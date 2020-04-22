@@ -1,4 +1,4 @@
-package storage
+package conf
 
 type Configuration struct {
 }
