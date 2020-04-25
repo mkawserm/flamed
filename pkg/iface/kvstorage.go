@@ -8,6 +8,8 @@ type IKVStorage interface {
 
 	RunGC()
 
+	ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) (bool, error)
+
 	Read(namespace []byte, key []byte) ([]byte, error)
 	Delete(namespace []byte, key []byte) (bool, error)
 	Create(namespace []byte, key []byte, value []byte) (bool, error)

@@ -18,6 +18,11 @@ func (k *KVStorageRegistry) AddKVStorage(name string, storage iface.IKVStorage) 
 	k.registry[name] = storage
 }
 
+func (k *KVStorageRegistry) GetKVStorage(name string) iface.IKVStorage {
+	storage := k.registry[name]
+	return storage
+}
+
 func GetKVStorageRegistry() *KVStorageRegistry {
 	return kvStorageRegistryIns
 }

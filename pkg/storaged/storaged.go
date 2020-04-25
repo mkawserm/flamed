@@ -20,3 +20,7 @@ type Storaged struct {
 //	}
 //	return d
 //}
+
+//func init() {
+//	registry.GetKVStorageRegistry().AddKVStorage(badger.Name, &badger.Badger{})
+//}
