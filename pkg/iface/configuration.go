@@ -3,11 +3,12 @@ package iface
 type IConfiguration interface {
 
 	/*Dragonboat Raft config*/
-	//InitialMembers() map[uint64]string
-	//Join() bool
-
+	InitialMembers() map[uint64]string
+	Join() bool
 	NodeID() uint64
 	ClusterID() uint64
+	ClusterName() []byte
+
 	CheckQuorum() bool
 	ElectionRTT() uint64
 	HeartbeatRTT() uint64
@@ -48,6 +49,8 @@ type IConfiguration interface {
 
 	/*Flame config*/
 	FlamePath() string
+	FlameSecretKey() []byte
+
 	StoragePluginKV() string
 	StoragePluginIndex() string
 	StoragePluginRaftLog() string
