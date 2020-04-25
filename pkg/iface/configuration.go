@@ -3,6 +3,9 @@ package iface
 type IConfiguration interface {
 
 	/*Dragonboat Raft config*/
+	//InitialMembers() map[uint64]string
+	//Join() bool
+
 	NodeID() uint64
 	ClusterID() uint64
 	CheckQuorum() bool
