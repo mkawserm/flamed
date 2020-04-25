@@ -4,7 +4,7 @@ type Configuration struct {
 	Path string
 }
 
-func (c *Configuration) FlamedPath() string {
+func (c *Configuration) FlamePath() string {
 	return c.Path
 }
 

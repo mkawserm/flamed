@@ -1,7 +1,7 @@
 package iface
 
 type IConfiguration interface {
-	FlamedPath() string
+	FlamePath() string
 	StoragePluginKV() string
 	StoragePluginIndex() string
 	StoragePluginRaftLog() string
