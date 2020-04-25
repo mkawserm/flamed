@@ -3,34 +3,34 @@ package pb;
 
 //option go_package = "pkg/pb";
 
-message FlamedKVPair {
+message FlameKVPair {
   bytes key = 1;
   bytes value = 2;
 }
 
-message FlamedSnapshot {
+message FlameSnapshot {
   uint32 version = 1;
   uint64 length = 2;
-  repeated FlamedKVPair flamedKVPairList = 3;
+  repeated FlameKVPair flameKVPairList = 3;
 }
 
-message FlamedEntry {
+message FlameEntry {
   bytes namespace = 1;
   bytes key = 2;
   bytes value = 3;
 }
 
-message FlamedAction {
-  enum FlamedActionType {
+message FlameAction {
+  enum FlameActionType {
     CREATE = 0;
     UPDATE = 1;
     DELETE = 2;
   }
 
-  FlamedActionType flamedActionType = 1;
-  FlamedEntry flamedEntry = 2;
+  FlameActionType flameActionType = 1;
+  FlameEntry flameEntry = 2;
 }
 
-message FlamedBatch {
-  repeated FlamedAction flamedActionList = 1;
+message FlameBatch {
+  repeated FlameAction flameActionList = 1;
 }
