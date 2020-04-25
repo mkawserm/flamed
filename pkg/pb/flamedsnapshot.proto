@@ -1,0 +1,15 @@
+syntax = "proto3";
+package pb;
+
+option go_package = "pkg/pb";
+
+message FlamedKVPair {
+  bytes key = 1;
+  bytes value = 2;
+}
+
+message FlamedSnapshot {
+  uint64 length = 1;
+  uint32 version = 2;
+  repeated FlamedKVPair flamedKVPair = 3;
+}
