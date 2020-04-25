@@ -5,4 +5,4 @@ cover-html:
 	@go tool cover -html=cover.out
 
 protobuf:
-	@protoc -I=./pkg/pb --go_out=. flamedsnapshot.proto
+	@protoc -I=./pkg/pb --go_out=./pkg/pb flamed.proto
