@@ -53,6 +53,10 @@ func (b *Badger) AsyncSnapshot(snapshot chan *pb.FlameSnapshot, maxItem int) err
 	return nil
 }
 
+func (b *Badger) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) error {
+	return nil
+}
+
 func (b *Badger) SyncSnapshot() (*pb.FlameSnapshot, error) {
 	return nil, nil
 }

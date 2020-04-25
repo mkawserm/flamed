@@ -17,6 +17,8 @@ type IKVStorage interface {
 
 	SetSnapshotConfiguration(configuration interface{})
 	AsyncSnapshot(snapshot chan *pb.FlameSnapshot, maxItem int) error
+	ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) error
+
 	SyncSnapshot() (*pb.FlameSnapshot, error)
 	ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error)
 }
