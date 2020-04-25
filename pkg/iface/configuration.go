@@ -58,4 +58,8 @@ type IConfiguration interface {
 	KVStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
 	RaftLogStorageCustomConfiguration() interface{}
+
+	KVStorageSnapshotConfiguration() interface{}
+	IndexStorageSnapshotConfiguration() interface{}
+	RaftLogStorageSnapshotConfiguration() interface{}
 }
