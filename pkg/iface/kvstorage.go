@@ -5,6 +5,7 @@ import "github.com/mkawserm/flamed/pkg/pb"
 type IKVStorage interface {
 	Open(path string, secretKey []byte, configuration interface{}) (bool, error)
 	Close() error
+
 	RunGC()
 
 	Read(namespace []byte, key []byte) ([]byte, error)
@@ -16,6 +17,7 @@ type IKVStorage interface {
 	ApplyAction(batch *pb.FlameAction) (bool, error)
 
 	SetSnapshotConfiguration(configuration interface{})
+
 	AsyncSnapshot(snapshot chan *pb.FlameSnapshot, maxItem int) error
 	ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) error
 
