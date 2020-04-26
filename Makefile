@@ -1,3 +1,6 @@
+test:
+	@go test ./...
+
 cover:
 	@go test -coverprofile=cover.out -v
 
