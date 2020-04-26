@@ -6,7 +6,7 @@ import (
 )
 
 type Storage struct {
-	mConfiguration iface.IConfiguration
+	mConfiguration iface.IFlameConfiguration
 
 	mSecretKey                      []byte
 	mKVStoragePath                  string
@@ -19,7 +19,7 @@ type Storage struct {
 	mIndexStorageConfiguration interface{}
 }
 
-func (s *Storage) SetConfiguration(configuration iface.IConfiguration) {
+func (s *Storage) SetConfiguration(configuration iface.IFlameConfiguration) {
 	s.mConfiguration = configuration
 
 	s.mSecretKey = s.mConfiguration.FlameSecretKey()

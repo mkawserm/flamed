@@ -1,12 +1,5 @@
 package iface
 
-type IndexObjectType int
-
-const (
-	JSONMapType IndexObjectType = iota
-	BleveClassifierType
-)
-
 type IConfiguration interface {
 
 	/*Dragonboat Raft config*/
@@ -54,21 +47,6 @@ type IConfiguration interface {
 	//SystemEventListener
 	//SystemTickerPrecision
 
-	/*Flame config*/
-	FlamePath() string
-	FlameSecretKey() []byte
-
-	StoragePluginKV() IKVStorage
-	StoragePluginIndex() IIndexStorage
-	StoragePluginRaftLog() IRaftLogStorage
-
-	KVStorageCustomConfiguration() interface{}
-	IndexStorageCustomConfiguration() interface{}
-	RaftLogStorageCustomConfiguration() interface{}
-
-	KVStorageSnapshotConfiguration() interface{}
-	//IndexStorageSnapshotConfiguration() interface{}
-	//RaftLogStorageSnapshotConfiguration() interface{}
-
-	IndexObject(namespace []byte, keys []string, value []byte) (IndexObjectType, interface{})
+	/*Flame Configuration*/
+	IFlameConfiguration
 }
