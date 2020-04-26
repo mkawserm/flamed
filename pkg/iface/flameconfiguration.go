@@ -25,5 +25,5 @@ type IFlameConfiguration interface {
 	//IndexStorageSnapshotConfiguration() interface{}
 	//RaftLogStorageSnapshotConfiguration() interface{}
 
-	IndexObject(namespace []byte, keys []string, value []byte) (IndexObjectType, interface{})
+	IndexObject(namespace []byte, fields []string, value []byte) (IndexObjectType, interface{})
 }

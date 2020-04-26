@@ -19,7 +19,7 @@ type Storage struct {
 	mIndexStorageConfiguration interface{}
 }
 
-func (s *Storage) SetConfiguration(configuration iface.IFlameConfiguration) {
+func (s *Storage) SetConfiguration(configuration iface.IFlameConfiguration) bool {
 	s.mConfiguration = configuration
 
 	s.mSecretKey = s.mConfiguration.FlameSecretKey()
@@ -31,6 +31,8 @@ func (s *Storage) SetConfiguration(configuration iface.IFlameConfiguration) {
 	s.mIndexStorage = s.mConfiguration.StoragePluginIndex()
 	s.mIndexStoragePath = s.mConfiguration.FlamePath()
 	s.mIndexStorageConfiguration = s.mConfiguration.IndexStorageCustomConfiguration()
+
+	return false
 }
 
 func (s *Storage) Open() (bool, error) {
