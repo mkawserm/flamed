@@ -6,8 +6,9 @@ import (
 )
 
 type Storage struct {
-	mSecretKey []byte
+	mConfiguration iface.IConfiguration
 
+	mSecretKey                      []byte
 	mKVStoragePath                  string
 	mKVStorage                      iface.IKVStorage
 	mKVStorageConfiguration         interface{}
@@ -18,36 +19,18 @@ type Storage struct {
 	mIndexStorageConfiguration interface{}
 }
 
-func (s *Storage) SetSecretKey(secretKey []byte) {
-	s.mSecretKey = secretKey
-}
+func (s *Storage) SetConfiguration(configuration iface.IConfiguration) {
+	s.mConfiguration = configuration
 
-func (s *Storage) SetKVStorage(kvStorage iface.IKVStorage) {
-	s.mKVStorage = kvStorage
-}
+	s.mSecretKey = s.mConfiguration.FlameSecretKey()
+	s.mKVStorage = s.mConfiguration.StoragePluginKV()
+	s.mKVStoragePath = s.mConfiguration.FlamePath()
+	s.mKVStorageConfiguration = s.mConfiguration.KVStorageCustomConfiguration()
+	s.mKVStorageSnapshotConfiguration = s.mConfiguration.KVStorageSnapshotConfiguration()
 
-func (s *Storage) SetKVStoragePath(path string) {
-	s.mKVStoragePath = path
-}
-
-func (s *Storage) SetKVStorageConfiguration(configuration interface{}) {
-	s.mKVStorageConfiguration = configuration
-}
-
-func (s *Storage) SetKVStorageSnapshotConfiguration(configuration interface{}) {
-	s.mKVStorageSnapshotConfiguration = configuration
-}
-
-func (s *Storage) SetIndexStorage(indexStorage iface.IIndexStorage) {
-	s.mIndexStorage = indexStorage
-}
-
-func (s *Storage) SetIndexStoragePath(path string) {
-	s.mIndexStoragePath = path
-}
-
-func (s *Storage) SetIndexStorageConfiguration(configuration interface{}) {
-	s.mIndexStorageConfiguration = configuration
+	s.mIndexStorage = s.mConfiguration.StoragePluginIndex()
+	s.mIndexStoragePath = s.mConfiguration.FlamePath()
+	s.mIndexStorageConfiguration = s.mConfiguration.IndexStorageCustomConfiguration()
 }
 
 func (s *Storage) Open() (bool, error) {
