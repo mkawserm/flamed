@@ -3,6 +3,7 @@ package storage
 import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/utility"
 )
 
 type Storage struct {
@@ -22,17 +23,35 @@ type Storage struct {
 func (s *Storage) SetConfiguration(configuration iface.IFlameConfiguration) bool {
 	s.mConfiguration = configuration
 
+	if s.mConfiguration.StoragePluginKV() == nil {
+		return false
+	}
+
+	if s.mConfiguration.StoragePluginRaftLog() == nil {
+		return false
+	}
+
+	kvStoragePath := s.mConfiguration.FlamePath() + "/kv"
+	indexStoragePath := s.mConfiguration.FlamePath() + "/index"
+
+	if !utility.MkPath(kvStoragePath) {
+		return false
+	}
+	if !utility.MkPath(indexStoragePath) {
+		return false
+	}
+
 	s.mSecretKey = s.mConfiguration.FlameSecretKey()
 	s.mKVStorage = s.mConfiguration.StoragePluginKV()
-	s.mKVStoragePath = s.mConfiguration.FlamePath()
+	s.mKVStoragePath = kvStoragePath
 	s.mKVStorageConfiguration = s.mConfiguration.KVStorageCustomConfiguration()
 	s.mKVStorageSnapshotConfiguration = s.mConfiguration.KVStorageSnapshotConfiguration()
 
 	s.mIndexStorage = s.mConfiguration.StoragePluginIndex()
-	s.mIndexStoragePath = s.mConfiguration.FlamePath()
+	s.mIndexStoragePath = indexStoragePath
 	s.mIndexStorageConfiguration = s.mConfiguration.IndexStorageCustomConfiguration()
 
-	return false
+	return true
 }
 
 func (s *Storage) Open() (bool, error) {
