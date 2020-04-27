@@ -1,6 +1,7 @@
 package badger
 
 import (
+	"context"
 	badgerDb "github.com/dgraph-io/badger/v2"
 	badgerDbOptions "github.com/dgraph-io/badger/v2/options"
 	"github.com/mkawserm/flamed/pkg/pb"
@@ -227,7 +228,28 @@ func (b *Badger) ApplyBatch(batch *pb.FlameBatch) (bool, error) {
 		return false, x.ErrFailedToApplyBatchToStorage
 	}
 
-	return false, nil
+	txn := b.mDb.NewTransaction(true)
+	defer txn.Discard()
+
+	for _, action := range batch.FlameActionList {
+		if action.FlameActionType == pb.FlameAction_CREATE || action.FlameActionType == pb.FlameAction_UPDATE {
+			uid := uidutil.GetUid(action.FlameEntry.Namespace, action.FlameEntry.Key)
+			if err := txn.Set(uid, action.FlameEntry.Value); err != nil {
+				return false, x.ErrFailedToApplyBatchToStorage
+			}
+		} else if action.FlameActionType == pb.FlameAction_DELETE {
+			uid := uidutil.GetUid(action.FlameEntry.Namespace, action.FlameEntry.Key)
+			if err := txn.Delete(uid); err != nil {
+				return false, x.ErrFailedToApplyBatchToStorage
+			}
+		}
+	}
+
+	if err := txn.Commit(); err != nil {
+		return false, x.ErrFailedToApplyBatchToStorage
+	}
+
+	return true, nil
 }
 
 func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
@@ -245,23 +267,88 @@ func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
 func (b *Badger) SetSnapshotConfiguration(configuration interface{}) {
 	if conf, ok := configuration.(SnapshotConfiguration); ok {
 		b.mSnapshotConf = conf
+	} else {
+		b.mSnapshotConf = SnapshotConfiguration{
+			GoroutineNumber: 16,
+			LogPrefix:       "Flamed:Async.Snapshot",
+		}
 	}
 }
 
-func (b *Badger) AsyncSnapshot(snapshot chan *pb.FlameSnapshot, maxItem int) error {
+func (b *Badger) AsyncSnapshot(snapshot chan<- *pb.FlameSnapshot) error {
 	if b.mDb == nil {
 		return x.ErrFailedToGenerateAsyncSnapshotFromStorage
+	}
+
+	stream := b.mDb.NewStream()
+	stream.NumGo = b.mSnapshotConf.GoroutineNumber
+	stream.LogPrefix = b.mSnapshotConf.LogPrefix
+	stream.KeyToList = nil
+
+	stream.Send = func(list *badgerDb.KVList) error {
+		data := &pb.FlameSnapshot{
+			Version:                0,
+			Length:                 0,
+			FlameSnapshotEntryList: make([]*pb.FlameSnapshotEntry, 0, 100),
+		}
+
+		for _, kv := range list.Kv {
+			entry := &pb.FlameSnapshotEntry{
+				Uid:  kv.Key,
+				Data: kv.Value,
+			}
+			data.FlameSnapshotEntryList = append(data.FlameSnapshotEntryList, entry)
+		}
+
+		data.Length = uint64(len(data.FlameSnapshotEntryList))
+		snapshot <- data
+		return nil
+	}
+
+	if err := stream.Orchestrate(context.Background()); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func (b *Badger) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) (bool, error) {
+func (b *Badger) ApplyAsyncSnapshot(snapshot <-chan *pb.FlameSnapshot) (bool, error) {
 	if b.mDb == nil {
 		return false, x.ErrFailedToApplyAsyncSnapshotToStorage
 	}
 
-	return false, nil
+	for {
+		ss := <-snapshot
+		if len(ss.FlameSnapshotEntryList) == 0 {
+			break
+		}
+
+		txn := b.mDb.NewTransaction(true)
+		for _, entry := range ss.FlameSnapshotEntryList {
+			if err := txn.Set(entry.Uid, entry.Data); err == badgerDb.ErrTxnTooBig {
+				if err := txn.Commit(); err != nil {
+					return false, x.ErrFailedToApplyAsyncSnapshotToStorage
+				}
+
+				txn = b.mDb.NewTransaction(true)
+				if err := txn.Set(entry.Uid, entry.Data); err != nil {
+					return false, x.ErrFailedToApplyAsyncSnapshotToStorage
+				}
+
+			} else if err != nil {
+				return false, x.ErrFailedToApplyAsyncSnapshotToStorage
+			}
+		}
+
+		if err := txn.Commit(); err != nil {
+			txn.Discard()
+			return false, x.ErrFailedToApplyAsyncSnapshotToStorage
+		}
+
+		txn.Discard()
+	}
+
+	return true, nil
 }
 
 func (b *Badger) SyncSnapshot() (*pb.FlameSnapshot, error) {
@@ -269,7 +356,37 @@ func (b *Badger) SyncSnapshot() (*pb.FlameSnapshot, error) {
 		return nil, x.ErrFailedToGenerateSyncSnapshotFromStorage
 	}
 
-	return nil, nil
+	snapshot := &pb.FlameSnapshot{
+		Version:                0,
+		Length:                 0,
+		FlameSnapshotEntryList: make([]*pb.FlameSnapshotEntry, 0, 100),
+	}
+
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		opts := badgerDb.DefaultIteratorOptions
+		opts.PrefetchSize = 100
+		it := txn.NewIterator(opts)
+		defer it.Close()
+
+		for it.Rewind(); it.Valid(); it.Next() {
+			item := it.Item()
+			if value, err := item.ValueCopy(nil); err != nil {
+				return err
+			} else {
+				snapshot.FlameSnapshotEntryList = append(snapshot.FlameSnapshotEntryList, &pb.FlameSnapshotEntry{
+					Uid:  item.Key(),
+					Data: value,
+				})
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, x.ErrFailedToGenerateSyncSnapshotFromStorage
+	}
+	snapshot.Length = uint64(len(snapshot.FlameSnapshotEntryList))
+	return snapshot, nil
 }
 
 func (b *Badger) ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error) {
@@ -277,5 +394,29 @@ func (b *Badger) ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error) {
 		return false, x.ErrFailedToApplySyncSnapshotToStorage
 	}
 
-	return false, nil
+	txn := b.mDb.NewTransaction(true)
+	defer txn.Discard()
+
+	for _, entry := range snapshot.FlameSnapshotEntryList {
+		if err := txn.Set(entry.Uid, entry.Data); err == badgerDb.ErrTxnTooBig {
+			if err := txn.Commit(); err != nil {
+				return false, x.ErrFailedToApplySyncSnapshotToStorage
+			}
+
+			txn = b.mDb.NewTransaction(true)
+
+			if err := txn.Set(entry.Uid, entry.Data); err != nil {
+				return false, x.ErrFailedToApplySyncSnapshotToStorage
+			}
+
+		} else if err != nil {
+			return false, x.ErrFailedToApplySyncSnapshotToStorage
+		}
+	}
+
+	if err := txn.Commit(); err != nil {
+		return false, x.ErrFailedToApplySyncSnapshotToStorage
+	}
+
+	return true, nil
 }

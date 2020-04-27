@@ -98,9 +98,9 @@ func (s *Storage) ApplyAction(action *pb.FlameAction) (bool, error) {
 	return s.mKVStorage.ApplyAction(action)
 }
 
-func (s *Storage) AsyncSnapshot(snapshot chan *pb.FlameSnapshot, maxItem int) error {
+func (s *Storage) AsyncSnapshot(snapshot chan *pb.FlameSnapshot) error {
 	s.mKVStorage.SetSnapshotConfiguration(s.mKVStorageSnapshotConfiguration)
-	return s.mKVStorage.AsyncSnapshot(snapshot, maxItem)
+	return s.mKVStorage.AsyncSnapshot(snapshot)
 }
 
 func (s *Storage) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) (bool, error) {
