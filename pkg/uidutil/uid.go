@@ -37,3 +37,22 @@ func GetNamespace(uid []byte) []byte {
 func GetNamespaceFromString(uidString string) []byte {
 	return GetNamespace(GetUIDFromString(uidString))
 }
+
+func SplitUID(uid []byte) ([]byte, []byte) {
+	r := bytes.Split(uid, []byte(":"))
+	if len(r) == 0 {
+		return nil, nil
+	} else if len(r) == 1 {
+		return r[0], nil
+	} else if len(r) == 2 {
+		return r[0], r[1]
+	} else {
+		key := bytes.TrimPrefix(uid, r[0])
+		key = bytes.TrimPrefix(key, []byte(":"))
+		return r[0], key
+	}
+}
+
+func SplitUIDString(uidString string) ([]byte, []byte) {
+	return SplitUID(GetUIDFromString(uidString))
+}

@@ -36,3 +36,30 @@ func TestGetNamespaceFromString(t *testing.T) {
 
 	GetNamespaceFromString(GetUIDString([]byte("1"), []byte("1")))
 }
+
+func TestSplitUID(t *testing.T) {
+	t.Helper()
+
+	n, k := SplitUID(GetUID([]byte("1"), []byte("2")))
+
+	if !bytes.Equal(n, []byte("1")) {
+		t.Fatalf("namespace does not match")
+	}
+	if !bytes.Equal(k, []byte("2")) {
+		t.Fatalf("key does not match")
+	}
+}
+
+func TestSplitUIDString(t *testing.T) {
+	t.Helper()
+
+	n, k := SplitUIDString(GetUIDString([]byte("1"), []byte("2")))
+
+	if !bytes.Equal(n, []byte("1")) {
+		t.Fatalf("namespace does not match")
+	}
+
+	if !bytes.Equal(k, []byte("2")) {
+		t.Fatalf("key does not match")
+	}
+}
