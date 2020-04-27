@@ -47,6 +47,6 @@ type IConfiguration interface {
 	//SystemEventListener
 	//SystemTickerPrecision
 
-	/*Flame Configuration*/
-	IFlameConfiguration
+	/*Storage Configuration*/
+	IStorageConfiguration
 }

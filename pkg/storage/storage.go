@@ -7,7 +7,7 @@ import (
 )
 
 type Storage struct {
-	mConfiguration iface.IFlameConfiguration
+	mConfiguration iface.IStorageConfiguration
 
 	mSecretKey                      []byte
 	mKVStoragePath                  string
@@ -20,7 +20,7 @@ type Storage struct {
 	mIndexStorageConfiguration interface{}
 }
 
-func (s *Storage) SetConfiguration(configuration iface.IFlameConfiguration) bool {
+func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bool {
 	s.mConfiguration = configuration
 
 	if s.mConfiguration.StoragePluginKV() == nil {
@@ -31,8 +31,8 @@ func (s *Storage) SetConfiguration(configuration iface.IFlameConfiguration) bool
 		return false
 	}
 
-	kvStoragePath := s.mConfiguration.FlamePath() + "/kv"
-	indexStoragePath := s.mConfiguration.FlamePath() + "/index"
+	kvStoragePath := s.mConfiguration.StoragePath() + "/kv"
+	indexStoragePath := s.mConfiguration.StoragePath() + "/index"
 
 	if !utility.MkPath(kvStoragePath) {
 		return false
@@ -41,7 +41,7 @@ func (s *Storage) SetConfiguration(configuration iface.IFlameConfiguration) bool
 		return false
 	}
 
-	s.mSecretKey = s.mConfiguration.FlameSecretKey()
+	s.mSecretKey = s.mConfiguration.StorageSecretKey()
 	s.mKVStorage = s.mConfiguration.StoragePluginKV()
 	s.mKVStoragePath = kvStoragePath
 	s.mKVStorageConfiguration = s.mConfiguration.KVStorageCustomConfiguration()
