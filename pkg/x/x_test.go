@@ -2,8 +2,17 @@ package x
 
 import "testing"
 
+func TestIsUIDDoesNotExists(t *testing.T) {
+	t.Helper()
+
+	if !IsUIDDoesNotExists(ErrUIDDoesNotExists) {
+		t.Fatalf("error mismatch")
+	}
+}
+
 func TestIsFailedToApplyActionToStorage(t *testing.T) {
 	t.Helper()
+
 	if !IsFailedToApplyActionToStorage(ErrFailedToApplyActionToStorage) {
 		t.Fatalf("error mismatch")
 	}

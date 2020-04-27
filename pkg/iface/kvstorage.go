@@ -10,6 +10,7 @@ type IKVStorage interface {
 
 	ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) (bool, error)
 
+	IsExists(namespace []byte, key []byte) bool
 	Read(namespace []byte, key []byte) ([]byte, error)
 	Delete(namespace []byte, key []byte) (bool, error)
 	Create(namespace []byte, key []byte, value []byte) (bool, error)

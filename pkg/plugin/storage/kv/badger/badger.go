@@ -134,7 +134,11 @@ func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 	})
 
 	if err != nil {
-		return nil, x.ErrFailedToReadDataFromStorage
+		if err == badgerDb.ErrKeyNotFound {
+			return nil, x.ErrUIDDoesNotExists
+		} else {
+			return nil, x.ErrFailedToReadDataFromStorage
+		}
 	}
 
 	return data, nil
@@ -195,6 +199,27 @@ func (b *Badger) Update(namespace []byte, key []byte, value []byte) (bool, error
 	}
 
 	return true, nil
+}
+
+func (b *Badger) IsExists(namespace []byte, key []byte) bool {
+	if b.mDb == nil {
+		return false
+	}
+
+	uid := uidutil.GetUID(namespace, key)
+
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		_, err := txn.Get(uid)
+		return err
+	})
+
+	if err == badgerDb.ErrKeyNotFound {
+		return false
+	} else if err == nil {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (b *Badger) ApplyBatch(batch *pb.FlameBatch) (bool, error) {

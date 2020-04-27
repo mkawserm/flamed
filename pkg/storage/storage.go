@@ -70,6 +70,10 @@ func (s *Storage) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) (boo
 	return s.mKVStorage.ChangeSecretKey(oldSecretKey, newSecretKey)
 }
 
+func (s *Storage) IsExists(namespace []byte, key []byte) bool {
+	return s.mKVStorage.IsExists(namespace, key)
+}
+
 func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
 	return s.mKVStorage.Read(namespace, key)
 }
@@ -99,7 +103,7 @@ func (s *Storage) AsyncSnapshot(snapshot chan *pb.FlameSnapshot, maxItem int) er
 	return s.mKVStorage.AsyncSnapshot(snapshot, maxItem)
 }
 
-func (s *Storage) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) error {
+func (s *Storage) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) (bool, error) {
 	return s.mKVStorage.ApplyAsyncSnapshot(snapshot)
 }
 
