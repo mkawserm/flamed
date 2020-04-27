@@ -212,17 +212,33 @@ func (b *Badger) SetSnapshotConfiguration(configuration interface{}) {
 }
 
 func (b *Badger) AsyncSnapshot(snapshot chan *pb.FlameSnapshot, maxItem int) error {
+	if b.mDb == nil {
+		return x.ErrFailedToGenerateAsyncSnapshotFromStorage
+	}
+
 	return nil
 }
 
-func (b *Badger) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) error {
-	return nil
+func (b *Badger) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) (bool, error) {
+	if b.mDb == nil {
+		return false, x.ErrFailedToApplyAsyncSnapshotToStorage
+	}
+
+	return false, nil
 }
 
 func (b *Badger) SyncSnapshot() (*pb.FlameSnapshot, error) {
+	if b.mDb == nil {
+		return nil, x.ErrFailedToGenerateSyncSnapshotFromStorage
+	}
+
 	return nil, nil
 }
 
 func (b *Badger) ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error) {
+	if b.mDb == nil {
+		return false, x.ErrFailedToApplySyncSnapshotToStorage
+	}
+
 	return false, nil
 }
