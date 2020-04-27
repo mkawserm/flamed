@@ -223,11 +223,23 @@ func (b *Badger) IsExists(namespace []byte, key []byte) bool {
 }
 
 func (b *Badger) ApplyBatch(batch *pb.FlameBatch) (bool, error) {
+	if b.mDb == nil {
+		return false, x.ErrFailedToApplyBatchToStorage
+	}
+
 	return false, nil
 }
 
-func (b *Badger) ApplyAction(batch *pb.FlameAction) (bool, error) {
-	return false, nil
+func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
+	if action.FlameActionType == pb.FlameAction_CREATE {
+		return b.Create(action.FlameEntry.Namespace, action.FlameEntry.Key, action.FlameEntry.Value)
+	} else if action.FlameActionType == pb.FlameAction_UPDATE {
+		return b.Update(action.FlameEntry.Namespace, action.FlameEntry.Key, action.FlameEntry.Value)
+	} else if action.FlameActionType == pb.FlameAction_DELETE {
+		return b.Delete(action.FlameEntry.Namespace, action.FlameEntry.Key)
+	}
+
+	return false, x.ErrFailedToApplyActionToStorage
 }
 
 func (b *Badger) SetSnapshotConfiguration(configuration interface{}) {

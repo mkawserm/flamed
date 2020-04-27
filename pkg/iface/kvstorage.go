@@ -17,7 +17,7 @@ type IKVStorage interface {
 	Update(namespace []byte, key []byte, value []byte) (bool, error)
 
 	ApplyBatch(batch *pb.FlameBatch) (bool, error)
-	ApplyAction(batch *pb.FlameAction) (bool, error)
+	ApplyAction(action *pb.FlameAction) (bool, error)
 
 	SetSnapshotConfiguration(configuration interface{})
 
