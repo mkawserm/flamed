@@ -4,7 +4,9 @@ import "bytes"
 import "encoding/hex"
 
 func GetUID(namespace []byte, key []byte) []byte {
-	if len(key) == 0 {
+	if len(namespace) == 0 {
+		return nil
+	} else if len(key) == 0 {
 		return namespace[:]
 	} else {
 		r := make([]byte, 0, len(namespace)+1+len(key))
