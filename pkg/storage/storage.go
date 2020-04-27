@@ -9,11 +9,11 @@ import (
 type Storage struct {
 	mConfiguration iface.IStorageConfiguration
 
-	mSecretKey                      []byte
-	mKVStoragePath                  string
-	mKVStorage                      iface.IKVStorage
-	mKVStorageConfiguration         interface{}
-	mKVStorageSnapshotConfiguration interface{}
+	mSecretKey []byte
+
+	mKVStoragePath          string
+	mKVStorage              iface.IKVStorage
+	mKVStorageConfiguration interface{}
 
 	mIndexStoragePath          string
 	mIndexStorage              iface.IIndexStorage
@@ -27,7 +27,7 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 		return false
 	}
 
-	if s.mConfiguration.StoragePluginRaftLog() == nil {
+	if s.mConfiguration.StoragePluginIndex() == nil {
 		return false
 	}
 

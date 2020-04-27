@@ -15,11 +15,9 @@ type IStorageConfiguration interface {
 
 	StoragePluginKV() IKVStorage
 	StoragePluginIndex() IIndexStorage
-	StoragePluginRaftLog() IRaftLogStorage
 
 	KVStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
-	RaftLogStorageCustomConfiguration() interface{}
 
 	IndexObject(namespace []byte, fields []string, value []byte) (IndexObjectType, interface{})
 }
