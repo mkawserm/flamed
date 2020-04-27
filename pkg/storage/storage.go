@@ -94,8 +94,8 @@ func (s *Storage) ApplyBatch(batch *pb.FlameBatch) (bool, error) {
 	return s.mKVStorage.ApplyBatch(batch)
 }
 
-func (s *Storage) ApplyAction(batch *pb.FlameAction) (bool, error) {
-	return s.mKVStorage.ApplyAction(batch)
+func (s *Storage) ApplyAction(action *pb.FlameAction) (bool, error) {
+	return s.mKVStorage.ApplyAction(action)
 }
 
 func (s *Storage) AsyncSnapshot(snapshot chan *pb.FlameSnapshot, maxItem int) error {
