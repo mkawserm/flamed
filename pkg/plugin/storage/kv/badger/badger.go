@@ -11,36 +11,52 @@ import (
 )
 
 type Badger struct {
-	mDbPath        string
-	mDb            *badgerDb.DB
-	mDbOpenOptions badgerDb.Options
-	mSnapshotConf  SnapshotConfiguration
+	mDbPath          string
+	mDb              *badgerDb.DB
+	mDbConfiguration Configuration
 }
 
-func (b *Badger) Open(path string, secretKey []byte, configuration interface{}) (bool, error) {
+func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuration interface{}) (bool, error) {
 	if b.mDb != nil {
 		return true, nil
 	}
 
 	b.mDbPath = path
-	b.mDbOpenOptions = badgerDb.DefaultOptions(b.mDbPath)
+	b.mDbConfiguration.BadgerOptions = badgerDb.DefaultOptions(b.mDbPath)
 
 	if configuration == nil {
-		b.mDbOpenOptions.ReadOnly = false
-		b.mDbOpenOptions.Truncate = true
-		b.mDbOpenOptions.TableLoadingMode = badgerDbOptions.LoadToRAM
-		b.mDbOpenOptions.ValueLogLoadingMode = badgerDbOptions.MemoryMap
-		b.mDbOpenOptions.Compression = badgerDbOptions.Snappy
+		b.mDbConfiguration.BadgerOptions.Truncate = true
+		b.mDbConfiguration.BadgerOptions.TableLoadingMode = badgerDbOptions.LoadToRAM
+		b.mDbConfiguration.BadgerOptions.ValueLogLoadingMode = badgerDbOptions.MemoryMap
+		b.mDbConfiguration.BadgerOptions.Compression = badgerDbOptions.Snappy
 	} else {
 		if opts, ok := configuration.(badgerDb.Options); ok {
-			b.mDbOpenOptions = opts
-			b.mDbOpenOptions.ValueDir = path
-			b.mDbOpenOptions.Dir = path
+			b.mDbConfiguration.BadgerOptions = opts
+			b.mDbConfiguration.BadgerOptions.ValueDir = path
+			b.mDbConfiguration.BadgerOptions.Dir = path
 		}
 	}
 
-	b.mDbOpenOptions.EncryptionKey = secretKey
-	db, err := badgerDb.Open(b.mDbOpenOptions)
+	b.mDbConfiguration.BadgerOptions.ReadOnly = readOnly
+	b.mDbConfiguration.BadgerOptions.EncryptionKey = secretKey
+
+	if b.mDbConfiguration.GoroutineNumber <= 0 {
+		b.mDbConfiguration.GoroutineNumber = 16
+	}
+
+	if b.mDbConfiguration.LogPrefix == "" {
+		b.mDbConfiguration.LogPrefix = "Flamed:Async.Snapshot"
+	}
+
+	if b.mDbConfiguration.SliceCap <= 0 {
+		b.mDbConfiguration.SliceCap = 100
+	}
+
+	if b.mDbConfiguration.EncryptionKeyRotationDuration <= 0 {
+		b.mDbConfiguration.EncryptionKeyRotationDuration = 10 * 24 * time.Hour
+	}
+
+	db, err := badgerDb.Open(b.mDbConfiguration.BadgerOptions)
 	if err != nil {
 		return false, x.ErrFailedToOpenStorage
 	}
@@ -98,7 +114,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) (bool
 		Dir:                           b.mDbPath,
 		ReadOnly:                      true,
 		EncryptionKey:                 oldSecretKey,
-		EncryptionKeyRotationDuration: 10 * 24 * time.Hour,
+		EncryptionKeyRotationDuration: b.mDbConfiguration.EncryptionKeyRotationDuration,
 	}
 
 	kr, err := badgerDb.OpenKeyRegistry(opt)
@@ -114,6 +130,43 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) (bool
 	}
 
 	return true, nil
+}
+
+func (b *Badger) ReadUsingPrefix(prefix []byte) ([]*pb.FlameEntry, error) {
+	if b.mDb == nil {
+		return nil, x.ErrFailedToReadDataFromStorage
+	}
+
+	data := make([]*pb.FlameEntry, 0, b.mDbConfiguration.SliceCap)
+
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
+		defer it.Close()
+
+		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
+			item := it.Item()
+			uid := item.Key()
+
+			if value, err := item.ValueCopy(nil); err == nil {
+				namespace, key := uidutil.SplitUid(uid)
+				entry := &pb.FlameEntry{
+					Namespace: namespace,
+					Key:       key,
+					Value:     value,
+				}
+				data = append(data, entry)
+			} else {
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, x.ErrFailedToReadDataFromStorage
+	}
+
+	return data, nil
 }
 
 func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
@@ -264,32 +317,21 @@ func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
 	return false, x.ErrFailedToApplyActionToStorage
 }
 
-func (b *Badger) SetSnapshotConfiguration(configuration interface{}) {
-	if conf, ok := configuration.(SnapshotConfiguration); ok {
-		b.mSnapshotConf = conf
-	} else {
-		b.mSnapshotConf = SnapshotConfiguration{
-			GoroutineNumber: 16,
-			LogPrefix:       "Flamed:Async.Snapshot",
-		}
-	}
-}
-
 func (b *Badger) AsyncSnapshot(snapshot chan<- *pb.FlameSnapshot) error {
 	if b.mDb == nil {
 		return x.ErrFailedToGenerateAsyncSnapshotFromStorage
 	}
 
 	stream := b.mDb.NewStream()
-	stream.NumGo = b.mSnapshotConf.GoroutineNumber
-	stream.LogPrefix = b.mSnapshotConf.LogPrefix
+	stream.NumGo = b.mDbConfiguration.GoroutineNumber
+	stream.LogPrefix = b.mDbConfiguration.LogPrefix
 	stream.KeyToList = nil
 
 	stream.Send = func(list *badgerDb.KVList) error {
 		data := &pb.FlameSnapshot{
 			Version:                0,
 			Length:                 0,
-			FlameSnapshotEntryList: make([]*pb.FlameSnapshotEntry, 0, 100),
+			FlameSnapshotEntryList: make([]*pb.FlameSnapshotEntry, 0, b.mDbConfiguration.SliceCap),
 		}
 
 		for _, kv := range list.Kv {
@@ -359,7 +401,7 @@ func (b *Badger) SyncSnapshot() (*pb.FlameSnapshot, error) {
 	snapshot := &pb.FlameSnapshot{
 		Version:                0,
 		Length:                 0,
-		FlameSnapshotEntryList: make([]*pb.FlameSnapshotEntry, 0, 100),
+		FlameSnapshotEntryList: make([]*pb.FlameSnapshotEntry, 0, b.mDbConfiguration.SliceCap),
 	}
 
 	err := b.mDb.View(func(txn *badgerDb.Txn) error {

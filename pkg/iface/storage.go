@@ -9,7 +9,7 @@ const (
 )
 
 type IStorageConfiguration interface {
-	/*Flame config*/
+	/*Storage Config*/
 	StoragePath() string
 	StorageSecretKey() []byte
 
@@ -20,10 +20,6 @@ type IStorageConfiguration interface {
 	KVStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
 	RaftLogStorageCustomConfiguration() interface{}
-
-	KVStorageSnapshotConfiguration() interface{}
-	//IndexStorageSnapshotConfiguration() interface{}
-	//RaftLogStorageSnapshotConfiguration() interface{}
 
 	IndexObject(namespace []byte, fields []string, value []byte) (IndexObjectType, interface{})
 }
