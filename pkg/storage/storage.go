@@ -45,7 +45,6 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 	s.mKVStorage = s.mConfiguration.StoragePluginKV()
 	s.mKVStoragePath = kvStoragePath
 	s.mKVStorageConfiguration = s.mConfiguration.KVStorageCustomConfiguration()
-	s.mKVStorageSnapshotConfiguration = s.mConfiguration.KVStorageSnapshotConfiguration()
 
 	s.mIndexStorage = s.mConfiguration.StoragePluginIndex()
 	s.mIndexStoragePath = indexStoragePath
@@ -55,7 +54,7 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 }
 
 func (s *Storage) Open() (bool, error) {
-	return s.mKVStorage.Open(s.mKVStoragePath, s.mSecretKey, s.mKVStorageConfiguration)
+	return s.mKVStorage.Open(s.mKVStoragePath, s.mSecretKey, false, s.mKVStorageConfiguration)
 }
 
 func (s *Storage) Close() error {
@@ -99,7 +98,6 @@ func (s *Storage) ApplyAction(action *pb.FlameAction) (bool, error) {
 }
 
 func (s *Storage) AsyncSnapshot(snapshot chan *pb.FlameSnapshot) error {
-	s.mKVStorage.SetSnapshotConfiguration(s.mKVStorageSnapshotConfiguration)
 	return s.mKVStorage.AsyncSnapshot(snapshot)
 }
 
@@ -108,7 +106,6 @@ func (s *Storage) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) (bool, err
 }
 
 func (s *Storage) SyncSnapshot() (*pb.FlameSnapshot, error) {
-	s.mKVStorage.SetSnapshotConfiguration(s.mKVStorageSnapshotConfiguration)
 	return s.mKVStorage.SyncSnapshot()
 }
 
