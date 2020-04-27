@@ -42,6 +42,7 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 	}
 
 	s.mSecretKey = s.mConfiguration.StorageSecretKey()
+
 	s.mKVStorage = s.mConfiguration.StoragePluginKV()
 	s.mKVStoragePath = kvStoragePath
 	s.mKVStorageConfiguration = s.mConfiguration.KVStorageCustomConfiguration()
