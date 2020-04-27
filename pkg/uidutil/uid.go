@@ -3,7 +3,7 @@ package uidutil
 import "bytes"
 import "encoding/hex"
 
-func GetUID(namespace []byte, key []byte) []byte {
+func GetUid(namespace []byte, key []byte) []byte {
 	if len(namespace) == 0 {
 		return nil
 	} else if len(key) == 0 {
@@ -17,12 +17,12 @@ func GetUID(namespace []byte, key []byte) []byte {
 	}
 }
 
-func GetUIDString(namespace []byte, key []byte) string {
-	src := GetUID(namespace, key)
+func GetUidString(namespace []byte, key []byte) string {
+	src := GetUid(namespace, key)
 	return hex.EncodeToString(src)
 }
 
-func GetUIDFromString(uidString string) []byte {
+func GetUidFromString(uidString string) []byte {
 	r, _ := hex.DecodeString(uidString)
 	return r
 }
@@ -37,10 +37,10 @@ func GetNamespace(uid []byte) []byte {
 }
 
 func GetNamespaceFromString(uidString string) []byte {
-	return GetNamespace(GetUIDFromString(uidString))
+	return GetNamespace(GetUidFromString(uidString))
 }
 
-func SplitUID(uid []byte) ([]byte, []byte) {
+func SplitUid(uid []byte) ([]byte, []byte) {
 	r := bytes.Split(uid, []byte(":"))
 	if len(r) == 0 {
 		return nil, nil
@@ -55,6 +55,6 @@ func SplitUID(uid []byte) ([]byte, []byte) {
 	}
 }
 
-func SplitUIDString(uidString string) ([]byte, []byte) {
-	return SplitUID(GetUIDFromString(uidString))
+func SplitUidString(uidString string) ([]byte, []byte) {
+	return SplitUid(GetUidFromString(uidString))
 }

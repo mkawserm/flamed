@@ -6,7 +6,7 @@ var ErrFailedToOpenStorage = errors.New("failed to open the storage")
 var ErrFailedToCloseStorage = errors.New("failed to close the storage")
 var ErrFailedToChangeSecretKey = errors.New("failed to change secret key")
 var ErrFailedToReadDataFromStorage = errors.New("failed to read data from the storage")
-var ErrUIDDoesNotExists = errors.New("uid does not exists")
+var ErrUidDoesNotExists = errors.New("uid does not exists")
 var ErrFailedToDeleteDataFromStorage = errors.New("failed to delete data from the storage")
 var ErrFailedToCreateDataToStorage = errors.New("failed to create data to the storage")
 var ErrFailedToUpdateDataToStorage = errors.New("failed to update data to the storage")
@@ -17,8 +17,8 @@ var ErrFailedToApplyAsyncSnapshotToStorage = errors.New("failed to apply async s
 var ErrFailedToGenerateSyncSnapshotFromStorage = errors.New("failed to generate sync snapshot from the storage")
 var ErrFailedToApplySyncSnapshotToStorage = errors.New("failed to apply sync snapshot to the storage")
 
-func IsUIDDoesNotExists(err error) bool {
-	return err == ErrUIDDoesNotExists
+func IsUidDoesNotExists(err error) bool {
+	return err == ErrUidDoesNotExists
 }
 
 func IsFailedToOpenStorage(err error) bool {

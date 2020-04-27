@@ -120,7 +120,7 @@ func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 		return nil, x.ErrFailedToReadDataFromStorage
 	}
 
-	uid := uidutil.GetUID(namespace, key)
+	uid := uidutil.GetUid(namespace, key)
 	var data []byte
 
 	err := b.mDb.View(func(txn *badgerDb.Txn) error {
@@ -135,7 +135,7 @@ func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 
 	if err != nil {
 		if err == badgerDb.ErrKeyNotFound {
-			return nil, x.ErrUIDDoesNotExists
+			return nil, x.ErrUidDoesNotExists
 		} else {
 			return nil, x.ErrFailedToReadDataFromStorage
 		}
@@ -149,7 +149,7 @@ func (b *Badger) Delete(namespace []byte, key []byte) (bool, error) {
 		return false, x.ErrFailedToDeleteDataFromStorage
 	}
 
-	uid := uidutil.GetUID(namespace, key)
+	uid := uidutil.GetUid(namespace, key)
 
 	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
 		err := txn.Delete(uid)
@@ -168,7 +168,7 @@ func (b *Badger) Create(namespace []byte, key []byte, value []byte) (bool, error
 		return false, x.ErrFailedToCreateDataToStorage
 	}
 
-	uid := uidutil.GetUID(namespace, key)
+	uid := uidutil.GetUid(namespace, key)
 
 	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
 		err := txn.Set(uid, value)
@@ -187,7 +187,7 @@ func (b *Badger) Update(namespace []byte, key []byte, value []byte) (bool, error
 		return false, x.ErrFailedToUpdateDataToStorage
 	}
 
-	uid := uidutil.GetUID(namespace, key)
+	uid := uidutil.GetUid(namespace, key)
 
 	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
 		err := txn.Set(uid, value)
@@ -206,7 +206,7 @@ func (b *Badger) IsExists(namespace []byte, key []byte) bool {
 		return false
 	}
 
-	uid := uidutil.GetUID(namespace, key)
+	uid := uidutil.GetUid(namespace, key)
 
 	err := b.mDb.View(func(txn *badgerDb.Txn) error {
 		_, err := txn.Get(uid)

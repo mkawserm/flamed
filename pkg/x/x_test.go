@@ -2,10 +2,10 @@ package x
 
 import "testing"
 
-func TestIsUIDDoesNotExists(t *testing.T) {
+func TestIsUidDoesNotExists(t *testing.T) {
 	t.Helper()
 
-	if !IsUIDDoesNotExists(ErrUIDDoesNotExists) {
+	if !IsUidDoesNotExists(ErrUidDoesNotExists) {
 		t.Fatalf("error mismatch")
 	}
 }
