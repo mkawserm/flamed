@@ -3,7 +3,7 @@ package uidutil
 import "bytes"
 import "encoding/hex"
 
-const separator = "::"
+const separator string = "::"
 
 func GetUid(namespace []byte, key []byte) []byte {
 	if len(namespace) == 0 {
