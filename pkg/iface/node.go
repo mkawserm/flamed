@@ -1,13 +1,8 @@
 package iface
 
-type IConfiguration interface {
-
-	/*Dragonboat Raft config*/
-	InitialMembers() map[uint64]string
-	Join() bool
+type INodeConfiguration interface {
 	NodeID() uint64
-	ClusterID() uint64
-	ClusterName() []byte
+	NodePath() string
 
 	CheckQuorum() bool
 	ElectionRTT() uint64
@@ -46,7 +41,4 @@ type IConfiguration interface {
 	//FS
 	//SystemEventListener
 	//SystemTickerPrecision
-
-	/*Storage Configuration*/
-	IStorageConfiguration
 }
