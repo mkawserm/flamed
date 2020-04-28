@@ -30,10 +30,12 @@ func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuratio
 		b.mDbConfiguration.BadgerOptions.ValueLogLoadingMode = badgerDbOptions.MemoryMap
 		b.mDbConfiguration.BadgerOptions.Compression = badgerDbOptions.Snappy
 	} else {
-		if opts, ok := configuration.(badgerDb.Options); ok {
-			b.mDbConfiguration.BadgerOptions = opts
-			b.mDbConfiguration.BadgerOptions.ValueDir = path
-			b.mDbConfiguration.BadgerOptions.Dir = path
+		if opts, ok := configuration.(Configuration); ok {
+			b.mDbConfiguration.BadgerOptions = opts.BadgerOptions
+			if !b.mDbConfiguration.BadgerOptions.InMemory {
+				b.mDbConfiguration.BadgerOptions.ValueDir = path
+				b.mDbConfiguration.BadgerOptions.Dir = path
+			}
 		}
 	}
 
