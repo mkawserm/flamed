@@ -3,6 +3,8 @@ package uidutil
 import "bytes"
 import "encoding/hex"
 
+var separator = []byte("::")
+
 func GetUid(namespace []byte, key []byte) []byte {
 	if len(namespace) == 0 {
 		return nil
@@ -11,7 +13,7 @@ func GetUid(namespace []byte, key []byte) []byte {
 	} else {
 		r := make([]byte, 0, len(namespace)+1+len(key))
 		r = append(r, namespace...)
-		r = append(r, ':')
+		r = append(r, separator...)
 		r = append(r, key...)
 		return r
 	}
@@ -28,7 +30,7 @@ func GetUidFromString(uidString string) []byte {
 }
 
 func GetNamespace(uid []byte) []byte {
-	r := bytes.Split(uid, []byte(":"))
+	r := bytes.Split(uid, separator)
 	if len(r) == 0 {
 		return nil
 	} else {
@@ -41,7 +43,7 @@ func GetNamespaceFromString(uidString string) []byte {
 }
 
 func SplitUid(uid []byte) ([]byte, []byte) {
-	r := bytes.Split(uid, []byte(":"))
+	r := bytes.Split(uid, separator)
 	if len(r) == 0 {
 		return nil, nil
 	} else if len(r) == 1 {
@@ -50,7 +52,7 @@ func SplitUid(uid []byte) ([]byte, []byte) {
 		return r[0], r[1]
 	} else {
 		key := bytes.TrimPrefix(uid, r[0])
-		key = bytes.TrimPrefix(key, []byte(":"))
+		key = bytes.TrimPrefix(key, separator)
 		return r[0], key
 	}
 }
