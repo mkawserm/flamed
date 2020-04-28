@@ -3,7 +3,6 @@ package node
 import (
 	"github.com/lni/dragonboat/v3"
 	"github.com/lni/dragonboat/v3/config"
-	"github.com/lni/dragonboat/v3/plugin/pebble"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/x"
 )
@@ -22,37 +21,12 @@ type Node struct {
 func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 	storagedConfiguration iface.IStoragedConfiguration) (bool, error) {
 
-	if n.mNodeHost != nil {
+	if n.mIsNodeReady {
 		return false, x.ErrNodeAlreadyConfigured
 	}
+
 	n.mNodeConfiguration = nodeConfiguration
 	n.mStoragedConfiguration = storagedConfiguration
-
-	n.mNodeHostConfiguration = config.NodeHostConfig{
-		DeploymentID:                  0,
-		WALDir:                        "",
-		NodeHostDir:                   "",
-		RTTMillisecond:                0,
-		RaftAddress:                   "",
-		ListenAddress:                 "",
-		MutualTLS:                     false,
-		CAFile:                        "",
-		CertFile:                      "",
-		KeyFile:                       "",
-		MaxSendQueueSize:              0,
-		MaxReceiveQueueSize:           0,
-		LogDBFactory:                  pebble.NewLogDB,
-		RaftRPCFactory:                nil,
-		EnableMetrics:                 false,
-		RaftEventListener:             nil,
-		MaxSnapshotSendBytesPerSecond: 0,
-		MaxSnapshotRecvBytesPerSecond: 0,
-		FS:                            nil,
-		SystemEventListener:           nil,
-		SystemTickerPrecision:         0,
-	}
-
-	//n.mNodeHostConfiguration.LogDBFactory = pebble.NewLogDB
 
 	return false, nil
 }
@@ -77,12 +51,17 @@ func (n *Node) StopCluster(clusterId uint64) error {
 }
 
 func (n *Node) StopNode() {
-	if n.mNodeHost == nil {
+	if !n.mIsNodeReady {
 		return
 	}
 
 	n.mNodeHost.Stop()
 
+	n.mIsNodeReady = false
+
 	n.mNodeHost = nil
 	n.mNodeConfiguration = nil
+	n.mStoragedConfiguration = nil
+	n.mRaftConfiguration = config.Config{}
+	n.mNodeHostConfiguration = config.NodeHostConfig{}
 }
