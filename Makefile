@@ -1,8 +1,11 @@
+build:
+	@CGO_ENABLED=0 go build -v -o bin/flamed cmd/flamed/main.go
+
 test:
-	@go test ./...
+	@CGO_ENABLED=0 go test ./...
 
 cover:
-	@go test ./... -coverprofile=cover.out -v
+	@CGO_ENABLED=0 go test ./... -coverprofile=cover.out -v
 
 cover-html:
 	@go tool cover -html=cover.out

@@ -1,5 +1,7 @@
 package iface
 
+import "github.com/lni/dragonboat/v3/config"
+
 type INodeConfiguration interface {
 	NodeID() uint64
 	NodePath() string
@@ -32,8 +34,10 @@ type INodeConfiguration interface {
 	KeyFile() string
 	MaxSendQueueSize() uint64
 	MaxReceiveQueueSize() uint64
-	//LogDBFactory
-	//RaftRPCFactory
+
+	LogDBFactory() config.LogDBFactoryFunc
+	RaftRPCFactory() config.RaftRPCFactoryFunc
+
 	EnableMetrics() bool
 	//RaftEventListener
 	MaxSnapshotSendBytesPerSecond() uint64

@@ -23,7 +23,7 @@ type Storage struct {
 }
 
 func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bool {
-	if s.mConfiguration == nil {
+	if s.mConfiguration != nil {
 		return false
 	}
 

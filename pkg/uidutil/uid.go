@@ -3,8 +3,8 @@ package uidutil
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/hex"
 )
-import "encoding/hex"
 
 const separator string = "::"
 
