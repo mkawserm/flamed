@@ -4,6 +4,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 type Storage struct {
@@ -21,6 +22,10 @@ type Storage struct {
 }
 
 func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bool {
+	if s.mConfiguration == nil {
+		return false
+	}
+
 	s.mConfiguration = configuration
 
 	if s.mConfiguration.StoragePluginKV() == nil {
@@ -55,6 +60,10 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 }
 
 func (s *Storage) Open() (bool, error) {
+	if s.mConfiguration == nil {
+		return false, x.ErrInvalidConfiguration
+	}
+
 	return s.mKVStorage.Open(s.mKVStoragePath, s.mSecretKey, false, s.mKVStorageConfiguration)
 }
 

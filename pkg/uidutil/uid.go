@@ -1,6 +1,9 @@
 package uidutil
 
-import "bytes"
+import (
+	"bytes"
+	"encoding/binary"
+)
 import "encoding/hex"
 
 const separator string = "::"
@@ -59,4 +62,16 @@ func SplitUid(uid []byte) ([]byte, []byte) {
 
 func SplitUidString(uidString string) ([]byte, []byte) {
 	return SplitUid(GetUidFromString(uidString))
+}
+
+func Uint64ToByteSlice(u uint64) []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b[0:], u)
+
+	return b
+}
+
+func ByteSliceToUint64(b []byte) uint64 {
+	n := binary.BigEndian.Uint64(b[0:])
+	return n
 }

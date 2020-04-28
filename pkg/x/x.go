@@ -2,6 +2,7 @@ package x
 
 import "errors"
 
+var ErrInvalidConfiguration = errors.New("invalid configuration")
 var ErrFailedToOpenStorage = errors.New("failed to open the storage")
 var ErrFailedToCloseStorage = errors.New("failed to close the storage")
 var ErrFailedToChangeSecretKey = errors.New("failed to change secret key")
@@ -16,6 +17,13 @@ var ErrFailedToGenerateAsyncSnapshotFromStorage = errors.New("failed to generate
 var ErrFailedToApplyAsyncSnapshotToStorage = errors.New("failed to apply async snapshot to the storage")
 var ErrFailedToGenerateSyncSnapshotFromStorage = errors.New("failed to generate sync snapshot from the storage")
 var ErrFailedToApplySyncSnapshotToStorage = errors.New("failed to apply sync snapshot to the storage")
+
+var ErrLastIndexIsNotMovingForward = errors.New("last index is not moving forward")
+var ErrInvalidLookupInput = errors.New("invalid lookup input")
+
+func IsInvalidConfiguration(err error) bool {
+	return err == ErrInvalidConfiguration
+}
 
 func IsUidDoesNotExists(err error) bool {
 	return err == ErrUidDoesNotExists
@@ -71,4 +79,12 @@ func IsFailedToGenerateSyncSnapshotFromStorage(err error) bool {
 
 func IsFailedToApplySyncSnapshotToStorage(err error) bool {
 	return err == ErrFailedToApplySyncSnapshotToStorage
+}
+
+func IsLastIndexIsNotMovingForward(err error) bool {
+	return err == ErrLastIndexIsNotMovingForward
+}
+
+func IsInvalidLookupInput(err error) bool {
+	return err == ErrInvalidLookupInput
 }

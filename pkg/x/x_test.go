@@ -2,6 +2,14 @@ package x
 
 import "testing"
 
+func TestIsInvalidConfiguration(t *testing.T) {
+	t.Helper()
+
+	if !IsInvalidConfiguration(ErrInvalidConfiguration) {
+		t.Fatalf("error mismatch")
+	}
+}
+
 func TestIsUidDoesNotExists(t *testing.T) {
 	t.Helper()
 
@@ -110,6 +118,22 @@ func TestIsFailedToUpdateDataToStorage(t *testing.T) {
 	t.Helper()
 
 	if !IsFailedToUpdateDataToStorage(ErrFailedToUpdateDataToStorage) {
+		t.Fatalf("error mismatch")
+	}
+}
+
+func TestIsLastIndexIsNotMovingForward(t *testing.T) {
+	t.Helper()
+
+	if !IsLastIndexIsNotMovingForward(ErrLastIndexIsNotMovingForward) {
+		t.Fatalf("error mismatch")
+	}
+}
+
+func TestIsInvalidLookupInput(t *testing.T) {
+	t.Helper()
+
+	if !IsInvalidLookupInput(ErrInvalidLookupInput) {
 		t.Fatalf("error mismatch")
 	}
 }

@@ -63,3 +63,11 @@ func TestSplitUidString(t *testing.T) {
 		t.Fatalf("key does not match")
 	}
 }
+
+func TestUint64Converter(t *testing.T) {
+	t.Helper()
+
+	if ByteSliceToUint64(Uint64ToByteSlice(1)) != 1 {
+		t.Fatalf("uit64 converter invalid conversion")
+	}
+}
