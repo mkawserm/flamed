@@ -18,8 +18,13 @@ var ErrFailedToApplyAsyncSnapshotToStorage = errors.New("failed to apply async s
 var ErrFailedToGenerateSyncSnapshotFromStorage = errors.New("failed to generate sync snapshot from the storage")
 var ErrFailedToApplySyncSnapshotToStorage = errors.New("failed to apply sync snapshot to the storage")
 
-var ErrLastIndexIsNotMovingForward = errors.New("last index is not moving forward")
 var ErrInvalidLookupInput = errors.New("invalid lookup input")
+
+var ErrFailedToPrepareSnapshot = errors.New("failed to prepare snapshot")
+var ErrFailedToSaveSnapshot = errors.New("failed to save snapshot")
+var ErrFailedToRecoverFromSnapshot = errors.New("failed to recover from snapshot")
+var ErrInvalidSnapshotContext = errors.New("invalid snapshot context")
+var ErrLastIndexIsNotMovingForward = errors.New("last index is not moving forward")
 
 func IsInvalidConfiguration(err error) bool {
 	return err == ErrInvalidConfiguration
@@ -87,4 +92,19 @@ func IsLastIndexIsNotMovingForward(err error) bool {
 
 func IsInvalidLookupInput(err error) bool {
 	return err == ErrInvalidLookupInput
+}
+
+func IsFailedToPrepareSnapshot(err error) bool {
+	return err == ErrFailedToPrepareSnapshot
+}
+
+func IsFailedToSaveSnapshot(err error) bool {
+	return err == ErrFailedToSaveSnapshot
+}
+func IsFailedToRecoverFromSnapshot(err error) bool {
+	return err == ErrFailedToRecoverFromSnapshot
+}
+
+func IsInvalidSnapshotContext(err error) bool {
+	return err == ErrInvalidSnapshotContext
 }

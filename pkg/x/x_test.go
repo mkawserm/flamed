@@ -137,3 +137,35 @@ func TestIsInvalidLookupInput(t *testing.T) {
 		t.Fatalf("error mismatch")
 	}
 }
+
+func TestIsFailedToPrepareSnapshot(t *testing.T) {
+	t.Helper()
+
+	if !IsFailedToPrepareSnapshot(ErrFailedToPrepareSnapshot) {
+		t.Fatalf("error mismatch")
+	}
+}
+
+func TestIsFailedToRecoverFromSnapshot(t *testing.T) {
+	t.Helper()
+
+	if !IsFailedToRecoverFromSnapshot(ErrFailedToRecoverFromSnapshot) {
+		t.Fatalf("error mismatch")
+	}
+}
+
+func TestIsFailedToSaveSnapshot(t *testing.T) {
+	t.Helper()
+
+	if !IsFailedToSaveSnapshot(ErrFailedToSaveSnapshot) {
+		t.Fatalf("error mismatch")
+	}
+}
+
+func TestIsInvalidSnapshotContext(t *testing.T) {
+	t.Helper()
+
+	if !IsInvalidSnapshotContext(ErrInvalidSnapshotContext) {
+		t.Fatalf("error mismatch")
+	}
+}

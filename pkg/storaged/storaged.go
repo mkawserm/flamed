@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/x"
+	"io"
 )
 
 import "github.com/mkawserm/flamed/pkg/storage"
@@ -134,9 +135,37 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 	return nil, x.ErrInvalidLookupInput
 }
 
-//PrepareSnapshot() (interface{}, error)
-//SaveSnapshot(interface{}, io.Writer, <-chan struct{}) error
-//RecoverFromSnapshot(io.Reader, <-chan struct{}) error
+func (s *Storaged) PrepareSnapshot() (interface{}, error) {
+	return s.mStorage.PrepareSnapshot()
+}
+
+func (s *Storaged) SaveSnapshot(snapshotContext interface{}, w io.Writer, done <-chan struct{}) error {
+	if snapshot, ok := snapshotContext.(iface.IKVStorage); ok {
+		return snapshot.SaveSnapshot(w)
+	} else {
+		return x.ErrInvalidSnapshotContext
+	}
+}
+
+func (s *Storaged) RecoverFromSnapshot(r io.Reader, done <-chan struct{}) error {
+	if err := s.mStorage.RecoverFromSnapshot(r); err != nil {
+		return err
+	}
+
+	// update the last applied index from the DB.
+	newLastApplied, err := s.queryAppliedIndex()
+	if err != nil || newLastApplied == 0 {
+		return x.ErrLastIndexIsNotMovingForward
+	}
+
+	if s.mLastApplied > newLastApplied {
+		return x.ErrLastIndexIsNotMovingForward
+	}
+
+	s.mLastApplied = newLastApplied
+
+	return nil
+}
 
 func NewStoraged(configuration iface.IStoragedConfiguration) func(
 	clusterId uint64,

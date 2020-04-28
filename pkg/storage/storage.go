@@ -5,11 +5,10 @@ import (
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
+	"io"
 )
 
 type Storage struct {
-	mConfiguration iface.IStorageConfiguration
-
 	mSecretKey []byte
 
 	mKVStoragePath          string
@@ -19,6 +18,8 @@ type Storage struct {
 	mIndexStoragePath          string
 	mIndexStorage              iface.IIndexStorage
 	mIndexStorageConfiguration interface{}
+
+	mConfiguration iface.IStorageConfiguration
 }
 
 func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bool {
@@ -67,6 +68,14 @@ func (s *Storage) Open() (bool, error) {
 	return s.mKVStorage.Open(s.mKVStoragePath, s.mSecretKey, false, s.mKVStorageConfiguration)
 }
 
+func (s *Storage) ReadOnlyOpen() (bool, error) {
+	if s.mConfiguration == nil {
+		return false, x.ErrInvalidConfiguration
+	}
+
+	return s.mKVStorage.Open(s.mKVStoragePath, s.mSecretKey, true, s.mKVStorageConfiguration)
+}
+
 func (s *Storage) Close() error {
 	return s.mKVStorage.Close()
 }
@@ -107,18 +116,30 @@ func (s *Storage) ApplyAction(action *pb.FlameAction) (bool, error) {
 	return s.mKVStorage.ApplyAction(action)
 }
 
-func (s *Storage) AsyncSnapshot(snapshot chan *pb.FlameSnapshot) error {
-	return s.mKVStorage.AsyncSnapshot(snapshot)
+//func (s *Storage) AsyncSnapshot(snapshot chan *pb.FlameSnapshot) error {
+//	return s.mKVStorage.AsyncSnapshot(snapshot)
+//}
+//
+//func (s *Storage) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) (bool, error) {
+//	return s.mKVStorage.ApplyAsyncSnapshot(snapshot)
+//}
+//
+//func (s *Storage) SyncSnapshot() (*pb.FlameSnapshot, error) {
+//	return s.mKVStorage.SyncSnapshot()
+//}
+//
+//func (s *Storage) ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error) {
+//	return s.mKVStorage.ApplySyncSnapshot(snapshot)
+//}
+
+func (s *Storage) PrepareSnapshot() (iface.IKVStorage, error) {
+	return s.mKVStorage.PrepareSnapshot()
 }
 
-func (s *Storage) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) (bool, error) {
-	return s.mKVStorage.ApplyAsyncSnapshot(snapshot)
+func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
+	return s.mKVStorage.RecoverFromSnapshot(r)
 }
 
-func (s *Storage) SyncSnapshot() (*pb.FlameSnapshot, error) {
-	return s.mKVStorage.SyncSnapshot()
-}
-
-func (s *Storage) ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error) {
-	return s.mKVStorage.ApplySyncSnapshot(snapshot)
+func (s *Storage) SaveSnapshot(w io.Writer) error {
+	return s.mKVStorage.SaveSnapshot(w)
 }

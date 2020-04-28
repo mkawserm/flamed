@@ -1,6 +1,9 @@
 package iface
 
-import "github.com/mkawserm/flamed/pkg/pb"
+import (
+	"github.com/mkawserm/flamed/pkg/pb"
+	"io"
+)
 
 type IKVStorage interface {
 	Open(path string, secretKey []byte, readOnly bool, configuration interface{}) (bool, error)
@@ -22,9 +25,13 @@ type IKVStorage interface {
 	ApplyBatch(batch *pb.FlameBatch) (bool, error)
 	ApplyAction(action *pb.FlameAction) (bool, error)
 
-	AsyncSnapshot(snapshot chan<- *pb.FlameSnapshot) error
-	ApplyAsyncSnapshot(snapshot <-chan *pb.FlameSnapshot) (bool, error)
+	PrepareSnapshot() (IKVStorage, error)
+	SaveSnapshot(w io.Writer) error
+	RecoverFromSnapshot(r io.Reader) error
 
-	SyncSnapshot() (*pb.FlameSnapshot, error)
-	ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error)
+	//AsyncSnapshot(snapshot chan<- *pb.FlameSnapshot) error
+	//ApplyAsyncSnapshot(snapshot <-chan *pb.FlameSnapshot) (bool, error)
+	//
+	//SyncSnapshot() (*pb.FlameSnapshot, error)
+	//ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error)
 }
