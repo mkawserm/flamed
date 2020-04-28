@@ -9,17 +9,24 @@ import (
 )
 
 type Node struct {
+	mIsNodeReady bool
+
 	mNodeHost              *dragonboat.NodeHost
 	mRaftConfiguration     config.Config
 	mNodeHostConfiguration config.NodeHostConfig
 	mNodeConfiguration     iface.INodeConfiguration
+
+	mStoragedConfiguration iface.IStoragedConfiguration
 }
 
-func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration) (bool, error) {
+func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
+	storagedConfiguration iface.IStoragedConfiguration) (bool, error) {
+
 	if n.mNodeHost != nil {
 		return false, x.ErrNodeAlreadyConfigured
 	}
 	n.mNodeConfiguration = nodeConfiguration
+	n.mStoragedConfiguration = storagedConfiguration
 
 	n.mNodeHostConfiguration = config.NodeHostConfig{
 		DeploymentID:                  0,
