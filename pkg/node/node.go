@@ -205,3 +205,10 @@ func (n *Node) GetDragonboatNodeHost() *dragonboat.NodeHost {
 	defer n.mMutex.Unlock()
 	return n.mNodeHost
 }
+
+//func (n *Node) GetStorage(clusterId uint64) *storage.Storage {
+//	n.mMutex.Lock()
+//	defer n.mMutex.Unlock()
+//
+//	return n.
+//}

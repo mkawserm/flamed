@@ -13,6 +13,7 @@ type IStoragedConfiguration interface {
 
 type IStoraged interface {
 	SetConfiguration(configuration IStoragedConfiguration) bool
+	GetStorage() IStorage
 	Open(<-chan struct{}) (uint64, error)
 	Sync() error
 	Close() error

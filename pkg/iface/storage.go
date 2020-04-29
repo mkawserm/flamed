@@ -1,5 +1,10 @@
 package iface
 
+import (
+	"github.com/mkawserm/flamed/pkg/pb"
+	"io"
+)
+
 type IndexObjectType int
 
 const (
@@ -23,4 +28,21 @@ type IStorageConfiguration interface {
 }
 
 type IStorage interface {
+	SetConfiguration(configuration IStorageConfiguration) bool
+	Open() error
+	ReadOnlyOpen() error
+	Close() error
+	RunGC()
+	ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) (bool, error)
+	IsExists(namespace []byte, key []byte) bool
+	Read(namespace []byte, key []byte) ([]byte, error)
+	Delete(namespace []byte, key []byte) (bool, error)
+	Create(namespace []byte, key []byte, value []byte) (bool, error)
+	Update(namespace []byte, key []byte, value []byte) (bool, error)
+	Append(namespace []byte, key []byte, value []byte) (bool, error)
+	ApplyBatch(batch *pb.FlameBatch) (bool, error)
+	ApplyAction(action *pb.FlameAction) (bool, error)
+	PrepareSnapshot() (IKVStorage, error)
+	RecoverFromSnapshot(r io.Reader) error
+	SaveSnapshot(w io.Writer) error
 }

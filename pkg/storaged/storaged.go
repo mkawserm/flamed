@@ -25,6 +25,10 @@ type Storaged struct {
 	mStoragedConfiguration iface.IStoragedConfiguration
 }
 
+func (s *Storaged) GetStorage() iface.IStorage {
+	return s.mStorage
+}
+
 func (s *Storaged) SetConfiguration(configuration iface.IStoragedConfiguration) bool {
 	if s.mStorage != nil {
 		return false
