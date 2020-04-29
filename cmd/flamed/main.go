@@ -1,11 +1,9 @@
 package main
 
-import "fmt"
 import "github.com/mkawserm/flamed/pkg/conf"
 import "github.com/mkawserm/flamed/pkg/node"
 
 func main() {
-	fmt.Println("Hello world")
 	n := &node.Node{}
 	defer n.StopNode()
 
@@ -25,7 +23,6 @@ func main() {
 	)
 
 	if err != nil {
-		fmt.Println("panic")
 		panic(err)
 	}
 
