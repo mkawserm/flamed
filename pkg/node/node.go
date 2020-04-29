@@ -137,7 +137,7 @@ func (n *Node) StartCluster(clusterConfiguration iface.IClusterConfiguration) er
 	}
 
 	n.mClusterMap[n.mRaftConfiguration.ClusterID] = clusterConfiguration.ClusterName()
-	n.mClusterSessionMap[n.mRaftConfiguration.ClusterID] = n.mNodeHost.GetNoOPSession(clusterConfiguration.ClusterId())
+	n.mClusterSessionMap[n.mRaftConfiguration.ClusterID] = nil //n.mNodeHost.GetNoOPSession(clusterConfiguration.ClusterId())
 
 	return nil
 }

@@ -32,20 +32,25 @@ func main() {
 		panic(err)
 	}
 
+	l := true
 	reader := bufio.NewReader(os.Stdin)
-	for {
+
+	for l {
 		fmt.Printf(">> ")
 		text, _ := reader.ReadString('\n')
 		t := strings.Trim(text, "\n")
 
 		switch t {
+		case "csid":
+			fmt.Println(n.ClusterIdList())
 		case "tcs":
 			fmt.Println(n.TotalCluster())
 		case "quit":
+			l = false
 			break
 		case "q":
+			l = false
 			break
-		case "":
 		}
 	}
 }
