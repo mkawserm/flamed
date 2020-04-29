@@ -188,6 +188,18 @@ func (n *Node) TotalCluster() int {
 	return len(n.mClusterMap)
 }
 
+func (n *Node) ClusterIdList() []uint64 {
+	n.mMutex.Lock()
+	defer n.mMutex.Unlock()
+
+	var ids []uint64
+	for k := range n.mClusterMap {
+		ids = append(ids, k)
+	}
+
+	return ids
+}
+
 func (n *Node) GetDragonboatNodeHost() *dragonboat.NodeHost {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
