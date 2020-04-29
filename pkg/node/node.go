@@ -105,7 +105,7 @@ func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 	}
 
 	if nh, err := dragonboat.NewNodeHost(n.mNodeHostConfiguration); err != nil {
-		return false, err
+		return err
 	} else {
 		n.mNodeHost = nh
 		n.mIsNodeReady = true

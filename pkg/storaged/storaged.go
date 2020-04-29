@@ -26,6 +26,12 @@ type Storaged struct {
 }
 
 func (s *Storaged) SetConfiguration(configuration iface.IStoragedConfiguration) bool {
+	if s.mStorage != nil {
+		return false
+	} else {
+		s.mStorage = &storage.Storage{}
+	}
+
 	s.mStoragedConfiguration = configuration
 	b := s.mStorage.SetConfiguration(configuration)
 
@@ -37,6 +43,10 @@ func (s *Storaged) SetConfiguration(configuration iface.IStoragedConfiguration) 
 }
 
 func (s *Storaged) saveAppliedIndex(u uint64) (bool, error) {
+	if s.mStorage == nil {
+		return false, x.ErrStorageIsNotReady
+	}
+
 	return s.mStorage.Create(
 		[]byte(appliedIndexNamespace),
 		[]byte(appliedIndexKey),
@@ -44,6 +54,10 @@ func (s *Storaged) saveAppliedIndex(u uint64) (bool, error) {
 }
 
 func (s *Storaged) queryAppliedIndex() (uint64, error) {
+	if s.mStorage == nil {
+		return 0, x.ErrStorageIsNotReady
+	}
+
 	data, err := s.mStorage.Read(
 		[]byte(appliedIndexNamespace),
 		[]byte(appliedIndexKey))
@@ -60,6 +74,10 @@ func (s *Storaged) queryAppliedIndex() (uint64, error) {
 }
 
 func (s *Storaged) Open(<-chan struct{}) (uint64, error) {
+	if s.mStorage == nil {
+		return 0, x.ErrStorageIsNotReady
+	}
+
 	_, err := s.mStorage.Open()
 
 	if err != nil {
@@ -80,10 +98,19 @@ func (s *Storaged) Sync() error {
 }
 
 func (s *Storaged) Close() error {
+	if s.mStorage == nil {
+		return nil
+	}
+
+	s.mStoragedConfiguration = nil
 	return s.mStorage.Close()
 }
 
 func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
+	if s.mStorage == nil {
+		return nil, x.ErrStorageIsNotReady
+	}
+
 	for idx, e := range entries {
 		batch := &pb.FlameBatch{}
 
@@ -116,6 +143,10 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 }
 
 func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
+	if s.mStorage == nil {
+		return nil, x.ErrStorageIsNotReady
+	}
+
 	if v, ok := input.(pb.FlameEntry); ok {
 		if len(v.Namespace) < 3 {
 			return nil, x.ErrInvalidLookupInput
@@ -136,10 +167,18 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 }
 
 func (s *Storaged) PrepareSnapshot() (interface{}, error) {
+	if s.mStorage == nil {
+		return nil, x.ErrStorageIsNotReady
+	}
+
 	return s.mStorage.PrepareSnapshot()
 }
 
-func (s *Storaged) SaveSnapshot(snapshotContext interface{}, w io.Writer, done <-chan struct{}) error {
+func (s *Storaged) SaveSnapshot(snapshotContext interface{}, w io.Writer, _ <-chan struct{}) error {
+	if s.mStorage == nil {
+		return x.ErrStorageIsNotReady
+	}
+
 	if snapshot, ok := snapshotContext.(iface.IKVStorage); ok {
 		return snapshot.SaveSnapshot(w)
 	} else {
@@ -147,7 +186,11 @@ func (s *Storaged) SaveSnapshot(snapshotContext interface{}, w io.Writer, done <
 	}
 }
 
-func (s *Storaged) RecoverFromSnapshot(r io.Reader, done <-chan struct{}) error {
+func (s *Storaged) RecoverFromSnapshot(r io.Reader, _ <-chan struct{}) error {
+	if s.mStorage == nil {
+		return x.ErrStorageIsNotReady
+	}
+
 	if err := s.mStorage.RecoverFromSnapshot(r); err != nil {
 		return err
 	}
@@ -170,15 +213,11 @@ func (s *Storaged) RecoverFromSnapshot(r io.Reader, done <-chan struct{}) error 
 func NewStoraged(configuration iface.IStoragedConfiguration) func(
 	clusterId uint64,
 	nodeId uint64) sm.IOnDiskStateMachine {
-
-	sd := &Storaged{}
-	if sd.SetConfiguration(configuration) {
-		return func(clusterId uint64, nodeId uint64) sm.IOnDiskStateMachine {
-			sd.mClusterId = clusterId
-			sd.mNodeId = nodeId
-			return nil
-		}
-	} else {
-		return nil
+	return func(clusterId uint64, nodeId uint64) sm.IOnDiskStateMachine {
+		sd := &Storaged{}
+		sd.SetConfiguration(configuration)
+		sd.mClusterId = clusterId
+		sd.mNodeId = nodeId
+		return sd
 	}
 }

@@ -44,8 +44,8 @@ func (c *ClusterConfiguration) Join() bool {
 
 func (c *ClusterConfiguration) StateMachine(sc iface.IStoragedConfiguration) func(uint64, uint64) sm.IOnDiskStateMachine {
 	if c.ClusterConfigurationInput.StateMachine == nil {
-		return c.ClusterConfigurationInput.StateMachine
-	} else {
 		return storaged.NewStoraged(sc)
+	} else {
+		return c.ClusterConfigurationInput.StateMachine
 	}
 }

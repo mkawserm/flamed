@@ -26,6 +26,7 @@ var ErrFailedToRecoverFromSnapshot = errors.New("failed to recover from snapshot
 var ErrInvalidSnapshotContext = errors.New("invalid snapshot context")
 var ErrLastIndexIsNotMovingForward = errors.New("last index is not moving forward")
 
+var ErrStorageIsNotReady = errors.New("storage is not ready")
 var ErrNodeIsNotReady = errors.New("node is not ready")
 var ErrNodeAlreadyConfigured = errors.New("node is already configured")
 var ErrFailedToStopCluster = errors.New("failed to stop cluster")
