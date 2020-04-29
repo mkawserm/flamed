@@ -1,7 +1,7 @@
 package main
 
 import "fmt"
-import "github.com/mkawserm/flamed"
+import "github.com/mkawserm/flamed/pkg/conf"
 import "github.com/mkawserm/flamed/pkg/node"
 
 func main() {
@@ -10,8 +10,8 @@ func main() {
 	defer n.StopNode()
 
 	err := n.ConfigureNode(
-		flamed.SimpleNodeConfiguration(1, "/tmp/1", "localhost:63001"),
-		flamed.SimpleStoragedConfiguration("/tmp/1", nil),
+		conf.SimpleNodeConfiguration(1, "/tmp/1", "localhost:63001"),
+		conf.SimpleStoragedConfiguration("/tmp/1", nil),
 	)
 
 	if err != nil {
@@ -19,7 +19,7 @@ func main() {
 	}
 
 	err = n.StartCluster(
-		flamed.SimpleClusterConfiguration(1,
+		conf.SimpleClusterConfiguration(1,
 			"example",
 			map[uint64]string{1: "localhost:63001"}, false),
 	)
