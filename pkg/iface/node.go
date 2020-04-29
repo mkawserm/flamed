@@ -4,7 +4,7 @@ import "github.com/lni/dragonboat/v3/config"
 
 type INodeConfiguration interface {
 	NodeID() uint64
-	NodePath() string
+	//NodePath() string
 
 	CheckQuorum() bool
 	ElectionRTT() uint64
@@ -23,8 +23,8 @@ type INodeConfiguration interface {
 
 	/*Dragonboat NodeHostConfig*/
 	DeploymentID() uint64
-	//WALDir() string
-	//NodeHostDir() string
+	WALDir() string
+	NodeHostDir() string
 	RTTMillisecond() uint64
 	RaftAddress() string
 	ListenAddress() string

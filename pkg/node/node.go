@@ -56,12 +56,12 @@ func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 		return x.ErrInvalidStoragedConfiguration
 	}
 
-	if !utility.MkPath(nodeConfiguration.NodePath() + "/node") {
-		return x.ErrFailedToCreateNodePath
+	if !utility.MkPath(nodeConfiguration.NodeHostDir()) {
+		return x.ErrFailedToCreateNodeHostDir
 	}
 
-	if !utility.MkPath(nodeConfiguration.NodePath() + "/wal") {
-		return x.ErrFailedToCreateNodePath
+	if !utility.MkPath(nodeConfiguration.WALDir()) {
+		return x.ErrFailedToCreateWALDir
 	}
 
 	n.mNodeConfiguration = nodeConfiguration
@@ -86,8 +86,8 @@ func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 
 	n.mNodeHostConfiguration = config.NodeHostConfig{
 		DeploymentID:                  nodeConfiguration.DeploymentID(),
-		WALDir:                        nodeConfiguration.NodePath() + "/wal",
-		NodeHostDir:                   nodeConfiguration.NodePath() + "/node",
+		WALDir:                        nodeConfiguration.WALDir(),
+		NodeHostDir:                   nodeConfiguration.NodeHostDir(),
 		RTTMillisecond:                nodeConfiguration.RTTMillisecond(),
 		RaftAddress:                   nodeConfiguration.RaftAddress(),
 		ListenAddress:                 nodeConfiguration.ListenAddress(),
@@ -180,4 +180,16 @@ func (n *Node) StopNode() {
 
 	n.mClusterMap = make(map[uint64]string)
 	n.mClusterSessionMap = make(map[uint64]*client.Session)
+}
+
+func (n *Node) TotalCluster() int {
+	n.mMutex.Lock()
+	defer n.mMutex.Unlock()
+	return len(n.mClusterMap)
+}
+
+func (n *Node) GetDragonboatNodeHost() *dragonboat.NodeHost {
+	n.mMutex.Lock()
+	defer n.mMutex.Unlock()
+	return n.mNodeHost
 }

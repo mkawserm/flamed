@@ -21,6 +21,7 @@ type IKVStorage interface {
 	Delete(namespace []byte, key []byte) (bool, error)
 	Create(namespace []byte, key []byte, value []byte) (bool, error)
 	Update(namespace []byte, key []byte, value []byte) (bool, error)
+	Append(namespace []byte, key []byte, value []byte) (bool, error)
 
 	ApplyBatch(batch *pb.FlameBatch) (bool, error)
 	ApplyAction(action *pb.FlameAction) (bool, error)

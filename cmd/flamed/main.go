@@ -1,6 +1,12 @@
 package main
 
-import "github.com/mkawserm/flamed/pkg/conf"
+import (
+	"bufio"
+	"fmt"
+	"github.com/mkawserm/flamed/pkg/conf"
+	"os"
+	"strings"
+)
 import "github.com/mkawserm/flamed/pkg/node"
 
 func main() {
@@ -8,7 +14,7 @@ func main() {
 	defer n.StopNode()
 
 	err := n.ConfigureNode(
-		conf.SimpleNodeConfiguration(1, "/tmp/1", "localhost:63001"),
+		conf.SimpleNodeConfiguration(1, "/tmp/1", "/tmp/1", "localhost:63001"),
 		conf.SimpleStoragedConfiguration("/tmp/1", nil),
 	)
 
@@ -26,4 +32,20 @@ func main() {
 		panic(err)
 	}
 
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Printf(">> ")
+		text, _ := reader.ReadString('\n')
+		t := strings.Trim(text, "\n")
+
+		switch t {
+		case "tcs":
+			fmt.Println(n.TotalCluster())
+		case "quit":
+			break
+		case "q":
+			break
+		case "":
+		}
+	}
 }

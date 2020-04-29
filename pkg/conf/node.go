@@ -6,8 +6,9 @@ import (
 )
 
 type NodeConfigurationInput struct {
-	NodeID   uint64 `json:"nodeId"`
-	NodePath string `json:"nodePath"`
+	NodeID      uint64 `json:"nodeId"`
+	NodeHostDir string `json:"nodeHostDir"`
+	WALDir      string `json:"walDir"`
 
 	CheckQuorum  bool   `json:"checkQuorum"`
 	ElectionRTT  uint64 `json:"electionRTT"`
@@ -54,8 +55,12 @@ func (n *NodeConfiguration) NodeID() uint64 {
 	return n.NodeConfigurationInput.NodeID
 }
 
-func (n *NodeConfiguration) NodePath() string {
-	return n.NodeConfigurationInput.NodePath
+func (n *NodeConfiguration) NodeHostDir() string {
+	return n.NodeConfigurationInput.NodeHostDir
+}
+
+func (n *NodeConfiguration) WALDir() string {
+	return n.NodeConfigurationInput.WALDir
 }
 
 func (n *NodeConfiguration) CheckQuorum() bool {

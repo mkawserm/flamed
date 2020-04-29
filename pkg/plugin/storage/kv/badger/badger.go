@@ -263,6 +263,39 @@ func (b *Badger) Update(namespace []byte, key []byte, value []byte) (bool, error
 	return true, nil
 }
 
+func (b *Badger) Append(namespace []byte, key []byte, value []byte) (bool, error) {
+	if b.mDb == nil {
+		return false, x.ErrFailedToAppendDataToStorage
+	}
+
+	uid := uidutil.GetUid(namespace, key)
+
+	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
+		var data []byte
+		if item, err := txn.Get(uid); err == badgerDb.ErrKeyNotFound {
+			return txn.Set(uid, value)
+		} else {
+			if err != nil {
+				return err
+			}
+
+			if v, err1 := item.ValueCopy(nil); err1 == nil {
+				data = v
+				data = append(data, value...)
+				return txn.Set(uid, data)
+			} else {
+				return err1
+			}
+		}
+	})
+
+	if err != nil {
+		return false, x.ErrFailedToAppendDataToStorage
+	}
+
+	return true, nil
+}
+
 func (b *Badger) IsExists(namespace []byte, key []byte) bool {
 	if b.mDb == nil {
 		return false
@@ -303,6 +336,31 @@ func (b *Badger) ApplyBatch(batch *pb.FlameBatch) (bool, error) {
 			if err := txn.Delete(uid); err != nil {
 				return false, x.ErrFailedToApplyBatchToStorage
 			}
+		} else if action.FlameActionType == pb.FlameAction_APPEND {
+			uid := uidutil.GetUid(action.FlameEntry.Namespace, action.FlameEntry.Key)
+
+			var data []byte
+			item, err := txn.Get(uid)
+			if err == badgerDb.ErrKeyNotFound {
+				if err := txn.Set(uid, action.FlameEntry.Value); err != nil {
+					return false, x.ErrFailedToApplyBatchToStorage
+				}
+			}
+
+			if err != nil {
+				return false, err
+			}
+
+			if v, err1 := item.ValueCopy(nil); err1 == nil {
+				data = v
+				data = append(data, action.FlameEntry.Value...)
+
+				if err := txn.Set(uid, data); err != nil {
+					return false, x.ErrFailedToApplyBatchToStorage
+				}
+			} else {
+				return false, x.ErrFailedToApplyBatchToStorage
+			}
 		}
 	}
 
@@ -318,6 +376,8 @@ func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
 		return b.Create(action.FlameEntry.Namespace, action.FlameEntry.Key, action.FlameEntry.Value)
 	} else if action.FlameActionType == pb.FlameAction_UPDATE {
 		return b.Update(action.FlameEntry.Namespace, action.FlameEntry.Key, action.FlameEntry.Value)
+	} else if action.FlameActionType == pb.FlameAction_APPEND {
+		return b.Append(action.FlameEntry.Namespace, action.FlameEntry.Key, action.FlameEntry.Value)
 	} else if action.FlameActionType == pb.FlameAction_DELETE {
 		return b.Delete(action.FlameEntry.Namespace, action.FlameEntry.Key)
 	}

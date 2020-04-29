@@ -108,6 +108,10 @@ func (s *Storage) Update(namespace []byte, key []byte, value []byte) (bool, erro
 	return s.mKVStorage.Update(namespace, key, value)
 }
 
+func (s *Storage) Append(namespace []byte, key []byte, value []byte) (bool, error) {
+	return s.mKVStorage.Append(namespace, key, value)
+}
+
 func (s *Storage) ApplyBatch(batch *pb.FlameBatch) (bool, error) {
 	return s.mKVStorage.ApplyBatch(batch)
 }

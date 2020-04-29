@@ -3,8 +3,8 @@ package conf
 import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/plugin/storage/index/bleve"
+	"github.com/mkawserm/flamed/pkg/plugin/storage/kv/badger"
 )
-import "github.com/mkawserm/flamed/pkg/plugin/storage/kv/badger"
 
 type StoragedConfigurationInput struct {
 	StoragePath      string `json:"storagePath"`
