@@ -6,10 +6,10 @@ import "github.com/mkawserm/flamed/pkg/node"
 
 func main() {
 	fmt.Println("Hello world")
-	node := &node.Node{}
-	defer node.StopNode()
+	n := &node.Node{}
+	defer n.StopNode()
 
-	err := node.ConfigureNode(
+	err := n.ConfigureNode(
 		flamed.SimpleNodeConfiguration(1, "/tmp/1", "localhost:63001"),
 		flamed.SimpleStoragedConfiguration("/tmp/1", nil),
 	)
@@ -18,7 +18,7 @@ func main() {
 		panic(err)
 	}
 
-	err = node.StartCluster(
+	err = n.StartCluster(
 		flamed.SimpleClusterConfiguration(1,
 			"example",
 			map[uint64]string{1: "localhost:63001"}, false),
