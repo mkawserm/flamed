@@ -29,6 +29,8 @@ var ErrLastIndexIsNotMovingForward = errors.New("last index is not moving forwar
 var ErrNodeIsNotReady = errors.New("node is not ready")
 var ErrNodeAlreadyConfigured = errors.New("node is already configured")
 var ErrFailedToStopCluster = errors.New("failed to stop cluster")
+var ErrFailedToCreateNodePath = errors.New("failed to create node path")
+var ErrInvalidStoragedConfiguration = errors.New("invalid storaged configuration")
 
 func IsInvalidConfiguration(err error) bool {
 	return err == ErrInvalidConfiguration

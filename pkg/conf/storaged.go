@@ -1,6 +1,9 @@
 package conf
 
-import "github.com/mkawserm/flamed/pkg/iface"
+import (
+	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/plugin/storage/index/bleve"
+)
 import "github.com/mkawserm/flamed/pkg/plugin/storage/kv/badger"
 
 type StoragedConfigurationInput struct {
@@ -35,7 +38,7 @@ func (s *StoragedConfiguration) StoragePluginKV() iface.IKVStorage {
 
 func (s *StoragedConfiguration) StoragePluginIndex() iface.IIndexStorage {
 	if s.StoragedConfigurationInput.StoragePluginIndex == nil {
-		return nil
+		return &bleve.Bleve{}
 	} else {
 		return nil
 	}

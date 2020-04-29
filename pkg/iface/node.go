@@ -25,7 +25,7 @@ type INodeConfiguration interface {
 	DeploymentID() uint64
 	//WALDir() string
 	//NodeHostDir() string
-	RTTMillisecond() string
+	RTTMillisecond() uint64
 	RaftAddress() string
 	ListenAddress() string
 	MutualTLS() bool

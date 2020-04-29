@@ -1,16 +1,17 @@
 package conf
 
 import (
+	sm "github.com/lni/dragonboat/v3/statemachine"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/storaged"
 )
 
 type ClusterConfigurationInput struct {
-	ClusterId      uint64                    `json:"clusterId"`
-	ClusterName    string                    `json:"clusterName"`
-	InitialMembers map[uint64]string         `json:"initialMembers"`
-	Join           bool                      `json:"join"`
-	StateMachine   iface.NewStateMachineFunc `json:"-"`
+	ClusterId      uint64                                      `json:"clusterId"`
+	ClusterName    string                                      `json:"clusterName"`
+	InitialMembers map[uint64]string                           `json:"initialMembers"`
+	Join           bool                                        `json:"join"`
+	StateMachine   func(uint64, uint64) sm.IOnDiskStateMachine `json:"-"`
 }
 
 type ClusterConfiguration struct {
@@ -41,10 +42,10 @@ func (c *ClusterConfiguration) Join() bool {
 	return c.ClusterConfigurationInput.Join
 }
 
-func (c *ClusterConfiguration) StateMachine() iface.NewStateMachineFunc {
+func (c *ClusterConfiguration) StateMachine(sc iface.IStoragedConfiguration) func(uint64, uint64) sm.IOnDiskStateMachine {
 	if c.ClusterConfigurationInput.StateMachine == nil {
 		return c.ClusterConfigurationInput.StateMachine
 	} else {
-		return storaged.NewStoraged
+		return storaged.NewStoraged(sc)
 	}
 }
