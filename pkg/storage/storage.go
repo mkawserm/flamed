@@ -120,22 +120,6 @@ func (s *Storage) ApplyAction(action *pb.FlameAction) (bool, error) {
 	return s.mKVStorage.ApplyAction(action)
 }
 
-//func (s *Storage) AsyncSnapshot(snapshot chan *pb.FlameSnapshot) error {
-//	return s.mKVStorage.AsyncSnapshot(snapshot)
-//}
-//
-//func (s *Storage) ApplyAsyncSnapshot(snapshot chan *pb.FlameSnapshot) (bool, error) {
-//	return s.mKVStorage.ApplyAsyncSnapshot(snapshot)
-//}
-//
-//func (s *Storage) SyncSnapshot() (*pb.FlameSnapshot, error) {
-//	return s.mKVStorage.SyncSnapshot()
-//}
-//
-//func (s *Storage) ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error) {
-//	return s.mKVStorage.ApplySyncSnapshot(snapshot)
-//}
-
 func (s *Storage) PrepareSnapshot() (iface.IKVStorage, error) {
 	return s.mKVStorage.PrepareSnapshot()
 }
