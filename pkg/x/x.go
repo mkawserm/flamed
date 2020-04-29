@@ -3,6 +3,7 @@ package x
 import "errors"
 
 var ErrInvalidConfiguration = errors.New("invalid configuration")
+var ErrStorageIsAlreadyOpen = errors.New("storage is already open")
 var ErrFailedToOpenStorage = errors.New("failed to open the storage")
 var ErrFailedToCloseStorage = errors.New("failed to close the storage")
 var ErrFailedToChangeSecretKey = errors.New("failed to change secret key")

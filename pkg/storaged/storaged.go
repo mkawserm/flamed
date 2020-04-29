@@ -78,7 +78,7 @@ func (s *Storaged) Open(<-chan struct{}) (uint64, error) {
 		return 0, x.ErrStorageIsNotReady
 	}
 
-	_, err := s.mStorage.Open()
+	err := s.mStorage.Open()
 
 	if err != nil {
 		return 0, err

@@ -19,9 +19,9 @@ type Badger struct {
 	mDbConfiguration Configuration
 }
 
-func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuration interface{}) (bool, error) {
+func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuration interface{}) error {
 	if b.mDb != nil {
-		return true, nil
+		return x.ErrStorageIsAlreadyOpen
 	}
 
 	b.mDbPath = path
@@ -64,18 +64,20 @@ func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuratio
 
 	db, err := badgerDb.Open(b.mDbConfiguration.BadgerOptions)
 	if err != nil {
-		return false, x.ErrFailedToOpenStorage
+		return x.ErrFailedToOpenStorage
 	}
 	b.mDb = db
-	return true, nil
+	return nil
 }
 
 func (b *Badger) Close() error {
-	b.mDbPath = ""
-
 	if b.mDb == nil {
 		return nil
 	}
+
+	b.mDbPath = ""
+	b.mSecretKey = nil
+	b.mDbConfiguration = Configuration{}
 
 	err := b.mDb.Close()
 	b.mDb = nil
@@ -471,7 +473,7 @@ func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
 
 func (b *Badger) PrepareSnapshot() (iface.IKVStorage, error) {
 	s := &Badger{}
-	_, err := s.Open(b.mDbPath, b.mSecretKey, true, b.mDbConfiguration)
+	err := s.Open(b.mDbPath, b.mSecretKey, true, b.mDbConfiguration)
 
 	if err != nil {
 		return nil, x.ErrFailedToPrepareSnapshot

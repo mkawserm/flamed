@@ -6,7 +6,7 @@ import (
 )
 
 type IKVStorage interface {
-	Open(path string, secretKey []byte, readOnly bool, configuration interface{}) (bool, error)
+	Open(path string, secretKey []byte, readOnly bool, configuration interface{}) error
 	Close() error
 
 	RunGC()

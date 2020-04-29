@@ -60,17 +60,17 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 	return true
 }
 
-func (s *Storage) Open() (bool, error) {
+func (s *Storage) Open() error {
 	if s.mConfiguration == nil {
-		return false, x.ErrInvalidConfiguration
+		return x.ErrInvalidConfiguration
 	}
 
 	return s.mKVStorage.Open(s.mKVStoragePath, s.mSecretKey, false, s.mKVStorageConfiguration)
 }
 
-func (s *Storage) ReadOnlyOpen() (bool, error) {
+func (s *Storage) ReadOnlyOpen() error {
 	if s.mConfiguration == nil {
-		return false, x.ErrInvalidConfiguration
+		return x.ErrInvalidConfiguration
 	}
 
 	return s.mKVStorage.Open(s.mKVStoragePath, s.mSecretKey, true, s.mKVStorageConfiguration)
