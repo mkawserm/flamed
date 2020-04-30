@@ -26,7 +26,6 @@ func (s LowerCamelCaseMarshaller) MarshalJSON() ([]byte, error) {
 	return converted, err
 }
 
-// Regexp definitions
 var keyMatchRegex2 = regexp.MustCompile(`"(\w+)":`)
 var wordBarrierRegex2 = regexp.MustCompile(`(\w)([A-Z])`)
 
