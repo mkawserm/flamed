@@ -1,10 +1,12 @@
 package nodehost
 
 import (
+	"context"
 	"github.com/lni/dragonboat/v3"
 	"github.com/lni/dragonboat/v3/client"
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/lni/dragonboat/v3/raftpb"
+	sm "github.com/lni/dragonboat/v3/statemachine"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
@@ -22,8 +24,7 @@ type NodeHost struct {
 
 	mStoragedConfiguration iface.IStoragedConfiguration
 
-	mClusterMap        map[uint64]string
-	mClusterSessionMap map[uint64]*client.Session
+	mClusterMap map[uint64]string
 }
 
 func (n *NodeHost) isStoragedConfigurationOk(storagedConfiguration iface.IStoragedConfiguration) bool {
@@ -112,7 +113,6 @@ func (n *NodeHost) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 	}
 
 	n.mClusterMap = make(map[uint64]string)
-	n.mClusterSessionMap = make(map[uint64]*client.Session)
 
 	return nil
 }
@@ -137,7 +137,7 @@ func (n *NodeHost) StartCluster(clusterConfiguration iface.IClusterConfiguration
 	}
 
 	n.mClusterMap[n.mRaftConfiguration.ClusterID] = clusterConfiguration.ClusterName()
-	n.mClusterSessionMap[n.mRaftConfiguration.ClusterID] = nil //n.mNodeHost.GetNoOPSession(clusterConfiguration.ClusterId())
+	//n.mNodeHost.GetNoOPSession(clusterConfiguration.ClusterId())
 
 	return nil
 }
@@ -155,7 +155,6 @@ func (n *NodeHost) StopCluster(clusterId uint64) error {
 	}
 
 	delete(n.mClusterMap, clusterId)
-	delete(n.mClusterSessionMap, clusterId)
 
 	return nil
 }
@@ -179,12 +178,12 @@ func (n *NodeHost) StopNode() {
 	n.mNodeHostConfiguration = config.NodeHostConfig{}
 
 	n.mClusterMap = make(map[uint64]string)
-	n.mClusterSessionMap = make(map[uint64]*client.Session)
 }
 
 func (n *NodeHost) TotalCluster() int {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
+
 	return len(n.mClusterMap)
 }
 
@@ -203,7 +202,76 @@ func (n *NodeHost) ClusterIdList() []uint64 {
 func (n *NodeHost) GetDragonboatNodeHost() *dragonboat.NodeHost {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
+
 	return n.mNodeHost
+}
+
+func (n *NodeHost) NodeHostConfig() config.NodeHostConfig {
+	return n.mNodeHost.NodeHostConfig()
+}
+
+func (n *NodeHost) RaftAddress() string {
+	return n.mNodeHost.RaftAddress()
+}
+
+func (n *NodeHost) SyncGetClusterMembership(ctx context.Context, clusterID uint64) (*dragonboat.Membership, error) {
+	return n.mNodeHost.SyncGetClusterMembership(ctx, clusterID)
+}
+
+func (n *NodeHost) GetLeaderID(clusterID uint64) (uint64, bool, error) {
+	return n.mNodeHost.GetLeaderID(clusterID)
+}
+
+func (n *NodeHost) HasNodeInfo(clusterID uint64, nodeID uint64) bool {
+	return n.mNodeHost.HasNodeInfo(clusterID, nodeID)
+}
+
+func (n *NodeHost) GetNodeHostInfo() *dragonboat.NodeHostInfo {
+	return n.mNodeHost.GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: false})
+}
+
+func (n *NodeHost) SyncPropose(ctx context.Context, session *client.Session, cmd []byte) (sm.Result, error) {
+	return n.mNodeHost.SyncPropose(ctx, session, cmd)
+}
+
+func (n *NodeHost) SyncRead(ctx context.Context, clusterID uint64, query interface{}) (interface{}, error) {
+	return n.mNodeHost.SyncRead(ctx, clusterID, query)
+}
+
+func (n *NodeHost) GetNoOPSession(clusterID uint64) *client.Session {
+	return n.mNodeHost.GetNoOPSession(clusterID)
+}
+
+func (n *NodeHost) SyncCloseSession(ctx context.Context, cs *client.Session) error {
+	return n.mNodeHost.SyncCloseSession(ctx, cs)
+}
+
+func (n *NodeHost) SyncRequestDeleteNode(ctx context.Context,
+	clusterID uint64, nodeID uint64, configChangeIndex uint64) error {
+	return n.mNodeHost.SyncRequestDeleteNode(ctx, clusterID, nodeID, configChangeIndex)
+}
+
+func (n *NodeHost) SyncRequestAddNode(ctx context.Context, clusterID uint64, nodeID uint64,
+	address string, configChangeIndex uint64) error {
+	return n.mNodeHost.SyncRequestAddNode(ctx, clusterID, nodeID, address, configChangeIndex)
+}
+
+func (n *NodeHost) SyncRequestAddObserver(ctx context.Context,
+	clusterID uint64, nodeID uint64,
+	address string, configChangeIndex uint64) error {
+	return n.mNodeHost.SyncRequestAddObserver(ctx, clusterID, nodeID, address, configChangeIndex)
+}
+
+func (n *NodeHost) SyncRequestAddWitness(ctx context.Context,
+	clusterID uint64, nodeID uint64,
+	address string, configChangeIndex uint64) error {
+	return n.mNodeHost.SyncRequestAddWitness(ctx, clusterID, nodeID, address, configChangeIndex)
+}
+
+func (n *NodeHost) SyncRequestSnapshot(ctx context.Context,
+	clusterID uint64,
+	opt dragonboat.SnapshotOption) (uint64, error) {
+	return n.mNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
 }
 
 //func (n *NodeHost) GetStorage(clusterId uint64) *storage.Storage {
