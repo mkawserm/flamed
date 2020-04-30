@@ -46,6 +46,21 @@ func main() {
 		t := strings.Trim(text, "\n")
 
 		switch t {
+		case "rs":
+			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+			r, e := n.GetDragonboatNodeHost().SyncRequestSnapshot(ctx, 1, dragonboat.SnapshotOption{
+				CompactionOverhead:         0,
+				ExportPath:                 "/tmp",
+				Exported:                   false,
+				OverrideCompactionOverhead: false,
+			})
+
+			if e != nil {
+				fmt.Println(e)
+			}
+			fmt.Println(r)
+
+			cancel()
 		case "ci":
 			nodeHostInfo := n.GetDragonboatNodeHost().GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: false})
 			if b, err := json.Marshal(utility.LowerCamelCaseMarshaller{Value: nodeHostInfo}); err == nil {

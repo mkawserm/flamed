@@ -120,7 +120,7 @@ func (s *Storage) ApplyAction(action *pb.FlameAction) (bool, error) {
 	return s.mKVStorage.ApplyAction(action)
 }
 
-func (s *Storage) PrepareSnapshot() (iface.IKVStorage, error) {
+func (s *Storage) PrepareSnapshot() (interface{}, error) {
 	return s.mKVStorage.PrepareSnapshot()
 }
 
@@ -128,6 +128,6 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 	return s.mKVStorage.RecoverFromSnapshot(r)
 }
 
-func (s *Storage) SaveSnapshot(w io.Writer) error {
-	return s.mKVStorage.SaveSnapshot(w)
+func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
+	return s.mKVStorage.SaveSnapshot(snapshotContext, w)
 }

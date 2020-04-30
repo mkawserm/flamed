@@ -4,7 +4,6 @@ import (
 	badgerDb "github.com/dgraph-io/badger/v2"
 	badgerDbOptions "github.com/dgraph-io/badger/v2/options"
 	"github.com/golang/protobuf/proto"
-	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/x"
@@ -63,6 +62,7 @@ func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuratio
 	}
 
 	db, err := badgerDb.Open(b.mDbConfiguration.BadgerOptions)
+
 	if err != nil {
 		return x.ErrFailedToOpenStorage
 	}
@@ -531,76 +531,73 @@ func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
 //	return true, nil
 //}
 
-func (b *Badger) PrepareSnapshot() (iface.IKVStorage, error) {
-	s := &Badger{}
-	err := s.Open(b.mDbPath, b.mSecretKey, true, b.mDbConfiguration)
-
-	if err != nil {
+func (b *Badger) PrepareSnapshot() (interface{}, error) {
+	if b.mDb == nil {
 		return nil, x.ErrFailedToPrepareSnapshot
 	}
 
-	return s, nil
+	return b.mDb.NewTransaction(false), nil
 }
 
-func (b *Badger) SaveSnapshot(w io.Writer) error {
+func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	if b.mDb == nil {
 		return x.ErrFailedToSaveSnapshot
 	}
 
-	total := uint64(0)
-	err := b.mDb.View(func(txn *badgerDb.Txn) error {
-		opts := badgerDb.DefaultIteratorOptions
-		opts.PrefetchValues = false
-		it := txn.NewIterator(opts)
-		defer it.Close()
-		for it.Rewind(); it.Valid(); it.Next() {
-			total = total + 1
-		}
-		return nil
-	})
-
-	if err != nil {
+	if snapshotContext == nil {
 		return x.ErrFailedToSaveSnapshot
 	}
 
-	if _, err := w.Write(uidutil.Uint64ToByteSlice(total)); err != nil {
-		return err
+	var txn *badgerDb.Txn
+	if v, ok := snapshotContext.(*badgerDb.Txn); ok {
+		txn = v
+	} else {
+		return x.ErrFailedToSaveSnapshot
 	}
 
-	err = b.mDb.View(func(txn *badgerDb.Txn) error {
-		opts := badgerDb.DefaultIteratorOptions
-		opts.PrefetchSize = 100
-		it := txn.NewIterator(opts)
-		defer it.Close()
+	defer txn.Discard()
 
-		for it.Rewind(); it.Valid(); it.Next() {
-			item := it.Item()
-			if value, err := item.ValueCopy(nil); err != nil {
-				return err
+	total := uint64(0)
+	opts := badgerDb.DefaultIteratorOptions
+	opts.PrefetchValues = false
+	it := txn.NewIterator(opts)
+	for it.Rewind(); it.Valid(); it.Next() {
+		total = total + 1
+	}
+	it.Close()
+
+	if _, err := w.Write(uidutil.Uint64ToByteSlice(total)); err != nil {
+		return x.ErrFailedToSaveSnapshot
+	}
+
+	opts = badgerDb.DefaultIteratorOptions
+	opts.PrefetchSize = 100
+
+	it = txn.NewIterator(opts)
+	defer it.Close()
+
+	for it.Rewind(); it.Valid(); it.Next() {
+		item := it.Item()
+		if value, err := item.ValueCopy(nil); err != nil {
+			return x.ErrFailedToSaveSnapshot
+		} else {
+			entry := &pb.FlameSnapshotEntry{
+				Uid:  item.Key(),
+				Data: value,
+			}
+
+			if data, err := proto.Marshal(entry); err != nil {
+				return x.ErrFailedToSaveSnapshot
 			} else {
-				entry := &pb.FlameSnapshotEntry{
-					Uid:  item.Key(),
-					Data: value,
+				dataLength := uint64(len(data))
+				if _, err := w.Write(uidutil.Uint64ToByteSlice(dataLength)); err != nil {
+					return x.ErrFailedToSaveSnapshot
 				}
-
-				if data, err := proto.Marshal(entry); err != nil {
-					return err
-				} else {
-					dataLength := uint64(len(data))
-					if _, err := w.Write(uidutil.Uint64ToByteSlice(dataLength)); err != nil {
-						return err
-					}
-					if _, err := w.Write(data); err != nil {
-						return err
-					}
+				if _, err := w.Write(data); err != nil {
+					return x.ErrFailedToSaveSnapshot
 				}
 			}
 		}
-		return nil
-	})
-
-	if err != nil {
-		return x.ErrFailedToSaveSnapshot
 	}
 
 	return nil

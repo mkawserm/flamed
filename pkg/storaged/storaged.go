@@ -182,12 +182,7 @@ func (s *Storaged) SaveSnapshot(snapshotContext interface{}, w io.Writer, _ <-ch
 	if s.mStorage == nil {
 		return x.ErrStorageIsNotReady
 	}
-
-	if snapshot, ok := snapshotContext.(iface.IKVStorage); ok {
-		return snapshot.SaveSnapshot(w)
-	} else {
-		return x.ErrInvalidSnapshotContext
-	}
+	return s.mStorage.SaveSnapshot(snapshotContext, w)
 }
 
 func (s *Storaged) RecoverFromSnapshot(r io.Reader, _ <-chan struct{}) error {

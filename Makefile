@@ -1,6 +1,9 @@
 build:
 	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/main.go
 
+run:
+	@./bin/flamed
+
 test:
 	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb
 

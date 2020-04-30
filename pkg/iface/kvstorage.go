@@ -26,8 +26,8 @@ type IKVStorage interface {
 	ApplyBatch(batch *pb.FlameBatch) (bool, error)
 	ApplyAction(action *pb.FlameAction) (bool, error)
 
-	PrepareSnapshot() (IKVStorage, error)
-	SaveSnapshot(w io.Writer) error
+	PrepareSnapshot() (interface{}, error)
+	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
 	RecoverFromSnapshot(r io.Reader) error
 
 	//AsyncSnapshot(snapshot chan<- *pb.FlameSnapshot) error

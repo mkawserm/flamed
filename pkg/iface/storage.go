@@ -42,7 +42,8 @@ type IStorage interface {
 	Append(namespace []byte, key []byte, value []byte) (bool, error)
 	ApplyBatch(batch *pb.FlameBatch) (bool, error)
 	ApplyAction(action *pb.FlameAction) (bool, error)
-	PrepareSnapshot() (IKVStorage, error)
+
+	PrepareSnapshot() (interface{}, error)
+	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
 	RecoverFromSnapshot(r io.Reader) error
-	SaveSnapshot(w io.Writer) error
 }
