@@ -2,9 +2,9 @@ package conf
 
 import "github.com/mkawserm/flamed/pkg/iface"
 
-func SimpleNodeHostConfiguration(nodeId uint64, nodeHostDir string, walDir string, raftAddress string) iface.INodeConfiguration {
+func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir string, raftAddress string) iface.INodeConfiguration {
 	return &NodeHostConfiguration{NodeHostConfigurationInput: NodeHostConfigurationInput{
-		NodeID:                        nodeId,
+		NodeID:                        nodeID,
 		NodeHostDir:                   nodeHostDir,
 		WALDir:                        walDir,
 		CheckQuorum:                   true,
@@ -44,9 +44,9 @@ func SimpleStoragedConfiguration(path string, secretKey []byte) iface.IStoragedC
 		}}
 }
 
-func SimpleClusterConfiguration(clusterId uint64, clusterName string, initialMembers map[uint64]string, join bool) iface.IClusterConfiguration {
+func SimpleClusterConfiguration(clusterID uint64, clusterName string, initialMembers map[uint64]string, join bool) iface.IClusterConfiguration {
 	return &ClusterConfiguration{ClusterConfigurationInput: ClusterConfigurationInput{
-		ClusterId:      clusterId,
+		ClusterID:      clusterID,
 		ClusterName:    clusterName,
 		InitialMembers: initialMembers,
 		Join:           join,

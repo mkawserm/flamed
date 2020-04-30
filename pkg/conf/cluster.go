@@ -7,7 +7,7 @@ import (
 )
 
 type ClusterConfigurationInput struct {
-	ClusterId      uint64                                      `json:"clusterId"`
+	ClusterID      uint64                                      `json:"clusterID"`
 	ClusterName    string                                      `json:"clusterName"`
 	InitialMembers map[uint64]string                           `json:"initialMembers"`
 	Join           bool                                        `json:"join"`
@@ -18,11 +18,11 @@ type ClusterConfiguration struct {
 	ClusterConfigurationInput ClusterConfigurationInput
 }
 
-func (c *ClusterConfiguration) ClusterId() uint64 {
-	if c.ClusterConfigurationInput.ClusterId == 0 {
+func (c *ClusterConfiguration) ClusterID() uint64 {
+	if c.ClusterConfigurationInput.ClusterID == 0 {
 		return 1
 	} else {
-		return c.ClusterConfigurationInput.ClusterId
+		return c.ClusterConfigurationInput.ClusterID
 	}
 }
 

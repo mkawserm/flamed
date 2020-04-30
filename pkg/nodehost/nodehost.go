@@ -11,6 +11,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 	"sync"
+	"time"
 )
 
 type NodeHost struct {
@@ -125,7 +126,7 @@ func (n *NodeHost) StartCluster(clusterConfiguration iface.IClusterConfiguration
 		return x.ErrNodeIsNotReady
 	}
 
-	n.mRaftConfiguration.ClusterID = clusterConfiguration.ClusterId()
+	n.mRaftConfiguration.ClusterID = clusterConfiguration.ClusterID()
 
 	err := n.mNodeHost.StartOnDiskCluster(clusterConfiguration.InitialMembers(),
 		clusterConfiguration.Join(),
@@ -137,12 +138,12 @@ func (n *NodeHost) StartCluster(clusterConfiguration iface.IClusterConfiguration
 	}
 
 	n.mClusterMap[n.mRaftConfiguration.ClusterID] = clusterConfiguration.ClusterName()
-	//n.mNodeHost.GetNoOPSession(clusterConfiguration.ClusterId())
+	//n.mNodeHost.GetNoOPSession(clusterConfiguration.ClusterID())
 
 	return nil
 }
 
-func (n *NodeHost) StopCluster(clusterId uint64) error {
+func (n *NodeHost) StopCluster(clusterID uint64) error {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 
@@ -150,11 +151,11 @@ func (n *NodeHost) StopCluster(clusterId uint64) error {
 		return x.ErrNodeIsNotReady
 	}
 
-	if err := n.mNodeHost.StopCluster(clusterId); err != nil {
+	if err := n.mNodeHost.StopCluster(clusterID); err != nil {
 		return x.ErrFailedToStopCluster
 	}
 
-	delete(n.mClusterMap, clusterId)
+	delete(n.mClusterMap, clusterID)
 
 	return nil
 }
@@ -199,11 +200,30 @@ func (n *NodeHost) ClusterIdList() []uint64 {
 	return ids
 }
 
-func (n *NodeHost) GetDragonboatNodeHost() *dragonboat.NodeHost {
-	n.mMutex.Lock()
-	defer n.mMutex.Unlock()
+//func (n *NodeHost) GetDragonboatNodeHost() *dragonboat.NodeHost {
+//	n.mMutex.Lock()
+//	defer n.mMutex.Unlock()
+//
+//	return n.mNodeHost
+//}
 
-	return n.mNodeHost
+func (n *NodeHost) ManagedSyncRead(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	d, e := n.mNodeHost.SyncRead(ctx, clusterID, query)
+	cancel()
+
+	return d, e
+}
+
+func (n *NodeHost) ManagedSyncPropose(clusterID uint64, cmd []byte, timeout time.Duration) (sm.Result, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	session := n.mNodeHost.GetNoOPSession(clusterID)
+	r, err := n.mNodeHost.SyncPropose(ctx, session, cmd)
+	cancel()
+
+	_ = n.mNodeHost.SyncCloseSession(context.TODO(), session)
+
+	return r, err
 }
 
 func (n *NodeHost) NodeHostConfig() config.NodeHostConfig {
