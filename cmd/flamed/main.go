@@ -2,19 +2,23 @@ package main
 
 import (
 	"bufio"
+	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/lni/dragonboat/v3"
 	"github.com/mkawserm/flamed/pkg/conf"
 	"os"
 	"strings"
+	"time"
 )
-import "github.com/mkawserm/flamed/pkg/node"
+import "github.com/mkawserm/flamed/pkg/nodehost"
 
 func main() {
-	n := &node.Node{}
+	n := &nodehost.NodeHost{}
 	defer n.StopNode()
 
 	err := n.ConfigureNode(
-		conf.SimpleNodeConfiguration(1, "/tmp/1", "/tmp/1", "localhost:63001"),
+		conf.SimpleNodeHostConfiguration(1, "/tmp/1", "/tmp/1", "localhost:63001"),
 		conf.SimpleStoragedConfiguration("/tmp/1", nil),
 	)
 
@@ -41,6 +45,24 @@ func main() {
 		t := strings.Trim(text, "\n")
 
 		switch t {
+		case "ci":
+			nodeHostInfo := n.GetDragonboatNodeHost().GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: false})
+			if b, err := json.Marshal(nodeHostInfo); err == nil {
+				fmt.Println(string(b))
+			}
+
+		case "mi":
+			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+			m, err := n.GetDragonboatNodeHost().SyncGetClusterMembership(ctx, 1)
+			if err != nil {
+				panic(err)
+			}
+
+			if b, err := json.Marshal(m); err == nil {
+				fmt.Println(string(b))
+			}
+
+			cancel()
 		case "csid":
 			fmt.Println(n.ClusterIdList())
 		case "tcs":

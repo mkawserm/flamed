@@ -1,4 +1,4 @@
-package node
+package nodehost
 
 import (
 	"github.com/lni/dragonboat/v3"
@@ -11,7 +11,7 @@ import (
 	"sync"
 )
 
-type Node struct {
+type NodeHost struct {
 	mMutex       sync.Mutex
 	mIsNodeReady bool
 
@@ -26,7 +26,7 @@ type Node struct {
 	mClusterSessionMap map[uint64]*client.Session
 }
 
-func (n *Node) isStoragedConfigurationOk(storagedConfiguration iface.IStoragedConfiguration) bool {
+func (n *NodeHost) isStoragedConfigurationOk(storagedConfiguration iface.IStoragedConfiguration) bool {
 	if storagedConfiguration.StoragePath() == "" {
 		return false
 	}
@@ -42,7 +42,7 @@ func (n *Node) isStoragedConfigurationOk(storagedConfiguration iface.IStoragedCo
 	return true
 }
 
-func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
+func (n *NodeHost) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 	storagedConfiguration iface.IStoragedConfiguration) error {
 
 	n.mMutex.Lock()
@@ -117,7 +117,7 @@ func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 	return nil
 }
 
-func (n *Node) StartCluster(clusterConfiguration iface.IClusterConfiguration) error {
+func (n *NodeHost) StartCluster(clusterConfiguration iface.IClusterConfiguration) error {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 
@@ -142,7 +142,7 @@ func (n *Node) StartCluster(clusterConfiguration iface.IClusterConfiguration) er
 	return nil
 }
 
-func (n *Node) StopCluster(clusterId uint64) error {
+func (n *NodeHost) StopCluster(clusterId uint64) error {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 
@@ -160,7 +160,7 @@ func (n *Node) StopCluster(clusterId uint64) error {
 	return nil
 }
 
-func (n *Node) StopNode() {
+func (n *NodeHost) StopNode() {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 
@@ -182,13 +182,13 @@ func (n *Node) StopNode() {
 	n.mClusterSessionMap = make(map[uint64]*client.Session)
 }
 
-func (n *Node) TotalCluster() int {
+func (n *NodeHost) TotalCluster() int {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 	return len(n.mClusterMap)
 }
 
-func (n *Node) ClusterIdList() []uint64 {
+func (n *NodeHost) ClusterIdList() []uint64 {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 
@@ -200,13 +200,13 @@ func (n *Node) ClusterIdList() []uint64 {
 	return ids
 }
 
-func (n *Node) GetDragonboatNodeHost() *dragonboat.NodeHost {
+func (n *NodeHost) GetDragonboatNodeHost() *dragonboat.NodeHost {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 	return n.mNodeHost
 }
 
-//func (n *Node) GetStorage(clusterId uint64) *storage.Storage {
+//func (n *NodeHost) GetStorage(clusterId uint64) *storage.Storage {
 //	n.mMutex.Lock()
 //	defer n.mMutex.Unlock()
 //

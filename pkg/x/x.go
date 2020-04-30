@@ -29,10 +29,10 @@ var ErrInvalidSnapshotContext = errors.New("invalid snapshot context")
 var ErrLastIndexIsNotMovingForward = errors.New("last index is not moving forward")
 
 var ErrStorageIsNotReady = errors.New("storage is not ready")
-var ErrNodeIsNotReady = errors.New("node is not ready")
-var ErrNodeAlreadyConfigured = errors.New("node is already configured")
+var ErrNodeIsNotReady = errors.New("nodehost is not ready")
+var ErrNodeAlreadyConfigured = errors.New("nodehost is already configured")
 var ErrFailedToStopCluster = errors.New("failed to stop cluster")
-var ErrFailedToCreateNodeHostDir = errors.New("failed to create node host dir")
+var ErrFailedToCreateNodeHostDir = errors.New("failed to create nodehost host dir")
 var ErrFailedToCreateWALDir = errors.New("failed to create wal dir")
 var ErrInvalidStoragedConfiguration = errors.New("invalid storaged configuration")
 

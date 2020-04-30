@@ -2,8 +2,8 @@ package conf
 
 import "github.com/mkawserm/flamed/pkg/iface"
 
-func SimpleNodeConfiguration(nodeId uint64, nodeHostDir string, walDir string, raftAddress string) iface.INodeConfiguration {
-	return &NodeConfiguration{NodeConfigurationInput: NodeConfigurationInput{
+func SimpleNodeHostConfiguration(nodeId uint64, nodeHostDir string, walDir string, raftAddress string) iface.INodeConfiguration {
+	return &NodeHostConfiguration{NodeHostConfigurationInput: NodeHostConfigurationInput{
 		NodeID:                        nodeId,
 		NodeHostDir:                   nodeHostDir,
 		WALDir:                        walDir,
