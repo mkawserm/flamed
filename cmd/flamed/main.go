@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/lni/dragonboat/v3"
 	"github.com/mkawserm/flamed/pkg/conf"
+	"github.com/mkawserm/flamed/pkg/utility"
 	"os"
 	"strings"
 	"time"
@@ -47,7 +48,7 @@ func main() {
 		switch t {
 		case "ci":
 			nodeHostInfo := n.GetDragonboatNodeHost().GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: false})
-			if b, err := json.Marshal(nodeHostInfo); err == nil {
+			if b, err := json.Marshal(utility.LowerCamelCaseMarshaller{Value: nodeHostInfo}); err == nil {
 				fmt.Println(string(b))
 			}
 
