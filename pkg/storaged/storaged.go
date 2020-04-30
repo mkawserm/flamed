@@ -151,7 +151,18 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	if v, ok := input.(pb.FlameEntry); ok {
+	if v, ok := input.([]byte); ok {
+		e := &pb.FlameEntry{}
+		if err := proto.Unmarshal(v, e); err != nil {
+			return nil, x.ErrInvalidLookupInput
+		}
+		if len(e.Namespace) < 3 {
+			return nil, x.ErrInvalidLookupInput
+		}
+		return s.mStorage.Read(e.Namespace, e.Key)
+	}
+
+	if v, ok := input.(*pb.FlameEntry); ok {
 		if len(v.Namespace) < 3 {
 			return nil, x.ErrInvalidLookupInput
 		}
@@ -159,7 +170,7 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 		return s.mStorage.Read(v.Namespace, v.Key)
 	}
 
-	if v, ok := input.(*pb.FlameEntry); ok {
+	if v, ok := input.(pb.FlameEntry); ok {
 		if len(v.Namespace) < 3 {
 			return nil, x.ErrInvalidLookupInput
 		}
