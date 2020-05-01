@@ -131,3 +131,11 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	return s.mKVStorage.SaveSnapshot(snapshotContext, w)
 }
+
+func (s *Storage) SaveAppliedIndex(u uint64) error {
+	return s.mKVStorage.SaveAppliedIndex(u)
+}
+
+func (s *Storage) QueryAppliedIndex() (uint64, error) {
+	return s.mKVStorage.QueryAppliedIndex()
+}

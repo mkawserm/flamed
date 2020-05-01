@@ -4,6 +4,7 @@ import (
 	badgerDb "github.com/dgraph-io/badger/v2"
 	badgerDbOptions "github.com/dgraph-io/badger/v2/options"
 	"github.com/golang/protobuf/proto"
+	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/x"
@@ -659,4 +660,34 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 	}
 
 	return nil
+}
+
+func (b *Badger) SaveAppliedIndex(u uint64) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	return b.Create(
+		[]byte(constant.AppliedIndexNamespace),
+		[]byte(constant.AppliedIndexKey),
+		uidutil.Uint64ToByteSlice(u))
+}
+
+func (b *Badger) QueryAppliedIndex() (uint64, error) {
+	if b.mDb == nil {
+		return 0, x.ErrStorageIsNotReady
+	}
+
+	data, err := b.Read(
+		[]byte(constant.AppliedIndexNamespace),
+		[]byte(constant.AppliedIndexKey))
+
+	if err == x.ErrUidDoesNotExists {
+		return 0, nil
+	}
+
+	if err != nil {
+		return 0, err
+	}
+	return uidutil.ByteSliceToUint64(data), nil
 }

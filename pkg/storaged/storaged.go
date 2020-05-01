@@ -4,16 +4,12 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/x"
 	"io"
 )
 
 import "github.com/mkawserm/flamed/pkg/storage"
 import sm "github.com/lni/dragonboat/v3/statemachine"
-
-const appliedIndexNamespace string = "_l"
-const appliedIndexKey string = "_l"
 
 type Storaged struct {
 	mStorage *storage.Storage
@@ -51,10 +47,7 @@ func (s *Storaged) saveAppliedIndex(u uint64) error {
 		return x.ErrStorageIsNotReady
 	}
 
-	return s.mStorage.Create(
-		[]byte(appliedIndexNamespace),
-		[]byte(appliedIndexKey),
-		uidutil.Uint64ToByteSlice(u))
+	return s.mStorage.SaveAppliedIndex(u)
 }
 
 func (s *Storaged) queryAppliedIndex() (uint64, error) {
@@ -62,19 +55,7 @@ func (s *Storaged) queryAppliedIndex() (uint64, error) {
 		return 0, x.ErrStorageIsNotReady
 	}
 
-	data, err := s.mStorage.Read(
-		[]byte(appliedIndexNamespace),
-		[]byte(appliedIndexKey))
-
-	if err == x.ErrUidDoesNotExists {
-		return 0, nil
-	}
-
-	if err == x.ErrFailedToReadDataFromStorage || err != nil {
-		return 0, err
-	}
-
-	return uidutil.ByteSliceToUint64(data), nil
+	return s.mStorage.QueryAppliedIndex()
 }
 
 func (s *Storaged) Open(<-chan struct{}) (uint64, error) {

@@ -46,4 +46,7 @@ type IStorage interface {
 	PrepareSnapshot() (interface{}, error)
 	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
 	RecoverFromSnapshot(r io.Reader) error
+
+	SaveAppliedIndex(u uint64) error
+	QueryAppliedIndex() (uint64, error)
 }

@@ -78,10 +78,12 @@ message FlameUser {
   bytes userData = 5;
 }
 
-message FlameACL {
+message FlameAccessControl {
   string username = 1;
   bytes namespace = 2;
-  uint32 permission = 3;
+  bytes permission = 3;
+  uint64 createdAt = 4;
+  uint64 updatedAt = 5;
 }
 
 message FlameProposal {
@@ -89,14 +91,16 @@ message FlameProposal {
     BATCH_ACTION = 0; /* FlameBatchAction */
 
     ADD_INDEX_META = 1; /* FlameIndexMeta */
-    DELETE_INDEX_META = 2; /* FlameIndexMeta */
+    UPDATE_INDEX_META = 2; /* FlameIndexMeta */
+    DELETE_INDEX_META = 3; /* FlameIndexMeta */
 
-    ADD_USER = 3; /* FlameUser */
-    UPDATE_USER = 4; /* FlameUser */
-    DELETE_USER = 5; /* FlameUser */
+    ADD_USER = 4; /* FlameUser */
+    UPDATE_USER = 5; /* FlameUser */
+    DELETE_USER = 6; /* FlameUser */
 
-    ADD_ACL = 6; /* FlameACL */
-    DELETE_ACL = 7; /* FlameACL */
+    ADD_ACCESS_CONTROL = 7; /* FlameAccessControl */
+    UPDATE_ACCESS_CONTROL = 8; /* FlameAccessControl */
+    DELETE_ACCESS_CONTROL = 9; /* FlameAccessControl */
   }
 
   FlameProposalType flameProposalType = 1;
