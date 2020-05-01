@@ -93,7 +93,11 @@ func (s *Storage) IsExists(namespace []byte, key []byte) bool {
 }
 
 func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
-	return s.mKVStorage.Read(namespace, key)
+	d, err := s.mKVStorage.Read(namespace, key)
+	if err == x.ErrUidDoesNotExists {
+		return nil, nil
+	}
+	return d, err
 }
 
 func (s *Storage) Delete(namespace []byte, key []byte) error {

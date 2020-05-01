@@ -137,25 +137,14 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 		if err := proto.Unmarshal(v, e); err != nil {
 			return nil, x.ErrInvalidLookupInput
 		}
-		if len(e.Namespace) < 3 {
-			return nil, x.ErrInvalidLookupInput
-		}
 		return s.mStorage.Read(e.Namespace, e.Key)
 	}
 
 	if v, ok := input.(*pb.FlameEntry); ok {
-		if len(v.Namespace) < 3 {
-			return nil, x.ErrInvalidLookupInput
-		}
-
 		return s.mStorage.Read(v.Namespace, v.Key)
 	}
 
 	if v, ok := input.(pb.FlameEntry); ok {
-		if len(v.Namespace) < 3 {
-			return nil, x.ErrInvalidLookupInput
-		}
-
 		return s.mStorage.Read(v.Namespace, v.Key)
 	}
 

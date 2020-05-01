@@ -17,6 +17,7 @@ var ErrFailedToUpdateDataToStorage = errors.New("failed to update data to the st
 var ErrFailedToAppendDataToStorage = errors.New("failed to append data to the storage")
 var ErrFailedToApplyBatchToStorage = errors.New("failed to apply batch to the storage")
 var ErrFailedToApplyActionToStorage = errors.New("failed to apply action to the storage")
+var ErrFailedToApplyProposal = errors.New("failed to apply proposal")
 
 //var ErrFailedToGenerateAsyncSnapshotFromStorage = errors.New("failed to generate async snapshot from the storage")
 //var ErrFailedToApplyAsyncSnapshotToStorage = errors.New("failed to apply async snapshot to the storage")

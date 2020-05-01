@@ -741,5 +741,56 @@ func (b *Badger) DeleteAccessControl(ac *pb.FlameAccessControl) error {
 }
 
 func (b *Badger) ApplyProposal(pp *pb.FlameProposal) error {
-	return nil
+	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
+		batch := &pb.FlameBatchAction{}
+		if err := proto.Unmarshal(pp.FlameProposalData, batch); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return b.ApplyBatchAction(batch)
+	} else if pp.FlameProposalType == pb.FlameProposal_ADD_INDEX_META {
+		indexMeta := &pb.FlameIndexMeta{}
+		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return b.AddIndexMeta(indexMeta)
+	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META {
+		indexMeta := &pb.FlameIndexMeta{}
+		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return b.UpdateIndexMeta(indexMeta)
+	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_INDEX_META {
+		indexMeta := &pb.FlameIndexMeta{}
+		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return b.DeleteIndexMeta(indexMeta)
+	} else if pp.FlameProposalType == pb.FlameProposal_ADD_ACCESS_CONTROL {
+		ac := &pb.FlameAccessControl{}
+		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return b.AddAccessControl(ac)
+	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL {
+		ac := &pb.FlameAccessControl{}
+		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return b.UpdateAccessControl(ac)
+	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_ACCESS_CONTROL {
+		ac := &pb.FlameAccessControl{}
+		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return b.DeleteAccessControl(ac)
+	}
+
+	return x.ErrFailedToApplyProposal
 }
