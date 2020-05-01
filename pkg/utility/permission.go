@@ -82,12 +82,6 @@ func setBit(n uint8, pos uint8) uint8 {
 	return n
 }
 
-//func clearBit(n uint8, pos uint8) uint8 {
-//	var mask uint8 = ^(1 << pos)
-//	n &= mask
-//	return n
-//}
-
 func hasBit(n uint8, pos uint8) bool {
 	val := n & (1 << pos)
 	return val > 0
