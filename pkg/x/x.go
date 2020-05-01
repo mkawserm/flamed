@@ -19,6 +19,21 @@ var ErrFailedToApplyBatchToStorage = errors.New("failed to apply batch to the st
 var ErrFailedToApplyActionToStorage = errors.New("failed to apply action to the storage")
 var ErrFailedToApplyProposal = errors.New("failed to apply proposal")
 
+var ErrFailedToAddIndexMeta = errors.New("failed to add index meta")
+var ErrFailedToReadIndexMeta = errors.New("failed to read index meta")
+var ErrFailedToUpdateIndexMeta = errors.New("failed to update index meta")
+var ErrFailedToDeleteIndexMeta = errors.New("failed to delete index meta")
+
+var ErrFailedToAddUser = errors.New("failed to add user")
+var ErrFailedToGetUser = errors.New("failed to get user")
+var ErrFailedToUpdateUser = errors.New("failed to update user")
+var ErrFailedToDeleteUser = errors.New("failed to delete user")
+
+var ErrFailedToAddAccessControl = errors.New("failed to add access control")
+var ErrFailedToGetAccessControl = errors.New("failed to get access control")
+var ErrFailedToUpdateAccessControl = errors.New("failed to update access control")
+var ErrFailedToDeleteAccessControl = errors.New("failed to delete access control")
+
 //var ErrFailedToGenerateAsyncSnapshotFromStorage = errors.New("failed to generate async snapshot from the storage")
 //var ErrFailedToApplyAsyncSnapshotToStorage = errors.New("failed to apply async snapshot to the storage")
 //var ErrFailedToGenerateSyncSnapshotFromStorage = errors.New("failed to generate sync snapshot from the storage")

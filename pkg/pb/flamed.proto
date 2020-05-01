@@ -81,7 +81,14 @@ message FlameUser {
 message FlameAccessControl {
   string username = 1;
   bytes namespace = 2;
-  bytes permission = 3;
+  bytes permission = 3; /* First 1 byte is considered as permission.
+                            Counted right to left bit
+                            Permission format:
+                              first byte read,
+                              second byte write,
+                              third byte update,
+                              fourth byte delete
+                        */
   uint64 createdAt = 4;
   uint64 updatedAt = 5;
 }

@@ -693,61 +693,288 @@ func (b *Badger) QueryAppliedIndex() (uint64, error) {
 }
 
 func (b *Badger) AddIndexMeta(meta *pb.FlameIndexMeta) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	data, err := proto.Marshal(meta)
+	if err != nil {
+		return x.ErrFailedToAddIndexMeta
+	}
+
+	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+		err := txn.Set(uid, data)
+		return err
+	})
+
+	if err != nil {
+		return x.ErrFailedToAddIndexMeta
+	}
+
 	return nil
 }
 
+func (b *Badger) IsIndexMetaExists(meta *pb.FlameIndexMeta) bool {
+	return b.IsExists([]byte(constant.IndexMetaNamespace), meta.Namespace)
+}
+
 func (b *Badger) GetIndexMeta(meta *pb.FlameIndexMeta) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		data := b.getValue(txn, uid)
+		if data == nil {
+			return x.ErrFailedToReadIndexMeta
+		}
+
+		return proto.Unmarshal(data, meta)
+	})
+
+	if err != nil {
+		return x.ErrFailedToReadIndexMeta
+	}
+
 	return nil
 }
 
 func (b *Badger) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	data, err := proto.Marshal(meta)
+	if err != nil {
+		return x.ErrFailedToUpdateIndexMeta
+	}
+
+	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+		err := txn.Set(uid, data)
+		return err
+	})
+
+	if err != nil {
+		return x.ErrFailedToUpdateIndexMeta
+	}
+
 	return nil
 }
 
 func (b *Badger) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
+		err := txn.Delete(uid)
+		return err
+	})
+
+	if err != nil {
+		return x.ErrFailedToDeleteIndexMeta
+	}
+
 	return nil
 }
 
 func (b *Badger) AddUser(user *pb.FlameUser) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	data, err := proto.Marshal(user)
+	if err != nil {
+		return x.ErrFailedToAddUser
+	}
+
+	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+		err := txn.Set(uid, data)
+		return err
+	})
+
+	if err != nil {
+		return x.ErrFailedToAddUser
+	}
+
 	return nil
 }
 
+func (b *Badger) IsUserExists(user *pb.FlameUser) bool {
+	return b.IsExists([]byte(constant.UserNamespace), []byte(user.Username))
+}
+
 func (b *Badger) GetUser(user *pb.FlameUser) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		data := b.getValue(txn, uid)
+		if data == nil {
+			return x.ErrFailedToGetUser
+		}
+
+		return proto.Unmarshal(data, user)
+	})
+
+	if err != nil {
+		return x.ErrFailedToGetUser
+	}
+
 	return nil
 }
 
 func (b *Badger) UpdateUser(user *pb.FlameUser) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	data, err := proto.Marshal(user)
+	if err != nil {
+		return x.ErrFailedToUpdateUser
+	}
+
+	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+		err := txn.Set(uid, data)
+		return err
+	})
+
+	if err != nil {
+		return x.ErrFailedToUpdateUser
+	}
+
 	return nil
 }
 
 func (b *Badger) DeleteUser(user *pb.FlameUser) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
+		err := txn.Delete(uid)
+		return err
+	})
+
+	if err != nil {
+		return x.ErrFailedToDeleteUser
+	}
+
 	return nil
 }
 
 func (b *Badger) AddAccessControl(ac *pb.FlameAccessControl) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	data, err := proto.Marshal(ac)
+	if err != nil {
+		return x.ErrFailedToAddAccessControl
+	}
+
+	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+
+	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+		err := txn.Set(uid, data)
+		return err
+	})
+
+	if err != nil {
+		return x.ErrFailedToAddAccessControl
+	}
+
 	return nil
 }
 
+func (b *Badger) IsAccessControlExists(ac *pb.FlameAccessControl) bool {
+	return b.IsExists([]byte(constant.UserNamespace), uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+}
+
 func (b *Badger) GetAccessControl(ac *pb.FlameAccessControl) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		data := b.getValue(txn, uid)
+		if data == nil {
+			return x.ErrFailedToGetAccessControl
+		}
+
+		return proto.Unmarshal(data, ac)
+	})
+
+	if err != nil {
+		return x.ErrFailedToGetAccessControl
+	}
+
 	return nil
 }
 
 func (b *Badger) UpdateAccessControl(ac *pb.FlameAccessControl) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	data, err := proto.Marshal(ac)
+	if err != nil {
+		return x.ErrFailedToUpdateAccessControl
+	}
+
+	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+		err := txn.Set(uid, data)
+		return err
+	})
+
+	if err != nil {
+		return x.ErrFailedToUpdateAccessControl
+	}
+
 	return nil
 }
 
 func (b *Badger) DeleteAccessControl(ac *pb.FlameAccessControl) error {
+	if b.mDb == nil {
+		return x.ErrStorageIsNotReady
+	}
+
+	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
+		err := txn.Delete(uid)
+		return err
+	})
+
+	if err != nil {
+		return x.ErrFailedToDeleteAccessControl
+	}
+
 	return nil
 }
 
 func (b *Badger) ApplyProposal(pp *pb.FlameProposal) error {
 	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
-		batch := &pb.FlameBatchAction{}
-		if err := proto.Unmarshal(pp.FlameProposalData, batch); err != nil {
+		batchAction := &pb.FlameBatchAction{}
+		if err := proto.Unmarshal(pp.FlameProposalData, batchAction); err != nil {
 			return x.ErrFailedToApplyProposal
 		}
 
-		return b.ApplyBatchAction(batch)
+		return b.ApplyBatchAction(batchAction)
 	} else if pp.FlameProposalType == pb.FlameProposal_ADD_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
