@@ -43,7 +43,18 @@ message FlameSnapshot {
 message FlameProposal {
   enum FlameProposalType {
     BATCH_ACTION = 0;
+
+    ADD_INDEX_META = 1;
+    DELETE_INDEX_META = 2;
+
+    ADD_USER = 3;
+    UPDATE_USER = 4;
+    DELETE_USER = 5;
+
+    ADD_ACL = 6;
+    DELETE_ACL = 7;
   }
 
-
+  FlameProposalType flameProposalType = 1;
+  bytes flameProposalData = 2;
 }
