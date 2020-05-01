@@ -109,9 +109,9 @@ func (b *Badger) RunGC() {
 	}
 }
 
-func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) (bool, error) {
+func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error {
 	if b.mDb == nil {
-		return false, x.ErrFailedToChangeSecretKey
+		return x.ErrStorageIsNotReady
 	}
 
 	//if len(oldSecretKey) == 0 || len(newSecretKey) == 0 {
@@ -127,22 +127,22 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) (bool
 
 	kr, err := badgerDb.OpenKeyRegistry(opt)
 	if err != nil {
-		return false, x.ErrFailedToChangeSecretKey
+		return x.ErrFailedToChangeSecretKey
 	}
 
 	opt.EncryptionKey = newSecretKey
 
 	err = badgerDb.WriteKeyRegistry(kr, opt)
 	if err != nil {
-		return false, x.ErrFailedToChangeSecretKey
+		return x.ErrFailedToChangeSecretKey
 	}
 
-	return true, nil
+	return nil
 }
 
 func (b *Badger) ReadUsingPrefix(prefix []byte) ([]*pb.FlameEntry, error) {
 	if b.mDb == nil {
-		return nil, x.ErrFailedToReadDataFromStorage
+		return nil, x.ErrStorageIsNotReady
 	}
 
 	data := make([]*pb.FlameEntry, 0, b.mDbConfiguration.SliceCap)
@@ -179,7 +179,7 @@ func (b *Badger) ReadUsingPrefix(prefix []byte) ([]*pb.FlameEntry, error) {
 
 func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 	if b.mDb == nil {
-		return nil, x.ErrFailedToReadDataFromStorage
+		return nil, x.ErrStorageIsNotReady
 	}
 
 	uid := uidutil.GetUid(namespace, key)
@@ -206,9 +206,9 @@ func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 	return data, nil
 }
 
-func (b *Badger) Delete(namespace []byte, key []byte) (bool, error) {
+func (b *Badger) Delete(namespace []byte, key []byte) error {
 	if b.mDb == nil {
-		return false, x.ErrFailedToDeleteDataFromStorage
+		return x.ErrStorageIsNotReady
 	}
 
 	uid := uidutil.GetUid(namespace, key)
@@ -219,15 +219,15 @@ func (b *Badger) Delete(namespace []byte, key []byte) (bool, error) {
 	})
 
 	if err != nil {
-		return false, x.ErrFailedToDeleteDataFromStorage
+		return x.ErrFailedToDeleteDataFromStorage
 	}
 
-	return true, nil
+	return nil
 }
 
-func (b *Badger) Create(namespace []byte, key []byte, value []byte) (bool, error) {
+func (b *Badger) Create(namespace []byte, key []byte, value []byte) error {
 	if b.mDb == nil {
-		return false, x.ErrFailedToCreateDataToStorage
+		return x.ErrStorageIsNotReady
 	}
 
 	uid := uidutil.GetUid(namespace, key)
@@ -238,15 +238,15 @@ func (b *Badger) Create(namespace []byte, key []byte, value []byte) (bool, error
 	})
 
 	if err != nil {
-		return false, x.ErrFailedToCreateDataToStorage
+		return x.ErrFailedToCreateDataToStorage
 	}
 
-	return true, nil
+	return nil
 }
 
-func (b *Badger) Update(namespace []byte, key []byte, value []byte) (bool, error) {
+func (b *Badger) Update(namespace []byte, key []byte, value []byte) error {
 	if b.mDb == nil {
-		return false, x.ErrFailedToUpdateDataToStorage
+		return x.ErrStorageIsNotReady
 	}
 
 	uid := uidutil.GetUid(namespace, key)
@@ -257,15 +257,15 @@ func (b *Badger) Update(namespace []byte, key []byte, value []byte) (bool, error
 	})
 
 	if err != nil {
-		return false, x.ErrFailedToUpdateDataToStorage
+		return x.ErrFailedToUpdateDataToStorage
 	}
 
-	return true, nil
+	return nil
 }
 
-func (b *Badger) Append(namespace []byte, key []byte, value []byte) (bool, error) {
+func (b *Badger) Append(namespace []byte, key []byte, value []byte) error {
 	if b.mDb == nil {
-		return false, x.ErrFailedToAppendDataToStorage
+		return x.ErrStorageIsNotReady
 	}
 
 	uid := uidutil.GetUid(namespace, key)
@@ -277,10 +277,10 @@ func (b *Badger) Append(namespace []byte, key []byte, value []byte) (bool, error
 	})
 
 	if err != nil {
-		return false, x.ErrFailedToAppendDataToStorage
+		return x.ErrFailedToAppendDataToStorage
 	}
 
-	return true, nil
+	return nil
 }
 
 func (b *Badger) IsExists(namespace []byte, key []byte) bool {
@@ -320,7 +320,7 @@ func (b *Badger) getValue(txn *badgerDb.Txn, uid []byte) []byte {
 
 func (b *Badger) ReadBatch(batch *pb.FlameBatchRead) error {
 	if b.mDb == nil {
-		return x.ErrFailedToReadBatchFromStorage
+		return x.ErrStorageIsNotReady
 	}
 
 	err := b.mDb.View(func(txn *badgerDb.Txn) error {
@@ -338,9 +338,9 @@ func (b *Badger) ReadBatch(batch *pb.FlameBatchRead) error {
 	return nil
 }
 
-func (b *Badger) ApplyBatchAction(batch *pb.FlameBatchAction) (bool, error) {
+func (b *Badger) ApplyBatchAction(batch *pb.FlameBatchAction) error {
 	if b.mDb == nil {
-		return false, x.ErrFailedToApplyBatchToStorage
+		return x.ErrStorageIsNotReady
 	}
 
 	txn := b.mDb.NewTransaction(true)
@@ -350,12 +350,12 @@ func (b *Badger) ApplyBatchAction(batch *pb.FlameBatchAction) (bool, error) {
 		if action.FlameActionType == pb.FlameAction_CREATE || action.FlameActionType == pb.FlameAction_UPDATE {
 			uid := uidutil.GetUid(action.FlameEntry.Namespace, action.FlameEntry.Key)
 			if err := txn.Set(uid, action.FlameEntry.Value); err != nil {
-				return false, x.ErrFailedToApplyBatchToStorage
+				return x.ErrFailedToApplyBatchToStorage
 			}
 		} else if action.FlameActionType == pb.FlameAction_DELETE {
 			uid := uidutil.GetUid(action.FlameEntry.Namespace, action.FlameEntry.Key)
 			if err := txn.Delete(uid); err != nil {
-				return false, x.ErrFailedToApplyBatchToStorage
+				return x.ErrFailedToApplyBatchToStorage
 			}
 		} else if action.FlameActionType == pb.FlameAction_APPEND {
 			uid := uidutil.GetUid(action.FlameEntry.Namespace, action.FlameEntry.Key)
@@ -363,19 +363,19 @@ func (b *Badger) ApplyBatchAction(batch *pb.FlameBatchAction) (bool, error) {
 			var data = b.getValue(txn, uid)
 			data = append(data, action.FlameEntry.Value...)
 			if err := txn.Set(uid, data); err != nil {
-				return false, x.ErrFailedToApplyBatchToStorage
+				return x.ErrFailedToApplyBatchToStorage
 			}
 		}
 	}
 
 	if err := txn.Commit(); err != nil {
-		return false, x.ErrFailedToApplyBatchToStorage
+		return x.ErrFailedToApplyBatchToStorage
 	}
 
-	return true, nil
+	return nil
 }
 
-func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
+func (b *Badger) ApplyAction(action *pb.FlameAction) error {
 	if action.FlameActionType == pb.FlameAction_CREATE {
 		return b.Create(action.FlameEntry.Namespace, action.FlameEntry.Key, action.FlameEntry.Value)
 	} else if action.FlameActionType == pb.FlameAction_UPDATE {
@@ -386,7 +386,7 @@ func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
 		return b.Delete(action.FlameEntry.Namespace, action.FlameEntry.Key)
 	}
 
-	return false, x.ErrFailedToApplyActionToStorage
+	return x.ErrFailedToApplyActionToStorage
 }
 
 //func (b *Badger) AsyncSnapshot(snapshot chan<- *pb.FlameSnapshot) error {
@@ -537,7 +537,7 @@ func (b *Badger) ApplyAction(action *pb.FlameAction) (bool, error) {
 
 func (b *Badger) PrepareSnapshot() (interface{}, error) {
 	if b.mDb == nil {
-		return nil, x.ErrFailedToPrepareSnapshot
+		return nil, x.ErrStorageIsNotReady
 	}
 
 	return b.mDb.NewTransaction(false), nil
@@ -545,7 +545,7 @@ func (b *Badger) PrepareSnapshot() (interface{}, error) {
 
 func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	if b.mDb == nil {
-		return x.ErrFailedToSaveSnapshot
+		return x.ErrStorageIsNotReady
 	}
 
 	if snapshotContext == nil {
@@ -609,7 +609,7 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 
 func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 	if b.mDb == nil {
-		return x.ErrFailedToRecoverFromSnapshot
+		return x.ErrStorageIsNotReady
 	}
 
 	sz := make([]byte, 8)

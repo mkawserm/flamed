@@ -25,7 +25,7 @@ var ErrFailedToApplyActionToStorage = errors.New("failed to apply action to the 
 
 var ErrInvalidLookupInput = errors.New("invalid lookup input")
 
-var ErrFailedToPrepareSnapshot = errors.New("failed to prepare snapshot")
+//var ErrFailedToPrepareSnapshot = errors.New("failed to prepare snapshot")
 var ErrFailedToSaveSnapshot = errors.New("failed to save snapshot")
 var ErrFailedToRecoverFromSnapshot = errors.New("failed to recover from snapshot")
 

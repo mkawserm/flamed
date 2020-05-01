@@ -46,9 +46,9 @@ func (s *Storaged) SetConfiguration(configuration iface.IStoragedConfiguration) 
 	return b
 }
 
-func (s *Storaged) saveAppliedIndex(u uint64) (bool, error) {
+func (s *Storaged) saveAppliedIndex(u uint64) error {
 	if s.mStorage == nil {
-		return false, x.ErrStorageIsNotReady
+		return x.ErrStorageIsNotReady
 	}
 
 	return s.mStorage.Create(
@@ -122,7 +122,7 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 			return nil, err
 		}
 
-		if b, err := s.mStorage.ApplyBatchAction(batch); b {
+		if err := s.mStorage.ApplyBatchAction(batch); err == nil {
 			entries[idx].Result = sm.Result{Value: uint64(len(entries[idx].Cmd))}
 		} else {
 			return nil, err
@@ -131,7 +131,7 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 
 	// save the applied index to the DB.
 	idx := entries[len(entries)-1].Index
-	_, err := s.saveAppliedIndex(idx)
+	err := s.saveAppliedIndex(idx)
 
 	if err != nil {
 		return nil, err

@@ -84,7 +84,7 @@ func (s *Storage) RunGC() {
 	s.mKVStorage.RunGC()
 }
 
-func (s *Storage) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) (bool, error) {
+func (s *Storage) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error {
 	return s.mKVStorage.ChangeSecretKey(oldSecretKey, newSecretKey)
 }
 
@@ -96,27 +96,27 @@ func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
 	return s.mKVStorage.Read(namespace, key)
 }
 
-func (s *Storage) Delete(namespace []byte, key []byte) (bool, error) {
+func (s *Storage) Delete(namespace []byte, key []byte) error {
 	return s.mKVStorage.Delete(namespace, key)
 }
 
-func (s *Storage) Create(namespace []byte, key []byte, value []byte) (bool, error) {
+func (s *Storage) Create(namespace []byte, key []byte, value []byte) error {
 	return s.mKVStorage.Create(namespace, key, value)
 }
 
-func (s *Storage) Update(namespace []byte, key []byte, value []byte) (bool, error) {
+func (s *Storage) Update(namespace []byte, key []byte, value []byte) error {
 	return s.mKVStorage.Update(namespace, key, value)
 }
 
-func (s *Storage) Append(namespace []byte, key []byte, value []byte) (bool, error) {
+func (s *Storage) Append(namespace []byte, key []byte, value []byte) error {
 	return s.mKVStorage.Append(namespace, key, value)
 }
 
-func (s *Storage) ApplyBatchAction(batch *pb.FlameBatchAction) (bool, error) {
+func (s *Storage) ApplyBatchAction(batch *pb.FlameBatchAction) error {
 	return s.mKVStorage.ApplyBatchAction(batch)
 }
 
-func (s *Storage) ApplyAction(action *pb.FlameAction) (bool, error) {
+func (s *Storage) ApplyAction(action *pb.FlameAction) error {
 	return s.mKVStorage.ApplyAction(action)
 }
 
