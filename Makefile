@@ -6,7 +6,7 @@ run:
 	@./bin/flamed
 
 test:
-	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb
+	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -v
 
 cover:
 	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -coverprofile=cover.out -v

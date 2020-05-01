@@ -728,17 +728,50 @@ func (b *Badger) GetIndexMeta(meta *pb.FlameIndexMeta) error {
 	err := b.mDb.View(func(txn *badgerDb.Txn) error {
 		data := b.getValue(txn, uid)
 		if data == nil {
-			return x.ErrFailedToReadIndexMeta
+			return x.ErrFailedToGetIndexMeta
 		}
 
 		return proto.Unmarshal(data, meta)
 	})
 
 	if err != nil {
-		return x.ErrFailedToReadIndexMeta
+		return x.ErrFailedToGetIndexMeta
 	}
 
 	return nil
+}
+
+func (b *Badger) GetAllIndexMeta() ([]*pb.FlameIndexMeta, error) {
+	if b.mDb == nil {
+		return nil, x.ErrStorageIsNotReady
+	}
+
+	data := make([]*pb.FlameIndexMeta, 0, b.mDbConfiguration.SliceCap)
+
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
+		defer it.Close()
+
+		for it.Seek([]byte(constant.IndexMetaNamespace)); it.ValidForPrefix([]byte(constant.IndexMetaNamespace)); it.Next() {
+			item := it.Item()
+			if value, err := item.ValueCopy(nil); err == nil {
+				fim := &pb.FlameIndexMeta{}
+				if err := proto.Unmarshal(value, fim); err != nil {
+					data = append(data, fim)
+				}
+				data = append(data, fim)
+			} else {
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, x.ErrFailedToGetAllIndexMeta
+	}
+
+	return data, nil
 }
 
 func (b *Badger) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
@@ -829,6 +862,39 @@ func (b *Badger) GetUser(user *pb.FlameUser) error {
 	}
 
 	return nil
+}
+
+func (b *Badger) GetAllUser() ([]*pb.FlameUser, error) {
+	if b.mDb == nil {
+		return nil, x.ErrStorageIsNotReady
+	}
+
+	data := make([]*pb.FlameUser, 0, b.mDbConfiguration.SliceCap)
+
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
+		defer it.Close()
+
+		for it.Seek([]byte(constant.UserNamespace)); it.ValidForPrefix([]byte(constant.UserNamespace)); it.Next() {
+			item := it.Item()
+			if value, err := item.ValueCopy(nil); err == nil {
+				fu := &pb.FlameUser{}
+				if err := proto.Unmarshal(value, fu); err != nil {
+					data = append(data, fu)
+				}
+				data = append(data, fu)
+			} else {
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, x.ErrFailedToGetAllUser
+	}
+
+	return data, nil
 }
 
 func (b *Badger) UpdateUser(user *pb.FlameUser) error {
@@ -922,6 +988,39 @@ func (b *Badger) GetAccessControl(ac *pb.FlameAccessControl) error {
 	}
 
 	return nil
+}
+
+func (b *Badger) GetAllAccessControl() ([]*pb.FlameAccessControl, error) {
+	if b.mDb == nil {
+		return nil, x.ErrStorageIsNotReady
+	}
+
+	data := make([]*pb.FlameAccessControl, 0, b.mDbConfiguration.SliceCap)
+
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
+		defer it.Close()
+
+		for it.Seek([]byte(constant.AccessControlNamespace)); it.ValidForPrefix([]byte(constant.AccessControlNamespace)); it.Next() {
+			item := it.Item()
+			if value, err := item.ValueCopy(nil); err == nil {
+				fac := &pb.FlameAccessControl{}
+				if err := proto.Unmarshal(value, fac); err != nil {
+					data = append(data, fac)
+				}
+				data = append(data, fac)
+			} else {
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, x.ErrFailedToGetAllAccessControl
+	}
+
+	return data, nil
 }
 
 func (b *Badger) UpdateAccessControl(ac *pb.FlameAccessControl) error {

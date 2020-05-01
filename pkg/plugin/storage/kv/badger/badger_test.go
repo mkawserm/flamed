@@ -20,25 +20,18 @@ func TestBadger_Open(t *testing.T) {
 	defer removeAll(path)
 
 	b := &Badger{}
-	o, err := b.Open(path, secretKey, false, nil)
+	err := b.Open(path, secretKey, false, nil)
 
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
 	}
-
-	if !o {
-		t.Fatalf("failed to open database")
-	}
+	_ = b.Close()
 
 	// Second time open to execute first branch
-	o, err = b.Open(path, secretKey, false, nil)
+	err = b.Open(path, secretKey, false, nil)
 
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
-	}
-
-	if !o {
-		t.Fatalf("failed to open database")
 	}
 
 	err = b.Close()
@@ -65,14 +58,10 @@ func TestBadger_OpenWithConfiguration(t *testing.T) {
 		EncryptionKeyRotationDuration: 0,
 	}
 
-	o, err := b.Open(path, secretKey, false, conf)
+	err := b.Open(path, secretKey, false, conf)
 
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
-	}
-
-	if !o {
-		t.Fatalf("failed to open database")
 	}
 
 	err = b.Close()
@@ -99,7 +88,7 @@ func TestBadger_OpenFailure(t *testing.T) {
 		EncryptionKeyRotationDuration: 0,
 	}
 
-	_, err := b.Open(path, secretKey, false, conf)
+	err := b.Open(path, secretKey, false, conf)
 
 	if err != x.ErrFailedToOpenStorage {
 		t.Fatalf("Unexpected error %v", err)
