@@ -81,8 +81,17 @@ func main() {
 				},
 			}
 
+			pp := &pb.FlameProposal{
+				FlameProposalType:    pb.FlameProposal_BATCH_ACTION,
+				FlameProposalData:    nil,
+				XXX_NoUnkeyedLiteral: struct{}{},
+				XXX_unrecognized:     nil,
+				XXX_sizecache:        0,
+			}
+
 			if data, err := proto.Marshal(batch); err == nil {
-				r, err := n.ManagedSyncPropose(1, data, 3*time.Minute)
+				pp.FlameProposalData = data
+				r, err := n.ManagedSyncApplyProposal(1, pp, 3*time.Minute)
 
 				if err != nil {
 					fmt.Println(err)

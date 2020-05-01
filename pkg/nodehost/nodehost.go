@@ -2,12 +2,14 @@ package nodehost
 
 import (
 	"context"
+	"github.com/golang/protobuf/proto"
 	"github.com/lni/dragonboat/v3"
 	"github.com/lni/dragonboat/v3/client"
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/lni/dragonboat/v3/raftpb"
 	sm "github.com/lni/dragonboat/v3/statemachine"
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 	"sync"
@@ -215,7 +217,13 @@ func (n *NodeHost) ManagedSyncRead(clusterID uint64, query interface{}, timeout 
 	return d, e
 }
 
-func (n *NodeHost) ManagedSyncPropose(clusterID uint64, cmd []byte, timeout time.Duration) (sm.Result, error) {
+func (n *NodeHost) ManagedSyncApplyProposal(clusterID uint64, pp *pb.FlameProposal,
+	timeout time.Duration) (sm.Result, error) {
+	cmd, err := proto.Marshal(pp)
+	if err != nil {
+		return sm.Result{}, err
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	session := n.mNodeHost.GetNoOPSession(clusterID)
 	r, err := n.mNodeHost.SyncPropose(ctx, session, cmd)
@@ -224,6 +232,15 @@ func (n *NodeHost) ManagedSyncPropose(clusterID uint64, cmd []byte, timeout time
 	_ = n.mNodeHost.SyncCloseSession(context.TODO(), session)
 
 	return r, err
+}
+
+func (n *NodeHost) SyncApplyProposal(ctx context.Context, session *client.Session,
+	pp *pb.FlameProposal) (sm.Result, error) {
+	cmd, err := proto.Marshal(pp)
+	if err != nil {
+		return sm.Result{}, err
+	}
+	return n.mNodeHost.SyncPropose(ctx, session, cmd)
 }
 
 func (n *NodeHost) ManagedSyncRequestAddNode(clusterID uint64,
@@ -294,10 +311,6 @@ func (n *NodeHost) GetNodeHostInfo() *dragonboat.NodeHostInfo {
 	return n.mNodeHost.GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: false})
 }
 
-func (n *NodeHost) SyncPropose(ctx context.Context, session *client.Session, cmd []byte) (sm.Result, error) {
-	return n.mNodeHost.SyncPropose(ctx, session, cmd)
-}
-
 func (n *NodeHost) SyncRead(ctx context.Context, clusterID uint64, query interface{}) (interface{}, error) {
 	return n.mNodeHost.SyncRead(ctx, clusterID, query)
 }
@@ -337,10 +350,3 @@ func (n *NodeHost) SyncRequestSnapshot(ctx context.Context,
 	opt dragonboat.SnapshotOption) (uint64, error) {
 	return n.mNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
 }
-
-//func (n *NodeHost) GetStorage(clusterId uint64) *storage.Storage {
-//	n.mMutex.Lock()
-//	defer n.mMutex.Unlock()
-//
-//	return n.
-//}

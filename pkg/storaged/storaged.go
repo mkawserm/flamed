@@ -97,13 +97,13 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 	}
 
 	for idx, e := range entries {
-		batch := &pb.FlameBatchAction{}
+		pp := &pb.FlameProposal{}
 
-		if err := proto.Unmarshal(e.Cmd, batch); err != nil {
+		if err := proto.Unmarshal(e.Cmd, pp); err != nil {
 			return nil, err
 		}
 
-		if err := s.mStorage.ApplyBatchAction(batch); err == nil {
+		if err := s.mStorage.ApplyProposal(pp); err == nil {
 			entries[idx].Result = sm.Result{Value: uint64(len(entries[idx].Cmd))}
 		} else {
 			return nil, err
