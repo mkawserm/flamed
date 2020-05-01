@@ -23,16 +23,11 @@ type IKVStorage interface {
 	Update(namespace []byte, key []byte, value []byte) (bool, error)
 	Append(namespace []byte, key []byte, value []byte) (bool, error)
 
-	ApplyBatch(batch *pb.FlameBatch) (bool, error)
+	ReadBatch(batch *pb.FlameBatchRead) error
+	ApplyBatchAction(batch *pb.FlameBatchAction) (bool, error)
 	ApplyAction(action *pb.FlameAction) (bool, error)
 
 	PrepareSnapshot() (interface{}, error)
 	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
 	RecoverFromSnapshot(r io.Reader) error
-
-	//AsyncSnapshot(snapshot chan<- *pb.FlameSnapshot) error
-	//ApplyAsyncSnapshot(snapshot <-chan *pb.FlameSnapshot) (bool, error)
-	//
-	//SyncSnapshot() (*pb.FlameSnapshot, error)
-	//ApplySyncSnapshot(snapshot *pb.FlameSnapshot) (bool, error)
 }

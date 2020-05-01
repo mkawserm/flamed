@@ -21,8 +21,12 @@ message FlameAction {
   FlameEntry flameEntry = 2;
 }
 
-message FlameBatch {
+message FlameBatchAction {
   repeated FlameAction flameActionList = 1;
+}
+
+message FlameBatchRead {
+  repeated FlameEntry flameEntryList = 1;
 }
 
 message FlameSnapshotEntry {

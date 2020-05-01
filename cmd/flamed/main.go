@@ -72,7 +72,7 @@ func main() {
 				Value:     uidutil.Uint64ToByteSlice(counter),
 			}
 
-			batch := &pb.FlameBatch{
+			batch := &pb.FlameBatchAction{
 				FlameActionList: []*pb.FlameAction{
 					{
 						FlameEntry:      e,

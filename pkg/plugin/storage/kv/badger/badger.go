@@ -271,22 +271,9 @@ func (b *Badger) Append(namespace []byte, key []byte, value []byte) (bool, error
 	uid := uidutil.GetUid(namespace, key)
 
 	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
-		var data []byte
-		if item, err := txn.Get(uid); err == badgerDb.ErrKeyNotFound {
-			return txn.Set(uid, value)
-		} else {
-			if err != nil {
-				return err
-			}
-
-			if v, err1 := item.ValueCopy(nil); err1 == nil {
-				data = v
-				data = append(data, value...)
-				return txn.Set(uid, data)
-			} else {
-				return err1
-			}
-		}
+		var data = b.getValue(txn, uid)
+		data = append(data, value...)
+		return txn.Set(uid, data)
 	})
 
 	if err != nil {
@@ -317,7 +304,41 @@ func (b *Badger) IsExists(namespace []byte, key []byte) bool {
 	}
 }
 
-func (b *Badger) ApplyBatch(batch *pb.FlameBatch) (bool, error) {
+func (b *Badger) getValue(txn *badgerDb.Txn, uid []byte) []byte {
+	var data []byte
+	item, err := txn.Get(uid)
+	if err != nil {
+		return nil
+	}
+
+	if v, err := item.ValueCopy(nil); err == nil {
+		data = v
+	}
+
+	return data
+}
+
+func (b *Badger) ReadBatch(batch *pb.FlameBatchRead) error {
+	if b.mDb == nil {
+		return x.ErrFailedToReadBatchFromStorage
+	}
+
+	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+		for idx := range batch.FlameEntryList {
+			uid := uidutil.GetUid(batch.FlameEntryList[idx].Namespace, batch.FlameEntryList[idx].Key)
+			batch.FlameEntryList[idx].Value = b.getValue(txn, uid)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return x.ErrFailedToReadBatchFromStorage
+	}
+
+	return nil
+}
+
+func (b *Badger) ApplyBatchAction(batch *pb.FlameBatchAction) (bool, error) {
 	if b.mDb == nil {
 		return false, x.ErrFailedToApplyBatchToStorage
 	}
@@ -339,26 +360,9 @@ func (b *Badger) ApplyBatch(batch *pb.FlameBatch) (bool, error) {
 		} else if action.FlameActionType == pb.FlameAction_APPEND {
 			uid := uidutil.GetUid(action.FlameEntry.Namespace, action.FlameEntry.Key)
 
-			var data []byte
-			item, err := txn.Get(uid)
-			if err == badgerDb.ErrKeyNotFound {
-				if err := txn.Set(uid, action.FlameEntry.Value); err != nil {
-					return false, x.ErrFailedToApplyBatchToStorage
-				}
-			}
-
-			if err != nil {
-				return false, err
-			}
-
-			if v, err1 := item.ValueCopy(nil); err1 == nil {
-				data = v
-				data = append(data, action.FlameEntry.Value...)
-
-				if err := txn.Set(uid, data); err != nil {
-					return false, x.ErrFailedToApplyBatchToStorage
-				}
-			} else {
+			var data = b.getValue(txn, uid)
+			data = append(data, action.FlameEntry.Value...)
+			if err := txn.Set(uid, data); err != nil {
 				return false, x.ErrFailedToApplyBatchToStorage
 			}
 		}
