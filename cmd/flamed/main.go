@@ -147,7 +147,7 @@ func main() {
 			//
 			//cancel()
 		case "csid":
-			fmt.Println(n.ClusterIdList())
+			fmt.Println(n.ClusterIDList())
 		case "tcs":
 			fmt.Println(n.TotalCluster())
 		case "quit":

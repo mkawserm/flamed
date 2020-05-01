@@ -39,3 +39,11 @@ message FlameSnapshot {
   uint64 length = 2;
   repeated FlameSnapshotEntry flameSnapshotEntryList = 3;
 }
+
+message FlameProposal {
+  enum FlameProposalType {
+    BATCH_ACTION = 0;
+  }
+
+
+}

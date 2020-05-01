@@ -188,7 +188,7 @@ func (n *NodeHost) TotalCluster() int {
 	return len(n.mClusterMap)
 }
 
-func (n *NodeHost) ClusterIdList() []uint64 {
+func (n *NodeHost) ClusterIDList() []uint64 {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 
@@ -224,6 +224,50 @@ func (n *NodeHost) ManagedSyncPropose(clusterID uint64, cmd []byte, timeout time
 	_ = n.mNodeHost.SyncCloseSession(context.TODO(), session)
 
 	return r, err
+}
+
+func (n *NodeHost) ManagedSyncRequestAddNode(clusterID uint64,
+	nodeID uint64,
+	address string,
+	timeout time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	err := n.mNodeHost.SyncRequestAddNode(ctx, clusterID, nodeID, address, 0)
+	cancel()
+	return err
+}
+
+func (n *NodeHost) ManagedSyncRequestAddObserver(clusterID uint64, nodeID uint64,
+	address string, timeout time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	err := n.mNodeHost.SyncRequestAddObserver(ctx, clusterID, nodeID, address, 0)
+	cancel()
+	return err
+}
+
+func (n *NodeHost) ManagedSyncRequestAddWitness(clusterID uint64, nodeID uint64,
+	address string, timeout time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	err := n.mNodeHost.SyncRequestAddWitness(ctx, clusterID, nodeID, address, 0)
+	cancel()
+	return err
+}
+
+func (n *NodeHost) ManagedSyncRequestDeleteNode(clusterID uint64,
+	nodeID uint64,
+	timeout time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	err := n.mNodeHost.SyncRequestDeleteNode(ctx, clusterID, nodeID, 0)
+	cancel()
+	return err
+}
+
+func (n *NodeHost) ManagedSyncRequestSnapshot(clusterID uint64,
+	opt dragonboat.SnapshotOption,
+	timeout time.Duration) (uint64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	num, err := n.mNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
+	cancel()
+	return num, err
 }
 
 func (n *NodeHost) NodeHostConfig() config.NodeHostConfig {
