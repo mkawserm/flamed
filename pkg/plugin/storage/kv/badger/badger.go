@@ -691,3 +691,55 @@ func (b *Badger) QueryAppliedIndex() (uint64, error) {
 	}
 	return uidutil.ByteSliceToUint64(data), nil
 }
+
+func (b *Badger) AddIndexMeta(meta *pb.FlameIndexMeta) error {
+	return nil
+}
+
+func (b *Badger) GetIndexMeta(meta *pb.FlameIndexMeta) error {
+	return nil
+}
+
+func (b *Badger) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
+	return nil
+}
+
+func (b *Badger) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+	return nil
+}
+
+func (b *Badger) AddUser(user *pb.FlameUser) error {
+	return nil
+}
+
+func (b *Badger) GetUser(user *pb.FlameUser) error {
+	return nil
+}
+
+func (b *Badger) UpdateUser(user *pb.FlameUser) error {
+	return nil
+}
+
+func (b *Badger) DeleteUser(user *pb.FlameUser) error {
+	return nil
+}
+
+func (b *Badger) AddAccessControl(ac *pb.FlameAccessControl) error {
+	return nil
+}
+
+func (b *Badger) GetAccessControl(ac *pb.FlameAccessControl) error {
+	return nil
+}
+
+func (b *Badger) UpdateAccessControl(ac *pb.FlameAccessControl) error {
+	return nil
+}
+
+func (b *Badger) DeleteAccessControl(ac *pb.FlameAccessControl) error {
+	return nil
+}
+
+func (b *Badger) ApplyProposal(pp *pb.FlameProposal) error {
+	return nil
+}

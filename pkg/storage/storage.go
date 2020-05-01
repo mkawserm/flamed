@@ -139,3 +139,55 @@ func (s *Storage) SaveAppliedIndex(u uint64) error {
 func (s *Storage) QueryAppliedIndex() (uint64, error) {
 	return s.mKVStorage.QueryAppliedIndex()
 }
+
+func (s *Storage) AddIndexMeta(meta *pb.FlameIndexMeta) error {
+	return s.mKVStorage.AddIndexMeta(meta)
+}
+
+func (s *Storage) GetIndexMeta(meta *pb.FlameIndexMeta) error {
+	return s.mKVStorage.GetIndexMeta(meta)
+}
+
+func (s *Storage) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
+	return s.mKVStorage.UpdateIndexMeta(meta)
+}
+
+func (s *Storage) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+	return s.mKVStorage.DeleteIndexMeta(meta)
+}
+
+func (s *Storage) AddUser(user *pb.FlameUser) error {
+	return s.mKVStorage.AddUser(user)
+}
+
+func (s *Storage) GetUser(user *pb.FlameUser) error {
+	return s.mKVStorage.GetUser(user)
+}
+
+func (s *Storage) UpdateUser(user *pb.FlameUser) error {
+	return s.mKVStorage.UpdateUser(user)
+}
+
+func (s *Storage) DeleteUser(user *pb.FlameUser) error {
+	return s.mKVStorage.DeleteUser(user)
+}
+
+func (s *Storage) AddAccessControl(ac *pb.FlameAccessControl) error {
+	return s.mKVStorage.AddAccessControl(ac)
+}
+
+func (s *Storage) GetAccessControl(ac *pb.FlameAccessControl) error {
+	return s.mKVStorage.GetAccessControl(ac)
+}
+
+func (s *Storage) UpdateAccessControl(ac *pb.FlameAccessControl) error {
+	return s.mKVStorage.UpdateAccessControl(ac)
+}
+
+func (s *Storage) DeleteAccessControl(ac *pb.FlameAccessControl) error {
+	return s.mKVStorage.DeleteAccessControl(ac)
+}
+
+func (s *Storage) ApplyProposal(pp *pb.FlameProposal) error {
+	return s.mKVStorage.ApplyProposal(pp)
+}

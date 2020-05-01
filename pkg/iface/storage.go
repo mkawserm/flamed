@@ -49,4 +49,21 @@ type IStorage interface {
 
 	SaveAppliedIndex(u uint64) error
 	QueryAppliedIndex() (uint64, error)
+
+	AddIndexMeta(meta *pb.FlameIndexMeta) error
+	GetIndexMeta(meta *pb.FlameIndexMeta) error
+	UpdateIndexMeta(meta *pb.FlameIndexMeta) error
+	DeleteIndexMeta(meta *pb.FlameIndexMeta) error
+
+	AddUser(user *pb.FlameUser) error
+	GetUser(user *pb.FlameUser) error
+	UpdateUser(user *pb.FlameUser) error
+	DeleteUser(user *pb.FlameUser) error
+
+	AddAccessControl(ac *pb.FlameAccessControl) error
+	GetAccessControl(ac *pb.FlameAccessControl) error
+	UpdateAccessControl(ac *pb.FlameAccessControl) error
+	DeleteAccessControl(ac *pb.FlameAccessControl) error
+
+	ApplyProposal(pp *pb.FlameProposal) error
 }
