@@ -101,11 +101,15 @@ func (n *NodeHost) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 		KeyFile:                       nodeConfiguration.KeyFile(),
 		MaxSendQueueSize:              nodeConfiguration.MaxSendQueueSize(),
 		MaxReceiveQueueSize:           nodeConfiguration.MaxReceiveQueueSize(),
-		LogDBFactory:                  nodeConfiguration.LogDBFactory(),
-		RaftRPCFactory:                nodeConfiguration.RaftRPCFactory(),
 		EnableMetrics:                 nodeConfiguration.EnableMetrics(),
 		MaxSnapshotSendBytesPerSecond: nodeConfiguration.MaxSnapshotSendBytesPerSecond(),
 		MaxSnapshotRecvBytesPerSecond: nodeConfiguration.MaxSnapshotRecvBytesPerSecond(),
+
+		LogDBFactory:          nodeConfiguration.LogDBFactory(),
+		RaftRPCFactory:        nodeConfiguration.RaftRPCFactory(),
+		RaftEventListener:     nodeConfiguration.RaftEventListener(),
+		SystemEventListener:   nodeConfiguration.SystemEventListener(),
+		SystemTickerPrecision: nodeConfiguration.SystemTickerPrecision(),
 	}
 
 	if nh, err := dragonboat.NewNodeHost(n.mNodeHostConfiguration); err != nil {

@@ -1,11 +1,13 @@
 package iface
 
-import "github.com/lni/dragonboat/v3/config"
+import (
+	"github.com/lni/dragonboat/v3/config"
+	"github.com/lni/dragonboat/v3/raftio"
+	"time"
+)
 
 type INodeConfiguration interface {
 	NodeID() uint64
-	//NodePath() string
-
 	CheckQuorum() bool
 	ElectionRTT() uint64
 	HeartbeatRTT() uint64
@@ -35,14 +37,14 @@ type INodeConfiguration interface {
 	MaxSendQueueSize() uint64
 	MaxReceiveQueueSize() uint64
 
+	EnableMetrics() bool
+	MaxSnapshotSendBytesPerSecond() uint64
+	MaxSnapshotRecvBytesPerSecond() uint64
+
 	LogDBFactory() config.LogDBFactoryFunc
 	RaftRPCFactory() config.RaftRPCFactoryFunc
 
-	EnableMetrics() bool
-	//RaftEventListener
-	MaxSnapshotSendBytesPerSecond() uint64
-	MaxSnapshotRecvBytesPerSecond() uint64
-	//FS
-	//SystemEventListener
-	//SystemTickerPrecision
+	RaftEventListener() raftio.IRaftEventListener
+	SystemEventListener() raftio.ISystemEventListener
+	SystemTickerPrecision() time.Duration
 }

@@ -1,7 +1,10 @@
 package logger
 
 import (
+	"fmt"
+	"github.com/lni/dragonboat/v3/logger"
 	"go.uber.org/zap"
+	"strings"
 	"sync"
 )
 
@@ -15,6 +18,10 @@ type Logger struct {
 	mZapLogger *zap.Logger
 }
 
+func (l *Logger) SetLevel(logger.LogLevel) {
+
+}
+
 func (l *Logger) SetupZapLogger(newLogger *zap.Logger) {
 	l.mMutex.Lock()
 	defer l.mMutex.Unlock()
@@ -23,19 +30,43 @@ func (l *Logger) SetupZapLogger(newLogger *zap.Logger) {
 }
 
 func (l *Logger) Errorf(f string, v ...interface{}) {
-	l.mZapLogger.Error(f)
+	msg := fmt.Sprintf(f, v...)
+	if strings.HasSuffix(msg, "\n") {
+		msg = strings.TrimSuffix(msg, "\n")
+	}
+	l.mZapLogger.Error(msg)
 }
 
 func (l *Logger) Warningf(f string, v ...interface{}) {
-	l.mZapLogger.Warn(f)
+	msg := fmt.Sprintf(f, v...)
+	if strings.HasSuffix(msg, "\n") {
+		msg = strings.TrimSuffix(msg, "\n")
+	}
+	l.mZapLogger.Warn(msg)
 }
 
 func (l *Logger) Infof(f string, v ...interface{}) {
-	l.mZapLogger.Info(f)
+	msg := fmt.Sprintf(f, v...)
+	if strings.HasSuffix(msg, "\n") {
+		msg = strings.TrimSuffix(msg, "\n")
+	}
+	l.mZapLogger.Info(msg)
 }
 
 func (l *Logger) Debugf(f string, v ...interface{}) {
-	l.mZapLogger.Debug(f)
+	msg := fmt.Sprintf(f, v...)
+	if strings.HasSuffix(msg, "\n") {
+		msg = strings.TrimSuffix(msg, "\n")
+	}
+	l.mZapLogger.Debug(msg)
+}
+
+func (l *Logger) Panicf(f string, v ...interface{}) {
+	msg := fmt.Sprintf(f, v...)
+	if strings.HasSuffix(msg, "\n") {
+		msg = strings.TrimSuffix(msg, "\n")
+	}
+	l.mZapLogger.Panic(msg)
 }
 
 func (l *Logger) GetZapLogger() *zap.Logger {
@@ -67,7 +98,10 @@ func init() {
 		if e != nil {
 			panic(e)
 		}
-
 		loggerIns = &Logger{mZapLogger: l}
+
+		logger.SetLoggerFactory(func(pkgName string) logger.ILogger {
+			return loggerIns
+		})
 	})
 }

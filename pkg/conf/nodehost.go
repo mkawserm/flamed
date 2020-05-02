@@ -3,6 +3,8 @@ package conf
 import (
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/lni/dragonboat/v3/plugin/pebble"
+	"github.com/lni/dragonboat/v3/raftio"
+	"time"
 )
 
 type NodeHostConfigurationInput struct {
@@ -39,12 +41,16 @@ type NodeHostConfigurationInput struct {
 	MaxSendQueueSize    uint64 `json:"maxSendQueueSize"`
 	MaxReceiveQueueSize uint64 `json:"maxReceiveQueueSize"`
 
-	LogDBFactory   config.LogDBFactoryFunc   `json:"-"`
-	RaftRPCFactory config.RaftRPCFactoryFunc `json:"-"`
-
 	EnableMetrics                 bool   `json:"enableMetrics"`
 	MaxSnapshotSendBytesPerSecond uint64 `json:"maxSnapshotSendBytesPerSecond"`
 	MaxSnapshotRecvBytesPerSecond uint64 `json:"maxSnapshotRecvBytesPerSecond"`
+
+	SystemTickerPrecision time.Duration `json:"systemTickerPrecision"`
+
+	LogDBFactory        config.LogDBFactoryFunc     `json:"-"`
+	RaftRPCFactory      config.RaftRPCFactoryFunc   `json:"-"`
+	RaftEventListener   raftio.IRaftEventListener   `json:"-"`
+	SystemEventListener raftio.ISystemEventListener `json:"-"`
 }
 
 type NodeHostConfiguration struct {
@@ -172,4 +178,16 @@ func (n *NodeHostConfiguration) MaxSnapshotSendBytesPerSecond() uint64 {
 
 func (n *NodeHostConfiguration) MaxSnapshotRecvBytesPerSecond() uint64 {
 	return n.NodeHostConfigurationInput.MaxSnapshotRecvBytesPerSecond
+}
+
+func (n *NodeHostConfiguration) RaftEventListener() raftio.IRaftEventListener {
+	return n.NodeHostConfigurationInput.RaftEventListener
+}
+
+func (n *NodeHostConfiguration) SystemEventListener() raftio.ISystemEventListener {
+	return n.NodeHostConfigurationInput.SystemEventListener
+}
+
+func (n *NodeHostConfiguration) SystemTickerPrecision() time.Duration {
+	return n.NodeHostConfigurationInput.SystemTickerPrecision
 }
