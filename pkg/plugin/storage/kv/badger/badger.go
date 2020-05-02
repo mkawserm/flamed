@@ -22,9 +22,9 @@ type Badger struct {
 }
 
 func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuration interface{}) error {
-	logger.GetZapLogger().Debug("opening badger database")
+	logger.L().Debug("opening badger database")
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb != nil {
@@ -40,7 +40,7 @@ func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuratio
 		b.mDbConfiguration.BadgerOptions.TableLoadingMode = badgerDbOptions.LoadToRAM
 		b.mDbConfiguration.BadgerOptions.ValueLogLoadingMode = badgerDbOptions.MemoryMap
 		b.mDbConfiguration.BadgerOptions.Compression = badgerDbOptions.Snappy
-		b.mDbConfiguration.BadgerOptions.Logger = logger.GetLogger()
+		b.mDbConfiguration.BadgerOptions.Logger = logger.S()
 	} else {
 		if opts, ok := configuration.(Configuration); ok {
 			b.mDbConfiguration.BadgerOptions = opts.BadgerOptions
@@ -73,7 +73,7 @@ func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuratio
 	db, err := badgerDb.Open(b.mDbConfiguration.BadgerOptions)
 
 	if err != nil {
-		logger.GetZapLogger().Error("failed to open badger db", zap.Error(err))
+		logger.L().Error("failed to open badger db", zap.Error(err))
 		return x.ErrFailedToOpenStorage
 	}
 	b.mDb = db
@@ -82,7 +82,7 @@ func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuratio
 
 func (b *Badger) Close() error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -96,7 +96,7 @@ func (b *Badger) Close() error {
 	err := b.mDb.Close()
 	b.mDb = nil
 	if err != nil {
-		logger.GetZapLogger().Error("failed to close badger db", zap.Error(err))
+		logger.L().Error("failed to close badger db", zap.Error(err))
 		return x.ErrFailedToCloseStorage
 	}
 
@@ -126,7 +126,7 @@ func (b *Badger) RunGC() {
 
 func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -146,7 +146,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 
 	kr, err := badgerDb.OpenKeyRegistry(opt)
 	if err != nil {
-		logger.GetZapLogger().Error("open key registry failure", zap.Error(err))
+		logger.L().Error("open key registry failure", zap.Error(err))
 		return x.ErrFailedToChangeSecretKey
 	}
 
@@ -154,7 +154,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 
 	err = badgerDb.WriteKeyRegistry(kr, opt)
 	if err != nil {
-		logger.GetZapLogger().Error("write to the key registry failure", zap.Error(err))
+		logger.L().Error("write to the key registry failure", zap.Error(err))
 		return x.ErrFailedToChangeSecretKey
 	}
 
@@ -163,7 +163,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 
 func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry) bool) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -197,7 +197,7 @@ func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry) b
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("failed to read using prefix", zap.Error(err))
+		logger.L().Error("failed to read using prefix", zap.Error(err))
 		return x.ErrFailedToReadDataFromStorage
 	}
 
@@ -206,7 +206,7 @@ func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry) b
 
 func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -230,7 +230,7 @@ func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 		if err == badgerDb.ErrKeyNotFound {
 			return nil, x.ErrUidDoesNotExists
 		} else {
-			logger.GetZapLogger().Error("failed to read", zap.Error(err))
+			logger.L().Error("failed to read", zap.Error(err))
 			return nil, x.ErrFailedToReadDataFromStorage
 		}
 	}
@@ -240,7 +240,7 @@ func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 
 func (b *Badger) Delete(namespace []byte, key []byte) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -255,7 +255,7 @@ func (b *Badger) Delete(namespace []byte, key []byte) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("failed to delete", zap.Error(err))
+		logger.L().Error("failed to delete", zap.Error(err))
 		return x.ErrFailedToDeleteDataFromStorage
 	}
 
@@ -264,7 +264,7 @@ func (b *Badger) Delete(namespace []byte, key []byte) error {
 
 func (b *Badger) Create(namespace []byte, key []byte, value []byte) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -279,7 +279,7 @@ func (b *Badger) Create(namespace []byte, key []byte, value []byte) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("failed to create", zap.Error(err))
+		logger.L().Error("failed to create", zap.Error(err))
 		return x.ErrFailedToCreateDataToStorage
 	}
 
@@ -288,7 +288,7 @@ func (b *Badger) Create(namespace []byte, key []byte, value []byte) error {
 
 func (b *Badger) Update(namespace []byte, key []byte, value []byte) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -303,7 +303,7 @@ func (b *Badger) Update(namespace []byte, key []byte, value []byte) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("failed to update", zap.Error(err))
+		logger.L().Error("failed to update", zap.Error(err))
 		return x.ErrFailedToUpdateDataToStorage
 	}
 
@@ -312,7 +312,7 @@ func (b *Badger) Update(namespace []byte, key []byte, value []byte) error {
 
 func (b *Badger) Append(namespace []byte, key []byte, value []byte) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -328,7 +328,7 @@ func (b *Badger) Append(namespace []byte, key []byte, value []byte) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("failed to append", zap.Error(err))
+		logger.L().Error("failed to append", zap.Error(err))
 		return x.ErrFailedToAppendDataToStorage
 	}
 
@@ -337,7 +337,7 @@ func (b *Badger) Append(namespace []byte, key []byte, value []byte) error {
 
 func (b *Badger) IsExists(namespace []byte, key []byte) bool {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -356,7 +356,7 @@ func (b *Badger) IsExists(namespace []byte, key []byte) bool {
 	} else if err == nil {
 		return true
 	} else {
-		logger.GetZapLogger().Error("is exist check failed", zap.Error(err))
+		logger.L().Error("is exist check failed", zap.Error(err))
 		return false
 	}
 }
@@ -377,7 +377,7 @@ func (b *Badger) getValue(txn *badgerDb.Txn, uid []byte) []byte {
 
 func (b *Badger) ReadBatch(batch *pb.FlameBatchRead) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -393,7 +393,7 @@ func (b *Badger) ReadBatch(batch *pb.FlameBatchRead) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("read batch failure", zap.Error(err))
+		logger.L().Error("read batch failure", zap.Error(err))
 		return x.ErrFailedToReadBatchFromStorage
 	}
 
@@ -402,7 +402,7 @@ func (b *Badger) ReadBatch(batch *pb.FlameBatchRead) error {
 
 func (b *Badger) ApplyBatchAction(batch *pb.FlameBatchAction) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -435,7 +435,7 @@ func (b *Badger) ApplyBatchAction(batch *pb.FlameBatchAction) error {
 	}
 
 	if err := txn.Commit(); err != nil {
-		logger.GetZapLogger().Error("txn commit error", zap.Error(err))
+		logger.L().Error("txn commit error", zap.Error(err))
 		return x.ErrFailedToApplyBatchToStorage
 	}
 
@@ -604,22 +604,22 @@ func (b *Badger) ApplyAction(action *pb.FlameAction) error {
 
 func (b *Badger) PrepareSnapshot() (interface{}, error) {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 	if b.mDb == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	logger.GetZapLogger().Debug("badger db snapshot prepared")
+	logger.L().Debug("badger db snapshot prepared")
 	return b.mDb.NewTransaction(false), nil
 }
 
 func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
-	logger.GetZapLogger().Debug("badger db saving snapshot")
+	logger.L().Debug("badger db saving snapshot")
 	if b.mDb == nil {
 		return x.ErrStorageIsNotReady
 	}
@@ -647,7 +647,7 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	it.Close()
 
 	if _, err := w.Write(uidutil.Uint64ToByteSlice(total)); err != nil {
-		logger.GetZapLogger().Error("write error", zap.Error(err))
+		logger.L().Error("write error", zap.Error(err))
 		return x.ErrFailedToSaveSnapshot
 	}
 
@@ -660,7 +660,7 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	for it.Rewind(); it.Valid(); it.Next() {
 		item := it.Item()
 		if value, err := item.ValueCopy(nil); err != nil {
-			logger.GetZapLogger().Error("value copy error", zap.Error(err))
+			logger.L().Error("value copy error", zap.Error(err))
 			return x.ErrFailedToSaveSnapshot
 		} else {
 			entry := &pb.FlameSnapshotEntry{
@@ -669,12 +669,12 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 			}
 
 			if data, err := proto.Marshal(entry); err != nil {
-				logger.GetZapLogger().Error("marshal error", zap.Error(err))
+				logger.L().Error("marshal error", zap.Error(err))
 				return x.ErrFailedToSaveSnapshot
 			} else {
 				dataLength := uint64(len(data))
 				if _, err := w.Write(uidutil.Uint64ToByteSlice(dataLength)); err != nil {
-					logger.GetZapLogger().Error("write error", zap.Error(err))
+					logger.L().Error("write error", zap.Error(err))
 					return x.ErrFailedToSaveSnapshot
 				}
 				if _, err := w.Write(data); err != nil {
@@ -684,17 +684,17 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 		}
 	}
 
-	logger.GetZapLogger().Debug("badger db snapshot saved")
+	logger.L().Debug("badger db snapshot saved")
 
 	return nil
 }
 
 func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
-	logger.GetZapLogger().Debug("badger db recovering from snapshot")
+	logger.L().Debug("badger db recovering from snapshot")
 
 	if b.mDb == nil {
 		return x.ErrStorageIsNotReady
@@ -702,7 +702,7 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 
 	sz := make([]byte, 8)
 	if _, err := io.ReadFull(r, sz); err != nil {
-		logger.GetZapLogger().Error("read error", zap.Error(err))
+		logger.L().Error("read error", zap.Error(err))
 		return x.ErrFailedToRecoverFromSnapshot
 	}
 
@@ -713,48 +713,48 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 
 	for i := uint64(0); i < total; i++ {
 		if _, err := io.ReadFull(r, sz); err != nil {
-			logger.GetZapLogger().Error("read error", zap.Error(err))
+			logger.L().Error("read error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
 		toRead := uidutil.ByteSliceToUint64(sz)
 		data := make([]byte, toRead)
 		if _, err := io.ReadFull(r, data); err != nil {
-			logger.GetZapLogger().Error("read error", zap.Error(err))
+			logger.L().Error("read error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
 		entry := &pb.FlameSnapshotEntry{}
 		if err := proto.Unmarshal(data, entry); err != nil {
-			logger.GetZapLogger().Error("unmarshal error", zap.Error(err))
+			logger.L().Error("unmarshal error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
 		if err := txn.Set(entry.Uid, entry.Data); err == badgerDb.ErrTxnTooBig {
 			if err := txn.Commit(); err != nil {
-				logger.GetZapLogger().Error("txn commit error", zap.Error(err))
+				logger.L().Error("txn commit error", zap.Error(err))
 				return x.ErrFailedToRecoverFromSnapshot
 			}
 
 			txn = b.mDb.NewTransaction(true)
 
 			if err := txn.Set(entry.Uid, entry.Data); err != nil {
-				logger.GetZapLogger().Error("txn set error", zap.Error(err))
+				logger.L().Error("txn set error", zap.Error(err))
 				return x.ErrFailedToRecoverFromSnapshot
 			}
 
 		} else if err != nil {
-			logger.GetZapLogger().Error("txn set error", zap.Error(err))
+			logger.L().Error("txn set error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 	}
 
 	if err := txn.Commit(); err != nil {
-		logger.GetZapLogger().Error("txn commit error", zap.Error(err))
+		logger.L().Error("txn commit error", zap.Error(err))
 		return x.ErrFailedToRecoverFromSnapshot
 	}
 
-	logger.GetZapLogger().Debug("badger db recovered from snapshot")
+	logger.L().Debug("badger db recovered from snapshot")
 
 	return nil
 }
@@ -791,7 +791,7 @@ func (b *Badger) QueryAppliedIndex() (uint64, error) {
 
 func (b *Badger) AddIndexMeta(meta *pb.FlameIndexMeta) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -800,7 +800,7 @@ func (b *Badger) AddIndexMeta(meta *pb.FlameIndexMeta) error {
 
 	data, err := proto.Marshal(meta)
 	if err != nil {
-		logger.GetZapLogger().Error("marshal error", zap.Error(err))
+		logger.L().Error("marshal error", zap.Error(err))
 		return x.ErrFailedToAddIndexMeta
 	}
 
@@ -811,7 +811,7 @@ func (b *Badger) AddIndexMeta(meta *pb.FlameIndexMeta) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("update error", zap.Error(err))
+		logger.L().Error("update error", zap.Error(err))
 		return x.ErrFailedToAddIndexMeta
 	}
 
@@ -824,7 +824,7 @@ func (b *Badger) IsIndexMetaExists(meta *pb.FlameIndexMeta) bool {
 
 func (b *Badger) GetIndexMeta(meta *pb.FlameIndexMeta) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -842,7 +842,7 @@ func (b *Badger) GetIndexMeta(meta *pb.FlameIndexMeta) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("update error", zap.Error(err))
+		logger.L().Error("update error", zap.Error(err))
 		return x.ErrFailedToGetIndexMeta
 	}
 
@@ -851,7 +851,7 @@ func (b *Badger) GetIndexMeta(meta *pb.FlameIndexMeta) error {
 
 func (b *Badger) GetAllIndexMeta() ([]*pb.FlameIndexMeta, error) {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -880,7 +880,7 @@ func (b *Badger) GetAllIndexMeta() ([]*pb.FlameIndexMeta, error) {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("view error", zap.Error(err))
+		logger.L().Error("view error", zap.Error(err))
 		return nil, x.ErrFailedToGetAllIndexMeta
 	}
 
@@ -889,7 +889,7 @@ func (b *Badger) GetAllIndexMeta() ([]*pb.FlameIndexMeta, error) {
 
 func (b *Badger) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -898,7 +898,7 @@ func (b *Badger) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
 
 	data, err := proto.Marshal(meta)
 	if err != nil {
-		logger.GetZapLogger().Error("proto marshal error", zap.Error(err))
+		logger.L().Error("proto marshal error", zap.Error(err))
 		return x.ErrFailedToUpdateIndexMeta
 	}
 
@@ -909,7 +909,7 @@ func (b *Badger) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db update error", zap.Error(err))
+		logger.L().Error("badger db update error", zap.Error(err))
 		return x.ErrFailedToUpdateIndexMeta
 	}
 
@@ -918,7 +918,7 @@ func (b *Badger) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
 
 func (b *Badger) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -932,7 +932,7 @@ func (b *Badger) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db delete error", zap.Error(err))
+		logger.L().Error("badger db delete error", zap.Error(err))
 		return x.ErrFailedToDeleteIndexMeta
 	}
 
@@ -941,7 +941,7 @@ func (b *Badger) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
 
 func (b *Badger) AddUser(user *pb.FlameUser) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -950,7 +950,7 @@ func (b *Badger) AddUser(user *pb.FlameUser) error {
 
 	data, err := proto.Marshal(user)
 	if err != nil {
-		logger.GetZapLogger().Error("proto marshal error", zap.Error(err))
+		logger.L().Error("proto marshal error", zap.Error(err))
 		return x.ErrFailedToAddUser
 	}
 
@@ -961,7 +961,7 @@ func (b *Badger) AddUser(user *pb.FlameUser) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db delete error", zap.Error(err))
+		logger.L().Error("badger db delete error", zap.Error(err))
 		return x.ErrFailedToAddUser
 	}
 
@@ -974,7 +974,7 @@ func (b *Badger) IsUserExists(user *pb.FlameUser) bool {
 
 func (b *Badger) GetUser(user *pb.FlameUser) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -992,7 +992,7 @@ func (b *Badger) GetUser(user *pb.FlameUser) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db update error", zap.Error(err))
+		logger.L().Error("badger db update error", zap.Error(err))
 		return x.ErrFailedToGetUser
 	}
 
@@ -1001,7 +1001,7 @@ func (b *Badger) GetUser(user *pb.FlameUser) error {
 
 func (b *Badger) GetAllUser() ([]*pb.FlameUser, error) {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -1030,7 +1030,7 @@ func (b *Badger) GetAllUser() ([]*pb.FlameUser, error) {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db view error", zap.Error(err))
+		logger.L().Error("badger db view error", zap.Error(err))
 		return nil, x.ErrFailedToGetAllUser
 	}
 
@@ -1039,7 +1039,7 @@ func (b *Badger) GetAllUser() ([]*pb.FlameUser, error) {
 
 func (b *Badger) UpdateUser(user *pb.FlameUser) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -1048,7 +1048,7 @@ func (b *Badger) UpdateUser(user *pb.FlameUser) error {
 
 	data, err := proto.Marshal(user)
 	if err != nil {
-		logger.GetZapLogger().Error("proto marshal error", zap.Error(err))
+		logger.L().Error("proto marshal error", zap.Error(err))
 		return x.ErrFailedToUpdateUser
 	}
 
@@ -1059,7 +1059,7 @@ func (b *Badger) UpdateUser(user *pb.FlameUser) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db update error", zap.Error(err))
+		logger.L().Error("badger db update error", zap.Error(err))
 		return x.ErrFailedToUpdateUser
 	}
 
@@ -1068,7 +1068,7 @@ func (b *Badger) UpdateUser(user *pb.FlameUser) error {
 
 func (b *Badger) DeleteUser(user *pb.FlameUser) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -1082,7 +1082,7 @@ func (b *Badger) DeleteUser(user *pb.FlameUser) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db update error", zap.Error(err))
+		logger.L().Error("badger db update error", zap.Error(err))
 		return x.ErrFailedToDeleteUser
 	}
 
@@ -1091,7 +1091,7 @@ func (b *Badger) DeleteUser(user *pb.FlameUser) error {
 
 func (b *Badger) AddAccessControl(ac *pb.FlameAccessControl) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -1100,7 +1100,7 @@ func (b *Badger) AddAccessControl(ac *pb.FlameAccessControl) error {
 
 	data, err := proto.Marshal(ac)
 	if err != nil {
-		logger.GetZapLogger().Error("proto marshal error", zap.Error(err))
+		logger.L().Error("proto marshal error", zap.Error(err))
 		return x.ErrFailedToAddAccessControl
 	}
 
@@ -1113,7 +1113,7 @@ func (b *Badger) AddAccessControl(ac *pb.FlameAccessControl) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db update error", zap.Error(err))
+		logger.L().Error("badger db update error", zap.Error(err))
 		return x.ErrFailedToAddAccessControl
 	}
 
@@ -1126,7 +1126,7 @@ func (b *Badger) IsAccessControlExists(ac *pb.FlameAccessControl) bool {
 
 func (b *Badger) GetAccessControl(ac *pb.FlameAccessControl) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -1145,7 +1145,7 @@ func (b *Badger) GetAccessControl(ac *pb.FlameAccessControl) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db view error", zap.Error(err))
+		logger.L().Error("badger db view error", zap.Error(err))
 		return x.ErrFailedToGetAccessControl
 	}
 
@@ -1154,7 +1154,7 @@ func (b *Badger) GetAccessControl(ac *pb.FlameAccessControl) error {
 
 func (b *Badger) GetAllAccessControl() ([]*pb.FlameAccessControl, error) {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -1183,7 +1183,7 @@ func (b *Badger) GetAllAccessControl() ([]*pb.FlameAccessControl, error) {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db view error", zap.Error(err))
+		logger.L().Error("badger db view error", zap.Error(err))
 		return nil, x.ErrFailedToGetAllAccessControl
 	}
 
@@ -1192,7 +1192,7 @@ func (b *Badger) GetAllAccessControl() ([]*pb.FlameAccessControl, error) {
 
 func (b *Badger) UpdateAccessControl(ac *pb.FlameAccessControl) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -1201,7 +1201,7 @@ func (b *Badger) UpdateAccessControl(ac *pb.FlameAccessControl) error {
 
 	data, err := proto.Marshal(ac)
 	if err != nil {
-		logger.GetZapLogger().Error("proto marshal error", zap.Error(err))
+		logger.L().Error("proto marshal error", zap.Error(err))
 		return x.ErrFailedToUpdateAccessControl
 	}
 
@@ -1213,7 +1213,7 @@ func (b *Badger) UpdateAccessControl(ac *pb.FlameAccessControl) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db update error", zap.Error(err))
+		logger.L().Error("badger db update error", zap.Error(err))
 		return x.ErrFailedToUpdateAccessControl
 	}
 
@@ -1222,7 +1222,7 @@ func (b *Badger) UpdateAccessControl(ac *pb.FlameAccessControl) error {
 
 func (b *Badger) DeleteAccessControl(ac *pb.FlameAccessControl) error {
 	defer func() {
-		_ = logger.GetZapLogger().Sync()
+		_ = logger.L().Sync()
 	}()
 
 	if b.mDb == nil {
@@ -1237,7 +1237,7 @@ func (b *Badger) DeleteAccessControl(ac *pb.FlameAccessControl) error {
 	})
 
 	if err != nil {
-		logger.GetZapLogger().Error("badger db update error", zap.Error(err))
+		logger.L().Error("badger db update error", zap.Error(err))
 		return x.ErrFailedToDeleteAccessControl
 	}
 
