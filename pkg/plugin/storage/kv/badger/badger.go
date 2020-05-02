@@ -163,7 +163,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 	return nil
 }
 
-func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry) bool) error {
+func (b *Badger) ReadPrefix(prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error {
 	defer func() {
 		_ = internalLogger.Sync()
 	}()
@@ -176,7 +176,8 @@ func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry) b
 		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
 		defer it.Close()
 
-		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
+		counter := 0
+		for it.Seek(prefix); it.Valid() && counter < limit; it.Next() {
 			item := it.Item()
 			uid := item.Key()
 
@@ -187,6 +188,7 @@ func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry) b
 					Key:       key,
 					Value:     value,
 				}
+				counter = counter + 1
 				next := receiver(entry)
 				if !next {
 					break
