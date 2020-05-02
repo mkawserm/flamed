@@ -41,27 +41,27 @@ func main() {
 
 	var counter uint64 = 0
 
-	//e := &pb.FlameEntry{
-	//	Namespace:            []byte("test"),
-	//	Key:                  []byte("counter"),
-	//}
-	//
-	//if data, err := proto.Marshal(e); err == nil {
-	//	r, err := n.ManagedSyncRead(1, data, 3*time.Minute)
-	//
-	//	if err != nil {
-	//		fmt.Println(err)
-	//	}
-	//
-	//	counter = uidutil.ByteSliceToUint64(r.([]byte))
-	//} else {
-	//	fmt.Println(err)
-	//}
-
 	for l {
 		fmt.Printf(">> ")
 		text, _ := reader.ReadString('\n')
 		t := strings.Trim(text, "\n")
+
+		//e := &pb.FlameEntry{
+		//	Namespace:            []byte("test"),
+		//	Key:                  []byte("counter"),
+		//}
+		//
+		//if data, err := proto.Marshal(e); err == nil {
+		//	r, err := n.ManagedSyncRead(1, data, 3*time.Minute)
+		//
+		//	if err != nil {
+		//		fmt.Println(err)
+		//	}
+		//
+		//	counter = uidutil.ByteSliceToUint64(r.([]byte))
+		//} else {
+		//	fmt.Println(err)
+		//}
 
 		switch t {
 		case "p":
@@ -82,11 +82,7 @@ func main() {
 			}
 
 			pp := &pb.FlameProposal{
-				FlameProposalType:    pb.FlameProposal_BATCH_ACTION,
-				FlameProposalData:    nil,
-				XXX_NoUnkeyedLiteral: struct{}{},
-				XXX_unrecognized:     nil,
-				XXX_sizecache:        0,
+				FlameProposalType: pb.FlameProposal_BATCH_ACTION,
 			}
 
 			if data, err := proto.Marshal(batch); err == nil {

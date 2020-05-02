@@ -4,6 +4,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 	"io"
 )
@@ -103,7 +104,7 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 			return nil, err
 		}
 
-		if err := s.mStorage.ApplyProposal(pp); err == nil {
+		if err := s.mStorage.ApplyProposal(pp, true); err == nil {
 			entries[idx].Result = sm.Result{Value: uint64(len(entries[idx].Cmd))}
 		} else {
 			return nil, err
@@ -137,14 +138,23 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 		if err := proto.Unmarshal(v, e); err != nil {
 			return nil, x.ErrInvalidLookupInput
 		}
+		if !utility.IsNamespaceValid(e.Namespace) {
+			return nil, nil
+		}
 		return s.mStorage.Read(e.Namespace, e.Key)
 	}
 
 	if v, ok := input.(*pb.FlameEntry); ok {
+		if !utility.IsNamespaceValid(v.Namespace) {
+			return nil, nil
+		}
 		return s.mStorage.Read(v.Namespace, v.Key)
 	}
 
 	if v, ok := input.(pb.FlameEntry); ok {
+		if !utility.IsNamespaceValid(v.Namespace) {
+			return nil, nil
+		}
 		return s.mStorage.Read(v.Namespace, v.Key)
 	}
 
