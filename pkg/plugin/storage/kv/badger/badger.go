@@ -141,7 +141,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 	return nil
 }
 
-func (b *Badger) ReadNamespace(namespace []byte, receiver func(entry *pb.FlameEntry)) error {
+func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry)) error {
 	if b.mDb == nil {
 		return x.ErrStorageIsNotReady
 	}
@@ -150,7 +150,7 @@ func (b *Badger) ReadNamespace(namespace []byte, receiver func(entry *pb.FlameEn
 		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
 		defer it.Close()
 
-		for it.Seek(namespace); it.ValidForPrefix(namespace); it.Next() {
+		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
 			item := it.Item()
 			uid := item.Key()
 
