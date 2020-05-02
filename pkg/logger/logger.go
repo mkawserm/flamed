@@ -55,16 +55,20 @@ func GetLoggerFactory() *Factory {
 	return loggerIns
 }
 
-func S() *SugaredLogger {
-	return &SugaredLogger{loggerIns.GetZapLogger().Sugar()}
+func S(pkgName string) *SugaredLogger {
+	return &SugaredLogger{loggerIns.GetZapLogger().Named(pkgName).Sugar()}
 }
 
-func L() *zap.Logger {
-	return GetLoggerFactory().GetZapLogger()
+//func L() *zap.Logger {
+//	return GetLoggerFactory().GetZapLogger()
+//}
+
+func NL(pkgName string) *zap.Logger {
+	return GetLoggerFactory().GetZapLogger().Named(pkgName)
 }
 
-func DragonboatLoggerFactory(string) logger.ILogger {
-	return S()
+func DragonboatLoggerFactory(pkgName string) logger.ILogger {
+	return &SugaredLogger{loggerIns.GetZapLogger().Named(pkgName).Sugar()}
 }
 
 func init() {
