@@ -5,6 +5,7 @@ import (
 	badgerDbOptions "github.com/dgraph-io/badger/v2/options"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
+	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/x"
@@ -33,6 +34,7 @@ func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuratio
 		b.mDbConfiguration.BadgerOptions.TableLoadingMode = badgerDbOptions.LoadToRAM
 		b.mDbConfiguration.BadgerOptions.ValueLogLoadingMode = badgerDbOptions.MemoryMap
 		b.mDbConfiguration.BadgerOptions.Compression = badgerDbOptions.Snappy
+		b.mDbConfiguration.BadgerOptions.Logger = logger.GetLogger()
 	} else {
 		if opts, ok := configuration.(Configuration); ok {
 			b.mDbConfiguration.BadgerOptions = opts.BadgerOptions
