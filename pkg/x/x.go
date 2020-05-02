@@ -37,6 +37,8 @@ var ErrFailedToGetAllAccessControl = errors.New("failed to get all access contro
 var ErrFailedToUpdateAccessControl = errors.New("failed to update access control")
 var ErrFailedToDeleteAccessControl = errors.New("failed to delete access control")
 
+var ErrInvalidNamespace = errors.New("invalid namespace: namespace should start with a letter and minimum 3 characters and can not contain `::`")
+
 //var ErrFailedToGenerateAsyncSnapshotFromStorage = errors.New("failed to generate async snapshot from the storage")
 //var ErrFailedToApplyAsyncSnapshotToStorage = errors.New("failed to apply async snapshot to the storage")
 //var ErrFailedToGenerateSyncSnapshotFromStorage = errors.New("failed to generate sync snapshot from the storage")

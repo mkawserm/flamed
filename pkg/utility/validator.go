@@ -1,7 +1,13 @@
 package utility
 
+import "bytes"
+
 func IsNamespaceValid(namespace []byte) bool {
 	if len(namespace) < 3 {
+		return false
+	}
+
+	if bytes.Contains(namespace, []byte("::")) {
 		return false
 	}
 
