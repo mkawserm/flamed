@@ -125,6 +125,10 @@ func (s *Storage) ApplyAction(action *pb.FlameAction) error {
 	return s.mKVStorage.ApplyAction(action)
 }
 
+func (s *Storage) ReadBatch(batch *pb.FlameBatchRead) error {
+	return s.mKVStorage.ReadBatch(batch)
+}
+
 func (s *Storage) PrepareSnapshot() (interface{}, error) {
 	return s.mKVStorage.PrepareSnapshot()
 }

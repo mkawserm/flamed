@@ -46,6 +46,8 @@ type IStorage interface {
 	ApplyAction(action *pb.FlameAction) error
 	ApplyBatchAction(batch *pb.FlameBatchAction) error
 
+	ReadBatch(batch *pb.FlameBatchRead) error
+
 	PrepareSnapshot() (interface{}, error)
 	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
 	RecoverFromSnapshot(r io.Reader) error

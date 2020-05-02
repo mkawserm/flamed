@@ -141,18 +141,16 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 	return nil
 }
 
-func (b *Badger) ReadUsingPrefix(prefix []byte) ([]*pb.FlameEntry, error) {
+func (b *Badger) ReadNamespace(namespace []byte, receiver func(entry *pb.FlameEntry)) error {
 	if b.mDb == nil {
-		return nil, x.ErrStorageIsNotReady
+		return x.ErrStorageIsNotReady
 	}
-
-	data := make([]*pb.FlameEntry, 0, b.mDbConfiguration.SliceCap)
 
 	err := b.mDb.View(func(txn *badgerDb.Txn) error {
 		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
 		defer it.Close()
 
-		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
+		for it.Seek(namespace); it.ValidForPrefix(namespace); it.Next() {
 			item := it.Item()
 			uid := item.Key()
 
@@ -163,7 +161,7 @@ func (b *Badger) ReadUsingPrefix(prefix []byte) ([]*pb.FlameEntry, error) {
 					Key:       key,
 					Value:     value,
 				}
-				data = append(data, entry)
+				receiver(entry)
 			} else {
 				return err
 			}
@@ -172,10 +170,10 @@ func (b *Badger) ReadUsingPrefix(prefix []byte) ([]*pb.FlameEntry, error) {
 	})
 
 	if err != nil {
-		return nil, x.ErrFailedToReadDataFromStorage
+		return x.ErrFailedToReadDataFromStorage
 	}
 
-	return data, nil
+	return nil
 }
 
 func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
