@@ -141,7 +141,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 	return nil
 }
 
-func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry)) error {
+func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry) bool) error {
 	if b.mDb == nil {
 		return x.ErrStorageIsNotReady
 	}
@@ -161,7 +161,10 @@ func (b *Badger) ReadPrefix(prefix []byte, receiver func(entry *pb.FlameEntry)) 
 					Key:       key,
 					Value:     value,
 				}
-				receiver(entry)
+				next := receiver(entry)
+				if !next {
+					break
+				}
 			} else {
 				return err
 			}
