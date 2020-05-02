@@ -73,5 +73,6 @@ type IStorage interface {
 	UpdateAccessControl(ac *pb.FlameAccessControl) error
 	DeleteAccessControl(ac *pb.FlameAccessControl) error
 
+	Lookup(input interface{}, checkValidity bool) (interface{}, error)
 	ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error
 }

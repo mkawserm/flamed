@@ -4,7 +4,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 	"io"
 )
@@ -133,32 +132,7 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	if v, ok := input.([]byte); ok {
-		e := &pb.FlameEntry{}
-		if err := proto.Unmarshal(v, e); err != nil {
-			return nil, x.ErrInvalidLookupInput
-		}
-		if !utility.IsNamespaceValid(e.Namespace) {
-			return nil, nil
-		}
-		return s.mStorage.Read(e.Namespace, e.Key)
-	}
-
-	if v, ok := input.(*pb.FlameEntry); ok {
-		if !utility.IsNamespaceValid(v.Namespace) {
-			return nil, nil
-		}
-		return s.mStorage.Read(v.Namespace, v.Key)
-	}
-
-	if v, ok := input.(pb.FlameEntry); ok {
-		if !utility.IsNamespaceValid(v.Namespace) {
-			return nil, nil
-		}
-		return s.mStorage.Read(v.Namespace, v.Key)
-	}
-
-	return nil, x.ErrInvalidLookupInput
+	return s.mStorage.Lookup(input, true)
 }
 
 func (s *Storaged) PrepareSnapshot() (interface{}, error) {

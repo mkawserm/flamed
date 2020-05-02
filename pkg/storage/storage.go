@@ -209,6 +209,42 @@ func (s *Storage) DeleteAccessControl(ac *pb.FlameAccessControl) error {
 	return s.mKVStorage.DeleteAccessControl(ac)
 }
 
+func (s *Storage) Lookup(input interface{}, checkValidity bool) (interface{}, error) {
+	if v, ok := input.([]byte); ok {
+		e := &pb.FlameEntry{}
+		if err := proto.Unmarshal(v, e); err != nil {
+			return nil, x.ErrInvalidLookupInput
+		}
+		if checkValidity {
+			if !utility.IsNamespaceValid(e.Namespace) {
+				return nil, nil
+			}
+		}
+		return s.Read(e.Namespace, e.Key)
+	}
+
+	if v, ok := input.(*pb.FlameEntry); ok {
+		if checkValidity {
+			if !utility.IsNamespaceValid(v.Namespace) {
+				return nil, nil
+			}
+		}
+		return s.Read(v.Namespace, v.Key)
+	}
+
+	if v, ok := input.(pb.FlameEntry); ok {
+		if checkValidity {
+			if !utility.IsNamespaceValid(v.Namespace) {
+				return nil, nil
+			}
+		}
+
+		return s.Read(v.Namespace, v.Key)
+	}
+
+	return nil, x.ErrInvalidLookupInput
+}
+
 func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error {
 	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
 		batchAction := &pb.FlameBatchAction{}
