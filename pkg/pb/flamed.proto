@@ -70,12 +70,18 @@ message FlameIndexMeta {
 }
 
 message FlameUser {
-  string username = 1;
-  string password = 2;
-  uint64 createdAt = 3;
-  uint64 updatedAt = 4;
+  enum FlameUserType {
+    SUPER_USER = 0;
+    NORMAL_USER = 1;
+  }
 
-  bytes userData = 5;
+  FlameUserType flameUserType = 1;
+
+  string username = 2;
+  string password = 3;
+  uint64 createdAt = 4;
+  uint64 updatedAt = 5;
+  bytes userData = 6;
 }
 
 message FlameAccessControl {
