@@ -273,7 +273,7 @@ func (n *NodeHost) ManagedSyncApplyProposal(clusterID uint64,
 	r, err := n.mNodeHost.SyncPropose(ctx, session, cmd)
 	cancel()
 
-	_ = n.mNodeHost.SyncCloseSession(context.TODO(), session)
+	_ = n.mNodeHost.SyncCloseSession(context.Background(), session)
 
 	return r, err
 }
