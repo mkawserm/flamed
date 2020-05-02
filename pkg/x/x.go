@@ -36,6 +36,7 @@ var ErrFailedToGetAccessControl = errors.New("failed to get access control")
 var ErrFailedToGetAllAccessControl = errors.New("failed to get all access control")
 var ErrFailedToUpdateAccessControl = errors.New("failed to update access control")
 var ErrFailedToDeleteAccessControl = errors.New("failed to delete access control")
+var ErrFailedToIterate = errors.New("failed to iterate")
 
 var ErrInvalidNamespace = errors.New("invalid namespace: namespace should start with a letter and minimum 3 characters and can not contain `::`")
 

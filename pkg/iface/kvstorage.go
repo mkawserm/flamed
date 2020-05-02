@@ -16,7 +16,7 @@ type IKVStorage interface {
 	IsExists(namespace []byte, key []byte) bool
 
 	Read(namespace []byte, key []byte) ([]byte, error)
-	ReadPrefix(prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error
+	Iterate(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error
 
 	Delete(namespace []byte, key []byte) error
 	Create(namespace []byte, key []byte, value []byte) error

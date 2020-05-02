@@ -163,7 +163,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 	return nil
 }
 
-func (b *Badger) ReadPrefix(prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error {
+func (b *Badger) Iterate(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error {
 	defer func() {
 		_ = internalLogger.Sync()
 	}()
@@ -177,7 +177,7 @@ func (b *Badger) ReadPrefix(prefix []byte, limit int, receiver func(entry *pb.Fl
 		defer it.Close()
 
 		counter := 0
-		for it.Seek(prefix); it.Valid() && counter < limit; it.Next() {
+		for it.Seek(seek); it.ValidForPrefix(prefix) && counter < limit; it.Next() {
 			item := it.Item()
 			uid := item.Key()
 
@@ -201,8 +201,8 @@ func (b *Badger) ReadPrefix(prefix []byte, limit int, receiver func(entry *pb.Fl
 	})
 
 	if err != nil {
-		internalLogger.Error("failed to read using prefix", zap.Error(err))
-		return x.ErrFailedToReadDataFromStorage
+		internalLogger.Error("iteration failure", zap.Error(err))
+		return x.ErrFailedToIterate
 	}
 
 	return nil
