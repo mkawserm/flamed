@@ -63,7 +63,7 @@ func S(pkgName string) *SugaredLogger {
 //	return GetLoggerFactory().GetZapLogger()
 //}
 
-func NL(pkgName string) *zap.Logger {
+func L(pkgName string) *zap.Logger {
 	return GetLoggerFactory().GetZapLogger().Named(pkgName)
 }
 

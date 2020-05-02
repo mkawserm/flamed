@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var internalLogger = logger.NL("badger")
+var internalLogger = logger.L("badger")
 
 type Badger struct {
 	mDbPath          string
