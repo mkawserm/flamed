@@ -3,11 +3,15 @@ package storage
 import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
+	"go.uber.org/zap"
 	"io"
 )
+
+var internalLogger = logger.L("storage")
 
 type Storage struct {
 	mSecretKey []byte
@@ -290,7 +294,14 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		return s.createIndexMeta(indexMeta)
+		if err := s.createIndexMeta(indexMeta); err != nil {
+			if err := s.mIndexStorage.CreateIndexMeta(indexMeta); err != nil {
+				internalLogger.Error("CreateIndexMeta error", zap.Error(err))
+			}
+		} else {
+			return err
+		}
+
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
@@ -303,7 +314,13 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		return s.updateIndexMeta(indexMeta)
+		if err := s.updateIndexMeta(indexMeta); err != nil {
+			if err := s.mIndexStorage.UpdateIndexMeta(indexMeta); err != nil {
+				internalLogger.Error("UpdateIndexMeta error", zap.Error(err))
+			}
+		} else {
+			return err
+		}
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
@@ -316,7 +333,13 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		return s.deleteIndexMeta(indexMeta)
+		if err := s.deleteIndexMeta(indexMeta); err != nil {
+			if err := s.mIndexStorage.DeleteIndexMeta(indexMeta); err != nil {
+				internalLogger.Error("DeleteIndexMeta error", zap.Error(err))
+			}
+		} else {
+			return err
+		}
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
