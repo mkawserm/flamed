@@ -61,6 +61,12 @@ message FlameIndexField {
   bool docValues = 9;
 }
 
+message FlameIndexDocument {
+  string name = 1;
+  bool default = 2;
+  repeated FlameIndexField flameIndexFieldList = 3;
+}
+
 message FlameIndexMeta {
   bytes namespace = 1;
   uint32 version = 2;
@@ -68,7 +74,7 @@ message FlameIndexMeta {
   bool default = 4;
   uint64 createdAt = 5;
   uint64 updatedAt = 6;
-  repeated FlameIndexField flameIndexFieldList = 7;
+  repeated FlameIndexDocument flameIndexDocumentList = 7;
 }
 
 message FlameUser {
