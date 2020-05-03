@@ -3,15 +3,12 @@ package storage
 import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
-	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
 	"io"
 )
-
-var internalLogger = logger.L("storage")
 
 type Storage struct {
 	mSecretKey []byte

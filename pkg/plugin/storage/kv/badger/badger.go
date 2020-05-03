@@ -14,8 +14,6 @@ import (
 	"time"
 )
 
-var internalLogger = logger.L("badger")
-
 type Badger struct {
 	mDbPath          string
 	mSecretKey       []byte

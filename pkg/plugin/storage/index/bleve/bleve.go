@@ -4,15 +4,12 @@ import (
 	bleveSearch "github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/index/scorch"
 	bleveMapping "github.com/blevesearch/bleve/mapping"
-	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
 	"os"
 )
-
-var internalLogger = logger.L("bleve")
 
 type Bleve struct {
 	path          string
