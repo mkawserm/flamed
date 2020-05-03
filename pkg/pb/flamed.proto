@@ -62,11 +62,19 @@ message FlameIndexField {
 }
 
 message FlameIndexMeta {
+  enum DocumentType {
+    NONE = 0;
+    JSON = 1;
+    CUSTOM = 2;
+  }
+
   bytes namespace = 1;
   uint32 version = 2;
   uint64 createdAt = 3;
   uint64 updatedAt = 4;
-  repeated FlameIndexField flameIndexFieldList = 5;
+  bool indexEnabled = 5;
+  DocumentType documentType = 6;
+  repeated FlameIndexField flameIndexFieldList = 7;
 }
 
 message FlameUser {
