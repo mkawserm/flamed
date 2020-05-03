@@ -226,13 +226,13 @@ func (s *Storage) deleteAccessControl(ac *pb.FlameAccessControl) error {
 	return s.mKVStorage.DeleteAccessControl(ac)
 }
 
-func (s *Storage) Lookup(input interface{}, checkValidity bool) (interface{}, error) {
+func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interface{}, error) {
 	if v, ok := input.([]byte); ok {
 		e := &pb.FlameEntry{}
 		if err := proto.Unmarshal(v, e); err != nil {
 			return nil, x.ErrInvalidLookupInput
 		}
-		if checkValidity {
+		if checkNamespaceValidity {
 			if !utility.IsNamespaceValid(e.Namespace) {
 				return nil, nil
 			}
@@ -241,7 +241,7 @@ func (s *Storage) Lookup(input interface{}, checkValidity bool) (interface{}, er
 	}
 
 	if v, ok := input.(*pb.FlameEntry); ok {
-		if checkValidity {
+		if checkNamespaceValidity {
 			if !utility.IsNamespaceValid(v.Namespace) {
 				return nil, nil
 			}
@@ -250,7 +250,7 @@ func (s *Storage) Lookup(input interface{}, checkValidity bool) (interface{}, er
 	}
 
 	if v, ok := input.(pb.FlameEntry); ok {
-		if checkValidity {
+		if checkNamespaceValidity {
 			if !utility.IsNamespaceValid(v.Namespace) {
 				return nil, nil
 			}
@@ -262,14 +262,14 @@ func (s *Storage) Lookup(input interface{}, checkValidity bool) (interface{}, er
 	return nil, x.ErrInvalidLookupInput
 }
 
-func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error {
+func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity bool) error {
 	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
 		batchAction := &pb.FlameBatchAction{}
 		if err := proto.Unmarshal(pp.FlameProposalData, batchAction); err != nil {
 			return x.ErrFailedToApplyProposal
 		}
 
-		if checkValidity {
+		if checkNamespaceValidity {
 			for idx := range batchAction.FlameActionList {
 				if !utility.IsNamespaceValid(batchAction.FlameActionList[idx].FlameEntry.Namespace) {
 					return x.ErrInvalidNamespace
@@ -284,7 +284,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			return x.ErrFailedToApplyProposal
 		}
 
-		if checkValidity {
+		if checkNamespaceValidity {
 			if !utility.IsNamespaceValid(indexMeta.Namespace) {
 				return x.ErrInvalidNamespace
 			}
@@ -297,7 +297,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			return x.ErrFailedToApplyProposal
 		}
 
-		if checkValidity {
+		if checkNamespaceValidity {
 			if !utility.IsNamespaceValid(indexMeta.Namespace) {
 				return x.ErrInvalidNamespace
 			}
@@ -310,7 +310,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			return x.ErrFailedToApplyProposal
 		}
 
-		if checkValidity {
+		if checkNamespaceValidity {
 			if !utility.IsNamespaceValid(indexMeta.Namespace) {
 				return x.ErrInvalidNamespace
 			}
@@ -323,7 +323,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			return x.ErrFailedToApplyProposal
 		}
 
-		if checkValidity {
+		if checkNamespaceValidity {
 			if !utility.IsNamespaceValid(ac.Namespace) {
 				return x.ErrInvalidNamespace
 			}
@@ -336,7 +336,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			return x.ErrFailedToApplyProposal
 		}
 
-		if checkValidity {
+		if checkNamespaceValidity {
 			if !utility.IsNamespaceValid(ac.Namespace) {
 				return x.ErrInvalidNamespace
 			}
@@ -349,7 +349,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			return x.ErrFailedToApplyProposal
 		}
 
-		if checkValidity {
+		if checkNamespaceValidity {
 			if !utility.IsNamespaceValid(ac.Namespace) {
 				return x.ErrInvalidNamespace
 			}
