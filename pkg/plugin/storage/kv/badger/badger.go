@@ -793,7 +793,7 @@ func (b *Badger) QueryAppliedIndex() (uint64, error) {
 	return uidutil.ByteSliceToUint64(data), nil
 }
 
-func (b *Badger) AddIndexMeta(meta *pb.FlameIndexMeta) error {
+func (b *Badger) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 	defer func() {
 		_ = internalLogger.Sync()
 	}()
@@ -943,7 +943,7 @@ func (b *Badger) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
 	return nil
 }
 
-func (b *Badger) AddUser(user *pb.FlameUser) error {
+func (b *Badger) CreateUser(user *pb.FlameUser) error {
 	defer func() {
 		_ = internalLogger.Sync()
 	}()
@@ -1093,7 +1093,7 @@ func (b *Badger) DeleteUser(user *pb.FlameUser) error {
 	return nil
 }
 
-func (b *Badger) AddAccessControl(ac *pb.FlameAccessControl) error {
+func (b *Badger) CreateAccessControl(ac *pb.FlameAccessControl) error {
 	defer func() {
 		_ = internalLogger.Sync()
 	}()
@@ -1256,13 +1256,13 @@ func (b *Badger) ApplyProposal(pp *pb.FlameProposal) error {
 		}
 
 		return b.ApplyBatchAction(batchAction)
-	} else if pp.FlameProposalType == pb.FlameProposal_ADD_INDEX_META {
+	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
 			return x.ErrFailedToApplyProposal
 		}
 
-		return b.AddIndexMeta(indexMeta)
+		return b.CreateIndexMeta(indexMeta)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
@@ -1277,13 +1277,13 @@ func (b *Badger) ApplyProposal(pp *pb.FlameProposal) error {
 		}
 
 		return b.DeleteIndexMeta(indexMeta)
-	} else if pp.FlameProposalType == pb.FlameProposal_ADD_ACCESS_CONTROL {
+	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
 			return x.ErrFailedToApplyProposal
 		}
 
-		return b.AddAccessControl(ac)
+		return b.CreateAccessControl(ac)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {

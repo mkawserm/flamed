@@ -66,7 +66,24 @@ func (s *Storage) Open() error {
 		return x.ErrInvalidConfiguration
 	}
 
-	return s.mKVStorage.Open(s.mKVStoragePath, s.mSecretKey, false, s.mKVStorageConfiguration)
+	err1 := s.mKVStorage.Open(
+		s.mKVStoragePath,
+		s.mSecretKey,
+		false,
+		s.mKVStorageConfiguration)
+	if err1 != nil {
+		return err1
+	}
+
+	err2 := s.mIndexStorage.Open(
+		s.mIndexStoragePath,
+		s.mSecretKey,
+		s.mIndexStorageConfiguration)
+	if err2 != nil {
+		return err2
+	}
+
+	return nil
 }
 
 func (s *Storage) ReadOnlyOpen() error {
@@ -149,8 +166,8 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 	return s.mKVStorage.QueryAppliedIndex()
 }
 
-func (s *Storage) AddIndexMeta(meta *pb.FlameIndexMeta) error {
-	return s.mKVStorage.AddIndexMeta(meta)
+func (s *Storage) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
+	return s.mKVStorage.CreateIndexMeta(meta)
 }
 
 func (s *Storage) GetIndexMeta(meta *pb.FlameIndexMeta) error {
@@ -169,8 +186,8 @@ func (s *Storage) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
 	return s.mKVStorage.DeleteIndexMeta(meta)
 }
 
-func (s *Storage) AddUser(user *pb.FlameUser) error {
-	return s.mKVStorage.AddUser(user)
+func (s *Storage) CreateUser(user *pb.FlameUser) error {
+	return s.mKVStorage.CreateUser(user)
 }
 
 func (s *Storage) GetUser(user *pb.FlameUser) error {
@@ -189,8 +206,8 @@ func (s *Storage) DeleteUser(user *pb.FlameUser) error {
 	return s.mKVStorage.DeleteUser(user)
 }
 
-func (s *Storage) AddAccessControl(ac *pb.FlameAccessControl) error {
-	return s.mKVStorage.AddAccessControl(ac)
+func (s *Storage) CreateAccessControl(ac *pb.FlameAccessControl) error {
+	return s.mKVStorage.CreateAccessControl(ac)
 }
 
 func (s *Storage) GetAccessControl(ac *pb.FlameAccessControl) error {
@@ -261,7 +278,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 		}
 
 		return s.ApplyBatchAction(batchAction)
-	} else if pp.FlameProposalType == pb.FlameProposal_ADD_INDEX_META {
+	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
 			return x.ErrFailedToApplyProposal
@@ -273,7 +290,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			}
 		}
 
-		return s.AddIndexMeta(indexMeta)
+		return s.CreateIndexMeta(indexMeta)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
@@ -300,7 +317,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 		}
 
 		return s.DeleteIndexMeta(indexMeta)
-	} else if pp.FlameProposalType == pb.FlameProposal_ADD_ACCESS_CONTROL {
+	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
 			return x.ErrFailedToApplyProposal
@@ -312,7 +329,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			}
 		}
 
-		return s.AddAccessControl(ac)
+		return s.CreateAccessControl(ac)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {

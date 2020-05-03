@@ -227,7 +227,7 @@ func (n *NodeHost) IsProposalValid(pp *pb.FlameProposal) bool {
 		}
 
 		return true
-	} else if pp.FlameProposalType == pb.FlameProposal_ADD_INDEX_META ||
+	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META ||
 		pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META ||
 		pp.FlameProposalType == pb.FlameProposal_DELETE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
@@ -239,7 +239,7 @@ func (n *NodeHost) IsProposalValid(pp *pb.FlameProposal) bool {
 		}
 
 		return true
-	} else if pp.FlameProposalType == pb.FlameProposal_ADD_ACCESS_CONTROL ||
+	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL ||
 		pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL ||
 		pp.FlameProposalType == pb.FlameProposal_DELETE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}

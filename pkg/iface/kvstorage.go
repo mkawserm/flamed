@@ -34,21 +34,21 @@ type IKVStorage interface {
 	SaveAppliedIndex(u uint64) error
 	QueryAppliedIndex() (uint64, error)
 
-	AddIndexMeta(meta *pb.FlameIndexMeta) error
+	CreateIndexMeta(meta *pb.FlameIndexMeta) error
 	IsIndexMetaExists(meta *pb.FlameIndexMeta) bool
 	GetIndexMeta(meta *pb.FlameIndexMeta) error
 	GetAllIndexMeta() ([]*pb.FlameIndexMeta, error)
 	UpdateIndexMeta(meta *pb.FlameIndexMeta) error
 	DeleteIndexMeta(meta *pb.FlameIndexMeta) error
 
-	AddUser(user *pb.FlameUser) error
+	CreateUser(user *pb.FlameUser) error
 	IsUserExists(user *pb.FlameUser) bool
 	GetUser(user *pb.FlameUser) error
 	GetAllUser() ([]*pb.FlameUser, error)
 	UpdateUser(user *pb.FlameUser) error
 	DeleteUser(user *pb.FlameUser) error
 
-	AddAccessControl(ac *pb.FlameAccessControl) error
+	CreateAccessControl(ac *pb.FlameAccessControl) error
 	IsAccessControlExists(ac *pb.FlameAccessControl) bool
 	GetAccessControl(ac *pb.FlameAccessControl) error
 	GetAllAccessControl() ([]*pb.FlameAccessControl, error)

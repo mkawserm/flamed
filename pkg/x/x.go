@@ -2,6 +2,8 @@ package x
 
 import "errors"
 
+var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
+
 var ErrInvalidConfiguration = errors.New("invalid configuration")
 var ErrStorageIsAlreadyOpen = errors.New("storage is already open")
 var ErrFailedToOpenStorage = errors.New("failed to open the storage")
@@ -37,6 +39,10 @@ var ErrFailedToGetAllAccessControl = errors.New("failed to get all access contro
 var ErrFailedToUpdateAccessControl = errors.New("failed to update access control")
 var ErrFailedToDeleteAccessControl = errors.New("failed to delete access control")
 var ErrFailedToIterate = errors.New("failed to iterate")
+
+var ErrFailedToCreateIndex = errors.New("failed to create index")
+var ErrFailedToUpdateIndex = errors.New("failed to update index")
+var ErrFailedToDeleteIndex = errors.New("failed to delete index")
 
 var ErrInvalidNamespace = errors.New("invalid namespace: namespace should start with a letter and minimum 3 characters and can not contain `::`")
 
