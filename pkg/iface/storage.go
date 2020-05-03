@@ -24,7 +24,7 @@ type IStorageConfiguration interface {
 	KVStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
 
-	IndexObject(namespace []byte, fields []string, value []byte) (IndexObjectType, interface{})
+	IndexObject(namespace, value []byte) (IndexObjectType, interface{})
 }
 
 type IStorage interface {
