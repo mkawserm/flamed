@@ -5,14 +5,6 @@ import (
 	"io"
 )
 
-type IndexObjectType int
-
-const (
-	JSONMapType IndexObjectType = iota
-	BleveClassifierType
-	GolangStructType
-)
-
 type IStorageConfiguration interface {
 	/*Storage Config*/
 	StoragePath() string
@@ -24,7 +16,8 @@ type IStorageConfiguration interface {
 	KVStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
 
-	IndexObject(namespace, value []byte) (IndexObjectType, interface{})
+	/*IndexObject*/
+	IndexObject
 }
 
 type IStorage interface {
