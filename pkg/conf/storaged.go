@@ -52,6 +52,6 @@ func (s *StoragedConfiguration) IndexStorageCustomConfiguration() interface{} {
 	return s.StoragedConfigurationInput.IndexStorageCustomConfiguration
 }
 
-func (s *StoragedConfiguration) IndexObject(namespace, value []byte) (iface.IndexObjectType, interface{}) {
-	return iface.JSONMapType, map[string]interface{}{}
+func (s *StoragedConfiguration) IndexObject(namespace, value []byte) interface{} {
+	return map[string]interface{}{}
 }
