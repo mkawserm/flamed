@@ -74,6 +74,10 @@ func (b *Bleve) CreateIndex(namespace string, data []*variant.IndexData) error {
 		return x.ErrFailedToCreateIndex
 	}
 
+	defer func() {
+		_ = index.Close()
+	}()
+
 	batch := index.NewBatch()
 	for idx := range data {
 		err = batch.Index(data[idx].ID, data[idx].Data)
@@ -101,6 +105,10 @@ func (b *Bleve) UpdateIndex(namespace string, data []*variant.IndexData) error {
 		return x.ErrFailedToUpdateIndex
 	}
 
+	defer func() {
+		_ = index.Close()
+	}()
+
 	batch := index.NewBatch()
 	for idx := range data {
 		err = batch.Index(data[idx].ID, data[idx].Data)
@@ -127,6 +135,10 @@ func (b *Bleve) DeleteIndex(namespace string, data []*variant.IndexData) error {
 		internalLogger.Debug("index db opening error", zap.Error(err))
 		return x.ErrFailedToDeleteIndex
 	}
+
+	defer func() {
+		_ = index.Close()
+	}()
 
 	batch := index.NewBatch()
 	for idx := range data {
