@@ -10,4 +10,6 @@ type IIndexStorage interface {
 	SetIndexMeta(meta *pb.FlameIndexMeta) error
 	Index(data []*variant.IndexData) error
 	Close() error
+
+	CanIndex(namespace string) bool
 }
