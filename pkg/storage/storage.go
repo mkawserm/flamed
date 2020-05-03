@@ -106,11 +106,11 @@ func (s *Storage) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) erro
 	return s.mKVStorage.ChangeSecretKey(oldSecretKey, newSecretKey)
 }
 
-func (s *Storage) IsExists(namespace []byte, key []byte) bool {
+func (s *Storage) isExists(namespace []byte, key []byte) bool {
 	return s.mKVStorage.IsExists(namespace, key)
 }
 
-func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
+func (s *Storage) read(namespace []byte, key []byte) ([]byte, error) {
 	d, err := s.mKVStorage.Read(namespace, key)
 	if err == x.ErrUidDoesNotExists {
 		return nil, nil
@@ -118,31 +118,31 @@ func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
 	return d, err
 }
 
-func (s *Storage) Delete(namespace []byte, key []byte) error {
+func (s *Storage) delete(namespace []byte, key []byte) error {
 	return s.mKVStorage.Delete(namespace, key)
 }
 
-func (s *Storage) Create(namespace []byte, key []byte, value []byte) error {
+func (s *Storage) create(namespace []byte, key []byte, value []byte) error {
 	return s.mKVStorage.Create(namespace, key, value)
 }
 
-func (s *Storage) Update(namespace []byte, key []byte, value []byte) error {
+func (s *Storage) update(namespace []byte, key []byte, value []byte) error {
 	return s.mKVStorage.Update(namespace, key, value)
 }
 
-func (s *Storage) Append(namespace []byte, key []byte, value []byte) error {
+func (s *Storage) append(namespace []byte, key []byte, value []byte) error {
 	return s.mKVStorage.Append(namespace, key, value)
 }
 
-func (s *Storage) ApplyBatchAction(batch *pb.FlameBatchAction) error {
+func (s *Storage) applyBatchAction(batch *pb.FlameBatchAction) error {
 	return s.mKVStorage.ApplyBatchAction(batch)
 }
 
-func (s *Storage) ApplyAction(action *pb.FlameAction) error {
+func (s *Storage) applyAction(action *pb.FlameAction) error {
 	return s.mKVStorage.ApplyAction(action)
 }
 
-func (s *Storage) ReadBatch(batch *pb.FlameBatchRead) error {
+func (s *Storage) readBatch(batch *pb.FlameBatchRead) error {
 	return s.mKVStorage.ReadBatch(batch)
 }
 
@@ -166,63 +166,63 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 	return s.mKVStorage.QueryAppliedIndex()
 }
 
-func (s *Storage) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
+func (s *Storage) createIndexMeta(meta *pb.FlameIndexMeta) error {
 	return s.mKVStorage.CreateIndexMeta(meta)
 }
 
-func (s *Storage) GetIndexMeta(meta *pb.FlameIndexMeta) error {
+func (s *Storage) getIndexMeta(meta *pb.FlameIndexMeta) error {
 	return s.mKVStorage.GetIndexMeta(meta)
 }
 
-func (s *Storage) GetAllIndexMeta() ([]*pb.FlameIndexMeta, error) {
+func (s *Storage) getAllIndexMeta() ([]*pb.FlameIndexMeta, error) {
 	return s.mKVStorage.GetAllIndexMeta()
 }
 
-func (s *Storage) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
+func (s *Storage) updateIndexMeta(meta *pb.FlameIndexMeta) error {
 	return s.mKVStorage.UpdateIndexMeta(meta)
 }
 
-func (s *Storage) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+func (s *Storage) deleteIndexMeta(meta *pb.FlameIndexMeta) error {
 	return s.mKVStorage.DeleteIndexMeta(meta)
 }
 
-func (s *Storage) CreateUser(user *pb.FlameUser) error {
+func (s *Storage) createUser(user *pb.FlameUser) error {
 	return s.mKVStorage.CreateUser(user)
 }
 
-func (s *Storage) GetUser(user *pb.FlameUser) error {
+func (s *Storage) getUser(user *pb.FlameUser) error {
 	return s.mKVStorage.GetUser(user)
 }
 
-func (s *Storage) GetAllUser() ([]*pb.FlameUser, error) {
+func (s *Storage) getAllUser() ([]*pb.FlameUser, error) {
 	return s.mKVStorage.GetAllUser()
 }
 
-func (s *Storage) UpdateUser(user *pb.FlameUser) error {
+func (s *Storage) updateUser(user *pb.FlameUser) error {
 	return s.mKVStorage.UpdateUser(user)
 }
 
-func (s *Storage) DeleteUser(user *pb.FlameUser) error {
+func (s *Storage) deleteUser(user *pb.FlameUser) error {
 	return s.mKVStorage.DeleteUser(user)
 }
 
-func (s *Storage) CreateAccessControl(ac *pb.FlameAccessControl) error {
+func (s *Storage) createAccessControl(ac *pb.FlameAccessControl) error {
 	return s.mKVStorage.CreateAccessControl(ac)
 }
 
-func (s *Storage) GetAccessControl(ac *pb.FlameAccessControl) error {
+func (s *Storage) getAccessControl(ac *pb.FlameAccessControl) error {
 	return s.mKVStorage.GetAccessControl(ac)
 }
 
-func (s *Storage) GetAllAccessControl() ([]*pb.FlameAccessControl, error) {
+func (s *Storage) getAllAccessControl() ([]*pb.FlameAccessControl, error) {
 	return s.mKVStorage.GetAllAccessControl()
 }
 
-func (s *Storage) UpdateAccessControl(ac *pb.FlameAccessControl) error {
+func (s *Storage) updateAccessControl(ac *pb.FlameAccessControl) error {
 	return s.mKVStorage.UpdateAccessControl(ac)
 }
 
-func (s *Storage) DeleteAccessControl(ac *pb.FlameAccessControl) error {
+func (s *Storage) deleteAccessControl(ac *pb.FlameAccessControl) error {
 	return s.mKVStorage.DeleteAccessControl(ac)
 }
 
@@ -237,7 +237,7 @@ func (s *Storage) Lookup(input interface{}, checkValidity bool) (interface{}, er
 				return nil, nil
 			}
 		}
-		return s.Read(e.Namespace, e.Key)
+		return s.read(e.Namespace, e.Key)
 	}
 
 	if v, ok := input.(*pb.FlameEntry); ok {
@@ -246,7 +246,7 @@ func (s *Storage) Lookup(input interface{}, checkValidity bool) (interface{}, er
 				return nil, nil
 			}
 		}
-		return s.Read(v.Namespace, v.Key)
+		return s.read(v.Namespace, v.Key)
 	}
 
 	if v, ok := input.(pb.FlameEntry); ok {
@@ -256,7 +256,7 @@ func (s *Storage) Lookup(input interface{}, checkValidity bool) (interface{}, er
 			}
 		}
 
-		return s.Read(v.Namespace, v.Key)
+		return s.read(v.Namespace, v.Key)
 	}
 
 	return nil, x.ErrInvalidLookupInput
@@ -277,7 +277,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			}
 		}
 
-		return s.ApplyBatchAction(batchAction)
+		return s.applyBatchAction(batchAction)
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
@@ -290,7 +290,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			}
 		}
 
-		return s.CreateIndexMeta(indexMeta)
+		return s.createIndexMeta(indexMeta)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
@@ -303,7 +303,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			}
 		}
 
-		return s.UpdateIndexMeta(indexMeta)
+		return s.updateIndexMeta(indexMeta)
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
@@ -316,7 +316,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			}
 		}
 
-		return s.DeleteIndexMeta(indexMeta)
+		return s.deleteIndexMeta(indexMeta)
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
@@ -329,7 +329,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			}
 		}
 
-		return s.CreateAccessControl(ac)
+		return s.createAccessControl(ac)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
@@ -342,7 +342,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			}
 		}
 
-		return s.UpdateAccessControl(ac)
+		return s.updateAccessControl(ac)
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
@@ -355,7 +355,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error 
 			}
 		}
 
-		return s.DeleteAccessControl(ac)
+		return s.deleteAccessControl(ac)
 	}
 
 	return x.ErrFailedToApplyProposal
