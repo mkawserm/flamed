@@ -41,7 +41,7 @@ message FlameSnapshot {
 }
 
 message FlameIndexField {
-  enum IndexFieldType {
+  enum FlameIndexFieldType {
     TEXT = 0;
     NUMERIC = 1;
     BOOLEAN = 2;
@@ -49,7 +49,7 @@ message FlameIndexField {
     DATE_TIME = 4;
   }
 
-  IndexFieldType indexFieldType = 1;
+  FlameIndexFieldType flameIndexFieldType = 1;
 
   string name = 2;
   string analyzer = 3;
