@@ -7,6 +7,9 @@ import (
 
 type IStorageConfiguration interface {
 	/*Storage Config*/
+	CacheSize() int
+	BatchSize() int
+
 	StoragePath() string
 	StorageSecretKey() []byte
 

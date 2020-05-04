@@ -9,6 +9,8 @@ import (
 )
 
 type StoragedConfigurationInput struct {
+	CacheSize        int    `json:"cacheSize"`
+	BatchSize        int    `json:"batchSize"`
 	StoragePath      string `json:"storagePath"`
 	StorageSecretKey []byte `json:"storageSecretKey"`
 
@@ -52,6 +54,20 @@ func (s *StoragedConfiguration) KVStorageCustomConfiguration() interface{} {
 
 func (s *StoragedConfiguration) IndexStorageCustomConfiguration() interface{} {
 	return s.StoragedConfigurationInput.IndexStorageCustomConfiguration
+}
+
+func (s *StoragedConfiguration) CacheSize() int {
+	if s.StoragedConfigurationInput.CacheSize <= 0 {
+		s.StoragedConfigurationInput.CacheSize = 100
+	}
+	return s.StoragedConfigurationInput.CacheSize
+}
+
+func (s *StoragedConfiguration) BatchSize() int {
+	if s.StoragedConfigurationInput.BatchSize <= 0 {
+		s.StoragedConfigurationInput.BatchSize = 100
+	}
+	return s.StoragedConfigurationInput.BatchSize
 }
 
 func (s *StoragedConfiguration) IndexObject(namespace, value []byte) interface{} {

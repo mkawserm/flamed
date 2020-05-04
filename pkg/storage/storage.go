@@ -402,7 +402,7 @@ func (s *Storage) getIndexHolderMap(batchAction *pb.FlameBatchAction) map[string
 		currentIndexHolder, ok := indexHolderMap[string(flameAction.FlameEntry.Namespace)]
 		if !ok {
 			currentIndexHolder = &internalIndexHolder{namespace: string(flameAction.FlameEntry.Namespace)}
-			currentIndexHolder.indexData = make([]*variant.IndexData, 0, 100)
+			currentIndexHolder.indexData = make([]*variant.IndexData, 0, s.mConfiguration.CacheSize())
 			indexHolderMap[string(flameAction.FlameEntry.Namespace)] = currentIndexHolder
 		}
 
