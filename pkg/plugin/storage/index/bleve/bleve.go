@@ -62,7 +62,7 @@ func (b *Bleve) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
 	return nil
 }
 
-func (b *Bleve) CreateIndex(namespace string, data []*variant.IndexData) error {
+func (b *Bleve) ApplyIndex(namespace string, data []*variant.IndexData) error {
 	p := b.path + "/" + namespace
 	index, err := bleveSearch.OpenUsing(p, nil)
 
@@ -77,75 +77,32 @@ func (b *Bleve) CreateIndex(namespace string, data []*variant.IndexData) error {
 
 	batch := index.NewBatch()
 	for idx := range data {
-		err = batch.Index(data[idx].ID, data[idx].Data)
-		if err != nil {
-			internalLogger.Debug("indexing error", zap.Error(err))
-			return x.ErrFailedToCreateIndex
+		if data[idx].Action == variant.CREATE {
+			err = batch.Index(data[idx].ID, data[idx].Data)
+			if err != nil {
+				internalLogger.Debug("indexing error", zap.Error(err))
+				return x.ErrFailedToCreateIndex
+			}
 		}
+
+		if data[idx].Action == variant.UPDATE {
+			err = batch.Index(data[idx].ID, data[idx].Data)
+			if err != nil {
+				internalLogger.Debug("index update error", zap.Error(err))
+				return x.ErrFailedToCreateIndex
+			}
+		}
+
+		if data[idx].Action == variant.DELETE {
+			batch.Delete(data[idx].ID)
+		}
+
 	}
 
 	err = index.Batch(batch)
 	if err != nil {
 		internalLogger.Debug("batch processing error", zap.Error(err))
 		return x.ErrFailedToCreateIndex
-	}
-
-	return nil
-}
-
-func (b *Bleve) UpdateIndex(namespace string, data []*variant.IndexData) error {
-	p := b.path + "/" + namespace
-	index, err := bleveSearch.OpenUsing(p, nil)
-
-	if err != nil {
-		internalLogger.Debug("index db opening error", zap.Error(err))
-		return x.ErrFailedToUpdateIndex
-	}
-
-	defer func() {
-		_ = index.Close()
-	}()
-
-	batch := index.NewBatch()
-	for idx := range data {
-		err = batch.Index(data[idx].ID, data[idx].Data)
-		if err != nil {
-			internalLogger.Debug("indexing error", zap.Error(err))
-			return x.ErrFailedToUpdateIndex
-		}
-	}
-
-	err = index.Batch(batch)
-	if err != nil {
-		internalLogger.Debug("batch processing error", zap.Error(err))
-		return x.ErrFailedToUpdateIndex
-	}
-
-	return nil
-}
-
-func (b *Bleve) DeleteIndex(namespace string, data []*variant.IndexData) error {
-	p := b.path + "/" + namespace
-	index, err := bleveSearch.OpenUsing(p, nil)
-
-	if err != nil {
-		internalLogger.Debug("index db opening error", zap.Error(err))
-		return x.ErrFailedToDeleteIndex
-	}
-
-	defer func() {
-		_ = index.Close()
-	}()
-
-	batch := index.NewBatch()
-	for idx := range data {
-		batch.Delete(data[idx].ID)
-	}
-
-	err = index.Batch(batch)
-	if err != nil {
-		internalLogger.Debug("batch processing error", zap.Error(err))
-		return x.ErrFailedToDeleteIndex
 	}
 
 	return nil

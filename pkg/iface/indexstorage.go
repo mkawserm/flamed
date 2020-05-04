@@ -13,9 +13,11 @@ type IIndexStorage interface {
 	UpdateIndexMeta(meta *pb.FlameIndexMeta) error
 	DeleteIndexMeta(meta *pb.FlameIndexMeta) error
 
-	CreateIndex(namespace string, data []*variant.IndexData) error
-	UpdateIndex(namespace string, data []*variant.IndexData) error
-	DeleteIndex(namespace string, data []*variant.IndexData) error
+	//CreateIndex(namespace string, data []*variant.IndexData) error
+	//UpdateIndex(namespace string, data []*variant.IndexData) error
+	//DeleteIndex(namespace string, data []*variant.IndexData) error
+
+	ApplyIndex(namespace string, data []*variant.IndexData) error
 
 	CanIndex(namespace string) bool
 }

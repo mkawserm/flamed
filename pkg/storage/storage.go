@@ -402,9 +402,7 @@ func (s *Storage) getIndexHolderMap(batchAction *pb.FlameBatchAction) map[string
 		currentIndexHolder, ok := indexHolderMap[string(flameAction.FlameEntry.Namespace)]
 		if !ok {
 			currentIndexHolder = &internalIndexHolder{namespace: string(flameAction.FlameEntry.Namespace)}
-			currentIndexHolder.createIndex = make([]*variant.IndexData, 0, 100)
-			currentIndexHolder.updateIndex = make([]*variant.IndexData, 0, 100)
-			currentIndexHolder.deleteIndex = make([]*variant.IndexData, 0, 100)
+			currentIndexHolder.indexData = make([]*variant.IndexData, 0, 100)
 			indexHolderMap[string(flameAction.FlameEntry.Namespace)] = currentIndexHolder
 		}
 
@@ -417,23 +415,26 @@ func (s *Storage) getIndexHolderMap(batchAction *pb.FlameBatchAction) map[string
 		id := uidutil.GetUidString(flameAction.FlameEntry.Namespace, flameAction.FlameEntry.Key)
 
 		if flameAction.FlameActionType == pb.FlameAction_CREATE {
-			currentIndexHolder.createIndex = append(currentIndexHolder.createIndex, &variant.IndexData{
-				ID:   id,
-				Data: data,
+			currentIndexHolder.indexData = append(currentIndexHolder.indexData, &variant.IndexData{
+				ID:     id,
+				Action: variant.CREATE,
+				Data:   data,
 			})
 		}
 
 		if flameAction.FlameActionType == pb.FlameAction_UPDATE {
-			currentIndexHolder.updateIndex = append(currentIndexHolder.updateIndex, &variant.IndexData{
-				ID:   id,
-				Data: data,
+			currentIndexHolder.indexData = append(currentIndexHolder.indexData, &variant.IndexData{
+				ID:     id,
+				Action: variant.UPDATE,
+				Data:   data,
 			})
 		}
 
 		if flameAction.FlameActionType == pb.FlameAction_DELETE {
-			currentIndexHolder.updateIndex = append(currentIndexHolder.updateIndex, &variant.IndexData{
-				ID:   id,
-				Data: data,
+			currentIndexHolder.indexData = append(currentIndexHolder.indexData, &variant.IndexData{
+				ID:     id,
+				Action: variant.DELETE,
+				Data:   data,
 			})
 		}
 	}
@@ -462,20 +463,10 @@ func (s *Storage) directIndex(batchAction *pb.FlameBatchAction) error {
 				zap.String("namespace", k))
 		}
 
-		err1 := s.mIndexStorage.CreateIndex(k, v.createIndex)
-		err2 := s.mIndexStorage.UpdateIndex(k, v.updateIndex)
-		err3 := s.mIndexStorage.DeleteIndex(k, v.deleteIndex)
+		err := s.mIndexStorage.ApplyIndex(k, v.indexData)
 
-		internalLogger.Error("create index error",
-			zap.Error(err1),
-			zap.String("namespace", k))
-
-		internalLogger.Error("update index error",
-			zap.Error(err2),
-			zap.String("namespace", k))
-
-		internalLogger.Error("delete index error",
-			zap.Error(err3),
+		internalLogger.Error("ApplyIndex failure",
+			zap.Error(err),
 			zap.String("namespace", k))
 	}
 
@@ -483,8 +474,6 @@ func (s *Storage) directIndex(batchAction *pb.FlameBatchAction) error {
 }
 
 type internalIndexHolder struct {
-	namespace   string
-	createIndex []*variant.IndexData
-	updateIndex []*variant.IndexData
-	deleteIndex []*variant.IndexData
+	namespace string
+	indexData []*variant.IndexData
 }
