@@ -4,10 +4,13 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
 	"io"
+	"time"
 )
 
 type Storage struct {
@@ -278,6 +281,8 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
+		_ = s.directIndex(batchAction)
+
 		return s.applyBatchAction(batchAction)
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
@@ -379,4 +384,107 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 	}
 
 	return x.ErrFailedToApplyProposal
+}
+
+func (s *Storage) getIndexHolderMap(batchAction *pb.FlameBatchAction) map[string]*internalIndexHolder {
+	var indexHolderMap = make(map[string]*internalIndexHolder)
+
+	for idx := range batchAction.FlameActionList {
+		flameAction := batchAction.FlameActionList[idx]
+		if flameAction == nil {
+			continue
+		}
+
+		if flameAction.FlameEntry == nil {
+			continue
+		}
+
+		currentIndexHolder, ok := indexHolderMap[string(flameAction.FlameEntry.Namespace)]
+		if !ok {
+			currentIndexHolder = &internalIndexHolder{namespace: string(flameAction.FlameEntry.Namespace)}
+			currentIndexHolder.createIndex = make([]*variant.IndexData, 0, 100)
+			currentIndexHolder.updateIndex = make([]*variant.IndexData, 0, 100)
+			currentIndexHolder.deleteIndex = make([]*variant.IndexData, 0, 100)
+			indexHolderMap[string(flameAction.FlameEntry.Namespace)] = currentIndexHolder
+		}
+
+		data := s.mConfiguration.IndexObject(flameAction.FlameEntry.Namespace, flameAction.FlameEntry.Value)
+
+		if data == nil {
+			continue
+		}
+
+		id := uidutil.GetUidString(flameAction.FlameEntry.Namespace, flameAction.FlameEntry.Key)
+
+		if flameAction.FlameActionType == pb.FlameAction_CREATE {
+			currentIndexHolder.createIndex = append(currentIndexHolder.createIndex, &variant.IndexData{
+				ID:   id,
+				Data: data,
+			})
+		}
+
+		if flameAction.FlameActionType == pb.FlameAction_UPDATE {
+			currentIndexHolder.updateIndex = append(currentIndexHolder.updateIndex, &variant.IndexData{
+				ID:   id,
+				Data: data,
+			})
+		}
+
+		if flameAction.FlameActionType == pb.FlameAction_DELETE {
+			currentIndexHolder.updateIndex = append(currentIndexHolder.updateIndex, &variant.IndexData{
+				ID:   id,
+				Data: data,
+			})
+		}
+	}
+
+	return indexHolderMap
+}
+
+func (s *Storage) directIndex(batchAction *pb.FlameBatchAction) error {
+	if batchAction == nil {
+		return nil
+	}
+
+	for k, v := range s.getIndexHolderMap(batchAction) {
+		if !s.mIndexStorage.CanIndex(k) {
+			flameMeta := &pb.FlameIndexMeta{
+				Namespace: []byte(k),
+				Version:   1,
+				Enabled:   true,
+				Default:   true,
+				CreatedAt: uint64(time.Now().UnixNano()),
+				UpdatedAt: uint64(time.Now().UnixNano()),
+			}
+			err := s.mIndexStorage.CreateIndexMeta(flameMeta)
+			internalLogger.Error("CreateIndexMeta failure",
+				zap.Error(err),
+				zap.String("namespace", k))
+		}
+
+		err1 := s.mIndexStorage.CreateIndex(k, v.createIndex)
+		err2 := s.mIndexStorage.UpdateIndex(k, v.updateIndex)
+		err3 := s.mIndexStorage.DeleteIndex(k, v.deleteIndex)
+
+		internalLogger.Error("create index error",
+			zap.Error(err1),
+			zap.String("namespace", k))
+
+		internalLogger.Error("update index error",
+			zap.Error(err2),
+			zap.String("namespace", k))
+
+		internalLogger.Error("delete index error",
+			zap.Error(err3),
+			zap.String("namespace", k))
+	}
+
+	return nil
+}
+
+type internalIndexHolder struct {
+	namespace   string
+	createIndex []*variant.IndexData
+	updateIndex []*variant.IndexData
+	deleteIndex []*variant.IndexData
 }

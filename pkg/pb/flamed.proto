@@ -13,8 +13,8 @@ message FlameAction {
   enum FlameActionType {
     CREATE = 0;
     UPDATE = 1;
-    APPEND = 2;
-    DELETE = 3;
+    DELETE = 2;
+    APPEND = 3;
   }
 
   FlameActionType flameActionType = 1;
