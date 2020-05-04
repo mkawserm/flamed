@@ -103,7 +103,7 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 			return nil, err
 		}
 
-		if err := s.mStorage.ApplyProposal(pp, true); err == nil {
+		if err := s.mStorage.ApplyProposal(pp, false); err == nil {
 			entries[idx].Result = sm.Result{Value: uint64(len(entries[idx].Cmd))}
 		} else {
 			return nil, err
@@ -132,7 +132,7 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	return s.mStorage.Lookup(input, true)
+	return s.mStorage.Lookup(input, false)
 }
 
 func (s *Storaged) PrepareSnapshot() (interface{}, error) {
