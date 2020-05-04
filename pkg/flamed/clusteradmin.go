@@ -63,8 +63,19 @@ func (c *ClusterAdmin) DeleteNode(nodeID uint64, timeout time.Duration, configCh
 }
 
 func (c *ClusterAdmin) RequestSnapshot(clusterID uint64,
-	opt dragonboat.SnapshotOption,
-	timeout time.Duration) (uint64, error) {
+	timeout time.Duration,
+	compactionOverhead uint64,
+	exportPath string,
+	exported bool,
+	overrideCompactionOverhead bool) (uint64, error) {
+
+	opt := dragonboat.SnapshotOption{
+		CompactionOverhead:         compactionOverhead,
+		ExportPath:                 exportPath,
+		Exported:                   exported,
+		OverrideCompactionOverhead: overrideCompactionOverhead,
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	num, err := c.mDragonboatNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
 	cancel()
