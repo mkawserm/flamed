@@ -20,7 +20,7 @@ type IStorageConfiguration interface {
 	IndexStorageCustomConfiguration() interface{}
 
 	/*IndexObject*/
-	IndexObject
+	IIndexObject
 }
 
 type IStorage interface {

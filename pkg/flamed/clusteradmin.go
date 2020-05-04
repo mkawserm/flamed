@@ -1,4 +1,4 @@
-package nodehost
+package flamed
 
 import (
 	"context"

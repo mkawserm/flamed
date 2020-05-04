@@ -8,6 +8,6 @@ package iface
 //	GolangStructType
 //)
 
-type IndexObject interface {
+type IIndexObject interface {
 	IndexObject(namespace, value []byte) interface{}
 }

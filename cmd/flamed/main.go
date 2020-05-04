@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 )
-import "github.com/mkawserm/flamed/pkg/nodehost"
+import "github.com/mkawserm/flamed/pkg/flamed"
 
 func main() {
-	n := &nodehost.NodeHost{}
+	n := &flamed.NodeHost{}
 	defer n.StopNode()
 
 	err := n.ConfigureNode(
