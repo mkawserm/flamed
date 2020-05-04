@@ -96,7 +96,6 @@ func (b *Bleve) ApplyIndex(namespace string, data []*variant.IndexData) error {
 		if data[idx].Action == variant.DELETE {
 			batch.Delete(data[idx].ID)
 		}
-
 	}
 
 	err = index.Batch(batch)
