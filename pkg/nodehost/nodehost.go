@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/golang/protobuf/proto"
 	"github.com/lni/dragonboat/v3"
-	"github.com/lni/dragonboat/v3/client"
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/lni/dragonboat/v3/raftpb"
 	sm "github.com/lni/dragonboat/v3/statemachine"
@@ -206,12 +205,24 @@ func (n *NodeHost) ClusterIDList() []uint64 {
 	return ids
 }
 
-//func (n *NodeHost) GetDragonboatNodeHost() *dragonboat.NodeHost {
-//	n.mMutex.Lock()
-//	defer n.mMutex.Unlock()
-//
-//	return n.mNodeHost
-//}
+func (n *NodeHost) NodeHostConfig() config.NodeHostConfig {
+	return n.mNodeHost.NodeHostConfig()
+}
+
+func (n *NodeHost) RaftAddress() string {
+	return n.mNodeHost.RaftAddress()
+}
+
+func (n *NodeHost) GetNodeHostInfo() *dragonboat.NodeHostInfo {
+	return n.mNodeHost.GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: false})
+}
+
+func (n *NodeHost) GetClusterAdmin(clusterID uint64) *ClusterAdmin {
+	return &ClusterAdmin{
+		mClusterID:          clusterID,
+		mDragonboatNodeHost: n.mNodeHost,
+	}
+}
 
 func (n *NodeHost) IsProposalValid(pp *pb.FlameProposal) bool {
 	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
@@ -282,119 +293,114 @@ func (n *NodeHost) ManagedSyncApplyProposal(clusterID uint64,
 	return r, err
 }
 
-func (n *NodeHost) SyncApplyProposal(ctx context.Context, session *client.Session,
-	pp *pb.FlameProposal) (sm.Result, error) {
-	cmd, err := proto.Marshal(pp)
-	if err != nil {
-		return sm.Result{}, err
-	}
-	return n.mNodeHost.SyncPropose(ctx, session, cmd)
-}
+//func (n *NodeHost) GetLeaderID(clusterID uint64) (uint64, bool, error) {
+//	return n.mNodeHost.GetLeaderID(clusterID)
+//}
 
-func (n *NodeHost) ManagedSyncRequestAddNode(clusterID uint64,
-	nodeID uint64,
-	address string,
-	timeout time.Duration) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	err := n.mNodeHost.SyncRequestAddNode(ctx, clusterID, nodeID, address, 0)
-	cancel()
-	return err
-}
+//func (n *NodeHost) HasNodeInfo(clusterID uint64, nodeID uint64) bool {
+//	return n.mNodeHost.HasNodeInfo(clusterID, nodeID)
+//}
 
-func (n *NodeHost) ManagedSyncRequestAddObserver(clusterID uint64, nodeID uint64,
-	address string, timeout time.Duration) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	err := n.mNodeHost.SyncRequestAddObserver(ctx, clusterID, nodeID, address, 0)
-	cancel()
-	return err
-}
+//func (n *NodeHost) ManagedSyncRequestAddNode(clusterID uint64,
+//	nodeID uint64,
+//	address string,
+//	timeout time.Duration) error {
+//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+//	err := n.mNodeHost.SyncRequestAddNode(ctx, clusterID, nodeID, address, 0)
+//	cancel()
+//	return err
+//}
 
-func (n *NodeHost) ManagedSyncRequestAddWitness(clusterID uint64, nodeID uint64,
-	address string, timeout time.Duration) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	err := n.mNodeHost.SyncRequestAddWitness(ctx, clusterID, nodeID, address, 0)
-	cancel()
-	return err
-}
+//func (n *NodeHost) ManagedSyncRequestAddObserver(clusterID uint64, nodeID uint64,
+//	address string, timeout time.Duration) error {
+//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+//	err := n.mNodeHost.SyncRequestAddObserver(ctx, clusterID, nodeID, address, 0)
+//	cancel()
+//	return err
+//}
 
-func (n *NodeHost) ManagedSyncRequestDeleteNode(clusterID uint64,
-	nodeID uint64,
-	timeout time.Duration) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	err := n.mNodeHost.SyncRequestDeleteNode(ctx, clusterID, nodeID, 0)
-	cancel()
-	return err
-}
+//func (n *NodeHost) ManagedSyncRequestAddWitness(clusterID uint64, nodeID uint64,
+//	address string, timeout time.Duration) error {
+//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+//	err := n.mNodeHost.SyncRequestAddWitness(ctx, clusterID, nodeID, address, 0)
+//	cancel()
+//	return err
+//}
 
-func (n *NodeHost) ManagedSyncRequestSnapshot(clusterID uint64,
-	opt dragonboat.SnapshotOption,
-	timeout time.Duration) (uint64, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	num, err := n.mNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
-	cancel()
-	return num, err
-}
+//func (n *NodeHost) ManagedSyncRequestDeleteNode(clusterID uint64,
+//	nodeID uint64,
+//	timeout time.Duration) error {
+//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+//	err := n.mNodeHost.SyncRequestDeleteNode(ctx, clusterID, nodeID, 0)
+//	cancel()
+//	return err
+//}
 
-func (n *NodeHost) NodeHostConfig() config.NodeHostConfig {
-	return n.mNodeHost.NodeHostConfig()
-}
+//func (n *NodeHost) ManagedSyncRequestSnapshot(clusterID uint64,
+//	opt dragonboat.SnapshotOption,
+//	timeout time.Duration) (uint64, error) {
+//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+//	num, err := n.mNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
+//	cancel()
+//	return num, err
+//}
 
-func (n *NodeHost) RaftAddress() string {
-	return n.mNodeHost.RaftAddress()
-}
+//func (n *NodeHost) GetDragonboatNodeHost() *dragonboat.NodeHost {
+//	n.mMutex.Lock()
+//	defer n.mMutex.Unlock()
+//
+//	return n.mNodeHost
+//}
 
-func (n *NodeHost) SyncGetClusterMembership(ctx context.Context, clusterID uint64) (*dragonboat.Membership, error) {
-	return n.mNodeHost.SyncGetClusterMembership(ctx, clusterID)
-}
+//func (n *NodeHost) SyncGetClusterMembership(ctx context.Context, clusterID uint64) (*dragonboat.Membership, error) {
+//	return n.mNodeHost.SyncGetClusterMembership(ctx, clusterID)
+//}
 
-func (n *NodeHost) GetLeaderID(clusterID uint64) (uint64, bool, error) {
-	return n.mNodeHost.GetLeaderID(clusterID)
-}
+//func (n *NodeHost) SyncRead(ctx context.Context, clusterID uint64, query interface{}) (interface{}, error) {
+//	return n.mNodeHost.SyncRead(ctx, clusterID, query)
+//}
 
-func (n *NodeHost) HasNodeInfo(clusterID uint64, nodeID uint64) bool {
-	return n.mNodeHost.HasNodeInfo(clusterID, nodeID)
-}
+//func (n *NodeHost) SyncApplyProposal(ctx context.Context, session *client.Session,
+//	pp *pb.FlameProposal) (sm.Result, error) {
+//	cmd, err := proto.Marshal(pp)
+//	if err != nil {
+//		return sm.Result{}, err
+//	}
+//	return n.mNodeHost.SyncPropose(ctx, session, cmd)
+//}
 
-func (n *NodeHost) GetNodeHostInfo() *dragonboat.NodeHostInfo {
-	return n.mNodeHost.GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: false})
-}
-
-func (n *NodeHost) SyncRead(ctx context.Context, clusterID uint64, query interface{}) (interface{}, error) {
-	return n.mNodeHost.SyncRead(ctx, clusterID, query)
-}
-
-func (n *NodeHost) GetNoOPSession(clusterID uint64) *client.Session {
-	return n.mNodeHost.GetNoOPSession(clusterID)
-}
-
-func (n *NodeHost) SyncCloseSession(ctx context.Context, cs *client.Session) error {
-	return n.mNodeHost.SyncCloseSession(ctx, cs)
-}
-
-func (n *NodeHost) SyncRequestDeleteNode(ctx context.Context,
-	clusterID uint64, nodeID uint64, configChangeIndex uint64) error {
-	return n.mNodeHost.SyncRequestDeleteNode(ctx, clusterID, nodeID, configChangeIndex)
-}
-
-func (n *NodeHost) SyncRequestAddNode(ctx context.Context, clusterID uint64, nodeID uint64,
-	address string, configChangeIndex uint64) error {
-	return n.mNodeHost.SyncRequestAddNode(ctx, clusterID, nodeID, address, configChangeIndex)
-}
-
-func (n *NodeHost) SyncRequestAddObserver(ctx context.Context,
-	clusterID uint64, nodeID uint64,
-	address string, configChangeIndex uint64) error {
-	return n.mNodeHost.SyncRequestAddObserver(ctx, clusterID, nodeID, address, configChangeIndex)
-}
-
-func (n *NodeHost) SyncRequestAddWitness(ctx context.Context,
-	clusterID uint64, nodeID uint64,
-	address string, configChangeIndex uint64) error {
-	return n.mNodeHost.SyncRequestAddWitness(ctx, clusterID, nodeID, address, configChangeIndex)
-}
-
-func (n *NodeHost) SyncRequestSnapshot(ctx context.Context,
-	clusterID uint64,
-	opt dragonboat.SnapshotOption) (uint64, error) {
-	return n.mNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
-}
+//func (n *NodeHost) GetNoOPSession(clusterID uint64) *client.Session {
+//	return n.mNodeHost.GetNoOPSession(clusterID)
+//}
+//
+//func (n *NodeHost) SyncCloseSession(ctx context.Context, cs *client.Session) error {
+//	return n.mNodeHost.SyncCloseSession(ctx, cs)
+//}
+//
+//func (n *NodeHost) SyncRequestDeleteNode(ctx context.Context,
+//	clusterID uint64, nodeID uint64, configChangeIndex uint64) error {
+//	return n.mNodeHost.SyncRequestDeleteNode(ctx, clusterID, nodeID, configChangeIndex)
+//}
+//
+//func (n *NodeHost) SyncRequestAddNode(ctx context.Context, clusterID uint64, nodeID uint64,
+//	address string, configChangeIndex uint64) error {
+//	return n.mNodeHost.SyncRequestAddNode(ctx, clusterID, nodeID, address, configChangeIndex)
+//}
+//
+//func (n *NodeHost) SyncRequestAddObserver(ctx context.Context,
+//	clusterID uint64, nodeID uint64,
+//	address string, configChangeIndex uint64) error {
+//	return n.mNodeHost.SyncRequestAddObserver(ctx, clusterID, nodeID, address, configChangeIndex)
+//}
+//
+//func (n *NodeHost) SyncRequestAddWitness(ctx context.Context,
+//	clusterID uint64, nodeID uint64,
+//	address string, configChangeIndex uint64) error {
+//	return n.mNodeHost.SyncRequestAddWitness(ctx, clusterID, nodeID, address, configChangeIndex)
+//}
+//
+//func (n *NodeHost) SyncRequestSnapshot(ctx context.Context,
+//	clusterID uint64,
+//	opt dragonboat.SnapshotOption) (uint64, error) {
+//	return n.mNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
+//}
