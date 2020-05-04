@@ -280,10 +280,12 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 				}
 			}
 		}
+
 		err := s.applyBatchAction(batchAction)
 		if err != nil {
 			return err
 		}
+
 		_ = s.directIndex(batchAction)
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
@@ -298,13 +300,15 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 		}
 
 		if err := s.createIndexMeta(indexMeta); err != nil {
-			if err := s.mIndexStorage.CreateIndexMeta(indexMeta); err != nil {
-				internalLogger.Error("CreateIndexMeta error", zap.Error(err))
-			} else {
-				return x.ErrFailedToApplyProposal
-			}
+			internalLogger.Error("createIndexMeta error", zap.Error(err))
+			return err
 		} else {
-			return nil
+			if err := s.mIndexStorage.CreateIndexMeta(indexMeta); err != nil {
+				internalLogger.Error("IndexStorage CreateIndexMeta error", zap.Error(err))
+				return err
+			} else {
+				return nil
+			}
 		}
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
@@ -319,13 +323,15 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 		}
 
 		if err := s.updateIndexMeta(indexMeta); err != nil {
-			if err := s.mIndexStorage.UpdateIndexMeta(indexMeta); err != nil {
-				internalLogger.Error("UpdateIndexMeta error", zap.Error(err))
-			} else {
-				return x.ErrFailedToApplyProposal
-			}
+			internalLogger.Error("updateIndexMeta error", zap.Error(err))
+			return err
 		} else {
-			return nil
+			if err := s.mIndexStorage.UpdateIndexMeta(indexMeta); err != nil {
+				internalLogger.Error("IndexStorage UpdateIndexMeta error", zap.Error(err))
+				return err
+			} else {
+				return nil
+			}
 		}
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
@@ -340,13 +346,15 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 		}
 
 		if err := s.deleteIndexMeta(indexMeta); err != nil {
-			if err := s.mIndexStorage.DeleteIndexMeta(indexMeta); err != nil {
-				internalLogger.Error("DeleteIndexMeta error", zap.Error(err))
-			} else {
-				return x.ErrFailedToApplyProposal
-			}
+			internalLogger.Error("deleteIndexMeta error", zap.Error(err))
+			return err
 		} else {
-			return nil
+			if err := s.mIndexStorage.DeleteIndexMeta(indexMeta); err != nil {
+				internalLogger.Error("IndexStorage DeleteIndexMeta error", zap.Error(err))
+				return err
+			} else {
+				return nil
+			}
 		}
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
