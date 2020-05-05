@@ -84,12 +84,12 @@ message FlameUser {
   }
 
   FlameUserType flameUserType = 1;
-
-  string username = 2;
-  string password = 3;
-  uint64 createdAt = 4;
-  uint64 updatedAt = 5;
-  bytes userData = 6;
+  string roles = 2; /* Comma separated user defined roles */
+  string username = 3;
+  string password = 4;
+  uint64 createdAt = 5;
+  uint64 updatedAt = 6;
+  bytes userData = 7;
 }
 
 message FlameAccessControl {
