@@ -217,8 +217,15 @@ func (n *NodeHost) GetNodeHostInfo() *dragonboat.NodeHostInfo {
 	return n.mNodeHost.GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: false})
 }
 
-func (n *NodeHost) GetClusterAdmin(clusterID uint64) *ClusterAdmin {
+func (n *NodeHost) NewClusterAdmin(clusterID uint64) *ClusterAdmin {
 	return &ClusterAdmin{
+		mClusterID:          clusterID,
+		mDragonboatNodeHost: n.mNodeHost,
+	}
+}
+
+func (n *NodeHost) NewAdmin(clusterID uint64) *Admin {
+	return &Admin{
 		mClusterID:          clusterID,
 		mDragonboatNodeHost: n.mNodeHost,
 	}
