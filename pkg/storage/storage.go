@@ -395,6 +395,27 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 		}
 
 		return s.deleteAccessControl(ac)
+	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_USER {
+		user := &pb.FlameUser{}
+		if err := proto.Unmarshal(pp.FlameProposalData, user); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return s.createUser(user)
+	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_USER {
+		user := &pb.FlameUser{}
+		if err := proto.Unmarshal(pp.FlameProposalData, user); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return s.updateUser(user)
+	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_USER {
+		user := &pb.FlameUser{}
+		if err := proto.Unmarshal(pp.FlameProposalData, user); err != nil {
+			return x.ErrFailedToApplyProposal
+		}
+
+		return s.deleteUser(user)
 	}
 
 	return x.ErrFailedToApplyProposal
