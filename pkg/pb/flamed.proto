@@ -127,3 +127,11 @@ message FlameProposal {
   FlameProposalType flameProposalType = 1;
   bytes flameProposalData = 2;
 }
+
+message FlameQuery {
+
+}
+
+message FlameResponse {
+
+}
