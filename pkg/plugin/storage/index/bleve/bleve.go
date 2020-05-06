@@ -68,7 +68,7 @@ func (b *Bleve) ApplyIndex(namespace string, data []*variant.IndexData) error {
 
 	if err != nil {
 		internalLogger.Debug("index db opening error", zap.Error(err))
-		return x.ErrFailedToCreateIndex
+		return x.ErrFailedToApplyIndex
 	}
 
 	defer func() {
@@ -89,7 +89,7 @@ func (b *Bleve) ApplyIndex(namespace string, data []*variant.IndexData) error {
 			err = batch.Index(data[idx].ID, data[idx].Data)
 			if err != nil {
 				internalLogger.Debug("index update error", zap.Error(err))
-				return x.ErrFailedToCreateIndex
+				return x.ErrFailedToUpdateIndex
 			}
 		}
 
@@ -101,7 +101,7 @@ func (b *Bleve) ApplyIndex(namespace string, data []*variant.IndexData) error {
 	err = index.Batch(batch)
 	if err != nil {
 		internalLogger.Debug("batch processing error", zap.Error(err))
-		return x.ErrFailedToCreateIndex
+		return x.ErrFailedToApplyIndex
 	}
 
 	return nil

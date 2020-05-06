@@ -43,9 +43,9 @@ var ErrFailedToUpdateAccessControl = errors.New("failed to update access control
 var ErrFailedToDeleteAccessControl = errors.New("failed to delete access control")
 var ErrFailedToIterate = errors.New("failed to iterate")
 
+var ErrFailedToApplyIndex = errors.New("failed to apply index")
 var ErrFailedToCreateIndex = errors.New("failed to create index")
 var ErrFailedToUpdateIndex = errors.New("failed to update index")
-var ErrFailedToDeleteIndex = errors.New("failed to delete index")
 
 var ErrInvalidNamespace = errors.New("invalid namespace: namespace should start with a letter and minimum 3 characters and can not contain `::`")
 

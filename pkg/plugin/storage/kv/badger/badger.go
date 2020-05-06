@@ -1302,49 +1302,49 @@ func (b *Badger) ApplyProposal(pp *pb.FlameProposal) error {
 	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
 		batchAction := &pb.FlameBatchAction{}
 		if err := proto.Unmarshal(pp.FlameProposalData, batchAction); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return b.ApplyBatchAction(batchAction)
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return b.CreateIndexMeta(indexMeta)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return b.UpdateIndexMeta(indexMeta)
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return b.DeleteIndexMeta(indexMeta)
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return b.CreateAccessControl(ac)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return b.UpdateAccessControl(ac)
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return b.DeleteAccessControl(ac)

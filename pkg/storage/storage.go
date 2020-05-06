@@ -270,7 +270,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
 		batchAction := &pb.FlameBatchAction{}
 		if err := proto.Unmarshal(pp.FlameProposalData, batchAction); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		if checkNamespaceValidity {
@@ -290,7 +290,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		if checkNamespaceValidity {
@@ -313,7 +313,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		if checkNamespaceValidity {
@@ -336,7 +336,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		if checkNamespaceValidity {
@@ -359,7 +359,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		if checkNamespaceValidity {
@@ -372,7 +372,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		if checkNamespaceValidity {
@@ -385,7 +385,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		if checkNamespaceValidity {
@@ -398,21 +398,21 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_USER {
 		user := &pb.FlameUser{}
 		if err := proto.Unmarshal(pp.FlameProposalData, user); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return s.createUser(user)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_USER {
 		user := &pb.FlameUser{}
 		if err := proto.Unmarshal(pp.FlameProposalData, user); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return s.updateUser(user)
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_USER {
 		user := &pb.FlameUser{}
 		if err := proto.Unmarshal(pp.FlameProposalData, user); err != nil {
-			return x.ErrFailedToApplyProposal
+			return x.ErrDataUnmarshalError
 		}
 
 		return s.deleteUser(user)
