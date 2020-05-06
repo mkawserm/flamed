@@ -43,7 +43,7 @@ func (b *Bleve) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 
 	if err != nil {
 		internalLogger.Debug("error while adding index meta", zap.Error(err))
-		return x.ErrFailedToAddIndexMeta
+		return x.ErrFailedToCreateIndexMeta
 	}
 
 	return nil

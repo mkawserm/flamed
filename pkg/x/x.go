@@ -21,19 +21,22 @@ var ErrFailedToApplyBatchToStorage = errors.New("failed to apply batch to the st
 var ErrFailedToApplyActionToStorage = errors.New("failed to apply action to the storage")
 var ErrFailedToApplyProposal = errors.New("failed to apply proposal")
 
-var ErrFailedToAddIndexMeta = errors.New("failed to add index meta")
+var ErrFailedToCreateIndexMeta = errors.New("failed to create index meta")
 var ErrFailedToGetIndexMeta = errors.New("failed to get index meta")
 var ErrFailedToGetAllIndexMeta = errors.New("failed to get all index meta")
 var ErrFailedToUpdateIndexMeta = errors.New("failed to update index meta")
 var ErrFailedToDeleteIndexMeta = errors.New("failed to delete index meta")
 
-var ErrFailedToAddUser = errors.New("failed to add user")
+var ErrInvalidUser = errors.New("invalid user: username length must be minimum 3 " +
+	"and password length must be minimum 6")
+
+var ErrFailedToCreateUser = errors.New("failed to create user")
 var ErrFailedToGetUser = errors.New("failed to get user")
 var ErrFailedToGetAllUser = errors.New("failed to get all user")
 var ErrFailedToUpdateUser = errors.New("failed to update user")
 var ErrFailedToDeleteUser = errors.New("failed to delete user")
 
-var ErrFailedToAddAccessControl = errors.New("failed to add access control")
+var ErrFailedToCreateAccessControl = errors.New("failed to create access control")
 var ErrFailedToGetAccessControl = errors.New("failed to get access control")
 var ErrFailedToGetAllAccessControl = errors.New("failed to get all access control")
 var ErrFailedToUpdateAccessControl = errors.New("failed to update access control")
@@ -45,6 +48,9 @@ var ErrFailedToUpdateIndex = errors.New("failed to update index")
 var ErrFailedToDeleteIndex = errors.New("failed to delete index")
 
 var ErrInvalidNamespace = errors.New("invalid namespace: namespace should start with a letter and minimum 3 characters and can not contain `::`")
+
+var ErrDataMarshalError = errors.New("failed to marshal data")
+var ErrDataUnmarshalError = errors.New("failed to unmarshal data")
 
 //var ErrFailedToGenerateAsyncSnapshotFromStorage = errors.New("failed to generate async snapshot from the storage")
 //var ErrFailedToApplyAsyncSnapshotToStorage = errors.New("failed to apply async snapshot to the storage")
