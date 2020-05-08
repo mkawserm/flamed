@@ -1,18 +1,13 @@
 package flamed
 
 import (
-	"context"
-	"github.com/golang/protobuf/proto"
 	"github.com/lni/dragonboat/v3"
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/lni/dragonboat/v3/raftpb"
-	sm "github.com/lni/dragonboat/v3/statemachine"
 	"github.com/mkawserm/flamed/pkg/iface"
-	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 	"sync"
-	"time"
 )
 
 type NodeHost struct {
@@ -231,74 +226,74 @@ func (n *NodeHost) NewAdmin(clusterID uint64) *Admin {
 	}
 }
 
-func (n *NodeHost) IsProposalValid(pp *pb.FlameProposal) bool {
-	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
-		batchAction := &pb.FlameBatchAction{}
-		if err := proto.Unmarshal(pp.FlameProposalData, batchAction); err != nil {
-			return false
-		}
-
-		for idx := range batchAction.FlameActionList {
-			if !utility.IsNamespaceValid(batchAction.FlameActionList[idx].FlameEntry.Namespace) {
-				return false
-			}
-		}
-
-		return true
-	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META ||
-		pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META ||
-		pp.FlameProposalType == pb.FlameProposal_DELETE_INDEX_META {
-		indexMeta := &pb.FlameIndexMeta{}
-		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
-			return false
-		}
-		if !utility.IsNamespaceValid(indexMeta.Namespace) {
-			return false
-		}
-
-		return true
-	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL ||
-		pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL ||
-		pp.FlameProposalType == pb.FlameProposal_DELETE_ACCESS_CONTROL {
-		ac := &pb.FlameAccessControl{}
-		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
-			return false
-		}
-		if !utility.IsNamespaceValid(ac.Namespace) {
-			return false
-		}
-
-		return true
-	}
-
-	return false
-}
-
-func (n *NodeHost) ManagedSyncRead(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	d, e := n.mNodeHost.SyncRead(ctx, clusterID, query)
-	cancel()
-
-	return d, e
-}
-
-func (n *NodeHost) ManagedSyncApplyProposal(clusterID uint64,
-	pp *pb.FlameProposal,
-	timeout time.Duration) (sm.Result, error) {
-	cmd, err := proto.Marshal(pp)
-	if err != nil {
-		return sm.Result{}, err
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	session := n.mNodeHost.GetNoOPSession(clusterID)
-	r, err := n.mNodeHost.SyncPropose(ctx, session, cmd)
-	cancel()
-
-	_ = n.mNodeHost.SyncCloseSession(context.Background(), session)
-
-	return r, err
-}
+//func (n *NodeHost) IsProposalValid(pp *pb.FlameProposal) bool {
+//	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
+//		batchAction := &pb.FlameBatchAction{}
+//		if err := proto.Unmarshal(pp.FlameProposalData, batchAction); err != nil {
+//			return false
+//		}
+//
+//		for idx := range batchAction.FlameActionList {
+//			if !utility.IsNamespaceValid(batchAction.FlameActionList[idx].FlameEntry.Namespace) {
+//				return false
+//			}
+//		}
+//
+//		return true
+//	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META ||
+//		pp.FlameProposalType == pb.FlameProposal_UPDATE_INDEX_META ||
+//		pp.FlameProposalType == pb.FlameProposal_DELETE_INDEX_META {
+//		indexMeta := &pb.FlameIndexMeta{}
+//		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {
+//			return false
+//		}
+//		if !utility.IsNamespaceValid(indexMeta.Namespace) {
+//			return false
+//		}
+//
+//		return true
+//	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_ACCESS_CONTROL ||
+//		pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL ||
+//		pp.FlameProposalType == pb.FlameProposal_DELETE_ACCESS_CONTROL {
+//		ac := &pb.FlameAccessControl{}
+//		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
+//			return false
+//		}
+//		if !utility.IsNamespaceValid(ac.Namespace) {
+//			return false
+//		}
+//
+//		return true
+//	}
+//
+//	return false
+//}
+//
+//func (n *NodeHost) ManagedSyncRead(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
+//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+//	d, e := n.mNodeHost.SyncRead(ctx, clusterID, query)
+//	cancel()
+//
+//	return d, e
+//}
+//
+//func (n *NodeHost) ManagedSyncApplyProposal(clusterID uint64,
+//	pp *pb.FlameProposal,
+//	timeout time.Duration) (sm.Result, error) {
+//	cmd, err := proto.Marshal(pp)
+//	if err != nil {
+//		return sm.Result{}, err
+//	}
+//
+//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+//	session := n.mNodeHost.GetNoOPSession(clusterID)
+//	r, err := n.mNodeHost.SyncPropose(ctx, session, cmd)
+//	cancel()
+//
+//	_ = n.mNodeHost.SyncCloseSession(context.Background(), session)
+//
+//	return r, err
+//}
 
 //func (n *NodeHost) GetLeaderID(clusterID uint64) (uint64, bool, error) {
 //	return n.mNodeHost.GetLeaderID(clusterID)

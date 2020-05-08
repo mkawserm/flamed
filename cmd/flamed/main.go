@@ -9,7 +9,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/uidutil"
 	"os"
 	"strings"
-	"time"
+	//"time"
 )
 import "github.com/mkawserm/flamed/pkg/flamed"
 
@@ -87,14 +87,14 @@ func main() {
 
 			if data, err := proto.Marshal(batch); err == nil {
 				pp.FlameProposalData = data
-				r, err := n.ManagedSyncApplyProposal(1, pp, 3*time.Minute)
-
-				if err != nil {
-					fmt.Println(err)
-				}
-
-				fmt.Println(r.Value)
-				fmt.Println(r.Data)
+				//r, err := n.ManagedSyncApplyProposal(1, pp, 3*time.Minute)
+				//
+				//if err != nil {
+				//	fmt.Println(err)
+				//}
+				//
+				//fmt.Println(r.Value)
+				//fmt.Println(r.Data)
 
 				counter = counter + 1
 			} else {
@@ -108,12 +108,13 @@ func main() {
 			}
 
 			if data, err := proto.Marshal(e); err == nil {
-				r, err := n.ManagedSyncRead(1, data, 3*time.Minute)
-
-				if err != nil {
-					fmt.Println(err)
-				}
-				fmt.Println(uidutil.ByteSliceToUint64(r.([]byte)))
+				fmt.Println(data)
+				//r, err := n.ManagedSyncRead(1, data, 3*time.Minute)
+				//
+				//if err != nil {
+				//	fmt.Println(err)
+				//}
+				//fmt.Println(uidutil.ByteSliceToUint64(r.([]byte)))
 			} else {
 				fmt.Println(err)
 			}
