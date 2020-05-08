@@ -502,6 +502,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 		}
 
 		_ = s.directIndex(batchAction)
+		return nil
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(pp.FlameProposalData, indexMeta); err != nil {

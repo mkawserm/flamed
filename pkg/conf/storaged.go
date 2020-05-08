@@ -5,7 +5,6 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/plugin/storage/index/bleve"
 	"github.com/mkawserm/flamed/pkg/plugin/storage/kv/badger"
-	"go.uber.org/zap"
 )
 
 type StoragedConfigurationInput struct {
@@ -70,14 +69,14 @@ func (s *StoragedConfiguration) BatchSize() int {
 	return s.StoragedConfigurationInput.BatchSize
 }
 
-func (s *StoragedConfiguration) IndexObject(namespace, value []byte) interface{} {
+func (s *StoragedConfiguration) IndexObject(_, value []byte) interface{} {
 	data := make(map[string]interface{})
 	if err := json.Unmarshal(value, &data); err == nil {
 		return data
 	} else {
-		internalLogger.Error("IndexObject json unmarshal error",
-			zap.Error(err),
-			zap.String("namespace", string(namespace)))
+		//internalLogger.Error("IndexObject json unmarshal error",
+		//	zap.Error(err),
+		//	zap.String("namespace", string(namespace)))
 		return nil
 	}
 }
