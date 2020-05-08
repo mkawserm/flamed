@@ -8,6 +8,7 @@ import (
 )
 
 type StoragedConfigurationInput struct {
+	AutoIndexMeta    bool   `json:"autoIndexMeta"`
 	CacheSize        int    `json:"cacheSize"`
 	BatchSize        int    `json:"batchSize"`
 	StoragePath      string `json:"storagePath"`
@@ -21,6 +22,10 @@ type StoragedConfigurationInput struct {
 
 type StoragedConfiguration struct {
 	StoragedConfigurationInput StoragedConfigurationInput
+}
+
+func (s *StoragedConfiguration) AutoIndexMeta() bool {
+	return s.StoragedConfigurationInput.AutoIndexMeta
 }
 
 func (s *StoragedConfiguration) StoragePath() string {

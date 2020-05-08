@@ -17,7 +17,7 @@ type IKVStorage interface {
 
 	Read(namespace []byte, key []byte) ([]byte, error)
 	Iterate(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error
-	//IterateKeyOnly(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error
+	IterateKeyOnly(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error
 
 	Delete(namespace []byte, key []byte) error
 	Create(namespace []byte, key []byte, value []byte) error

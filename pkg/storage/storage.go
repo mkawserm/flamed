@@ -735,7 +735,7 @@ func (s *Storage) directIndex(batchAction *pb.FlameBatchAction) error {
 	}
 
 	for k, v := range s.getIndexHolderMap(batchAction) {
-		if !s.mIndexStorage.CanIndex(k) {
+		if !s.mIndexStorage.CanIndex(k) && s.mConfiguration.AutoIndexMeta() {
 			//internalLogger.Info("no index found, creating new one", zap.String("namespace",k))
 			flameMeta := &pb.FlameIndexMeta{
 				Namespace: []byte(k),
@@ -753,11 +753,13 @@ func (s *Storage) directIndex(batchAction *pb.FlameBatchAction) error {
 			}
 		}
 
-		err := s.mIndexStorage.ApplyIndex(k, v.indexData)
-		if err != nil {
-			internalLogger.Error("ApplyIndex failure",
-				zap.Error(err),
-				zap.String("namespace", k))
+		if s.mIndexStorage.CanIndex(k) {
+			err := s.mIndexStorage.ApplyIndex(k, v.indexData)
+			if err != nil {
+				internalLogger.Error("ApplyIndex failure",
+					zap.Error(err),
+					zap.String("namespace", k))
+			}
 		}
 	}
 
@@ -837,7 +839,18 @@ func (s *Storage) UpdateIndex(namespace []byte) error {
 	err := s.GetIndexMeta(indexMeta)
 
 	if err != nil {
-		return err
+		if s.mConfiguration.AutoIndexMeta() {
+			indexMeta = &pb.FlameIndexMeta{
+				Namespace: namespace,
+				Version:   1,
+				Enabled:   true,
+				Default:   true,
+				CreatedAt: uint64(time.Now().UnixNano()),
+				UpdatedAt: uint64(time.Now().UnixNano()),
+			}
+		} else {
+			return err
+		}
 	}
 
 	err = s.mIndexStorage.UpdateIndexMeta(indexMeta)

@@ -10,6 +10,8 @@ type IStorageConfiguration interface {
 	CacheSize() int
 	BatchSize() int
 
+	AutoIndexMeta() bool
+
 	StoragePath() string
 	StorageSecretKey() []byte
 

@@ -39,6 +39,7 @@ func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir strin
 func SimpleStoragedConfiguration(path string, secretKey []byte) iface.IStoragedConfiguration {
 	return &StoragedConfiguration{
 		StoragedConfigurationInput: StoragedConfigurationInput{
+			AutoIndexMeta:    true,
 			StoragePath:      path,
 			StorageSecretKey: secretKey,
 		}}
