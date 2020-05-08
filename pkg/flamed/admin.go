@@ -19,6 +19,16 @@ type Admin struct {
 	mDragonboatNodeHost *dragonboat.NodeHost
 }
 
+func (a *Admin) QueryAppliedIndex(timeout time.Duration) uint64 {
+	q := &storage.AppliedIndexQuery{}
+	_, err := a.managedSyncRead(a.mClusterID, q, timeout)
+	if err != nil {
+		return 0
+	} else {
+		return q.AppliedIndex
+	}
+}
+
 func (a *Admin) IterateUser(seek *pb.FlameUser, limit int, timeout time.Duration) ([]*pb.FlameUser, error) {
 	allocationLength := 100
 	if limit != 0 {

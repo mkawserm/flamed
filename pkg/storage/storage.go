@@ -447,6 +447,15 @@ func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interf
 		return nil, nil
 	}
 
+	if v, ok := input.(*AppliedIndexQuery); ok {
+		o, err := s.QueryAppliedIndex()
+		if err != nil {
+			return nil, err
+		}
+		v.AppliedIndex = o
+		return v, nil
+	}
+
 	if v, ok := input.(*pb.FlameUser); ok {
 		return v, s.GetUser(v)
 	}

@@ -49,6 +49,7 @@ func main() {
 	}
 
 	manager := n.NewStorageManager(1)
+	admin := n.NewAdmin(1)
 
 	l := true
 	reader := bufio.NewReader(os.Stdin)
@@ -78,6 +79,10 @@ func main() {
 		//}
 
 		switch t {
+		case "ai":
+			index := admin.QueryAppliedIndex(3 * time.Minute)
+			fmt.Println(index)
+
 		case "p":
 			counter = counter + 1
 			co := &CounterObject{}
