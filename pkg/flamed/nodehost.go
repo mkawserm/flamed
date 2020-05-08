@@ -226,6 +226,13 @@ func (n *NodeHost) NewAdmin(clusterID uint64) *Admin {
 	}
 }
 
+func (n *NodeHost) NewEntryManager(clusterID uint64) *EntryManager {
+	return &EntryManager{
+		mClusterID:          clusterID,
+		mDragonboatNodeHost: n.mNodeHost,
+	}
+}
+
 //func (n *NodeHost) IsProposalValid(pp *pb.FlameProposal) bool {
 //	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
 //		batchAction := &pb.FlameBatchAction{}
