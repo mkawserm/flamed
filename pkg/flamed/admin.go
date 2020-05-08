@@ -20,135 +20,105 @@ type Admin struct {
 }
 
 func (a *Admin) IterateUser(seek *pb.FlameUser, limit int, timeout time.Duration) ([]*pb.FlameUser, error) {
-	if seek == nil {
-		allocationLength := 100
-		if limit != 0 {
-			allocationLength = limit
-		}
-		data := make([]*pb.FlameUser, 0, allocationLength)
-		itr := &storage.Iterator{
-			Seek:   []byte(constant.UserNamespace),
-			Prefix: []byte(constant.UserNamespace),
-			Limit:  limit,
-			Receiver: func(entry *pb.FlameEntry) bool {
-				u := &pb.FlameUser{}
-				if err := proto.Unmarshal(entry.Value, u); err == nil {
-					data = append(data, u)
-				}
-				return true
-			},
-		}
+	allocationLength := 100
+	if limit != 0 {
+		allocationLength = limit
+	}
 
-		if _, err := a.managedSyncRead(a.mClusterID, itr, timeout); err != nil {
-			return nil, x.ErrFailedToIterate
-		} else {
-			return data, nil
-		}
-	} else {
-		allocationLength := 100
-		if limit != 0 {
-			allocationLength = limit
-		}
-
-		newLimit := limit
-		if newLimit != 0 {
+	newLimit := limit
+	if newLimit != 0 {
+		if seek != nil {
 			newLimit = newLimit + 1
 		}
+	}
 
-		data := make([]*pb.FlameUser, 0, allocationLength)
-		uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(seek.Username))
-		firstEntry := true
-		itr := &storage.Iterator{
-			Seek:   uid,
-			Prefix: []byte(constant.UserNamespace),
-			Limit:  newLimit,
-			Receiver: func(entry *pb.FlameEntry) bool {
-				if firstEntry {
-					firstEntry = false
-					return true
-				}
+	data := make([]*pb.FlameUser, 0, allocationLength)
 
-				u := &pb.FlameUser{}
-				if err := proto.Unmarshal(entry.Value, u); err == nil {
-					data = append(data, u)
-				}
+	uid := uidutil.GetUid([]byte(constant.UserNamespace), nil)
+	if seek != nil {
+		uid = uidutil.GetUid([]byte(constant.UserNamespace), []byte(seek.Username))
+	}
 
+	skipFirstEntry := false
+	if seek != nil {
+		skipFirstEntry = true
+	}
+
+	itr := &storage.Iterator{
+		Seek:   uid,
+		Prefix: []byte(constant.UserNamespace),
+		Limit:  newLimit,
+		Receiver: func(entry *pb.FlameEntry) bool {
+			if skipFirstEntry {
+				skipFirstEntry = false
 				return true
-			},
-		}
+			}
 
-		if _, err := a.managedSyncRead(a.mClusterID, itr, timeout); err != nil {
-			return nil, x.ErrFailedToIterate
-		} else {
-			return data, nil
-		}
+			u := &pb.FlameUser{}
+			if err := proto.Unmarshal(entry.Value, u); err == nil {
+				data = append(data, u)
+			}
+
+			return true
+		},
+	}
+
+	if _, err := a.managedSyncRead(a.mClusterID, itr, timeout); err != nil {
+		return nil, x.ErrFailedToIterate
+	} else {
+		return data, nil
 	}
 }
 
 func (a *Admin) IterateAccessControl(seek *pb.FlameAccessControl, limit int, timeout time.Duration) ([]*pb.FlameAccessControl, error) {
-	if seek == nil {
-		allocationLength := 100
-		if limit != 0 {
-			allocationLength = limit
-		}
-		data := make([]*pb.FlameAccessControl, 0, allocationLength)
-		itr := &storage.Iterator{
-			Seek:   []byte(constant.AccessControlNamespace),
-			Prefix: []byte(constant.AccessControlNamespace),
-			Limit:  limit,
-			Receiver: func(entry *pb.FlameEntry) bool {
-				u := &pb.FlameAccessControl{}
-				if err := proto.Unmarshal(entry.Value, u); err == nil {
-					data = append(data, u)
-				}
-				return true
-			},
-		}
+	allocationLength := 100
+	if limit != 0 {
+		allocationLength = limit
+	}
 
-		if _, err := a.managedSyncRead(a.mClusterID, itr, timeout); err != nil {
-			return nil, x.ErrFailedToIterate
-		} else {
-			return data, nil
-		}
-	} else {
-		allocationLength := 100
-		if limit != 0 {
-			allocationLength = limit
-		}
-
-		newLimit := limit
-		if newLimit != 0 {
+	newLimit := limit
+	if newLimit != 0 {
+		if seek != nil {
 			newLimit = newLimit + 1
 		}
+	}
 
-		data := make([]*pb.FlameAccessControl, 0, allocationLength)
-		uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+	data := make([]*pb.FlameAccessControl, 0, allocationLength)
+
+	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace), nil)
+	if seek != nil {
+		uid = uidutil.GetUid([]byte(constant.AccessControlNamespace),
 			uidutil.GetUid([]byte(seek.Username), seek.Namespace))
-		firstEntry := true
-		itr := &storage.Iterator{
-			Seek:   uid,
-			Prefix: []byte(constant.AccessControlNamespace),
-			Limit:  newLimit,
-			Receiver: func(entry *pb.FlameEntry) bool {
-				if firstEntry {
-					firstEntry = false
-					return true
-				}
+	}
 
-				u := &pb.FlameAccessControl{}
-				if err := proto.Unmarshal(entry.Value, u); err == nil {
-					data = append(data, u)
-				}
+	skipFirstEntry := false
+	if seek != nil {
+		skipFirstEntry = true
+	}
 
+	itr := &storage.Iterator{
+		Seek:   uid,
+		Prefix: []byte(constant.UserNamespace),
+		Limit:  newLimit,
+		Receiver: func(entry *pb.FlameEntry) bool {
+			if skipFirstEntry {
+				skipFirstEntry = false
 				return true
-			},
-		}
+			}
 
-		if _, err := a.managedSyncRead(a.mClusterID, itr, timeout); err != nil {
-			return nil, x.ErrFailedToIterate
-		} else {
-			return data, nil
-		}
+			u := &pb.FlameAccessControl{}
+			if err := proto.Unmarshal(entry.Value, u); err == nil {
+				data = append(data, u)
+			}
+
+			return true
+		},
+	}
+
+	if _, err := a.managedSyncRead(a.mClusterID, itr, timeout); err != nil {
+		return nil, x.ErrFailedToIterate
+	} else {
+		return data, nil
 	}
 }
 
