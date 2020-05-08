@@ -6,6 +6,8 @@ import (
 	"github.com/lni/dragonboat/v3"
 	sm "github.com/lni/dragonboat/v3/statemachine"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/storage"
+	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
@@ -132,6 +134,57 @@ func (m *StorageManager) GetAccessControl(namespace, username string, timeout ti
 	}
 
 	return ac
+}
+
+func (m *StorageManager) Iterate(seek *pb.FlameEntry, limit int, timeout time.Duration) ([]*pb.FlameEntry, error) {
+	if !utility.IsNamespaceValid(seek.Namespace) {
+		return nil, x.ErrInvalidNamespace
+	}
+
+	allocationLength := 100
+	if limit != 0 {
+		allocationLength = limit
+	}
+
+	newLimit := limit
+	if len(seek.Key) != 0 {
+		if newLimit != 0 {
+			newLimit = newLimit + 1
+		}
+	}
+
+	data := make([]*pb.FlameEntry, 0, allocationLength)
+	uid := uidutil.GetUid(seek.Namespace, seek.Key)
+
+	skipFirstEntry := true
+	if len(seek.Key) == 0 {
+		skipFirstEntry = false
+	}
+
+	itr := &storage.Iterator{
+		Seek:   uid,
+		Prefix: seek.Namespace,
+		Limit:  newLimit,
+		Receiver: func(entry *pb.FlameEntry) bool {
+			if skipFirstEntry {
+				skipFirstEntry = false
+				return true
+			}
+
+			u := &pb.FlameEntry{}
+			if err := proto.Unmarshal(entry.Value, u); err == nil {
+				data = append(data, u)
+			}
+
+			return true
+		},
+	}
+
+	if _, err := m.managedSyncRead(m.mClusterID, itr, timeout); err != nil {
+		return nil, x.ErrFailedToIterate
+	} else {
+		return data, nil
+	}
 }
 
 func (m *StorageManager) Get(entry *pb.FlameEntry, timeout time.Duration) error {
