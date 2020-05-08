@@ -238,14 +238,14 @@ func (n *NodeHost) NewAdmin(clusterID uint64) *Admin {
 	}
 }
 
-func (n *NodeHost) NewEntryManager(clusterID uint64) *EntryManager {
+func (n *NodeHost) NewStorageManager(clusterID uint64) *StorageManager {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 	if _, ok := n.mClusterMap[clusterID]; !ok {
 		return nil
 	}
 
-	return &EntryManager{
+	return &StorageManager{
 		mClusterID:          clusterID,
 		mDragonboatNodeHost: n.mNodeHost,
 	}
