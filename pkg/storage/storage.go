@@ -348,7 +348,7 @@ func (s *Storage) CreateAccessControl(ac *pb.FlameAccessControl) error {
 	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
 
 	err = s.mKVStorage.Create([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid(ac.Namespace, []byte(ac.Username)), data)
+		uidutil.GetUid([]byte(ac.Username), ac.Namespace), data)
 
 	if err != nil {
 		internalLogger.Error("kv storage create error", zap.Error(err))
@@ -359,7 +359,7 @@ func (s *Storage) CreateAccessControl(ac *pb.FlameAccessControl) error {
 }
 
 func (s *Storage) IsAccessControlExists(ac *pb.FlameAccessControl) bool {
-	return s.mKVStorage.IsExists([]byte(constant.UserNamespace), uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+	return s.mKVStorage.IsExists([]byte(constant.UserNamespace), uidutil.GetUid([]byte(ac.Username), ac.Namespace))
 }
 
 func (s *Storage) GetAccessControl(ac *pb.FlameAccessControl) error {
@@ -370,7 +370,7 @@ func (s *Storage) GetAccessControl(ac *pb.FlameAccessControl) error {
 	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
 	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
 	data, err := s.mKVStorage.Read([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+		uidutil.GetUid([]byte(ac.Username), ac.Namespace))
 
 	if err != nil {
 		internalLogger.Error("kv storage read error", zap.Error(err))
@@ -402,7 +402,7 @@ func (s *Storage) UpdateAccessControl(ac *pb.FlameAccessControl) error {
 	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
 
 	err = s.mKVStorage.Update([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid(ac.Namespace, []byte(ac.Username)), data)
+		uidutil.GetUid([]byte(ac.Username), ac.Namespace), data)
 
 	if err != nil {
 		internalLogger.Error("kv storage update error", zap.Error(err))
@@ -420,7 +420,7 @@ func (s *Storage) DeleteAccessControl(ac *pb.FlameAccessControl) error {
 	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
 	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
 	err := s.mKVStorage.Delete([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+		uidutil.GetUid([]byte(ac.Username), ac.Namespace))
 
 	if err != nil {
 		internalLogger.Error("kv storage delete error", zap.Error(err))
