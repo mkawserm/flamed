@@ -16,3 +16,7 @@ cover-html:
 
 protobuf:
 	@protoc -I=./pkg/pb --go_out=./pkg/pb flamed.proto
+
+push:
+	git push
+	git push github
