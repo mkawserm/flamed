@@ -35,7 +35,7 @@ func (b *Bleve) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 		b.removeAll(p)
 	}
 
-	_, err := bleveSearch.NewUsing(p,
+	index, err := bleveSearch.NewUsing(p,
 		b.getMapping(meta),
 		scorch.Name,
 		scorch.Name,
@@ -45,6 +45,8 @@ func (b *Bleve) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 		internalLogger.Debug("error while adding index meta", zap.Error(err))
 		return x.ErrFailedToCreateIndexMeta
 	}
+
+	_ = index.Close()
 
 	return nil
 }
@@ -128,7 +130,7 @@ func (b *Bleve) removeAll(path string) {
 	_ = os.RemoveAll(path)
 }
 
-func (b *Bleve) getMapping(*pb.FlameIndexMeta) *bleveMapping.IndexMappingImpl {
+func (b *Bleve) getMapping(_ *pb.FlameIndexMeta) *bleveMapping.IndexMappingImpl {
 	indexMapping := bleveMapping.NewIndexMapping()
 	return indexMapping
 }

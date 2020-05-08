@@ -482,6 +482,10 @@ func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interf
 }
 
 func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity bool) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
 	if pp.FlameProposalType == pb.FlameProposal_BATCH_ACTION {
 		batchAction := &pb.FlameBatchAction{}
 		if err := proto.Unmarshal(pp.FlameProposalData, batchAction); err != nil {
@@ -694,12 +698,17 @@ func (s *Storage) getIndexHolderMap(batchAction *pb.FlameBatchAction) map[string
 }
 
 func (s *Storage) directIndex(batchAction *pb.FlameBatchAction) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
 	if batchAction == nil {
 		return nil
 	}
 
 	for k, v := range s.getIndexHolderMap(batchAction) {
 		if !s.mIndexStorage.CanIndex(k) {
+			//internalLogger.Info("no index found, creating new one", zap.String("namespace",k))
 			flameMeta := &pb.FlameIndexMeta{
 				Namespace: []byte(k),
 				Version:   1,
@@ -709,16 +718,19 @@ func (s *Storage) directIndex(batchAction *pb.FlameBatchAction) error {
 				UpdatedAt: uint64(time.Now().UnixNano()),
 			}
 			err := s.mIndexStorage.CreateIndexMeta(flameMeta)
-			internalLogger.Error("CreateIndexMeta failure",
-				zap.Error(err),
-				zap.String("namespace", k))
+			if err != nil {
+				internalLogger.Error("CreateIndexMeta failure",
+					zap.Error(err),
+					zap.String("namespace", k))
+			}
 		}
 
 		err := s.mIndexStorage.ApplyIndex(k, v.indexData)
-
-		internalLogger.Error("ApplyIndex failure",
-			zap.Error(err),
-			zap.String("namespace", k))
+		if err != nil {
+			internalLogger.Error("ApplyIndex failure",
+				zap.Error(err),
+				zap.String("namespace", k))
+		}
 	}
 
 	return nil

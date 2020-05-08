@@ -2,16 +2,28 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/conf"
 	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/uidutil"
 	"os"
 	"strings"
 	"time"
 	//"time"
 )
 import "github.com/mkawserm/flamed/pkg/flamed"
+
+type CounterObject struct {
+	Counter uint64 `json:"counter"`
+}
+
+func getJson(object *CounterObject) []byte {
+	if data, err := json.Marshal(object); err == nil {
+		return data
+	} else {
+		return nil
+	}
+}
 
 func main() {
 	n := &flamed.NodeHost{}
@@ -67,18 +79,18 @@ func main() {
 
 		switch t {
 		case "p":
+			counter = counter + 1
+			co := &CounterObject{}
+			co.Counter = counter
 			fmt.Println("counter to propose:", counter)
 			e := &pb.FlameEntry{
 				Namespace: []byte("test"),
 				Key:       []byte("counter"),
-				Value:     uidutil.Uint64ToByteSlice(counter),
+				Value:     getJson(co),
 			}
 			if err := manager.Create(e, 3*time.Minute); err != nil {
 				fmt.Println(err)
 			}
-
-			counter = counter + 1
-
 		case "r":
 			e := &pb.FlameEntry{
 				Namespace: []byte("test"),
@@ -88,7 +100,14 @@ func main() {
 			if err := manager.Read(e, 3*time.Minute); err != nil {
 				fmt.Println(err)
 			} else {
-				fmt.Println(uidutil.ByteSliceToUint64(e.Value))
+				co := &CounterObject{}
+				err := json.Unmarshal(e.Value, co)
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				fmt.Println("Counter:", co.Counter)
+				counter = co.Counter
 			}
 
 		case "rs":
