@@ -116,12 +116,21 @@ func (m *StorageManager) GetUser(username string, timeout time.Duration) *pb.Fla
 }
 
 func (m *StorageManager) GetAccessControl(namespace, username string, timeout time.Duration) *pb.FlameAccessControl {
+	if !utility.IsUsernameValid(username) {
+		return nil
+	}
+
+	if !utility.IsNamespaceValid([]byte(namespace)) {
+		return nil
+	}
+
 	ac := &pb.FlameAccessControl{Username: username, Namespace: []byte(namespace)}
 	_, err := m.managedSyncRead(m.mClusterID, ac, timeout)
 	if err != nil {
 		internalLogger.Error("failed to get access control", zap.Error(err))
 		return nil
 	}
+
 	return ac
 }
 
