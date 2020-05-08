@@ -213,6 +213,12 @@ func (n *NodeHost) GetNodeHostInfo() *dragonboat.NodeHostInfo {
 }
 
 func (n *NodeHost) NewClusterAdmin(clusterID uint64) *ClusterAdmin {
+	n.mMutex.Lock()
+	defer n.mMutex.Unlock()
+	if _, ok := n.mClusterMap[clusterID]; !ok {
+		return nil
+	}
+
 	return &ClusterAdmin{
 		mClusterID:          clusterID,
 		mDragonboatNodeHost: n.mNodeHost,
@@ -220,6 +226,12 @@ func (n *NodeHost) NewClusterAdmin(clusterID uint64) *ClusterAdmin {
 }
 
 func (n *NodeHost) NewAdmin(clusterID uint64) *Admin {
+	n.mMutex.Lock()
+	defer n.mMutex.Unlock()
+	if _, ok := n.mClusterMap[clusterID]; !ok {
+		return nil
+	}
+
 	return &Admin{
 		mClusterID:          clusterID,
 		mDragonboatNodeHost: n.mNodeHost,
@@ -227,6 +239,12 @@ func (n *NodeHost) NewAdmin(clusterID uint64) *Admin {
 }
 
 func (n *NodeHost) NewEntryManager(clusterID uint64) *EntryManager {
+	n.mMutex.Lock()
+	defer n.mMutex.Unlock()
+	if _, ok := n.mClusterMap[clusterID]; !ok {
+		return nil
+	}
+
 	return &EntryManager{
 		mClusterID:          clusterID,
 		mDragonboatNodeHost: n.mNodeHost,
