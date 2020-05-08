@@ -212,53 +212,53 @@ func (b *Badger) Iterate(seek, prefix []byte, limit int, receiver func(entry *pb
 	return nil
 }
 
-func (b *Badger) IterateKeyOnly(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	err := b.mDb.View(func(txn *badgerDb.Txn) error {
-		opts := badgerDb.DefaultIteratorOptions
-		opts.PrefetchValues = false
-		it := txn.NewIterator(opts)
-		defer it.Close()
-
-		counter := 0
-		if limit == 0 {
-			counter = -1
-		}
-		for it.Seek(seek); it.ValidForPrefix(prefix) && counter < limit; it.Next() {
-			item := it.Item()
-			uid := item.Key()
-			namespace, key := uidutil.SplitUid(uid)
-			entry := &pb.FlameEntry{
-				Namespace: namespace,
-				Key:       key,
-			}
-
-			if limit != 0 {
-				counter = counter + 1
-			}
-
-			next := receiver(entry)
-			if !next {
-				break
-			}
-		}
-		return nil
-	})
-
-	if err != nil {
-		internalLogger.Error("iteration failure", zap.Error(err))
-		return x.ErrFailedToIterate
-	}
-
-	return nil
-}
+//func (b *Badger) IterateKeyOnly(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+//		opts := badgerDb.DefaultIteratorOptions
+//		opts.PrefetchValues = false
+//		it := txn.NewIterator(opts)
+//		defer it.Close()
+//
+//		counter := 0
+//		if limit == 0 {
+//			counter = -1
+//		}
+//		for it.Seek(seek); it.ValidForPrefix(prefix) && counter < limit; it.Next() {
+//			item := it.Item()
+//			uid := item.Key()
+//			namespace, key := uidutil.SplitUid(uid)
+//			entry := &pb.FlameEntry{
+//				Namespace: namespace,
+//				Key:       key,
+//			}
+//
+//			if limit != 0 {
+//				counter = counter + 1
+//			}
+//
+//			next := receiver(entry)
+//			if !next {
+//				break
+//			}
+//		}
+//		return nil
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("iteration failure", zap.Error(err))
+//		return x.ErrFailedToIterate
+//	}
+//
+//	return nil
+//}
 
 func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 	defer func() {

@@ -17,20 +17,20 @@ type IKVStorage interface {
 
 	Read(namespace []byte, key []byte) ([]byte, error)
 	Iterate(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error
-	IterateKeyOnly(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error
+	//IterateKeyOnly(seek, prefix []byte, limit int, receiver func(entry *pb.FlameEntry) bool) error
 
 	Delete(namespace []byte, key []byte) error
 	Create(namespace []byte, key []byte, value []byte) error
 	Update(namespace []byte, key []byte, value []byte) error
 	Append(namespace []byte, key []byte, value []byte) error
 
+	ReadBatch(batch *pb.FlameBatchRead) error
 	ApplyBatchAction(batch *pb.FlameBatchAction) error
 
 	PrepareSnapshot() (interface{}, error)
 	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
 	RecoverFromSnapshot(r io.Reader) error
 
-	//ReadBatch(batch *pb.FlameBatchRead) error
 	//ApplyAction(action *pb.FlameAction) error
 
 	//CreateIndexMeta(meta *pb.FlameIndexMeta) error

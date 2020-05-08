@@ -4,6 +4,7 @@ import "errors"
 
 var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 
+var ErrFailedToReadFlameEntry = errors.New("failed to read flame entry")
 var ErrInvalidConfiguration = errors.New("invalid configuration")
 var ErrStorageIsAlreadyOpen = errors.New("storage is already open")
 var ErrFailedToOpenStorage = errors.New("failed to open the storage")
@@ -18,12 +19,14 @@ var ErrFailedToCreateDataToStorage = errors.New("failed to create data to the st
 var ErrFailedToUpdateDataToStorage = errors.New("failed to update data to the storage")
 var ErrFailedToAppendDataToStorage = errors.New("failed to append data to the storage")
 var ErrFailedToApplyBatchToStorage = errors.New("failed to apply batch to the storage")
-var ErrFailedToApplyActionToStorage = errors.New("failed to apply action to the storage")
+
+//var ErrFailedToApplyActionToStorage = errors.New("failed to apply action to the storage")
 var ErrFailedToApplyProposal = errors.New("failed to apply proposal")
 
 var ErrFailedToCreateIndexMeta = errors.New("failed to create index meta")
 var ErrFailedToGetIndexMeta = errors.New("failed to get index meta")
-var ErrFailedToGetAllIndexMeta = errors.New("failed to get all index meta")
+
+//var ErrFailedToGetAllIndexMeta = errors.New("failed to get all index meta")
 var ErrFailedToUpdateIndexMeta = errors.New("failed to update index meta")
 var ErrFailedToDeleteIndexMeta = errors.New("failed to delete index meta")
 
@@ -32,13 +35,15 @@ var ErrInvalidUser = errors.New("invalid user: username length must be minimum 3
 
 var ErrFailedToCreateUser = errors.New("failed to create user")
 var ErrFailedToGetUser = errors.New("failed to get user")
-var ErrFailedToGetAllUser = errors.New("failed to get all user")
+
+//var ErrFailedToGetAllUser = errors.New("failed to get all user")
 var ErrFailedToUpdateUser = errors.New("failed to update user")
 var ErrFailedToDeleteUser = errors.New("failed to delete user")
 
 var ErrFailedToCreateAccessControl = errors.New("failed to create access control")
 var ErrFailedToGetAccessControl = errors.New("failed to get access control")
-var ErrFailedToGetAllAccessControl = errors.New("failed to get all access control")
+
+//var ErrFailedToGetAllAccessControl = errors.New("failed to get all access control")
 var ErrFailedToUpdateAccessControl = errors.New("failed to update access control")
 var ErrFailedToDeleteAccessControl = errors.New("failed to delete access control")
 var ErrFailedToIterate = errors.New("failed to iterate")

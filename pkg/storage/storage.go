@@ -145,6 +145,22 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 	return uidutil.ByteSliceToUint64(data), nil
 }
 
+func (s *Storage) GetFlameEntry(entry *pb.FlameEntry) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	data, err := s.mKVStorage.Read(entry.Namespace, entry.Key)
+	if err != nil {
+		internalLogger.Error("kv storage read error", zap.Error(err))
+		return x.ErrFailedToReadFlameEntry
+	}
+
+	entry.Value = data
+
+	return nil
+}
+
 func (s *Storage) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 	defer func() {
 		_ = internalLogger.Sync()
@@ -171,7 +187,27 @@ func (s *Storage) IsIndexMetaExists(meta *pb.FlameIndexMeta) bool {
 	return s.mKVStorage.IsExists([]byte(constant.IndexMetaNamespace), meta.Namespace)
 }
 
-//GetIndexMeta(meta *pb.FlameIndexMeta) error
+func (s *Storage) GetIndexMeta(meta *pb.FlameIndexMeta) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	//uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	data, err := s.mKVStorage.Read([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	if err != nil {
+		internalLogger.Error("kv storage read error", zap.Error(err))
+		return x.ErrFailedToGetIndexMeta
+	}
+
+	err = proto.Unmarshal(data, meta)
+	if err != nil {
+		internalLogger.Error("storage proto unmarshal error", zap.Error(err))
+		return x.ErrFailedToGetIndexMeta
+	}
+
+	return nil
+}
+
 //GetAllIndexMeta() ([]*pb.FlameIndexMeta, error)
 func (s *Storage) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
 	defer func() {
@@ -237,7 +273,27 @@ func (s *Storage) IsUserExists(user *pb.FlameUser) bool {
 	return s.mKVStorage.IsExists([]byte(constant.UserNamespace), []byte(user.Username))
 }
 
-//GetUser(user *pb.FlameUser) error
+func (s *Storage) GetUser(user *pb.FlameUser) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	//uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+	data, err := s.mKVStorage.Read([]byte(constant.UserNamespace), []byte(user.Username))
+	if err != nil {
+		internalLogger.Error("kv storage read error", zap.Error(err))
+		return x.ErrFailedToGetUser
+	}
+
+	err = proto.Unmarshal(data, user)
+	if err != nil {
+		internalLogger.Error("unmarshal error", zap.Error(err))
+		return x.ErrFailedToGetUser
+	}
+
+	return nil
+}
+
 //GetAllUser() ([]*pb.FlameUser, error)
 func (s *Storage) UpdateUser(user *pb.FlameUser) error {
 	defer func() {
@@ -306,7 +362,30 @@ func (s *Storage) IsAccessControlExists(ac *pb.FlameAccessControl) bool {
 	return s.mKVStorage.IsExists([]byte(constant.UserNamespace), uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
 }
 
-//GetAccessControl(ac *pb.FlameAccessControl) error
+func (s *Storage) GetAccessControl(ac *pb.FlameAccessControl) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+	data, err := s.mKVStorage.Read([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+
+	if err != nil {
+		internalLogger.Error("kv storage read error", zap.Error(err))
+		return x.ErrFailedToGetAccessControl
+	}
+
+	err = proto.Unmarshal(data, ac)
+	if err != nil {
+		internalLogger.Error("unmarshal error", zap.Error(err))
+		return x.ErrFailedToGetAccessControl
+	}
+
+	return nil
+}
+
 //GetAllAccessControl() ([]*pb.FlameAccessControl, error)
 func (s *Storage) UpdateAccessControl(ac *pb.FlameAccessControl) error {
 	defer func() {
@@ -352,17 +431,42 @@ func (s *Storage) DeleteAccessControl(ac *pb.FlameAccessControl) error {
 }
 
 func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interface{}, error) {
-	if v, ok := input.([]byte); ok {
-		e := &pb.FlameEntry{}
-		if err := proto.Unmarshal(v, e); err != nil {
-			return nil, x.ErrInvalidLookupInput
+	if v, ok := input.(*Iterator); ok {
+		err := s.mKVStorage.Iterate(v.Seek, v.Prefix, v.Limit, v.Receiver)
+		if err != nil {
+			return nil, err
 		}
+		return nil, nil
+	}
+
+	if v, ok := input.(*pb.FlameBatchRead); ok {
+		err := s.mKVStorage.ReadBatch(v)
+		if err != nil {
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	if v, ok := input.(*pb.FlameUser); ok {
+		return v, s.GetUser(v)
+	}
+
+	if v, ok := input.(*pb.FlameIndexMeta); ok {
 		if checkNamespaceValidity {
-			if !utility.IsNamespaceValid(e.Namespace) {
+			if !utility.IsNamespaceValid(v.Namespace) {
 				return nil, nil
 			}
 		}
-		return s.mKVStorage.Read(e.Namespace, e.Key)
+		return v, s.GetIndexMeta(v)
+	}
+
+	if v, ok := input.(*pb.FlameAccessControl); ok {
+		if checkNamespaceValidity {
+			if !utility.IsNamespaceValid(v.Namespace) {
+				return nil, nil
+			}
+		}
+		return v, s.GetAccessControl(v)
 	}
 
 	if v, ok := input.(*pb.FlameEntry); ok {
@@ -371,17 +475,7 @@ func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interf
 				return nil, nil
 			}
 		}
-		return s.mKVStorage.Read(v.Namespace, v.Key)
-	}
-
-	if v, ok := input.(pb.FlameEntry); ok {
-		if checkNamespaceValidity {
-			if !utility.IsNamespaceValid(v.Namespace) {
-				return nil, nil
-			}
-		}
-
-		return s.mKVStorage.Read(v.Namespace, v.Key)
+		return v, s.GetFlameEntry(v)
 	}
 
 	return nil, x.ErrInvalidLookupInput
