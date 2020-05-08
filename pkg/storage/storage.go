@@ -116,7 +116,17 @@ func (s *Storage) PrepareSnapshot() (interface{}, error) {
 }
 
 func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
-	return s.mKVStorage.RecoverFromSnapshot(r)
+	err := s.mKVStorage.RecoverFromSnapshot(r)
+
+	if err != nil {
+		return err
+	}
+
+	if err := s.FullIndex(); err != nil {
+		internalLogger.Error("full index error", zap.Error(err))
+	}
+
+	return nil
 }
 
 func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
@@ -514,7 +524,11 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			return err
 		}
 
-		_ = s.directIndex(batchAction)
+		err = s.directIndex(batchAction)
+		if err != nil {
+			internalLogger.Error("batch action direct index error", zap.Error(err))
+		}
+
 		return nil
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_INDEX_META {
 		indexMeta := &pb.FlameIndexMeta{}
@@ -559,6 +573,11 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 				internalLogger.Error("IndexStorage UpdateIndexMeta error", zap.Error(err))
 				return err
 			} else {
+				err := s.UpdateIndex(indexMeta.Namespace)
+				if err != nil {
+					internalLogger.Error("UpdateIndex error", zap.Error(err))
+				}
+
 				return nil
 			}
 		}
@@ -743,6 +762,130 @@ func (s *Storage) directIndex(batchAction *pb.FlameBatchAction) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) FullIndex() error {
+	errFound := false
+	err := s.mKVStorage.Iterate([]byte(constant.IndexMetaNamespace), []byte(""), 0, func(entry *pb.FlameEntry) bool {
+		indexMeta := &pb.FlameIndexMeta{}
+		if err := proto.Unmarshal(entry.Value, indexMeta); err != nil {
+			errFound = true
+			internalLogger.Error("proto unmarshal error", zap.Error(err))
+			return false
+		}
+
+		if err := s.mIndexStorage.CreateIndexMeta(indexMeta); err != nil {
+			internalLogger.Error("CreateIndexMeta failure", zap.Error(err))
+			errFound = true
+			return false
+		}
+		return true
+	})
+
+	if errFound {
+		return x.ErrFailedToApplyIndex
+	}
+
+	if err != nil {
+		return err
+	}
+
+	idx := 0
+	batchAction := &pb.FlameBatchAction{
+		FlameActionList: make([]*pb.FlameAction, 0, 100),
+	}
+
+	err = s.mKVStorage.Iterate([]byte("A"), []byte(""), 0, func(entry *pb.FlameEntry) bool {
+		action := &pb.FlameAction{
+			FlameActionType: pb.FlameAction_CREATE,
+			FlameEntry:      entry,
+		}
+		batchAction.FlameActionList[idx] = action
+
+		idx = idx + 1
+
+		if idx == 100 {
+			idx = 0
+			err := s.directIndex(batchAction)
+			if err != nil {
+				errFound = true
+				internalLogger.Error("direct index failed",
+					zap.Error(err))
+				return false
+			}
+		}
+
+		return true
+	})
+
+	if errFound {
+		return x.ErrFailedToApplyIndex
+	}
+
+	if idx < 100 {
+		batchAction.FlameActionList = batchAction.FlameActionList[0:idx]
+		err := s.directIndex(batchAction)
+		return err
+	} else {
+		return err
+	}
+}
+
+func (s *Storage) UpdateIndex(namespace []byte) error {
+	indexMeta := &pb.FlameIndexMeta{Namespace: namespace}
+
+	err := s.GetIndexMeta(indexMeta)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.mIndexStorage.UpdateIndexMeta(indexMeta)
+	if err != nil {
+		return err
+	}
+
+	idx := 0
+	errDirectIndex := false
+	batchAction := &pb.FlameBatchAction{
+		FlameActionList: make([]*pb.FlameAction, 0, 100),
+	}
+
+	err = s.mKVStorage.Iterate(namespace, namespace, 0, func(entry *pb.FlameEntry) bool {
+		action := &pb.FlameAction{
+			FlameActionType: pb.FlameAction_CREATE,
+			FlameEntry:      entry,
+		}
+		batchAction.FlameActionList[idx] = action
+
+		idx = idx + 1
+
+		if idx == 100 {
+			idx = 0
+			err := s.directIndex(batchAction)
+			if err != nil {
+				errDirectIndex = true
+				internalLogger.Error("direct index failed",
+					zap.Error(err),
+					zap.String("namespace", string(namespace)))
+				return false
+			}
+		}
+
+		return true
+	})
+
+	if errDirectIndex {
+		return x.ErrFailedToApplyIndex
+	}
+
+	if idx < 100 {
+		batchAction.FlameActionList = batchAction.FlameActionList[0:idx]
+		err := s.directIndex(batchAction)
+		return err
+	} else {
+		return err
+	}
 }
 
 type internalIndexHolder struct {
