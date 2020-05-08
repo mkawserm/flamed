@@ -55,6 +55,4 @@ type IKVStorage interface {
 	GetAllAccessControl() ([]*pb.FlameAccessControl, error)
 	UpdateAccessControl(ac *pb.FlameAccessControl) error
 	DeleteAccessControl(ac *pb.FlameAccessControl) error
-
-	ApplyProposal(pp *pb.FlameProposal) error
 }
