@@ -670,36 +670,6 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 	return nil
 }
 
-func (b *Badger) SaveAppliedIndex(u uint64) error {
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	return b.Create(
-		[]byte(constant.AppliedIndexNamespace),
-		[]byte(constant.AppliedIndexKey),
-		uidutil.Uint64ToByteSlice(u))
-}
-
-func (b *Badger) QueryAppliedIndex() (uint64, error) {
-	if b.mDb == nil {
-		return 0, x.ErrStorageIsNotReady
-	}
-
-	data, err := b.Read(
-		[]byte(constant.AppliedIndexNamespace),
-		[]byte(constant.AppliedIndexKey))
-
-	if err == x.ErrUidDoesNotExists {
-		return 0, nil
-	}
-
-	if err != nil {
-		return 0, err
-	}
-	return uidutil.ByteSliceToUint64(data), nil
-}
-
 func (b *Badger) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 	defer func() {
 		_ = internalLogger.Sync()

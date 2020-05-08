@@ -2,6 +2,7 @@ package storage
 
 import (
 	"github.com/golang/protobuf/proto"
+	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/uidutil"
@@ -123,11 +124,25 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 }
 
 func (s *Storage) SaveAppliedIndex(u uint64) error {
-	return s.mKVStorage.SaveAppliedIndex(u)
+	return s.mKVStorage.Create(
+		[]byte(constant.AppliedIndexNamespace),
+		[]byte(constant.AppliedIndexKey),
+		uidutil.Uint64ToByteSlice(u))
 }
 
 func (s *Storage) QueryAppliedIndex() (uint64, error) {
-	return s.mKVStorage.QueryAppliedIndex()
+	data, err := s.mKVStorage.Read(
+		[]byte(constant.AppliedIndexNamespace),
+		[]byte(constant.AppliedIndexKey))
+
+	if err == x.ErrUidDoesNotExists {
+		return 0, nil
+	}
+
+	if err != nil {
+		return 0, err
+	}
+	return uidutil.ByteSliceToUint64(data), nil
 }
 
 func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interface{}, error) {

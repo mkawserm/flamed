@@ -32,9 +32,6 @@ type IKVStorage interface {
 	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
 	RecoverFromSnapshot(r io.Reader) error
 
-	SaveAppliedIndex(u uint64) error
-	QueryAppliedIndex() (uint64, error)
-
 	CreateIndexMeta(meta *pb.FlameIndexMeta) error
 	IsIndexMetaExists(meta *pb.FlameIndexMeta) bool
 	GetIndexMeta(meta *pb.FlameIndexMeta) error
