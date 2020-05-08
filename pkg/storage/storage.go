@@ -145,6 +145,212 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 	return uidutil.ByteSliceToUint64(data), nil
 }
 
+func (s *Storage) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	data, err := proto.Marshal(meta)
+	if err != nil {
+		internalLogger.Error("marshal error", zap.Error(err))
+		return x.ErrDataMarshalError
+	}
+
+	//uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	err = s.mKVStorage.Create([]byte(constant.IndexMetaNamespace), meta.Namespace, data)
+
+	if err != nil {
+		internalLogger.Error("kv storage update error", zap.Error(err))
+		return x.ErrFailedToCreateIndexMeta
+	}
+
+	return nil
+}
+
+func (s *Storage) IsIndexMetaExists(meta *pb.FlameIndexMeta) bool {
+	return s.mKVStorage.IsExists([]byte(constant.IndexMetaNamespace), meta.Namespace)
+}
+
+//GetIndexMeta(meta *pb.FlameIndexMeta) error
+//GetAllIndexMeta() ([]*pb.FlameIndexMeta, error)
+func (s *Storage) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	data, err := proto.Marshal(meta)
+	if err != nil {
+		internalLogger.Error("proto marshal error", zap.Error(err))
+		return x.ErrDataMarshalError
+	}
+
+	//uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	err = s.mKVStorage.Update([]byte(constant.IndexMetaNamespace), meta.Namespace, data)
+
+	if err != nil {
+		internalLogger.Error("kv storage update error", zap.Error(err))
+		return x.ErrFailedToUpdateIndexMeta
+	}
+
+	return nil
+}
+
+func (s *Storage) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	//uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	err := s.mKVStorage.Delete([]byte(constant.IndexMetaNamespace), meta.Namespace)
+
+	if err != nil {
+		internalLogger.Error("kv storage delete error", zap.Error(err))
+		return x.ErrFailedToDeleteIndexMeta
+	}
+
+	return nil
+}
+
+func (s *Storage) CreateUser(user *pb.FlameUser) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	data, err := proto.Marshal(user)
+	if err != nil {
+		internalLogger.Error("proto marshal error", zap.Error(err))
+		return x.ErrDataMarshalError
+	}
+
+	//uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+	err = s.mKVStorage.Create([]byte(constant.UserNamespace), []byte(user.Username), data)
+
+	if err != nil {
+		internalLogger.Error("kv storage create error", zap.Error(err))
+		return x.ErrFailedToCreateUser
+	}
+
+	return nil
+}
+
+func (s *Storage) IsUserExists(user *pb.FlameUser) bool {
+	return s.mKVStorage.IsExists([]byte(constant.UserNamespace), []byte(user.Username))
+}
+
+//GetUser(user *pb.FlameUser) error
+//GetAllUser() ([]*pb.FlameUser, error)
+func (s *Storage) UpdateUser(user *pb.FlameUser) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	data, err := proto.Marshal(user)
+	if err != nil {
+		internalLogger.Error("proto marshal error", zap.Error(err))
+		return x.ErrDataMarshalError
+	}
+
+	//uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+	err = s.mKVStorage.Update([]byte(constant.UserNamespace), []byte(user.Username), data)
+
+	if err != nil {
+		internalLogger.Error("kv storage update error", zap.Error(err))
+		return x.ErrFailedToUpdateUser
+	}
+
+	return nil
+}
+
+func (s *Storage) DeleteUser(user *pb.FlameUser) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	//uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+	err := s.mKVStorage.Delete([]byte(constant.UserNamespace), []byte(user.Username))
+
+	if err != nil {
+		internalLogger.Error("kv storage delete error", zap.Error(err))
+		return x.ErrFailedToDeleteUser
+	}
+
+	return nil
+}
+
+func (s *Storage) CreateAccessControl(ac *pb.FlameAccessControl) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	data, err := proto.Marshal(ac)
+	if err != nil {
+		internalLogger.Error("proto marshal error", zap.Error(err))
+		return x.ErrDataMarshalError
+	}
+
+	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+
+	err = s.mKVStorage.Create([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid(ac.Namespace, []byte(ac.Username)), data)
+
+	if err != nil {
+		internalLogger.Error("kv storage create error", zap.Error(err))
+		return x.ErrFailedToCreateAccessControl
+	}
+
+	return nil
+}
+
+func (s *Storage) IsAccessControlExists(ac *pb.FlameAccessControl) bool {
+	return s.mKVStorage.IsExists([]byte(constant.UserNamespace), uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+}
+
+//GetAccessControl(ac *pb.FlameAccessControl) error
+//GetAllAccessControl() ([]*pb.FlameAccessControl, error)
+func (s *Storage) UpdateAccessControl(ac *pb.FlameAccessControl) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	data, err := proto.Marshal(ac)
+	if err != nil {
+		internalLogger.Error("proto marshal error", zap.Error(err))
+		return x.ErrDataMarshalError
+	}
+
+	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+
+	err = s.mKVStorage.Update([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid(ac.Namespace, []byte(ac.Username)), data)
+
+	if err != nil {
+		internalLogger.Error("kv storage update error", zap.Error(err))
+		return x.ErrFailedToUpdateAccessControl
+	}
+
+	return nil
+}
+
+func (s *Storage) DeleteAccessControl(ac *pb.FlameAccessControl) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+	err := s.mKVStorage.Delete([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+
+	if err != nil {
+		internalLogger.Error("kv storage delete error", zap.Error(err))
+		return x.ErrFailedToDeleteAccessControl
+	}
+
+	return nil
+}
+
 func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interface{}, error) {
 	if v, ok := input.([]byte); ok {
 		e := &pb.FlameEntry{}
@@ -214,7 +420,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		if err := s.mKVStorage.CreateIndexMeta(indexMeta); err != nil {
+		if err := s.CreateIndexMeta(indexMeta); err != nil {
 			internalLogger.Error("CreateIndexMeta error", zap.Error(err))
 			return err
 		} else {
@@ -237,7 +443,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		if err := s.mKVStorage.UpdateIndexMeta(indexMeta); err != nil {
+		if err := s.UpdateIndexMeta(indexMeta); err != nil {
 			internalLogger.Error("UpdateIndexMeta error", zap.Error(err))
 			return err
 		} else {
@@ -260,7 +466,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		if err := s.mKVStorage.DeleteIndexMeta(indexMeta); err != nil {
+		if err := s.DeleteIndexMeta(indexMeta); err != nil {
 			internalLogger.Error("DeleteIndexMeta error", zap.Error(err))
 			return err
 		} else {
@@ -283,7 +489,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		return s.mKVStorage.CreateAccessControl(ac)
+		return s.CreateAccessControl(ac)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
@@ -296,7 +502,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		return s.mKVStorage.UpdateAccessControl(ac)
+		return s.UpdateAccessControl(ac)
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_ACCESS_CONTROL {
 		ac := &pb.FlameAccessControl{}
 		if err := proto.Unmarshal(pp.FlameProposalData, ac); err != nil {
@@ -309,28 +515,28 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		return s.mKVStorage.DeleteAccessControl(ac)
+		return s.DeleteAccessControl(ac)
 	} else if pp.FlameProposalType == pb.FlameProposal_CREATE_USER {
 		user := &pb.FlameUser{}
 		if err := proto.Unmarshal(pp.FlameProposalData, user); err != nil {
 			return x.ErrDataUnmarshalError
 		}
 
-		return s.mKVStorage.CreateUser(user)
+		return s.CreateUser(user)
 	} else if pp.FlameProposalType == pb.FlameProposal_UPDATE_USER {
 		user := &pb.FlameUser{}
 		if err := proto.Unmarshal(pp.FlameProposalData, user); err != nil {
 			return x.ErrDataUnmarshalError
 		}
 
-		return s.mKVStorage.UpdateUser(user)
+		return s.UpdateUser(user)
 	} else if pp.FlameProposalType == pb.FlameProposal_DELETE_USER {
 		user := &pb.FlameUser{}
 		if err := proto.Unmarshal(pp.FlameProposalData, user); err != nil {
 			return x.ErrDataUnmarshalError
 		}
 
-		return s.mKVStorage.DeleteUser(user)
+		return s.DeleteUser(user)
 	}
 
 	return x.ErrFailedToApplyProposal

@@ -4,7 +4,6 @@ import (
 	badgerDb "github.com/dgraph-io/badger/v2"
 	badgerDbOptions "github.com/dgraph-io/badger/v2/options"
 	"github.com/golang/protobuf/proto"
-	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/uidutil"
@@ -670,454 +669,454 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 	return nil
 }
 
-func (b *Badger) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	data, err := proto.Marshal(meta)
-	if err != nil {
-		internalLogger.Error("marshal error", zap.Error(err))
-		return x.ErrDataMarshalError
-	}
-
-	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
-	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
-		err := txn.Set(uid, data)
-		return err
-	})
-
-	if err != nil {
-		internalLogger.Error("update error", zap.Error(err))
-		return x.ErrFailedToCreateIndexMeta
-	}
-
-	return nil
-}
-
-func (b *Badger) IsIndexMetaExists(meta *pb.FlameIndexMeta) bool {
-	return b.IsExists([]byte(constant.IndexMetaNamespace), meta.Namespace)
-}
-
-func (b *Badger) GetIndexMeta(meta *pb.FlameIndexMeta) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
-	err := b.mDb.View(func(txn *badgerDb.Txn) error {
-		data := b.getValue(txn, uid)
-		if data == nil {
-			return x.ErrFailedToGetIndexMeta
-		}
-
-		return proto.Unmarshal(data, meta)
-	})
-
-	if err != nil {
-		internalLogger.Error("update error", zap.Error(err))
-		return x.ErrFailedToGetIndexMeta
-	}
-
-	return nil
-}
-
-func (b *Badger) GetAllIndexMeta() ([]*pb.FlameIndexMeta, error) {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return nil, x.ErrStorageIsNotReady
-	}
-
-	data := make([]*pb.FlameIndexMeta, 0, b.mDbConfiguration.SliceCap)
-
-	err := b.mDb.View(func(txn *badgerDb.Txn) error {
-		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
-		defer it.Close()
-
-		for it.Seek([]byte(constant.IndexMetaNamespace)); it.ValidForPrefix([]byte(constant.IndexMetaNamespace)); it.Next() {
-			item := it.Item()
-			if value, err := item.ValueCopy(nil); err == nil {
-				fim := &pb.FlameIndexMeta{}
-				if err := proto.Unmarshal(value, fim); err == nil {
-					data = append(data, fim)
-				}
-			} else {
-				return err
-			}
-		}
-		return nil
-	})
-
-	if err != nil {
-		internalLogger.Error("view error", zap.Error(err))
-		return nil, x.ErrFailedToGetAllIndexMeta
-	}
-
-	return data, nil
-}
-
-func (b *Badger) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	data, err := proto.Marshal(meta)
-	if err != nil {
-		internalLogger.Error("proto marshal error", zap.Error(err))
-		return x.ErrDataMarshalError
-	}
-
-	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
-	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
-		err := txn.Set(uid, data)
-		return err
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db update error", zap.Error(err))
-		return x.ErrFailedToUpdateIndexMeta
-	}
-
-	return nil
-}
-
-func (b *Badger) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
-	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
-		err := txn.Delete(uid)
-		return err
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db delete error", zap.Error(err))
-		return x.ErrFailedToDeleteIndexMeta
-	}
-
-	return nil
-}
-
-func (b *Badger) CreateUser(user *pb.FlameUser) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	data, err := proto.Marshal(user)
-	if err != nil {
-		internalLogger.Error("proto marshal error", zap.Error(err))
-		return x.ErrDataMarshalError
-	}
-
-	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
-	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
-		err := txn.Set(uid, data)
-		return err
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db delete error", zap.Error(err))
-		return x.ErrFailedToCreateUser
-	}
-
-	return nil
-}
-
-func (b *Badger) IsUserExists(user *pb.FlameUser) bool {
-	return b.IsExists([]byte(constant.UserNamespace), []byte(user.Username))
-}
-
-func (b *Badger) GetUser(user *pb.FlameUser) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
-	err := b.mDb.View(func(txn *badgerDb.Txn) error {
-		data := b.getValue(txn, uid)
-		if data == nil {
-			return x.ErrFailedToGetUser
-		}
-
-		return proto.Unmarshal(data, user)
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db update error", zap.Error(err))
-		return x.ErrFailedToGetUser
-	}
-
-	return nil
-}
-
-func (b *Badger) GetAllUser() ([]*pb.FlameUser, error) {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return nil, x.ErrStorageIsNotReady
-	}
-
-	data := make([]*pb.FlameUser, 0, b.mDbConfiguration.SliceCap)
-
-	err := b.mDb.View(func(txn *badgerDb.Txn) error {
-		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
-		defer it.Close()
-
-		for it.Seek([]byte(constant.UserNamespace)); it.ValidForPrefix([]byte(constant.UserNamespace)); it.Next() {
-			item := it.Item()
-			if value, err := item.ValueCopy(nil); err == nil {
-				fu := &pb.FlameUser{}
-				if err := proto.Unmarshal(value, fu); err == nil {
-					data = append(data, fu)
-				}
-			} else {
-				return err
-			}
-		}
-		return nil
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db view error", zap.Error(err))
-		return nil, x.ErrFailedToGetAllUser
-	}
-
-	return data, nil
-}
-
-func (b *Badger) UpdateUser(user *pb.FlameUser) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	data, err := proto.Marshal(user)
-	if err != nil {
-		internalLogger.Error("proto marshal error", zap.Error(err))
-		return x.ErrDataMarshalError
-	}
-
-	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
-	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
-		err := txn.Set(uid, data)
-		return err
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db update error", zap.Error(err))
-		return x.ErrFailedToUpdateUser
-	}
-
-	return nil
-}
-
-func (b *Badger) DeleteUser(user *pb.FlameUser) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
-	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
-		err := txn.Delete(uid)
-		return err
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db update error", zap.Error(err))
-		return x.ErrFailedToDeleteUser
-	}
-
-	return nil
-}
-
-func (b *Badger) CreateAccessControl(ac *pb.FlameAccessControl) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	data, err := proto.Marshal(ac)
-	if err != nil {
-		internalLogger.Error("proto marshal error", zap.Error(err))
-		return x.ErrDataMarshalError
-	}
-
-	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
-
-	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
-		err := txn.Set(uid, data)
-		return err
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db update error", zap.Error(err))
-		return x.ErrFailedToCreateAccessControl
-	}
-
-	return nil
-}
-
-func (b *Badger) IsAccessControlExists(ac *pb.FlameAccessControl) bool {
-	return b.IsExists([]byte(constant.UserNamespace), uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
-}
-
-func (b *Badger) GetAccessControl(ac *pb.FlameAccessControl) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
-	err := b.mDb.View(func(txn *badgerDb.Txn) error {
-		data := b.getValue(txn, uid)
-		if data == nil {
-			return x.ErrFailedToGetAccessControl
-		}
-
-		return proto.Unmarshal(data, ac)
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db view error", zap.Error(err))
-		return x.ErrFailedToGetAccessControl
-	}
-
-	return nil
-}
-
-func (b *Badger) GetAllAccessControl() ([]*pb.FlameAccessControl, error) {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return nil, x.ErrStorageIsNotReady
-	}
-
-	data := make([]*pb.FlameAccessControl, 0, b.mDbConfiguration.SliceCap)
-
-	err := b.mDb.View(func(txn *badgerDb.Txn) error {
-		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
-		defer it.Close()
-
-		for it.Seek([]byte(constant.AccessControlNamespace)); it.ValidForPrefix([]byte(constant.AccessControlNamespace)); it.Next() {
-			item := it.Item()
-			if value, err := item.ValueCopy(nil); err == nil {
-				fac := &pb.FlameAccessControl{}
-				if err := proto.Unmarshal(value, fac); err == nil {
-					data = append(data, fac)
-				}
-			} else {
-				return err
-			}
-		}
-		return nil
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db view error", zap.Error(err))
-		return nil, x.ErrFailedToGetAllAccessControl
-	}
-
-	return data, nil
-}
-
-func (b *Badger) UpdateAccessControl(ac *pb.FlameAccessControl) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	data, err := proto.Marshal(ac)
-	if err != nil {
-		internalLogger.Error("proto marshal error", zap.Error(err))
-		return x.ErrDataMarshalError
-	}
-
-	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
-	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
-		err := txn.Set(uid, data)
-		return err
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db update error", zap.Error(err))
-		return x.ErrFailedToUpdateAccessControl
-	}
-
-	return nil
-}
-
-func (b *Badger) DeleteAccessControl(ac *pb.FlameAccessControl) error {
-	defer func() {
-		_ = internalLogger.Sync()
-	}()
-
-	if b.mDb == nil {
-		return x.ErrStorageIsNotReady
-	}
-
-	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
-	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
-		err := txn.Delete(uid)
-		return err
-	})
-
-	if err != nil {
-		internalLogger.Error("badger db update error", zap.Error(err))
-		return x.ErrFailedToDeleteAccessControl
-	}
-
-	return nil
-}
+//func (b *Badger) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	data, err := proto.Marshal(meta)
+//	if err != nil {
+//		internalLogger.Error("marshal error", zap.Error(err))
+//		return x.ErrDataMarshalError
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+//	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+//		err := txn.Set(uid, data)
+//		return err
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("update error", zap.Error(err))
+//		return x.ErrFailedToCreateIndexMeta
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) IsIndexMetaExists(meta *pb.FlameIndexMeta) bool {
+//	return b.IsExists([]byte(constant.IndexMetaNamespace), meta.Namespace)
+//}
+
+//func (b *Badger) GetIndexMeta(meta *pb.FlameIndexMeta) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+//	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+//		data := b.getValue(txn, uid)
+//		if data == nil {
+//			return x.ErrFailedToGetIndexMeta
+//		}
+//
+//		return proto.Unmarshal(data, meta)
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("update error", zap.Error(err))
+//		return x.ErrFailedToGetIndexMeta
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) GetAllIndexMeta() ([]*pb.FlameIndexMeta, error) {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return nil, x.ErrStorageIsNotReady
+//	}
+//
+//	data := make([]*pb.FlameIndexMeta, 0, b.mDbConfiguration.SliceCap)
+//
+//	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+//		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
+//		defer it.Close()
+//
+//		for it.Seek([]byte(constant.IndexMetaNamespace)); it.ValidForPrefix([]byte(constant.IndexMetaNamespace)); it.Next() {
+//			item := it.Item()
+//			if value, err := item.ValueCopy(nil); err == nil {
+//				fim := &pb.FlameIndexMeta{}
+//				if err := proto.Unmarshal(value, fim); err == nil {
+//					data = append(data, fim)
+//				}
+//			} else {
+//				return err
+//			}
+//		}
+//		return nil
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("view error", zap.Error(err))
+//		return nil, x.ErrFailedToGetAllIndexMeta
+//	}
+//
+//	return data, nil
+//}
+
+//func (b *Badger) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	data, err := proto.Marshal(meta)
+//	if err != nil {
+//		internalLogger.Error("proto marshal error", zap.Error(err))
+//		return x.ErrDataMarshalError
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+//	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+//		err := txn.Set(uid, data)
+//		return err
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db update error", zap.Error(err))
+//		return x.ErrFailedToUpdateIndexMeta
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
+//	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
+//		err := txn.Delete(uid)
+//		return err
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db delete error", zap.Error(err))
+//		return x.ErrFailedToDeleteIndexMeta
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) CreateUser(user *pb.FlameUser) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	data, err := proto.Marshal(user)
+//	if err != nil {
+//		internalLogger.Error("proto marshal error", zap.Error(err))
+//		return x.ErrDataMarshalError
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+//	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+//		err := txn.Set(uid, data)
+//		return err
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db delete error", zap.Error(err))
+//		return x.ErrFailedToCreateUser
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) IsUserExists(user *pb.FlameUser) bool {
+//	return b.IsExists([]byte(constant.UserNamespace), []byte(user.Username))
+//}
+
+//func (b *Badger) GetUser(user *pb.FlameUser) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+//	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+//		data := b.getValue(txn, uid)
+//		if data == nil {
+//			return x.ErrFailedToGetUser
+//		}
+//
+//		return proto.Unmarshal(data, user)
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db update error", zap.Error(err))
+//		return x.ErrFailedToGetUser
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) GetAllUser() ([]*pb.FlameUser, error) {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return nil, x.ErrStorageIsNotReady
+//	}
+//
+//	data := make([]*pb.FlameUser, 0, b.mDbConfiguration.SliceCap)
+//
+//	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+//		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
+//		defer it.Close()
+//
+//		for it.Seek([]byte(constant.UserNamespace)); it.ValidForPrefix([]byte(constant.UserNamespace)); it.Next() {
+//			item := it.Item()
+//			if value, err := item.ValueCopy(nil); err == nil {
+//				fu := &pb.FlameUser{}
+//				if err := proto.Unmarshal(value, fu); err == nil {
+//					data = append(data, fu)
+//				}
+//			} else {
+//				return err
+//			}
+//		}
+//		return nil
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db view error", zap.Error(err))
+//		return nil, x.ErrFailedToGetAllUser
+//	}
+//
+//	return data, nil
+//}
+
+//func (b *Badger) UpdateUser(user *pb.FlameUser) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	data, err := proto.Marshal(user)
+//	if err != nil {
+//		internalLogger.Error("proto marshal error", zap.Error(err))
+//		return x.ErrDataMarshalError
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+//	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+//		err := txn.Set(uid, data)
+//		return err
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db update error", zap.Error(err))
+//		return x.ErrFailedToUpdateUser
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) DeleteUser(user *pb.FlameUser) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
+//	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
+//		err := txn.Delete(uid)
+//		return err
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db update error", zap.Error(err))
+//		return x.ErrFailedToDeleteUser
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) CreateAccessControl(ac *pb.FlameAccessControl) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	data, err := proto.Marshal(ac)
+//	if err != nil {
+//		internalLogger.Error("proto marshal error", zap.Error(err))
+//		return x.ErrDataMarshalError
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+//		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+//
+//	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+//		err := txn.Set(uid, data)
+//		return err
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db update error", zap.Error(err))
+//		return x.ErrFailedToCreateAccessControl
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) IsAccessControlExists(ac *pb.FlameAccessControl) bool {
+//	return b.IsExists([]byte(constant.UserNamespace), uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+//}
+
+//func (b *Badger) GetAccessControl(ac *pb.FlameAccessControl) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+//		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+//	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+//		data := b.getValue(txn, uid)
+//		if data == nil {
+//			return x.ErrFailedToGetAccessControl
+//		}
+//
+//		return proto.Unmarshal(data, ac)
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db view error", zap.Error(err))
+//		return x.ErrFailedToGetAccessControl
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) GetAllAccessControl() ([]*pb.FlameAccessControl, error) {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return nil, x.ErrStorageIsNotReady
+//	}
+//
+//	data := make([]*pb.FlameAccessControl, 0, b.mDbConfiguration.SliceCap)
+//
+//	err := b.mDb.View(func(txn *badgerDb.Txn) error {
+//		it := txn.NewIterator(badgerDb.DefaultIteratorOptions)
+//		defer it.Close()
+//
+//		for it.Seek([]byte(constant.AccessControlNamespace)); it.ValidForPrefix([]byte(constant.AccessControlNamespace)); it.Next() {
+//			item := it.Item()
+//			if value, err := item.ValueCopy(nil); err == nil {
+//				fac := &pb.FlameAccessControl{}
+//				if err := proto.Unmarshal(value, fac); err == nil {
+//					data = append(data, fac)
+//				}
+//			} else {
+//				return err
+//			}
+//		}
+//		return nil
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db view error", zap.Error(err))
+//		return nil, x.ErrFailedToGetAllAccessControl
+//	}
+//
+//	return data, nil
+//}
+
+//func (b *Badger) UpdateAccessControl(ac *pb.FlameAccessControl) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	data, err := proto.Marshal(ac)
+//	if err != nil {
+//		internalLogger.Error("proto marshal error", zap.Error(err))
+//		return x.ErrDataMarshalError
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+//		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+//	err = b.mDb.Update(func(txn *badgerDb.Txn) error {
+//		err := txn.Set(uid, data)
+//		return err
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db update error", zap.Error(err))
+//		return x.ErrFailedToUpdateAccessControl
+//	}
+//
+//	return nil
+//}
+
+//func (b *Badger) DeleteAccessControl(ac *pb.FlameAccessControl) error {
+//	defer func() {
+//		_ = internalLogger.Sync()
+//	}()
+//
+//	if b.mDb == nil {
+//		return x.ErrStorageIsNotReady
+//	}
+//
+//	uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+//		uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
+//	err := b.mDb.Update(func(txn *badgerDb.Txn) error {
+//		err := txn.Delete(uid)
+//		return err
+//	})
+//
+//	if err != nil {
+//		internalLogger.Error("badger db update error", zap.Error(err))
+//		return x.ErrFailedToDeleteAccessControl
+//	}
+//
+//	return nil
+//}
