@@ -16,6 +16,11 @@ type Admin struct {
 	mDragonboatNodeHost *dragonboat.NodeHost
 }
 
+func (a *Admin) GetUser(user *pb.FlameUser, timeout time.Duration) error {
+	_, err := a.managedSyncRead(a.mClusterID, user, timeout)
+	return err
+}
+
 func (a *Admin) CreateUser(user *pb.FlameUser, timeout time.Duration) error {
 	if !utility.IsFlameUserValid(user) {
 		return x.ErrInvalidUser
@@ -98,6 +103,18 @@ func (a *Admin) DeleteUser(user *pb.FlameUser, timeout time.Duration) error {
 	} else {
 		return x.ErrFailedToDeleteUser
 	}
+}
+
+func (a *Admin) GetAccessControl(ac *pb.FlameAccessControl, timeout time.Duration) error {
+	if !utility.IsUsernameValid(ac.Username) {
+		return x.ErrInvalidUser
+	}
+	if !utility.IsNamespaceValid(ac.Namespace) {
+		return x.ErrInvalidNamespace
+	}
+
+	_, err := a.managedSyncRead(a.mClusterID, ac, timeout)
+	return err
 }
 
 func (a *Admin) CreateAccessControl(ac *pb.FlameAccessControl, timeout time.Duration) error {
@@ -293,4 +310,12 @@ func (a *Admin) managedSyncApplyProposal(clusterID uint64,
 	_ = a.mDragonboatNodeHost.SyncCloseSession(context.Background(), session)
 
 	return r, err
+}
+
+func (a *Admin) managedSyncRead(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	d, e := a.mDragonboatNodeHost.SyncRead(ctx, clusterID, query)
+	cancel()
+
+	return d, e
 }
