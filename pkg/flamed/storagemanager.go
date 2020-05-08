@@ -101,6 +101,26 @@ func (m *StorageManager) NewBatch(namespace string) *Batch {
 	}
 }
 
+func (m *StorageManager) GetUser(username string, timeout time.Duration) *pb.FlameUser {
+	user := &pb.FlameUser{Username: username}
+	_, err := m.managedSyncRead(m.mClusterID, user, timeout)
+	if err != nil {
+		internalLogger.Error("failed to get user", zap.Error(err))
+		return nil
+	}
+	return user
+}
+
+func (m *StorageManager) GetAccessControl(namespace, username string, timeout time.Duration) *pb.FlameAccessControl {
+	ac := &pb.FlameAccessControl{Username: username, Namespace: []byte(namespace)}
+	_, err := m.managedSyncRead(m.mClusterID, ac, timeout)
+	if err != nil {
+		internalLogger.Error("failed to get access control", zap.Error(err))
+		return nil
+	}
+	return ac
+}
+
 func (m *StorageManager) Get(entry *pb.FlameEntry, timeout time.Duration) error {
 	return m.Read(entry, timeout)
 }
