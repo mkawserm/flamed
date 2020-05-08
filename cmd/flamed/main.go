@@ -3,12 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/conf"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/uidutil"
 	"os"
 	"strings"
+	"time"
 	//"time"
 )
 import "github.com/mkawserm/flamed/pkg/flamed"
@@ -35,6 +35,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	manager := n.NewStorageManager(1)
 
 	l := true
 	reader := bufio.NewReader(os.Stdin)
@@ -71,35 +73,11 @@ func main() {
 				Key:       []byte("counter"),
 				Value:     uidutil.Uint64ToByteSlice(counter),
 			}
-
-			batch := &pb.FlameBatchAction{
-				FlameActionList: []*pb.FlameAction{
-					{
-						FlameEntry:      e,
-						FlameActionType: pb.FlameAction_CREATE,
-					},
-				},
-			}
-
-			pp := &pb.FlameProposal{
-				FlameProposalType: pb.FlameProposal_BATCH_ACTION,
-			}
-
-			if data, err := proto.Marshal(batch); err == nil {
-				pp.FlameProposalData = data
-				//r, err := n.ManagedSyncApplyProposal(1, pp, 3*time.Minute)
-				//
-				//if err != nil {
-				//	fmt.Println(err)
-				//}
-				//
-				//fmt.Println(r.Value)
-				//fmt.Println(r.Data)
-
-				counter = counter + 1
-			} else {
+			if err := manager.Create(e, 3*time.Minute); err != nil {
 				fmt.Println(err)
 			}
+
+			counter = counter + 1
 
 		case "r":
 			e := &pb.FlameEntry{
@@ -107,16 +85,10 @@ func main() {
 				Key:       []byte("counter"),
 			}
 
-			if data, err := proto.Marshal(e); err == nil {
-				fmt.Println(data)
-				//r, err := n.ManagedSyncRead(1, data, 3*time.Minute)
-				//
-				//if err != nil {
-				//	fmt.Println(err)
-				//}
-				//fmt.Println(uidutil.ByteSliceToUint64(r.([]byte)))
-			} else {
+			if err := manager.Read(e, 3*time.Minute); err != nil {
 				fmt.Println(err)
+			} else {
+				fmt.Println(uidutil.ByteSliceToUint64(e.Value))
 			}
 
 		case "rs":
