@@ -248,6 +248,7 @@ func (n *NodeHost) NewStorageManager(clusterID uint64) *StorageManager {
 	return &StorageManager{
 		mClusterID:          clusterID,
 		mDragonboatNodeHost: n.mNodeHost,
+		mCacheSize:          n.mStoragedConfiguration.CacheSize(),
 	}
 }
 

@@ -19,6 +19,7 @@ type Batch struct {
 	mNamespace  []byte
 	mMutex      *sync.Mutex
 	mActionList []*pb.FlameAction
+	mCacheSize  int
 }
 
 func (b *Batch) Reset() {
@@ -29,7 +30,7 @@ func (b *Batch) Reset() {
 		return
 	}
 
-	b.mActionList = make([]*pb.FlameAction, 0, 100)
+	b.mActionList = make([]*pb.FlameAction, 0, b.mCacheSize)
 }
 
 func (b *Batch) Create(key, value []byte) {
@@ -86,10 +87,12 @@ func (b *Batch) NewBatch(namespace string) *Batch {
 		mNamespace:  ns,
 		mMutex:      b.mMutex,
 		mActionList: b.mActionList,
+		mCacheSize:  b.mCacheSize,
 	}
 }
 
 type StorageManager struct {
+	mCacheSize          int
 	mClusterID          uint64
 	mDragonboatNodeHost *dragonboat.NodeHost
 }
@@ -103,7 +106,8 @@ func (m *StorageManager) NewBatch(namespace string) *Batch {
 	return &Batch{
 		mNamespace:  ns,
 		mMutex:      &sync.Mutex{},
-		mActionList: make([]*pb.FlameAction, 0, 100),
+		mActionList: make([]*pb.FlameAction, 0, m.mCacheSize),
+		mCacheSize:  m.mCacheSize,
 	}
 }
 
