@@ -4,6 +4,7 @@ import "errors"
 
 var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 
+var ErrEmptyBatch = errors.New("empty batch")
 var ErrFailedToReadFlameEntry = errors.New("failed to read flame entry")
 var ErrInvalidConfiguration = errors.New("invalid configuration")
 var ErrStorageIsAlreadyOpen = errors.New("storage is already open")
