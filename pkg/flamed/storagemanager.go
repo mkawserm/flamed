@@ -23,6 +23,10 @@ func (b *Batch) Reset() {
 	b.mMutex.Lock()
 	defer b.mMutex.Unlock()
 
+	if len(b.mActionList) == 0 {
+		return
+	}
+
 	b.mActionList = make([]*pb.FlameAction, 0, 100)
 }
 
