@@ -71,6 +71,12 @@ func (a *Admin) IterateUser(seek *pb.FlameUser, limit int, timeout time.Duration
 }
 
 func (a *Admin) IterateAccessControl(seek *pb.FlameAccessControl, limit int, timeout time.Duration) ([]*pb.FlameAccessControl, error) {
+	if seek != nil {
+		if !utility.IsNamespaceValid(seek.Namespace) {
+			return nil, x.ErrInvalidNamespace
+		}
+	}
+
 	allocationLength := 100
 	if limit != 0 {
 		allocationLength = limit
