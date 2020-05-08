@@ -81,10 +81,14 @@ func main() {
 		case "p":
 			counter = counter + 1
 			co := &CounterObject{}
-			co.Counter = counter
 			fmt.Println("counter to propose:", counter)
 			b := manager.NewBatch("test")
+
+			co.Counter = counter
 			b.Create([]byte("counter"), getJson(co))
+
+			co.Counter = counter + 1
+			b.Create([]byte("counter2"), getJson(co))
 
 			if err := manager.ApplyBatch(b, 3*time.Minute); err != nil {
 				fmt.Println(err)
@@ -107,6 +111,23 @@ func main() {
 				fmt.Println("Counter:", co.Counter)
 				counter = co.Counter
 			}
+		case "i":
+			data, err := manager.Iterate(&pb.FlameEntry{
+				Namespace: []byte("test"),
+			}, 1, 3*time.Minute)
+
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			fmt.Println(data)
+
+			data, err = manager.Iterate(data[0], 1, 3*time.Minute)
+
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(data)
 
 		case "rs":
 			//ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

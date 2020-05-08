@@ -171,11 +171,7 @@ func (m *StorageManager) Iterate(seek *pb.FlameEntry, limit int, timeout time.Du
 				return true
 			}
 
-			u := &pb.FlameEntry{}
-			if err := proto.Unmarshal(entry.Value, u); err == nil {
-				data = append(data, u)
-			}
-
+			data = append(data, entry)
 			return true
 		},
 	}
