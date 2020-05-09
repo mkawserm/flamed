@@ -440,6 +440,26 @@ func (s *Storage) DeleteAccessControl(ac *pb.FlameAccessControl) error {
 	return nil
 }
 
+func (s *Storage) executeCommand(cmd *Command) error {
+	if cmd.CommandID == SyncFullIndex {
+		return s.FullIndex()
+	}
+
+	if cmd.CommandID == SyncUpdateIndex {
+		if n, ok := cmd.Data.([]byte); ok {
+			return s.UpdateIndex(n)
+		} else {
+			internalLogger.Error("unknown data for SyncUpdateIndex")
+		}
+	}
+
+	if cmd.CommandID == SyncRunGC {
+		s.RunGC()
+	}
+
+	return nil
+}
+
 func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interface{}, error) {
 	if v, ok := input.(*Iterator); ok {
 		err := s.mKVStorage.Iterate(v.Seek, v.Prefix, v.Limit, v.Receiver)
@@ -495,6 +515,10 @@ func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interf
 			}
 		}
 		return v, s.GetFlameEntry(v)
+	}
+
+	if v, ok := input.(*Command); ok {
+		return nil, s.executeCommand(v)
 	}
 
 	return nil, x.ErrInvalidLookupInput
