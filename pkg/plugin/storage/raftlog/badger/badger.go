@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const MaxKeyLength = 1024
+
 type Transaction struct {
 	mDb    *badgerDb.DB
 	mTxn   *badgerDb.Txn
@@ -207,9 +209,9 @@ func (b *Badger) CompactEntries(firstKey []byte, lastKey []byte) error {
 }
 
 func (b *Badger) FullCompaction() error {
-	fk := make([]byte, 1024)
-	lk := make([]byte, 1024)
-	for i := uint64(0); i < 1024; i++ {
+	fk := make([]byte, MaxKeyLength)
+	lk := make([]byte, MaxKeyLength)
+	for i := uint64(0); i < MaxKeyLength; i++ {
 		fk[i] = 0
 		lk[i] = 0xFF
 	}
