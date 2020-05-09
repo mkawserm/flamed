@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/plugin/storage/index/bleve"
-	"github.com/mkawserm/flamed/pkg/plugin/storage/kv/badger"
+	"github.com/mkawserm/flamed/pkg/plugin/storage/statemachine/badger"
 )
 
 type StoragedConfigurationInput struct {
@@ -14,10 +14,10 @@ type StoragedConfigurationInput struct {
 	StoragePath      string `json:"storagePath"`
 	StorageSecretKey []byte `json:"storageSecretKey"`
 
-	StoragePluginKV                 iface.IKVStorage    `json:"-"`
-	StoragePluginIndex              iface.IIndexStorage `json:"-"`
-	KVStorageCustomConfiguration    interface{}         `json:"-"`
-	IndexStorageCustomConfiguration interface{}         `json:"-"`
+	StoragePluginStateMachine       iface.IStateMachineStorage `json:"-"`
+	StoragePluginIndex              iface.IIndexStorage        `json:"-"`
+	KVStorageCustomConfiguration    interface{}                `json:"-"`
+	IndexStorageCustomConfiguration interface{}                `json:"-"`
 }
 
 type StoragedConfiguration struct {
@@ -36,11 +36,11 @@ func (s *StoragedConfiguration) StorageSecretKey() []byte {
 	return s.StoragedConfigurationInput.StorageSecretKey
 }
 
-func (s *StoragedConfiguration) StoragePluginKV() iface.IKVStorage {
-	if s.StoragedConfigurationInput.StoragePluginKV == nil {
+func (s *StoragedConfiguration) StoragePluginStateMachine() iface.IStateMachineStorage {
+	if s.StoragedConfigurationInput.StoragePluginStateMachine == nil {
 		return &badger.Badger{}
 	} else {
-		return s.StoragedConfigurationInput.StoragePluginKV
+		return s.StoragedConfigurationInput.StoragePluginStateMachine
 	}
 }
 
@@ -52,7 +52,7 @@ func (s *StoragedConfiguration) StoragePluginIndex() iface.IIndexStorage {
 	}
 }
 
-func (s *StoragedConfiguration) KVStorageCustomConfiguration() interface{} {
+func (s *StoragedConfiguration) StateMachineStorageCustomConfiguration() interface{} {
 	return s.StoragedConfigurationInput.KVStorageCustomConfiguration
 }
 

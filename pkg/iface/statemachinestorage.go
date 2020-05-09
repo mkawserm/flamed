@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-type IKVStorage interface {
+type IStateMachineStorage interface {
 	Open(path string, secretKey []byte, readOnly bool, configuration interface{}) error
 	Close() error
 

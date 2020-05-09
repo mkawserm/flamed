@@ -15,11 +15,11 @@ type IStorageConfiguration interface {
 	StoragePath() string
 	StorageSecretKey() []byte
 
-	StoragePluginKV() IKVStorage
 	StoragePluginIndex() IIndexStorage
+	StoragePluginStateMachine() IStateMachineStorage
 
-	KVStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
+	StateMachineStorageCustomConfiguration() interface{}
 
 	/*IndexObject*/
 	IIndexObject

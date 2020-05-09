@@ -17,9 +17,9 @@ import (
 type Storage struct {
 	mSecretKey []byte
 
-	mKVStoragePath          string
-	mKVStorage              iface.IKVStorage
-	mKVStorageConfiguration interface{}
+	mStateMachineStoragePath string
+	mStateMachineStorage     iface.IStateMachineStorage
+	mKVStorageConfiguration  interface{}
 
 	mIndexStoragePath          string
 	mIndexStorage              iface.IIndexStorage
@@ -35,7 +35,7 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 
 	s.mConfiguration = configuration
 
-	if s.mConfiguration.StoragePluginKV() == nil {
+	if s.mConfiguration.StoragePluginStateMachine() == nil {
 		return false
 	}
 
@@ -43,7 +43,7 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 		return false
 	}
 
-	kvStoragePath := s.mConfiguration.StoragePath() + "/kv"
+	kvStoragePath := s.mConfiguration.StoragePath() + "/sm"
 	indexStoragePath := s.mConfiguration.StoragePath() + "/index"
 
 	if !utility.MkPath(kvStoragePath) {
@@ -55,9 +55,9 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 
 	s.mSecretKey = s.mConfiguration.StorageSecretKey()
 
-	s.mKVStorage = s.mConfiguration.StoragePluginKV()
-	s.mKVStoragePath = kvStoragePath
-	s.mKVStorageConfiguration = s.mConfiguration.KVStorageCustomConfiguration()
+	s.mStateMachineStorage = s.mConfiguration.StoragePluginStateMachine()
+	s.mStateMachineStoragePath = kvStoragePath
+	s.mKVStorageConfiguration = s.mConfiguration.StateMachineStorageCustomConfiguration()
 
 	s.mIndexStorage = s.mConfiguration.StoragePluginIndex()
 	s.mIndexStoragePath = indexStoragePath
@@ -71,8 +71,8 @@ func (s *Storage) Open() error {
 		return x.ErrInvalidConfiguration
 	}
 
-	err1 := s.mKVStorage.Open(
-		s.mKVStoragePath,
+	err1 := s.mStateMachineStorage.Open(
+		s.mStateMachineStoragePath,
 		s.mSecretKey,
 		false,
 		s.mKVStorageConfiguration)
@@ -96,27 +96,27 @@ func (s *Storage) ReadOnlyOpen() error {
 		return x.ErrInvalidConfiguration
 	}
 
-	return s.mKVStorage.Open(s.mKVStoragePath, s.mSecretKey, true, s.mKVStorageConfiguration)
+	return s.mStateMachineStorage.Open(s.mStateMachineStoragePath, s.mSecretKey, true, s.mKVStorageConfiguration)
 }
 
 func (s *Storage) Close() error {
-	return s.mKVStorage.Close()
+	return s.mStateMachineStorage.Close()
 }
 
 func (s *Storage) RunGC() {
-	s.mKVStorage.RunGC()
+	s.mStateMachineStorage.RunGC()
 }
 
 func (s *Storage) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error {
-	return s.mKVStorage.ChangeSecretKey(oldSecretKey, newSecretKey)
+	return s.mStateMachineStorage.ChangeSecretKey(oldSecretKey, newSecretKey)
 }
 
 func (s *Storage) PrepareSnapshot() (interface{}, error) {
-	return s.mKVStorage.PrepareSnapshot()
+	return s.mStateMachineStorage.PrepareSnapshot()
 }
 
 func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
-	err := s.mKVStorage.RecoverFromSnapshot(r)
+	err := s.mStateMachineStorage.RecoverFromSnapshot(r)
 
 	if err != nil {
 		return err
@@ -130,18 +130,18 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 }
 
 func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
-	return s.mKVStorage.SaveSnapshot(snapshotContext, w)
+	return s.mStateMachineStorage.SaveSnapshot(snapshotContext, w)
 }
 
 func (s *Storage) SaveAppliedIndex(u uint64) error {
-	return s.mKVStorage.Create(
+	return s.mStateMachineStorage.Create(
 		[]byte(constant.AppliedIndexNamespace),
 		[]byte(constant.AppliedIndexKey),
 		uidutil.Uint64ToByteSlice(u))
 }
 
 func (s *Storage) QueryAppliedIndex() (uint64, error) {
-	data, err := s.mKVStorage.Read(
+	data, err := s.mStateMachineStorage.Read(
 		[]byte(constant.AppliedIndexNamespace),
 		[]byte(constant.AppliedIndexKey))
 
@@ -160,9 +160,9 @@ func (s *Storage) GetFlameEntry(entry *pb.FlameEntry) error {
 		_ = internalLogger.Sync()
 	}()
 
-	data, err := s.mKVStorage.Read(entry.Namespace, entry.Key)
+	data, err := s.mStateMachineStorage.Read(entry.Namespace, entry.Key)
 	if err != nil {
-		internalLogger.Error("kv storage read error", zap.Error(err))
+		internalLogger.Error("sm storage read error", zap.Error(err))
 		return x.ErrFailedToReadFlameEntry
 	}
 
@@ -183,10 +183,10 @@ func (s *Storage) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 	}
 
 	//uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
-	err = s.mKVStorage.Create([]byte(constant.IndexMetaNamespace), meta.Namespace, data)
+	err = s.mStateMachineStorage.Create([]byte(constant.IndexMetaNamespace), meta.Namespace, data)
 
 	if err != nil {
-		internalLogger.Error("kv storage update error", zap.Error(err))
+		internalLogger.Error("sm storage update error", zap.Error(err))
 		return x.ErrFailedToCreateIndexMeta
 	}
 
@@ -194,7 +194,7 @@ func (s *Storage) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 }
 
 func (s *Storage) IsIndexMetaExists(meta *pb.FlameIndexMeta) bool {
-	return s.mKVStorage.IsExists([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	return s.mStateMachineStorage.IsExists([]byte(constant.IndexMetaNamespace), meta.Namespace)
 }
 
 func (s *Storage) GetIndexMeta(meta *pb.FlameIndexMeta) error {
@@ -203,9 +203,9 @@ func (s *Storage) GetIndexMeta(meta *pb.FlameIndexMeta) error {
 	}()
 
 	//uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
-	data, err := s.mKVStorage.Read([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	data, err := s.mStateMachineStorage.Read([]byte(constant.IndexMetaNamespace), meta.Namespace)
 	if err != nil {
-		internalLogger.Error("kv storage read error", zap.Error(err))
+		internalLogger.Error("sm storage read error", zap.Error(err))
 		return x.ErrFailedToGetIndexMeta
 	}
 
@@ -231,10 +231,10 @@ func (s *Storage) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
 	}
 
 	//uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
-	err = s.mKVStorage.Update([]byte(constant.IndexMetaNamespace), meta.Namespace, data)
+	err = s.mStateMachineStorage.Update([]byte(constant.IndexMetaNamespace), meta.Namespace, data)
 
 	if err != nil {
-		internalLogger.Error("kv storage update error", zap.Error(err))
+		internalLogger.Error("sm storage update error", zap.Error(err))
 		return x.ErrFailedToUpdateIndexMeta
 	}
 
@@ -247,10 +247,10 @@ func (s *Storage) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
 	}()
 
 	//uid := uidutil.GetUid([]byte(constant.IndexMetaNamespace), meta.Namespace)
-	err := s.mKVStorage.Delete([]byte(constant.IndexMetaNamespace), meta.Namespace)
+	err := s.mStateMachineStorage.Delete([]byte(constant.IndexMetaNamespace), meta.Namespace)
 
 	if err != nil {
-		internalLogger.Error("kv storage delete error", zap.Error(err))
+		internalLogger.Error("sm storage delete error", zap.Error(err))
 		return x.ErrFailedToDeleteIndexMeta
 	}
 
@@ -269,10 +269,10 @@ func (s *Storage) CreateUser(user *pb.FlameUser) error {
 	}
 
 	//uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
-	err = s.mKVStorage.Create([]byte(constant.UserNamespace), []byte(user.Username), data)
+	err = s.mStateMachineStorage.Create([]byte(constant.UserNamespace), []byte(user.Username), data)
 
 	if err != nil {
-		internalLogger.Error("kv storage create error", zap.Error(err))
+		internalLogger.Error("sm storage create error", zap.Error(err))
 		return x.ErrFailedToCreateUser
 	}
 
@@ -280,7 +280,7 @@ func (s *Storage) CreateUser(user *pb.FlameUser) error {
 }
 
 func (s *Storage) IsUserExists(user *pb.FlameUser) bool {
-	return s.mKVStorage.IsExists([]byte(constant.UserNamespace), []byte(user.Username))
+	return s.mStateMachineStorage.IsExists([]byte(constant.UserNamespace), []byte(user.Username))
 }
 
 func (s *Storage) GetUser(user *pb.FlameUser) error {
@@ -289,9 +289,9 @@ func (s *Storage) GetUser(user *pb.FlameUser) error {
 	}()
 
 	//uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
-	data, err := s.mKVStorage.Read([]byte(constant.UserNamespace), []byte(user.Username))
+	data, err := s.mStateMachineStorage.Read([]byte(constant.UserNamespace), []byte(user.Username))
 	if err != nil {
-		internalLogger.Error("kv storage read error", zap.Error(err))
+		internalLogger.Error("sm storage read error", zap.Error(err))
 		return x.ErrFailedToGetUser
 	}
 
@@ -317,10 +317,10 @@ func (s *Storage) UpdateUser(user *pb.FlameUser) error {
 	}
 
 	//uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
-	err = s.mKVStorage.Update([]byte(constant.UserNamespace), []byte(user.Username), data)
+	err = s.mStateMachineStorage.Update([]byte(constant.UserNamespace), []byte(user.Username), data)
 
 	if err != nil {
-		internalLogger.Error("kv storage update error", zap.Error(err))
+		internalLogger.Error("sm storage update error", zap.Error(err))
 		return x.ErrFailedToUpdateUser
 	}
 
@@ -333,10 +333,10 @@ func (s *Storage) DeleteUser(user *pb.FlameUser) error {
 	}()
 
 	//uid := uidutil.GetUid([]byte(constant.UserNamespace), []byte(user.Username))
-	err := s.mKVStorage.Delete([]byte(constant.UserNamespace), []byte(user.Username))
+	err := s.mStateMachineStorage.Delete([]byte(constant.UserNamespace), []byte(user.Username))
 
 	if err != nil {
-		internalLogger.Error("kv storage delete error", zap.Error(err))
+		internalLogger.Error("sm storage delete error", zap.Error(err))
 		return x.ErrFailedToDeleteUser
 	}
 
@@ -357,11 +357,11 @@ func (s *Storage) CreateAccessControl(ac *pb.FlameAccessControl) error {
 	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
 	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
 
-	err = s.mKVStorage.Create([]byte(constant.AccessControlNamespace),
+	err = s.mStateMachineStorage.Create([]byte(constant.AccessControlNamespace),
 		uidutil.GetUid([]byte(ac.Username), ac.Namespace), data)
 
 	if err != nil {
-		internalLogger.Error("kv storage create error", zap.Error(err))
+		internalLogger.Error("sm storage create error", zap.Error(err))
 		return x.ErrFailedToCreateAccessControl
 	}
 
@@ -369,7 +369,7 @@ func (s *Storage) CreateAccessControl(ac *pb.FlameAccessControl) error {
 }
 
 func (s *Storage) IsAccessControlExists(ac *pb.FlameAccessControl) bool {
-	return s.mKVStorage.IsExists([]byte(constant.UserNamespace), uidutil.GetUid([]byte(ac.Username), ac.Namespace))
+	return s.mStateMachineStorage.IsExists([]byte(constant.UserNamespace), uidutil.GetUid([]byte(ac.Username), ac.Namespace))
 }
 
 func (s *Storage) GetAccessControl(ac *pb.FlameAccessControl) error {
@@ -379,11 +379,11 @@ func (s *Storage) GetAccessControl(ac *pb.FlameAccessControl) error {
 
 	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
 	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
-	data, err := s.mKVStorage.Read([]byte(constant.AccessControlNamespace),
+	data, err := s.mStateMachineStorage.Read([]byte(constant.AccessControlNamespace),
 		uidutil.GetUid([]byte(ac.Username), ac.Namespace))
 
 	if err != nil {
-		internalLogger.Error("kv storage read error", zap.Error(err))
+		internalLogger.Error("sm storage read error", zap.Error(err))
 		return x.ErrFailedToGetAccessControl
 	}
 
@@ -411,11 +411,11 @@ func (s *Storage) UpdateAccessControl(ac *pb.FlameAccessControl) error {
 	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
 	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
 
-	err = s.mKVStorage.Update([]byte(constant.AccessControlNamespace),
+	err = s.mStateMachineStorage.Update([]byte(constant.AccessControlNamespace),
 		uidutil.GetUid([]byte(ac.Username), ac.Namespace), data)
 
 	if err != nil {
-		internalLogger.Error("kv storage update error", zap.Error(err))
+		internalLogger.Error("sm storage update error", zap.Error(err))
 		return x.ErrFailedToUpdateAccessControl
 	}
 
@@ -429,11 +429,11 @@ func (s *Storage) DeleteAccessControl(ac *pb.FlameAccessControl) error {
 
 	//uid := uidutil.GetUid([]byte(constant.AccessControlNamespace),
 	//	uidutil.GetUid(ac.Namespace, []byte(ac.Username)))
-	err := s.mKVStorage.Delete([]byte(constant.AccessControlNamespace),
+	err := s.mStateMachineStorage.Delete([]byte(constant.AccessControlNamespace),
 		uidutil.GetUid([]byte(ac.Username), ac.Namespace))
 
 	if err != nil {
-		internalLogger.Error("kv storage delete error", zap.Error(err))
+		internalLogger.Error("sm storage delete error", zap.Error(err))
 		return x.ErrFailedToDeleteAccessControl
 	}
 
@@ -462,7 +462,7 @@ func (s *Storage) executeCommand(cmd *Command) error {
 
 func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interface{}, error) {
 	if v, ok := input.(*Iterator); ok {
-		err := s.mKVStorage.Iterate(v.Seek, v.Prefix, v.Limit, v.Receiver)
+		err := s.mStateMachineStorage.Iterate(v.Seek, v.Prefix, v.Limit, v.Receiver)
 		if err != nil {
 			return nil, err
 		}
@@ -470,7 +470,7 @@ func (s *Storage) Lookup(input interface{}, checkNamespaceValidity bool) (interf
 	}
 
 	if v, ok := input.(*pb.FlameBatchRead); ok {
-		err := s.mKVStorage.ReadBatch(v)
+		err := s.mStateMachineStorage.ReadBatch(v)
 		if err != nil {
 			return nil, err
 		}
@@ -543,7 +543,7 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			}
 		}
 
-		err := s.mKVStorage.ApplyBatchAction(batchAction)
+		err := s.mStateMachineStorage.ApplyBatchAction(batchAction)
 		if err != nil {
 			return err
 		}
@@ -792,7 +792,7 @@ func (s *Storage) directIndex(batchAction *pb.FlameBatchAction) error {
 
 func (s *Storage) FullIndex() error {
 	errFound := false
-	err := s.mKVStorage.Iterate([]byte(constant.IndexMetaNamespace), []byte(""), 0, func(entry *pb.FlameEntry) bool {
+	err := s.mStateMachineStorage.Iterate([]byte(constant.IndexMetaNamespace), []byte(""), 0, func(entry *pb.FlameEntry) bool {
 		indexMeta := &pb.FlameIndexMeta{}
 		if err := proto.Unmarshal(entry.Value, indexMeta); err != nil {
 			errFound = true
@@ -821,7 +821,7 @@ func (s *Storage) FullIndex() error {
 		FlameActionList: make([]*pb.FlameAction, 0, 100),
 	}
 
-	err = s.mKVStorage.Iterate([]byte("A"), []byte(""), 0, func(entry *pb.FlameEntry) bool {
+	err = s.mStateMachineStorage.Iterate([]byte("A"), []byte(""), 0, func(entry *pb.FlameEntry) bool {
 		action := &pb.FlameAction{
 			FlameActionType: pb.FlameAction_CREATE,
 			FlameEntry:      entry,
@@ -888,7 +888,7 @@ func (s *Storage) UpdateIndex(namespace []byte) error {
 		FlameActionList: make([]*pb.FlameAction, 0, 100),
 	}
 
-	err = s.mKVStorage.Iterate(namespace, namespace, 0, func(entry *pb.FlameEntry) bool {
+	err = s.mStateMachineStorage.Iterate(namespace, namespace, 0, func(entry *pb.FlameEntry) bool {
 		action := &pb.FlameAction{
 			FlameActionType: pb.FlameAction_CREATE,
 			FlameEntry:      entry,

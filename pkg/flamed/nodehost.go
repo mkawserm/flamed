@@ -33,7 +33,7 @@ func (n *NodeHost) isStoragedConfigurationOk(storagedConfiguration iface.IStorag
 		return false
 	}
 
-	if storagedConfiguration.StoragePluginKV() == nil {
+	if storagedConfiguration.StoragePluginStateMachine() == nil {
 		return false
 	}
 
