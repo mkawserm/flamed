@@ -25,7 +25,7 @@ func getJson(object *CounterObject) []byte {
 }
 
 func main() {
-	n := &flamed.NodeHost{}
+	n := flamed.NewFlamed()
 	defer n.StopNode()
 
 	err := n.ConfigureNode(
