@@ -254,6 +254,15 @@ func main() {
 
 			fmt.Println(data)
 
+			co := &CounterObject{}
+			err = json.Unmarshal(data[len(data)-1].Value, co)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			fmt.Println("Counter:", co.Counter)
+			counter = co.Counter
+
 			//data, err = manager1.Iterate(data[0], 1, 3*time.Minute)
 			//
 			//if err != nil {
