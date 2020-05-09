@@ -28,16 +28,6 @@ func (a *Admin) SyncCompleteIndexUpdate(timeout time.Duration) error {
 	return err
 }
 
-func (a *Admin) SyncRunGC(timeout time.Duration) error {
-	command := &storage.Command{
-		CommandID: storage.SyncRunGC,
-		Data:      nil,
-	}
-	_, err := a.managedSyncRead(a.mClusterID, command, timeout)
-
-	return err
-}
-
 func (a *Admin) SyncPartialIndexUpdate(namespace []byte, timeout time.Duration) error {
 	if !utility.IsNamespaceValid(namespace) {
 		return x.ErrInvalidNamespace
@@ -48,6 +38,16 @@ func (a *Admin) SyncPartialIndexUpdate(namespace []byte, timeout time.Duration) 
 		Data:      namespace,
 	}
 	_, err := a.managedSyncRead(a.mClusterID, command, timeout)
+	return err
+}
+
+func (a *Admin) SyncRunGC(timeout time.Duration) error {
+	command := &storage.Command{
+		CommandID: storage.SyncRunGC,
+		Data:      nil,
+	}
+	_, err := a.managedSyncRead(a.mClusterID, command, timeout)
+
 	return err
 }
 
