@@ -10,7 +10,7 @@ func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir strin
 		CheckQuorum:                   true,
 		ElectionRTT:                   5,
 		HeartbeatRTT:                  1,
-		SnapshotEntries:               10,
+		SnapshotEntries:               100,
 		CompactionOverhead:            5,
 		OrderedConfigChange:           false,
 		MaxInMemLogSize:               0,
