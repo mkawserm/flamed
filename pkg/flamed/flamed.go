@@ -12,19 +12,19 @@ type Flamed struct {
 
 func (f *Flamed) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 	storagedConfiguration iface.IStoragedConfiguration) error {
-	return f.ConfigureNode(nodeConfiguration, storagedConfiguration)
+	return f.mNodeHost.ConfigureNode(nodeConfiguration, storagedConfiguration)
 }
 
 func (f *Flamed) StartCluster(clusterConfiguration iface.IClusterConfiguration) error {
-	return f.StartCluster(clusterConfiguration)
+	return f.mNodeHost.StartCluster(clusterConfiguration)
 }
 
 func (f *Flamed) StopCluster(clusterID uint64) error {
-	return f.StopCluster(clusterID)
+	return f.mNodeHost.StopCluster(clusterID)
 }
 
 func (f *Flamed) StopNode() {
-	f.StopNode()
+	f.mNodeHost.StopNode()
 }
 
 func (f *Flamed) TotalCluster() int {
