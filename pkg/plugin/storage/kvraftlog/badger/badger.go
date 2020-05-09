@@ -228,11 +228,6 @@ func (b *Badger) CompactEntries(firstKey []byte, lastKey []byte) error {
 		}
 		return nil
 	})
-
-	if err != nil {
-		b.RunGC()
-	}
-
 	return err
 }
 
