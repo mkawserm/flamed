@@ -15,7 +15,6 @@ type StoragedConfigurationInput struct {
 	StorageSecretKey []byte `json:"storageSecretKey"`
 
 	StoragePluginIndex        iface.IIndexStorage        `json:"-"`
-	StoragePluginKVRaftLog    iface.IKVRaftLogStorage    `json:"-"`
 	StoragePluginStateMachine iface.IStateMachineStorage `json:"-"`
 
 	KVStorageCustomConfiguration        interface{} `json:"-"`
@@ -37,14 +36,6 @@ func (s *StoragedConfiguration) StoragePath() string {
 
 func (s *StoragedConfiguration) StorageSecretKey() []byte {
 	return s.StoragedConfigurationInput.StorageSecretKey
-}
-
-func (s *StoragedConfiguration) StoragePluginKVRaftLog() iface.IKVRaftLogStorage {
-	if s.StoragedConfigurationInput.StoragePluginKVRaftLog == nil {
-		return nil
-	} else {
-		return s.StoragedConfigurationInput.StoragePluginKVRaftLog
-	}
 }
 
 func (s *StoragedConfiguration) StoragePluginStateMachine() iface.IStateMachineStorage {
@@ -69,10 +60,6 @@ func (s *StoragedConfiguration) StateMachineStorageCustomConfiguration() interfa
 
 func (s *StoragedConfiguration) IndexStorageCustomConfiguration() interface{} {
 	return s.StoragedConfigurationInput.IndexStorageCustomConfiguration
-}
-
-func (s *StoragedConfiguration) KVRaftLogStorageCustomConfiguration() interface{} {
-	return s.StoragedConfigurationInput.KVRaftLogStorageCustomConfiguration
 }
 
 func (s *StoragedConfiguration) CacheSize() int {
