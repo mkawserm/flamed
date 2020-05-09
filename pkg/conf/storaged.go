@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/plugin/storage/index/blevescorch"
-	kvRaftLogBadger "github.com/mkawserm/flamed/pkg/plugin/storage/kvraftlog/badger"
 	smBadger "github.com/mkawserm/flamed/pkg/plugin/storage/statemachine/badger"
 )
 
@@ -42,7 +41,7 @@ func (s *StoragedConfiguration) StorageSecretKey() []byte {
 
 func (s *StoragedConfiguration) StoragePluginKVRaftLog() iface.IKVRaftLogStorage {
 	if s.StoragedConfigurationInput.StoragePluginKVRaftLog == nil {
-		return &kvRaftLogBadger.Badger{}
+		return nil
 	} else {
 		return s.StoragedConfigurationInput.StoragePluginKVRaftLog
 	}
