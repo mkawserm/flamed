@@ -21,7 +21,7 @@ func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir strin
 		IsObserver:                    false,
 		IsWitness:                     false,
 		Quiesce:                       false,
-		DeploymentID:                  0,
+		DeploymentID:                  1,
 		RTTMillisecond:                200,
 		RaftAddress:                   raftAddress,
 		ListenAddress:                 "",
