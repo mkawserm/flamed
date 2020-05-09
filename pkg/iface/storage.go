@@ -16,9 +16,11 @@ type IStorageConfiguration interface {
 	StorageSecretKey() []byte
 
 	StoragePluginIndex() IIndexStorage
+	StoragePluginKVRaftLog() IKVRaftLogStorage
 	StoragePluginStateMachine() IStateMachineStorage
 
 	IndexStorageCustomConfiguration() interface{}
+	KVRaftLogStorageCustomConfiguration() interface{}
 	StateMachineStorageCustomConfiguration() interface{}
 
 	/*IndexObject*/

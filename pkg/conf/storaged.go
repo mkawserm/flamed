@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/plugin/storage/index/bleve"
-	"github.com/mkawserm/flamed/pkg/plugin/storage/statemachine/badger"
+	kvRaftLogBadger "github.com/mkawserm/flamed/pkg/plugin/storage/kvraftlog/badger"
+	smBadger "github.com/mkawserm/flamed/pkg/plugin/storage/statemachine/badger"
 )
 
 type StoragedConfigurationInput struct {
@@ -14,10 +15,13 @@ type StoragedConfigurationInput struct {
 	StoragePath      string `json:"storagePath"`
 	StorageSecretKey []byte `json:"storageSecretKey"`
 
-	StoragePluginStateMachine       iface.IStateMachineStorage `json:"-"`
-	StoragePluginIndex              iface.IIndexStorage        `json:"-"`
-	KVStorageCustomConfiguration    interface{}                `json:"-"`
-	IndexStorageCustomConfiguration interface{}                `json:"-"`
+	StoragePluginIndex        iface.IIndexStorage        `json:"-"`
+	StoragePluginKVRaftLog    iface.IKVRaftLogStorage    `json:"-"`
+	StoragePluginStateMachine iface.IStateMachineStorage `json:"-"`
+
+	KVStorageCustomConfiguration        interface{} `json:"-"`
+	IndexStorageCustomConfiguration     interface{} `json:"-"`
+	KVRaftLogStorageCustomConfiguration interface{} `json:"-"`
 }
 
 type StoragedConfiguration struct {
@@ -36,9 +40,17 @@ func (s *StoragedConfiguration) StorageSecretKey() []byte {
 	return s.StoragedConfigurationInput.StorageSecretKey
 }
 
+func (s *StoragedConfiguration) StoragePluginKVRaftLog() iface.IKVRaftLogStorage {
+	if s.StoragedConfigurationInput.StoragePluginKVRaftLog == nil {
+		return &kvRaftLogBadger.Badger{}
+	} else {
+		return s.StoragedConfigurationInput.StoragePluginKVRaftLog
+	}
+}
+
 func (s *StoragedConfiguration) StoragePluginStateMachine() iface.IStateMachineStorage {
 	if s.StoragedConfigurationInput.StoragePluginStateMachine == nil {
-		return &badger.Badger{}
+		return &smBadger.Badger{}
 	} else {
 		return s.StoragedConfigurationInput.StoragePluginStateMachine
 	}
@@ -58,6 +70,10 @@ func (s *StoragedConfiguration) StateMachineStorageCustomConfiguration() interfa
 
 func (s *StoragedConfiguration) IndexStorageCustomConfiguration() interface{} {
 	return s.StoragedConfigurationInput.IndexStorageCustomConfiguration
+}
+
+func (s *StoragedConfiguration) KVRaftLogStorageCustomConfiguration() interface{} {
+	return s.StoragedConfigurationInput.KVRaftLogStorageCustomConfiguration
 }
 
 func (s *StoragedConfiguration) CacheSize() int {
