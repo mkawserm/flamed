@@ -1,4 +1,4 @@
-package bleve
+package blevescorch
 
 import (
 	bleveSearch "github.com/blevesearch/bleve"
@@ -11,13 +11,13 @@ import (
 	"os"
 )
 
-type Bleve struct {
+type BleveScorch struct {
 	path          string
 	secretKey     []byte
 	configuration interface{}
 }
 
-func (b *Bleve) Open(path string, secretKey []byte, configuration interface{}) error {
+func (b *BleveScorch) Open(path string, secretKey []byte, configuration interface{}) error {
 	if len(path) == 0 {
 		return x.ErrPathCanNotBeEmpty
 	}
@@ -29,7 +29,7 @@ func (b *Bleve) Open(path string, secretKey []byte, configuration interface{}) e
 	return nil
 }
 
-func (b *Bleve) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
+func (b *BleveScorch) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 	p := b.path + "/" + string(meta.Namespace)
 	if b.isPathExists(p) {
 		b.removeAll(p)
@@ -51,11 +51,11 @@ func (b *Bleve) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 	return nil
 }
 
-func (b *Bleve) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
+func (b *BleveScorch) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
 	return b.CreateIndexMeta(meta)
 }
 
-func (b *Bleve) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+func (b *BleveScorch) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
 	p := b.path + "/" + string(meta.Namespace)
 	if b.isPathExists(p) {
 		b.removeAll(p)
@@ -64,7 +64,7 @@ func (b *Bleve) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
 	return nil
 }
 
-func (b *Bleve) ApplyIndex(namespace string, data []*variant.IndexData) error {
+func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) error {
 	p := b.path + "/" + namespace
 	index, err := bleveSearch.OpenUsing(p, nil)
 
@@ -109,15 +109,15 @@ func (b *Bleve) ApplyIndex(namespace string, data []*variant.IndexData) error {
 	return nil
 }
 
-func (b *Bleve) Close() error {
+func (b *BleveScorch) Close() error {
 	return nil
 }
 
-func (b *Bleve) CanIndex(namespace string) bool {
+func (b *BleveScorch) CanIndex(namespace string) bool {
 	return b.isPathExists(b.path + "/" + namespace)
 }
 
-func (b *Bleve) isPathExists(path string) bool {
+func (b *BleveScorch) isPathExists(path string) bool {
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return false
@@ -126,11 +126,11 @@ func (b *Bleve) isPathExists(path string) bool {
 	}
 }
 
-func (b *Bleve) removeAll(path string) {
+func (b *BleveScorch) removeAll(path string) {
 	_ = os.RemoveAll(path)
 }
 
-func (b *Bleve) getMapping(_ *pb.FlameIndexMeta) *bleveMapping.IndexMappingImpl {
+func (b *BleveScorch) getMapping(_ *pb.FlameIndexMeta) *bleveMapping.IndexMappingImpl {
 	indexMapping := bleveMapping.NewIndexMapping()
 	return indexMapping
 }

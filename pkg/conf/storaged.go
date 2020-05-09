@@ -3,7 +3,7 @@ package conf
 import (
 	"encoding/json"
 	"github.com/mkawserm/flamed/pkg/iface"
-	"github.com/mkawserm/flamed/pkg/plugin/storage/index/bleve"
+	"github.com/mkawserm/flamed/pkg/plugin/storage/index/blevescorch"
 	kvRaftLogBadger "github.com/mkawserm/flamed/pkg/plugin/storage/kvraftlog/badger"
 	smBadger "github.com/mkawserm/flamed/pkg/plugin/storage/statemachine/badger"
 )
@@ -58,7 +58,7 @@ func (s *StoragedConfiguration) StoragePluginStateMachine() iface.IStateMachineS
 
 func (s *StoragedConfiguration) StoragePluginIndex() iface.IIndexStorage {
 	if s.StoragedConfigurationInput.StoragePluginIndex == nil {
-		return &bleve.Bleve{}
+		return &blevescorch.BleveScorch{}
 	} else {
 		return nil
 	}

@@ -1,4 +1,4 @@
-package bleve
+package blevescorch
 
 import "github.com/mkawserm/flamed/pkg/logger"
 
