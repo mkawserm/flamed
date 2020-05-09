@@ -29,8 +29,8 @@ func main() {
 	defer n.StopNode()
 
 	err := n.ConfigureNode(
-		conf.SimpleNodeHostConfiguration(1, "/tmp/1", "/tmp/1", "localhost:63001"),
-		conf.SimpleStoragedConfiguration("/tmp/1", nil),
+		conf.SimpleNodeHostConfiguration(1, "/tmp/1/nh", "/tmp/1/wal", "localhost:63001"),
+		conf.SimpleStoragedConfiguration("/tmp/1/storage", nil),
 	)
 
 	if err != nil {
