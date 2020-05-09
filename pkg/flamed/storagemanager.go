@@ -19,6 +19,7 @@ type Batch struct {
 	mNamespace  []byte
 	mMutex      *sync.Mutex
 	mActionList []*pb.FlameAction
+	mEntryList  []*pb.FlameEntry
 	mCacheSize  int
 }
 
@@ -26,11 +27,29 @@ func (b *Batch) Reset() {
 	b.mMutex.Lock()
 	defer b.mMutex.Unlock()
 
-	if len(b.mActionList) == 0 {
-		return
+	if len(b.mActionList) != 0 {
+		b.mActionList = make([]*pb.FlameAction, 0, b.mCacheSize)
 	}
 
-	b.mActionList = make([]*pb.FlameAction, 0, b.mCacheSize)
+	if len(b.mEntryList) != 0 {
+		b.mEntryList = make([]*pb.FlameEntry, 0, b.mCacheSize)
+	}
+}
+
+func (b *Batch) Read(key []byte) {
+	b.mMutex.Lock()
+	defer b.mMutex.Unlock()
+
+	entry := &pb.FlameEntry{
+		Namespace: b.mNamespace,
+		Key:       key,
+	}
+
+	b.mEntryList = append(b.mEntryList, entry)
+}
+
+func (b *Batch) Add(key, value []byte) {
+	b.Create(key, value)
 }
 
 func (b *Batch) Create(key, value []byte) {
@@ -86,6 +105,7 @@ func (b *Batch) NewBatch(namespace string) *Batch {
 	return &Batch{
 		mNamespace:  ns,
 		mMutex:      b.mMutex,
+		mEntryList:  b.mEntryList,
 		mActionList: b.mActionList,
 		mCacheSize:  b.mCacheSize,
 	}
@@ -107,6 +127,7 @@ func (m *StorageManager) NewBatch(namespace string) *Batch {
 		mNamespace:  ns,
 		mMutex:      &sync.Mutex{},
 		mActionList: make([]*pb.FlameAction, 0, m.mCacheSize),
+		mEntryList:  make([]*pb.FlameEntry, 0, m.mCacheSize),
 		mCacheSize:  m.mCacheSize,
 	}
 }
@@ -311,6 +332,25 @@ func (m *StorageManager) Delete(entry *pb.FlameEntry, timeout time.Duration) err
 	} else {
 		return x.ErrFailedToApplyProposal
 	}
+}
+
+func (m *StorageManager) ReadBatch(batch *Batch, timeout time.Duration) (*pb.FlameBatchRead, error) {
+	if len(batch.mEntryList) == 0 {
+		return nil, x.ErrEmptyBatch
+	}
+
+	rb := &pb.FlameBatchRead{
+		FlameEntryList: batch.mEntryList,
+	}
+
+	_, err := m.managedSyncRead(m.mClusterID, rb, timeout)
+	batch.Reset()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rb, nil
 }
 
 func (m *StorageManager) ApplyBatch(batch *Batch, timeout time.Duration) error {
