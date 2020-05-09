@@ -21,7 +21,7 @@ type Badger struct {
 }
 
 func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuration interface{}) error {
-	internalLogger.Debug("opening badger database")
+	internalLogger.Info("sm opening badger database")
 	defer func() {
 		_ = internalLogger.Sync()
 	}()
@@ -39,7 +39,7 @@ func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuratio
 		b.mDbConfiguration.BadgerOptions.TableLoadingMode = badgerDbOptions.LoadToRAM
 		b.mDbConfiguration.BadgerOptions.ValueLogLoadingMode = badgerDbOptions.MemoryMap
 		b.mDbConfiguration.BadgerOptions.Compression = badgerDbOptions.Snappy
-		b.mDbConfiguration.BadgerOptions.Logger = logger.S("badger")
+		b.mDbConfiguration.BadgerOptions.Logger = logger.S("sm-badger")
 	} else {
 		if opts, ok := configuration.(Configuration); ok {
 			b.mDbConfiguration.BadgerOptions = opts.BadgerOptions
@@ -72,7 +72,7 @@ func (b *Badger) Open(path string, secretKey []byte, readOnly bool, configuratio
 	db, err := badgerDb.Open(b.mDbConfiguration.BadgerOptions)
 
 	if err != nil {
-		internalLogger.Error("failed to open badger db", zap.Error(err))
+		internalLogger.Error("sm failed to open badger db", zap.Error(err))
 		return x.ErrFailedToOpenStorage
 	}
 	b.mDb = db
@@ -95,7 +95,7 @@ func (b *Badger) Close() error {
 	err := b.mDb.Close()
 	b.mDb = nil
 	if err != nil {
-		internalLogger.Error("failed to close badger db", zap.Error(err))
+		internalLogger.Error("sm failed to close badger db", zap.Error(err))
 		return x.ErrFailedToCloseStorage
 	}
 
@@ -145,7 +145,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 
 	kr, err := badgerDb.OpenKeyRegistry(opt)
 	if err != nil {
-		internalLogger.Error("open key registry failure", zap.Error(err))
+		internalLogger.Error("sm open key registry failure", zap.Error(err))
 		return x.ErrFailedToChangeSecretKey
 	}
 
@@ -153,7 +153,7 @@ func (b *Badger) ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
 
 	err = badgerDb.WriteKeyRegistry(kr, opt)
 	if err != nil {
-		internalLogger.Error("write to the key registry failure", zap.Error(err))
+		internalLogger.Error("sm write to the key registry failure", zap.Error(err))
 		return x.ErrFailedToChangeSecretKey
 	}
 
@@ -205,7 +205,7 @@ func (b *Badger) Iterate(seek, prefix []byte, limit int, receiver func(entry *pb
 	})
 
 	if err != nil {
-		internalLogger.Error("iteration failure", zap.Error(err))
+		internalLogger.Error("sm iteration failure", zap.Error(err))
 		return x.ErrFailedToIterate
 	}
 
@@ -253,7 +253,7 @@ func (b *Badger) IterateKeyOnly(seek, prefix []byte, limit int, receiver func(en
 	})
 
 	if err != nil {
-		internalLogger.Error("iteration failure", zap.Error(err))
+		internalLogger.Error("sm iteration failure", zap.Error(err))
 		return x.ErrFailedToIterate
 	}
 
@@ -286,7 +286,7 @@ func (b *Badger) Read(namespace []byte, key []byte) ([]byte, error) {
 		if err == badgerDb.ErrKeyNotFound {
 			return nil, x.ErrUidDoesNotExists
 		} else {
-			internalLogger.Error("failed to read", zap.Error(err))
+			internalLogger.Error("sm failed to read", zap.Error(err))
 			return nil, x.ErrFailedToReadDataFromStorage
 		}
 	}
@@ -311,7 +311,7 @@ func (b *Badger) Delete(namespace []byte, key []byte) error {
 	})
 
 	if err != nil {
-		internalLogger.Error("failed to delete", zap.Error(err))
+		internalLogger.Error("sm failed to delete", zap.Error(err))
 		return x.ErrFailedToDeleteDataFromStorage
 	}
 
@@ -335,7 +335,7 @@ func (b *Badger) Create(namespace []byte, key []byte, value []byte) error {
 	})
 
 	if err != nil {
-		internalLogger.Error("failed to create", zap.Error(err))
+		internalLogger.Error("sm failed to create", zap.Error(err))
 		return x.ErrFailedToCreateDataToStorage
 	}
 
@@ -359,7 +359,7 @@ func (b *Badger) Update(namespace []byte, key []byte, value []byte) error {
 	})
 
 	if err != nil {
-		internalLogger.Error("failed to update", zap.Error(err))
+		internalLogger.Error("sm failed to update", zap.Error(err))
 		return x.ErrFailedToUpdateDataToStorage
 	}
 
@@ -384,7 +384,7 @@ func (b *Badger) Append(namespace []byte, key []byte, value []byte) error {
 	})
 
 	if err != nil {
-		internalLogger.Error("failed to append", zap.Error(err))
+		internalLogger.Error("sm failed to append", zap.Error(err))
 		return x.ErrFailedToAppendDataToStorage
 	}
 
@@ -412,7 +412,7 @@ func (b *Badger) IsExists(namespace []byte, key []byte) bool {
 	} else if err == nil {
 		return true
 	} else {
-		internalLogger.Error("is exist check failed", zap.Error(err))
+		internalLogger.Error("sm is exist check failed", zap.Error(err))
 		return false
 	}
 }
@@ -449,7 +449,7 @@ func (b *Badger) ReadBatch(batch *pb.FlameBatchRead) error {
 	})
 
 	if err != nil {
-		internalLogger.Error("read batch failure", zap.Error(err))
+		internalLogger.Error("sm read batch failure", zap.Error(err))
 		return x.ErrFailedToReadBatchFromStorage
 	}
 
@@ -491,7 +491,7 @@ func (b *Badger) ApplyBatchAction(batch *pb.FlameBatchAction) error {
 	}
 
 	if err := txn.Commit(); err != nil {
-		internalLogger.Error("txn commit error", zap.Error(err))
+		internalLogger.Error("sm txn commit error", zap.Error(err))
 		return x.ErrFailedToApplyBatchToStorage
 	}
 
@@ -520,7 +520,7 @@ func (b *Badger) PrepareSnapshot() (interface{}, error) {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	internalLogger.Debug("badger db snapshot prepared")
+	internalLogger.Debug("sm badger db snapshot prepared")
 	return b.mDb.NewTransaction(false), nil
 }
 
@@ -529,7 +529,7 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 		_ = internalLogger.Sync()
 	}()
 
-	internalLogger.Debug("badger db saving snapshot")
+	internalLogger.Debug("sm badger db saving snapshot")
 	if b.mDb == nil {
 		return x.ErrStorageIsNotReady
 	}
@@ -557,7 +557,7 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	it.Close()
 
 	if _, err := w.Write(uidutil.Uint64ToByteSlice(total)); err != nil {
-		internalLogger.Error("write error", zap.Error(err))
+		internalLogger.Error("sm write error", zap.Error(err))
 		return x.ErrFailedToSaveSnapshot
 	}
 
@@ -570,7 +570,7 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	for it.Rewind(); it.Valid(); it.Next() {
 		item := it.Item()
 		if value, err := item.ValueCopy(nil); err != nil {
-			internalLogger.Error("value copy error", zap.Error(err))
+			internalLogger.Error("sm value copy error", zap.Error(err))
 			return x.ErrFailedToSaveSnapshot
 		} else {
 			entry := &pb.FlameSnapshotEntry{
@@ -579,12 +579,12 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 			}
 
 			if data, err := proto.Marshal(entry); err != nil {
-				internalLogger.Error("marshal error", zap.Error(err))
+				internalLogger.Error("sm marshal error", zap.Error(err))
 				return x.ErrFailedToSaveSnapshot
 			} else {
 				dataLength := uint64(len(data))
 				if _, err := w.Write(uidutil.Uint64ToByteSlice(dataLength)); err != nil {
-					internalLogger.Error("write error", zap.Error(err))
+					internalLogger.Error("sm write error", zap.Error(err))
 					return x.ErrFailedToSaveSnapshot
 				}
 				if _, err := w.Write(data); err != nil {
@@ -594,7 +594,7 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 		}
 	}
 
-	internalLogger.Debug("badger db snapshot saved")
+	internalLogger.Debug("sm badger db snapshot saved")
 
 	return nil
 }
@@ -604,7 +604,7 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 		_ = internalLogger.Sync()
 	}()
 
-	internalLogger.Debug("badger db recovering from snapshot")
+	internalLogger.Debug("sm badger db recovering from snapshot")
 
 	if b.mDb == nil {
 		return x.ErrStorageIsNotReady
@@ -612,7 +612,7 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 
 	sz := make([]byte, 8)
 	if _, err := io.ReadFull(r, sz); err != nil {
-		internalLogger.Error("read error", zap.Error(err))
+		internalLogger.Error("sm read error", zap.Error(err))
 		return x.ErrFailedToRecoverFromSnapshot
 	}
 
@@ -623,48 +623,48 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 
 	for i := uint64(0); i < total; i++ {
 		if _, err := io.ReadFull(r, sz); err != nil {
-			internalLogger.Error("read error", zap.Error(err))
+			internalLogger.Error("sm read error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
 		toRead := uidutil.ByteSliceToUint64(sz)
 		data := make([]byte, toRead)
 		if _, err := io.ReadFull(r, data); err != nil {
-			internalLogger.Error("read error", zap.Error(err))
+			internalLogger.Error("sm read error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
 		entry := &pb.FlameSnapshotEntry{}
 		if err := proto.Unmarshal(data, entry); err != nil {
-			internalLogger.Error("unmarshal error", zap.Error(err))
+			internalLogger.Error("sm unmarshal error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
 		if err := txn.Set(entry.Uid, entry.Data); err == badgerDb.ErrTxnTooBig {
 			if err := txn.Commit(); err != nil {
-				internalLogger.Error("txn commit error", zap.Error(err))
+				internalLogger.Error("sm txn commit error", zap.Error(err))
 				return x.ErrFailedToRecoverFromSnapshot
 			}
 
 			txn = b.mDb.NewTransaction(true)
 
 			if err := txn.Set(entry.Uid, entry.Data); err != nil {
-				internalLogger.Error("txn set error", zap.Error(err))
+				internalLogger.Error("sm txn set error", zap.Error(err))
 				return x.ErrFailedToRecoverFromSnapshot
 			}
 
 		} else if err != nil {
-			internalLogger.Error("txn set error", zap.Error(err))
+			internalLogger.Error("sm txn set error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 	}
 
 	if err := txn.Commit(); err != nil {
-		internalLogger.Error("txn commit error", zap.Error(err))
+		internalLogger.Error("sm txn commit error", zap.Error(err))
 		return x.ErrFailedToRecoverFromSnapshot
 	}
 
-	internalLogger.Debug("badger db recovered from snapshot")
+	internalLogger.Debug("sm badger db recovered from snapshot")
 
 	return nil
 }

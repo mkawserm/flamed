@@ -3,7 +3,9 @@ package badger
 import (
 	"bytes"
 	badgerDb "github.com/dgraph-io/badger/v2"
+	badgerDbOptions "github.com/dgraph-io/badger/v2/options"
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/logger"
 	"time"
 )
 
@@ -75,6 +77,31 @@ type Badger struct {
 	//mSecretKey []byte
 
 	//mOpts badgerDb.Options
+}
+
+func (b *Badger) Open(dir, valueDir string, secretKey []byte, _ interface{}) error {
+	if b.mDb != nil {
+		return nil
+	}
+
+	opts := badgerDb.DefaultOptions(dir)
+	opts.Dir = dir
+	opts.ValueDir = valueDir
+	opts.EncryptionKey = secretKey
+	opts.Truncate = true
+	opts.TableLoadingMode = badgerDbOptions.LoadToRAM
+	opts.ValueLogLoadingMode = badgerDbOptions.MemoryMap
+	opts.Compression = badgerDbOptions.Snappy
+	opts.Logger = logger.S("raft-log-badger")
+
+	db, err := badgerDb.Open(opts)
+
+	if err != nil {
+		return nil
+	} else {
+		b.mDb = db
+		return nil
+	}
 }
 
 func (b *Badger) Name() string {
