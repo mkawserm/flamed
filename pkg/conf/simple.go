@@ -1,6 +1,9 @@
 package conf
 
-import "github.com/mkawserm/flamed/pkg/iface"
+import (
+	"github.com/lni/dragonboat/v3/plugin/pebble"
+	"github.com/mkawserm/flamed/pkg/iface"
+)
 
 func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir string, raftAddress string) iface.INodeConfiguration {
 	return &NodeHostConfiguration{NodeHostConfigurationInput: NodeHostConfigurationInput{
@@ -28,7 +31,7 @@ func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir strin
 		KeyFile:                       "",
 		MaxSendQueueSize:              0,
 		MaxReceiveQueueSize:           0,
-		LogDBFactory:                  nil,
+		LogDBFactory:                  pebble.NewBatchedLogDB,
 		RaftRPCFactory:                nil,
 		EnableMetrics:                 false,
 		MaxSnapshotSendBytesPerSecond: 0,
