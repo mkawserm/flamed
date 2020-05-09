@@ -68,12 +68,13 @@ func (t *Transaction) Destroy() error {
 }
 
 type Badger struct {
-	mDir       string
-	mWalDir    string
-	mSecretKey []byte
+	mDb *badgerDb.DB
 
-	mDb   *badgerDb.DB
-	mOpts badgerDb.Options
+	//mDir       string
+	//mWalDir    string
+	//mSecretKey []byte
+
+	//mOpts badgerDb.Options
 }
 
 func (b *Badger) Name() string {
