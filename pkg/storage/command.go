@@ -3,8 +3,8 @@ package storage
 type CommandID uint8
 
 const (
-	SyncFullIndex CommandID = iota
-	SyncUpdateIndex
+	SyncCompleteIndexUpdate CommandID = iota
+	SyncPartialIndexUpdate
 	SyncRunGC
 )
 

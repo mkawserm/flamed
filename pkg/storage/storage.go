@@ -441,15 +441,15 @@ func (s *Storage) DeleteAccessControl(ac *pb.FlameAccessControl) error {
 }
 
 func (s *Storage) executeCommand(cmd *Command) error {
-	if cmd.CommandID == SyncFullIndex {
+	if cmd.CommandID == SyncCompleteIndexUpdate {
 		return s.FullIndex()
 	}
 
-	if cmd.CommandID == SyncUpdateIndex {
+	if cmd.CommandID == SyncPartialIndexUpdate {
 		if n, ok := cmd.Data.([]byte); ok {
 			return s.UpdateIndex(n)
 		} else {
-			internalLogger.Error("unknown data for SyncUpdateIndex")
+			internalLogger.Error("unknown data for SyncPartialIndexUpdate")
 		}
 	}
 

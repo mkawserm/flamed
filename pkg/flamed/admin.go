@@ -19,9 +19,9 @@ type Admin struct {
 	mDragonboatNodeHost *dragonboat.NodeHost
 }
 
-func (a *Admin) SyncFullIndex(timeout time.Duration) error {
+func (a *Admin) SyncCompleteIndexUpdate(timeout time.Duration) error {
 	command := &storage.Command{
-		CommandID: storage.SyncFullIndex,
+		CommandID: storage.SyncCompleteIndexUpdate,
 		Data:      nil,
 	}
 	_, err := a.managedSyncRead(a.mClusterID, command, timeout)
@@ -38,13 +38,13 @@ func (a *Admin) SyncRunGC(timeout time.Duration) error {
 	return err
 }
 
-func (a *Admin) SyncUpdateIndex(namespace []byte, timeout time.Duration) error {
+func (a *Admin) SyncPartialIndexUpdate(namespace []byte, timeout time.Duration) error {
 	if !utility.IsNamespaceValid(namespace) {
 		return x.ErrInvalidNamespace
 	}
 
 	command := &storage.Command{
-		CommandID: storage.SyncUpdateIndex,
+		CommandID: storage.SyncPartialIndexUpdate,
 		Data:      namespace,
 	}
 	_, err := a.managedSyncRead(a.mClusterID, command, timeout)
