@@ -43,9 +43,12 @@ func main() {
 		panic(err)
 	}
 
-	err = flame1.StartCluster(
-		conf.SimpleClusterConfiguration(clusterId, "example", members, false),
-	)
+	clusterConfig := conf.SimpleClusterConfiguration(clusterId, "example", members, false)
+
+	fmt.Println(clusterConfig.InitialMembers())
+	//panic("asdasd")
+
+	err = flame1.StartCluster(clusterConfig)
 
 	if err != nil {
 		panic(err)

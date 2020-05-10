@@ -84,9 +84,16 @@ github.com/lni/goutils v1.1.0/go.mod h1:NDD+zR5cMNH2OsJj+r/X7zBSzBlmxytUUot268gt
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
-github.com/mkawserm/dragonboat v2.1.7+incompatible h1:juJMSosCafiADYe9FEG3VKtwBuVHp70jWCoQ0euhEPA=
-github.com/mkawserm/dragonboat/v3 v3.2.4 h1:aijt8HttH8enk92uIYRzpjOqG46LhuU9pQQLkZTjJ0M=
-github.com/mkawserm/dragonboat/v3 v3.2.4/go.mod h1:b3k6zDAERZFS61Q2WA0xntlzSiOTd8n9OVYuiQjJJWY=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510011712-be79f1997170 h1:z11exrv5lrePhc+KHhRiioAh0+rv6FSqfsvBkwnpRoY=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510011712-be79f1997170/go.mod h1:b3k6zDAERZFS61Q2WA0xntlzSiOTd8n9OVYuiQjJJWY=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510012427-288a8a829d1e h1:R/7LU+8xoXMYjoVAHsvPDOy9fMtZlfXiFG2nlqG8SJ0=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510012427-288a8a829d1e/go.mod h1:b3k6zDAERZFS61Q2WA0xntlzSiOTd8n9OVYuiQjJJWY=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510013718-085b498dfb70 h1:AOvDf9Tv9xSg1/KI9tTHFWKgCsAR8f5MvKlj+8nROYc=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510013718-085b498dfb70/go.mod h1:b3k6zDAERZFS61Q2WA0xntlzSiOTd8n9OVYuiQjJJWY=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510014121-c3da683ce0a7 h1:YuwC4ZYtXSgr3yjU0puSJYDcs9DSJl+HTfL3yKdMC14=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510014121-c3da683ce0a7/go.mod h1:b3k6zDAERZFS61Q2WA0xntlzSiOTd8n9OVYuiQjJJWY=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510020443-d7b36ad5bc19 h1:lY8oSnuFk6FyAQ4A2mbeW9Vjn3bHkmxdZUBFRV+cLL4=
+github.com/mkawserm/dragonboat/v3 v3.0.0-20200510020443-d7b36ad5bc19/go.mod h1:b3k6zDAERZFS61Q2WA0xntlzSiOTd8n9OVYuiQjJJWY=
 github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae/go.mod h1:qAyveg+e4CE+eKJXWVjKXM4ck2QobLqTDytGJbLLhJg=
 github.com/mschoch/smat v0.2.0/go.mod h1:kc9mz7DoBKqDyiRL7VZN8KvXQMWeTaVnttLRXOlotKw=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
@@ -158,7 +165,6 @@ golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5h
 golang.org/x/sys v0.0.0-20190312061237-fead79001313/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190412213103-97732733099d/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
-golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa h1:KIDDMLT1O0Nr7TSxp8xM5tJcdn8tgyAONntO829og1M=
 golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20200202164722-d101bd2416d5 h1:LfCXLvNmTYH9kEmVgqbnsWfruoXZIrh4YBgqVHtDvw0=
