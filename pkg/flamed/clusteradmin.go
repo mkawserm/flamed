@@ -2,7 +2,6 @@ package flamed
 
 import (
 	"context"
-	"github.com/mkawserm/dragonboat/v3"
 	"time"
 )
 

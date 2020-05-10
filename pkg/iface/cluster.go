@@ -1,6 +1,6 @@
 package iface
 
-import sm "github.com/mkawserm/dragonboat/v3/statemachine"
+import sm "github.com/lni/dragonboat/v3/statemachine"
 
 type IClusterConfiguration interface {
 	ClusterID() uint64

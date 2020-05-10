@@ -1,8 +1,7 @@
 package flamed
 
 import (
-	"github.com/mkawserm/dragonboat/v3"
-	"github.com/mkawserm/dragonboat/v3/config"
+	"github.com/lni/dragonboat/v3/config"
 	"github.com/mkawserm/flamed/pkg/iface"
 )
 

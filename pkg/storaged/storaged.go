@@ -9,7 +9,7 @@ import (
 )
 
 import "github.com/mkawserm/flamed/pkg/storage"
-import sm "github.com/mkawserm/dragonboat/v3/statemachine"
+import sm "github.com/lni/dragonboat/v3/statemachine"
 
 type Storaged struct {
 	mStorage *storage.Storage

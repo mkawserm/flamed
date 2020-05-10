@@ -1,8 +1,8 @@
 package iface
 
 import (
-	"github.com/mkawserm/dragonboat/v3/config"
-	"github.com/mkawserm/dragonboat/v3/raftio"
+	"github.com/lni/dragonboat/v3/config"
+	"github.com/lni/dragonboat/v3/raftio"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/mkawserm/dragonboat/v3/logger"
+	"github.com/lni/dragonboat/v3/logger"
 	"go.uber.org/zap"
 	"sync"
 )
