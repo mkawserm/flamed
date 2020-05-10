@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"github.com/lni/dragonboat/v3/plugin/pebble"
 	"github.com/mkawserm/flamed/pkg/iface"
 )
 
@@ -20,7 +21,7 @@ func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir strin
 		IsObserver:                    false,
 		IsWitness:                     false,
 		Quiesce:                       false,
-		DeploymentID:                  1,
+		DeploymentID:                  0,
 		RTTMillisecond:                200,
 		RaftAddress:                   raftAddress,
 		ListenAddress:                 "",
@@ -30,7 +31,7 @@ func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir strin
 		KeyFile:                       "",
 		MaxSendQueueSize:              0,
 		MaxReceiveQueueSize:           0,
-		LogDBFactory:                  nil,
+		LogDBFactory:                  pebble.NewLogDB,
 		RaftRPCFactory:                nil,
 		EnableMetrics:                 false,
 		MaxSnapshotSendBytesPerSecond: 0,
