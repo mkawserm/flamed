@@ -3,6 +3,7 @@ package flamed
 import (
 	"context"
 	"github.com/golang/protobuf/proto"
+	"github.com/lni/dragonboat/v3"
 	sm "github.com/lni/dragonboat/v3/statemachine"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/storage"
