@@ -1,7 +1,7 @@
 package conf
 
 import (
-	sm "github.com/lni/dragonboat/v3/statemachine"
+	sm "github.com/mkawserm/dragonboat/v3/statemachine"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/storaged"
 )

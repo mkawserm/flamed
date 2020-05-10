@@ -1,9 +1,8 @@
 package conf
 
 import (
-	"github.com/lni/dragonboat/v3/config"
-	"github.com/lni/dragonboat/v3/plugin/pebble"
-	"github.com/lni/dragonboat/v3/raftio"
+	"github.com/mkawserm/dragonboat/v3/config"
+	"github.com/mkawserm/dragonboat/v3/raftio"
 	"time"
 )
 
@@ -157,11 +156,7 @@ func (n *NodeHostConfiguration) MaxReceiveQueueSize() uint64 {
 }
 
 func (n *NodeHostConfiguration) LogDBFactory() config.LogDBFactoryFunc {
-	if n.NodeHostConfigurationInput.LogDBFactory == nil {
-		return pebble.NewLogDB
-	} else {
-		return n.NodeHostConfigurationInput.LogDBFactory
-	}
+	return n.NodeHostConfigurationInput.LogDBFactory
 }
 
 func (n *NodeHostConfiguration) RaftRPCFactory() config.RaftRPCFactoryFunc {

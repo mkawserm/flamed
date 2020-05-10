@@ -1,9 +1,9 @@
 package flamed
 
 import (
-	"github.com/lni/dragonboat/v3"
-	"github.com/lni/dragonboat/v3/config"
-	"github.com/lni/dragonboat/v3/raftpb"
+	"github.com/mkawserm/dragonboat/v3"
+	"github.com/mkawserm/dragonboat/v3/config"
+	"github.com/mkawserm/dragonboat/v3/raftpb"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"

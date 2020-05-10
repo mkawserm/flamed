@@ -1,7 +1,7 @@
 package iface
 
 import (
-	sm "github.com/lni/dragonboat/v3/statemachine"
+	sm "github.com/mkawserm/dragonboat/v3/statemachine"
 	"io"
 )
 
