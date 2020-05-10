@@ -42,6 +42,7 @@ func SimpleStoragedConfiguration(path string, secretKey []byte) iface.IStoragedC
 	return &StoragedConfiguration{
 		StoragedConfigurationInput: StoragedConfigurationInput{
 			AutoIndexMeta:    true,
+			IndexEnable:      true,
 			StoragePath:      path,
 			StorageSecretKey: secretKey,
 		}}

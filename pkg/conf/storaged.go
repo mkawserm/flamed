@@ -14,6 +14,8 @@ type StoragedConfigurationInput struct {
 	StoragePath      string `json:"storagePath"`
 	StorageSecretKey []byte `json:"storageSecretKey"`
 
+	IndexEnable bool `json:"indexEnable"`
+
 	StoragePluginIndex        iface.IIndexStorage        `json:"-"`
 	StoragePluginStateMachine iface.IStateMachineStorage `json:"-"`
 
@@ -28,6 +30,10 @@ type StoragedConfiguration struct {
 
 func (s *StoragedConfiguration) AutoIndexMeta() bool {
 	return s.StoragedConfigurationInput.AutoIndexMeta
+}
+
+func (s *StoragedConfiguration) IndexEnable() bool {
+	return s.StoragedConfigurationInput.IndexEnable
 }
 
 func (s *StoragedConfiguration) StoragePath() string {

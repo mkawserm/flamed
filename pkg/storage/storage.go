@@ -39,8 +39,10 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 		return false
 	}
 
-	if s.mConfiguration.StoragePluginIndex() == nil {
-		return false
+	if s.mConfiguration.IndexEnable() {
+		if s.mConfiguration.StoragePluginIndex() == nil {
+			return false
+		}
 	}
 
 	kvStoragePath := s.mConfiguration.StoragePath() + "/sm"
@@ -49,8 +51,11 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 	if !utility.MkPath(kvStoragePath) {
 		return false
 	}
-	if !utility.MkPath(indexStoragePath) {
-		return false
+
+	if s.mConfiguration.IndexEnable() {
+		if !utility.MkPath(indexStoragePath) {
+			return false
+		}
 	}
 
 	s.mSecretKey = s.mConfiguration.StorageSecretKey()
@@ -80,24 +85,26 @@ func (s *Storage) Open() error {
 		return err1
 	}
 
-	err2 := s.mIndexStorage.Open(
-		s.mIndexStoragePath,
-		s.mSecretKey,
-		s.mIndexStorageConfiguration)
-	if err2 != nil {
-		return err2
+	if s.mConfiguration.IndexEnable() {
+		err2 := s.mIndexStorage.Open(
+			s.mIndexStoragePath,
+			s.mSecretKey,
+			s.mIndexStorageConfiguration)
+		if err2 != nil {
+			return err2
+		}
 	}
 
 	return nil
 }
 
-func (s *Storage) ReadOnlyOpen() error {
-	if s.mConfiguration == nil {
-		return x.ErrInvalidConfiguration
-	}
-
-	return s.mStateMachineStorage.Open(s.mStateMachineStoragePath, s.mSecretKey, true, s.mKVStorageConfiguration)
-}
+//func (s *Storage) ReadOnlyOpen() error {
+//	if s.mConfiguration == nil {
+//		return x.ErrInvalidConfiguration
+//	}
+//
+//	return s.mStateMachineStorage.Open(s.mStateMachineStoragePath, s.mSecretKey, true, s.mKVStorageConfiguration)
+//}
 
 func (s *Storage) Close() error {
 	return s.mStateMachineStorage.Close()
@@ -548,6 +555,9 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			return err
 		}
 
+		if !s.mConfiguration.IndexEnable() {
+			return nil
+		}
 		err = s.directIndex(batchAction)
 		if err != nil {
 			internalLogger.Error("batch action direct index error", zap.Error(err))
@@ -570,6 +580,9 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			internalLogger.Error("CreateIndexMeta error", zap.Error(err))
 			return err
 		} else {
+			if !s.mConfiguration.IndexEnable() {
+				return nil
+			}
 			if err := s.mIndexStorage.CreateIndexMeta(indexMeta); err != nil {
 				internalLogger.Error("IndexStorage CreateIndexMeta error", zap.Error(err))
 				return err
@@ -593,6 +606,10 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			internalLogger.Error("UpdateIndexMeta error", zap.Error(err))
 			return err
 		} else {
+			if !s.mConfiguration.IndexEnable() {
+				return nil
+			}
+
 			if err := s.mIndexStorage.UpdateIndexMeta(indexMeta); err != nil {
 				internalLogger.Error("IndexStorage UpdateIndexMeta error", zap.Error(err))
 				return err
@@ -621,6 +638,9 @@ func (s *Storage) ApplyProposal(pp *pb.FlameProposal, checkNamespaceValidity boo
 			internalLogger.Error("DeleteIndexMeta error", zap.Error(err))
 			return err
 		} else {
+			if !s.mConfiguration.IndexEnable() {
+				return nil
+			}
 			if err := s.mIndexStorage.DeleteIndexMeta(indexMeta); err != nil {
 				internalLogger.Error("IndexStorage DeleteIndexMeta error", zap.Error(err))
 				return err

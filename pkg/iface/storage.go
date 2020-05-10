@@ -11,6 +11,7 @@ type IStorageConfiguration interface {
 	BatchSize() int
 
 	AutoIndexMeta() bool
+	IndexEnable() bool
 
 	StoragePath() string
 	StorageSecretKey() []byte
