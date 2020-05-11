@@ -15,35 +15,40 @@ import (
 	"io"
 )
 
+type IndexDataContainer map[string][]*variant.IndexData
+
 type StateContext struct {
+	mTxn           iface.IStateStorageTransaction
+	mIndexDataList []*variant.IndexData
 }
 
-func (s *StateContext) GetState(address []byte) ([]byte, error) {
-	return nil, nil
+func (s *StateContext) GetState(key []byte) ([]byte, error) {
+	return s.mTxn.Get(key)
 }
 
-func (s *StateContext) SetState(address []byte, payload []byte) error {
-	return nil
+func (s *StateContext) SetState(key []byte, value []byte) error {
+	return s.mTxn.Set(key, value)
 }
 
-func (s *StateContext) DeleteState(address []byte) error {
-	return nil
+func (s *StateContext) DeleteState(key []byte) error {
+	return s.mTxn.Delete(key)
 }
 
 func (s *StateContext) SetIndex(id string, data interface{}) error {
+	s.mIndexDataList = append(s.mIndexDataList, &variant.IndexData{
+		ID:     id,
+		Data:   data,
+		Action: variant.SET,
+	})
 	return nil
 }
 
 func (s *StateContext) DeleteIndex(id string) error {
+	s.mIndexDataList = append(s.mIndexDataList, &variant.IndexData{
+		ID:     id,
+		Action: variant.DELETE,
+	})
 	return nil
-}
-
-func (s *StateContext) Commit() error {
-	return nil
-}
-
-func (s *StateContext) Discard() {
-
 }
 
 type Storage struct {
@@ -258,8 +263,10 @@ func (s *Storage) Lookup(input interface{}) (interface{}, error) {
 }
 
 func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *variant.ProposalResponse {
-	stateContext := &StateContext{}
-	defer stateContext.Discard()
+	txn := s.mStateStorage.NewTransaction()
+	defer txn.Discard()
+
+	var indexDataContainer = make(IndexDataContainer)
 
 	pr := variant.NewProposalResponse(0)
 	for _, t := range proposal.Transactions {
@@ -271,17 +278,27 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 			return pr
 		}
 
+		stateContext := &StateContext{
+			mTxn:           txn,
+			mIndexDataList: make([]*variant.IndexData, 0),
+		}
 		tpr := tp.Apply(ctx, stateContext, t)
 		pr.Append(tpr)
+
 		if tpr.Status == 0 {
 			return pr
+		} else {
+			indexDataContainer[string(t.Namespace)] = stateContext.mIndexDataList
 		}
 	}
 
-	if err := stateContext.Commit(); err == nil {
+	if err := txn.Commit(); err == nil {
+		/* TODO: SEND INDEX DATA TO BE PROCESSED */
+
 		pr.Status = 1
 		return pr
 	} else {
+		indexDataContainer = nil
 		pr.Status = 0
 		pr.ErrorText = "state commit failed"
 		return pr
@@ -1055,10 +1072,6 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 //	}
 //}
 //
-//type internalIndexHolder struct {
-//	namespace string
-//	indexData []*variant.IndexData
-//}
 
 func (s *Storage) PrepareSnapshot() (interface{}, error) {
 	defer func() {
@@ -1200,3 +1213,8 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	internalLogger.Debug("storage snapshot saved")
 	return nil
 }
+
+//type internalIndexHolder struct {
+//	namespace string
+//	indexData []*variant.IndexData
+//}

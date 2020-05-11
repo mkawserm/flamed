@@ -79,19 +79,11 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 
 	batch := index.NewBatch()
 	for idx := range data {
-		if data[idx].Action == variant.CREATE {
+		if data[idx].Action == variant.SET {
 			err = batch.Index(data[idx].ID, data[idx].Data)
 			if err != nil {
 				internalLogger.Debug("indexing error", zap.Error(err))
 				return x.ErrFailedToCreateIndex
-			}
-		}
-
-		if data[idx].Action == variant.UPDATE {
-			err = batch.Index(data[idx].ID, data[idx].Data)
-			if err != nil {
-				internalLogger.Debug("index update error", zap.Error(err))
-				return x.ErrFailedToUpdateIndex
 			}
 		}
 

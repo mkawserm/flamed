@@ -1,11 +1,10 @@
 package variant
 
-const CREATE = 1
-const UPDATE = 2
-const DELETE = 3
+const SET = 1
+const DELETE = 2
 
 type IndexData struct {
 	ID     string      `json:"id"`
 	Data   interface{} `json:"data"`
-	Action int8        `json:"action"` /* 1 - CREATE, 2 - UPDATE, 3 - DELETE */
+	Action int8        `json:"action"` /*1 - SET, 2 - DELETE*/
 }
