@@ -20,335 +20,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type FlameAction_FlameActionType int32
-
-const (
-	FlameAction_CREATE FlameAction_FlameActionType = 0
-	FlameAction_UPDATE FlameAction_FlameActionType = 1
-	FlameAction_DELETE FlameAction_FlameActionType = 2
-	FlameAction_APPEND FlameAction_FlameActionType = 3
-)
-
-var FlameAction_FlameActionType_name = map[int32]string{
-	0: "CREATE",
-	1: "UPDATE",
-	2: "DELETE",
-	3: "APPEND",
-}
-
-var FlameAction_FlameActionType_value = map[string]int32{
-	"CREATE": 0,
-	"UPDATE": 1,
-	"DELETE": 2,
-	"APPEND": 3,
-}
-
-func (x FlameAction_FlameActionType) String() string {
-	return proto.EnumName(FlameAction_FlameActionType_name, int32(x))
-}
-
-func (FlameAction_FlameActionType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{1, 0}
-}
-
-type FlameIndexField_FlameIndexFieldType int32
-
-const (
-	FlameIndexField_TEXT      FlameIndexField_FlameIndexFieldType = 0
-	FlameIndexField_NUMERIC   FlameIndexField_FlameIndexFieldType = 1
-	FlameIndexField_BOOLEAN   FlameIndexField_FlameIndexFieldType = 2
-	FlameIndexField_GEO_POINT FlameIndexField_FlameIndexFieldType = 3
-	FlameIndexField_DATE_TIME FlameIndexField_FlameIndexFieldType = 4
-)
-
-var FlameIndexField_FlameIndexFieldType_name = map[int32]string{
-	0: "TEXT",
-	1: "NUMERIC",
-	2: "BOOLEAN",
-	3: "GEO_POINT",
-	4: "DATE_TIME",
-}
-
-var FlameIndexField_FlameIndexFieldType_value = map[string]int32{
-	"TEXT":      0,
-	"NUMERIC":   1,
-	"BOOLEAN":   2,
-	"GEO_POINT": 3,
-	"DATE_TIME": 4,
-}
-
-func (x FlameIndexField_FlameIndexFieldType) String() string {
-	return proto.EnumName(FlameIndexField_FlameIndexFieldType_name, int32(x))
-}
-
-func (FlameIndexField_FlameIndexFieldType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{6, 0}
-}
-
-type FlameUser_FlameUserType int32
-
-const (
-	FlameUser_SUPER_USER  FlameUser_FlameUserType = 0
-	FlameUser_NORMAL_USER FlameUser_FlameUserType = 1
-)
-
-var FlameUser_FlameUserType_name = map[int32]string{
-	0: "SUPER_USER",
-	1: "NORMAL_USER",
-}
-
-var FlameUser_FlameUserType_value = map[string]int32{
-	"SUPER_USER":  0,
-	"NORMAL_USER": 1,
-}
-
-func (x FlameUser_FlameUserType) String() string {
-	return proto.EnumName(FlameUser_FlameUserType_name, int32(x))
-}
-
-func (FlameUser_FlameUserType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{11, 0}
-}
-
-type FlameProposal_FlameProposalType int32
-
-const (
-	FlameProposal_BATCH_ACTION          FlameProposal_FlameProposalType = 0
-	FlameProposal_CREATE_USER           FlameProposal_FlameProposalType = 1
-	FlameProposal_UPDATE_USER           FlameProposal_FlameProposalType = 2
-	FlameProposal_DELETE_USER           FlameProposal_FlameProposalType = 3
-	FlameProposal_CREATE_INDEX_META     FlameProposal_FlameProposalType = 4
-	FlameProposal_UPDATE_INDEX_META     FlameProposal_FlameProposalType = 5
-	FlameProposal_DELETE_INDEX_META     FlameProposal_FlameProposalType = 6
-	FlameProposal_CREATE_ACCESS_CONTROL FlameProposal_FlameProposalType = 7
-	FlameProposal_UPDATE_ACCESS_CONTROL FlameProposal_FlameProposalType = 8
-	FlameProposal_DELETE_ACCESS_CONTROL FlameProposal_FlameProposalType = 9
-	FlameProposal_BATCH_USER            FlameProposal_FlameProposalType = 10
-	FlameProposal_BATCH_INDEX_META      FlameProposal_FlameProposalType = 11
-	FlameProposal_BATCH_ACCESS_CONTROL  FlameProposal_FlameProposalType = 12
-)
-
-var FlameProposal_FlameProposalType_name = map[int32]string{
-	0:  "BATCH_ACTION",
-	1:  "CREATE_USER",
-	2:  "UPDATE_USER",
-	3:  "DELETE_USER",
-	4:  "CREATE_INDEX_META",
-	5:  "UPDATE_INDEX_META",
-	6:  "DELETE_INDEX_META",
-	7:  "CREATE_ACCESS_CONTROL",
-	8:  "UPDATE_ACCESS_CONTROL",
-	9:  "DELETE_ACCESS_CONTROL",
-	10: "BATCH_USER",
-	11: "BATCH_INDEX_META",
-	12: "BATCH_ACCESS_CONTROL",
-}
-
-var FlameProposal_FlameProposalType_value = map[string]int32{
-	"BATCH_ACTION":          0,
-	"CREATE_USER":           1,
-	"UPDATE_USER":           2,
-	"DELETE_USER":           3,
-	"CREATE_INDEX_META":     4,
-	"UPDATE_INDEX_META":     5,
-	"DELETE_INDEX_META":     6,
-	"CREATE_ACCESS_CONTROL": 7,
-	"UPDATE_ACCESS_CONTROL": 8,
-	"DELETE_ACCESS_CONTROL": 9,
-	"BATCH_USER":            10,
-	"BATCH_INDEX_META":      11,
-	"BATCH_ACCESS_CONTROL":  12,
-}
-
-func (x FlameProposal_FlameProposalType) String() string {
-	return proto.EnumName(FlameProposal_FlameProposalType_name, int32(x))
-}
-
-func (FlameProposal_FlameProposalType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{16, 0}
-}
-
-type FlameEntry struct {
-	Namespace            []byte   `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	Key                  []byte   `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
-	Value                []byte   `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *FlameEntry) Reset()         { *m = FlameEntry{} }
-func (m *FlameEntry) String() string { return proto.CompactTextString(m) }
-func (*FlameEntry) ProtoMessage()    {}
-func (*FlameEntry) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{0}
-}
-
-func (m *FlameEntry) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameEntry.Unmarshal(m, b)
-}
-func (m *FlameEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameEntry.Marshal(b, m, deterministic)
-}
-func (m *FlameEntry) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameEntry.Merge(m, src)
-}
-func (m *FlameEntry) XXX_Size() int {
-	return xxx_messageInfo_FlameEntry.Size(m)
-}
-func (m *FlameEntry) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameEntry.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameEntry proto.InternalMessageInfo
-
-func (m *FlameEntry) GetNamespace() []byte {
-	if m != nil {
-		return m.Namespace
-	}
-	return nil
-}
-
-func (m *FlameEntry) GetKey() []byte {
-	if m != nil {
-		return m.Key
-	}
-	return nil
-}
-
-func (m *FlameEntry) GetValue() []byte {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-type FlameAction struct {
-	FlameActionType      FlameAction_FlameActionType `protobuf:"varint,1,opt,name=flameActionType,proto3,enum=pb.FlameAction_FlameActionType" json:"flameActionType,omitempty"`
-	FlameEntry           *FlameEntry                 `protobuf:"bytes,2,opt,name=flameEntry,proto3" json:"flameEntry,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                    `json:"-"`
-	XXX_unrecognized     []byte                      `json:"-"`
-	XXX_sizecache        int32                       `json:"-"`
-}
-
-func (m *FlameAction) Reset()         { *m = FlameAction{} }
-func (m *FlameAction) String() string { return proto.CompactTextString(m) }
-func (*FlameAction) ProtoMessage()    {}
-func (*FlameAction) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{1}
-}
-
-func (m *FlameAction) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameAction.Unmarshal(m, b)
-}
-func (m *FlameAction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameAction.Marshal(b, m, deterministic)
-}
-func (m *FlameAction) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameAction.Merge(m, src)
-}
-func (m *FlameAction) XXX_Size() int {
-	return xxx_messageInfo_FlameAction.Size(m)
-}
-func (m *FlameAction) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameAction.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameAction proto.InternalMessageInfo
-
-func (m *FlameAction) GetFlameActionType() FlameAction_FlameActionType {
-	if m != nil {
-		return m.FlameActionType
-	}
-	return FlameAction_CREATE
-}
-
-func (m *FlameAction) GetFlameEntry() *FlameEntry {
-	if m != nil {
-		return m.FlameEntry
-	}
-	return nil
-}
-
-type FlameBatchAction struct {
-	FlameActionList      []*FlameAction `protobuf:"bytes,1,rep,name=flameActionList,proto3" json:"flameActionList,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
-}
-
-func (m *FlameBatchAction) Reset()         { *m = FlameBatchAction{} }
-func (m *FlameBatchAction) String() string { return proto.CompactTextString(m) }
-func (*FlameBatchAction) ProtoMessage()    {}
-func (*FlameBatchAction) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{2}
-}
-
-func (m *FlameBatchAction) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameBatchAction.Unmarshal(m, b)
-}
-func (m *FlameBatchAction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameBatchAction.Marshal(b, m, deterministic)
-}
-func (m *FlameBatchAction) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameBatchAction.Merge(m, src)
-}
-func (m *FlameBatchAction) XXX_Size() int {
-	return xxx_messageInfo_FlameBatchAction.Size(m)
-}
-func (m *FlameBatchAction) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameBatchAction.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameBatchAction proto.InternalMessageInfo
-
-func (m *FlameBatchAction) GetFlameActionList() []*FlameAction {
-	if m != nil {
-		return m.FlameActionList
-	}
-	return nil
-}
-
-type FlameBatchRead struct {
-	FlameEntryList       []*FlameEntry `protobuf:"bytes,1,rep,name=flameEntryList,proto3" json:"flameEntryList,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *FlameBatchRead) Reset()         { *m = FlameBatchRead{} }
-func (m *FlameBatchRead) String() string { return proto.CompactTextString(m) }
-func (*FlameBatchRead) ProtoMessage()    {}
-func (*FlameBatchRead) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{3}
-}
-
-func (m *FlameBatchRead) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameBatchRead.Unmarshal(m, b)
-}
-func (m *FlameBatchRead) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameBatchRead.Marshal(b, m, deterministic)
-}
-func (m *FlameBatchRead) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameBatchRead.Merge(m, src)
-}
-func (m *FlameBatchRead) XXX_Size() int {
-	return xxx_messageInfo_FlameBatchRead.Size(m)
-}
-func (m *FlameBatchRead) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameBatchRead.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameBatchRead proto.InternalMessageInfo
-
-func (m *FlameBatchRead) GetFlameEntryList() []*FlameEntry {
-	if m != nil {
-		return m.FlameEntryList
-	}
-	return nil
-}
-
-type FlameSnapshotEntry struct {
+type SnapshotEntry struct {
 	Uid                  []byte   `protobuf:"bytes,1,opt,name=uid,proto3" json:"uid,omitempty"`
 	Data                 []byte   `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -356,839 +28,118 @@ type FlameSnapshotEntry struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *FlameSnapshotEntry) Reset()         { *m = FlameSnapshotEntry{} }
-func (m *FlameSnapshotEntry) String() string { return proto.CompactTextString(m) }
-func (*FlameSnapshotEntry) ProtoMessage()    {}
-func (*FlameSnapshotEntry) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{4}
+func (m *SnapshotEntry) Reset()         { *m = SnapshotEntry{} }
+func (m *SnapshotEntry) String() string { return proto.CompactTextString(m) }
+func (*SnapshotEntry) ProtoMessage()    {}
+func (*SnapshotEntry) Descriptor() ([]byte, []int) {
+	return fileDescriptor_388b6a0687b80922, []int{0}
 }
 
-func (m *FlameSnapshotEntry) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameSnapshotEntry.Unmarshal(m, b)
+func (m *SnapshotEntry) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SnapshotEntry.Unmarshal(m, b)
 }
-func (m *FlameSnapshotEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameSnapshotEntry.Marshal(b, m, deterministic)
+func (m *SnapshotEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SnapshotEntry.Marshal(b, m, deterministic)
 }
-func (m *FlameSnapshotEntry) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameSnapshotEntry.Merge(m, src)
+func (m *SnapshotEntry) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SnapshotEntry.Merge(m, src)
 }
-func (m *FlameSnapshotEntry) XXX_Size() int {
-	return xxx_messageInfo_FlameSnapshotEntry.Size(m)
+func (m *SnapshotEntry) XXX_Size() int {
+	return xxx_messageInfo_SnapshotEntry.Size(m)
 }
-func (m *FlameSnapshotEntry) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameSnapshotEntry.DiscardUnknown(m)
+func (m *SnapshotEntry) XXX_DiscardUnknown() {
+	xxx_messageInfo_SnapshotEntry.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_FlameSnapshotEntry proto.InternalMessageInfo
+var xxx_messageInfo_SnapshotEntry proto.InternalMessageInfo
 
-func (m *FlameSnapshotEntry) GetUid() []byte {
+func (m *SnapshotEntry) GetUid() []byte {
 	if m != nil {
 		return m.Uid
 	}
 	return nil
 }
 
-func (m *FlameSnapshotEntry) GetData() []byte {
+func (m *SnapshotEntry) GetData() []byte {
 	if m != nil {
 		return m.Data
 	}
 	return nil
 }
 
-type FlameSnapshot struct {
-	Version                uint32                `protobuf:"varint,1,opt,name=version,proto3" json:"version,omitempty"`
-	Length                 uint64                `protobuf:"varint,2,opt,name=length,proto3" json:"length,omitempty"`
-	FlameSnapshotEntryList []*FlameSnapshotEntry `protobuf:"bytes,3,rep,name=flameSnapshotEntryList,proto3" json:"flameSnapshotEntryList,omitempty"`
-	XXX_NoUnkeyedLiteral   struct{}              `json:"-"`
-	XXX_unrecognized       []byte                `json:"-"`
-	XXX_sizecache          int32                 `json:"-"`
+type Snapshot struct {
+	Version              uint32           `protobuf:"varint,1,opt,name=version,proto3" json:"version,omitempty"`
+	Length               uint64           `protobuf:"varint,2,opt,name=length,proto3" json:"length,omitempty"`
+	SnapshotEntryList    []*SnapshotEntry `protobuf:"bytes,3,rep,name=snapshotEntryList,proto3" json:"snapshotEntryList,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
 }
 
-func (m *FlameSnapshot) Reset()         { *m = FlameSnapshot{} }
-func (m *FlameSnapshot) String() string { return proto.CompactTextString(m) }
-func (*FlameSnapshot) ProtoMessage()    {}
-func (*FlameSnapshot) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{5}
+func (m *Snapshot) Reset()         { *m = Snapshot{} }
+func (m *Snapshot) String() string { return proto.CompactTextString(m) }
+func (*Snapshot) ProtoMessage()    {}
+func (*Snapshot) Descriptor() ([]byte, []int) {
+	return fileDescriptor_388b6a0687b80922, []int{1}
 }
 
-func (m *FlameSnapshot) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameSnapshot.Unmarshal(m, b)
+func (m *Snapshot) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Snapshot.Unmarshal(m, b)
 }
-func (m *FlameSnapshot) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameSnapshot.Marshal(b, m, deterministic)
+func (m *Snapshot) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Snapshot.Marshal(b, m, deterministic)
 }
-func (m *FlameSnapshot) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameSnapshot.Merge(m, src)
+func (m *Snapshot) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Snapshot.Merge(m, src)
 }
-func (m *FlameSnapshot) XXX_Size() int {
-	return xxx_messageInfo_FlameSnapshot.Size(m)
+func (m *Snapshot) XXX_Size() int {
+	return xxx_messageInfo_Snapshot.Size(m)
 }
-func (m *FlameSnapshot) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameSnapshot.DiscardUnknown(m)
+func (m *Snapshot) XXX_DiscardUnknown() {
+	xxx_messageInfo_Snapshot.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_FlameSnapshot proto.InternalMessageInfo
+var xxx_messageInfo_Snapshot proto.InternalMessageInfo
 
-func (m *FlameSnapshot) GetVersion() uint32 {
+func (m *Snapshot) GetVersion() uint32 {
 	if m != nil {
 		return m.Version
 	}
 	return 0
 }
 
-func (m *FlameSnapshot) GetLength() uint64 {
+func (m *Snapshot) GetLength() uint64 {
 	if m != nil {
 		return m.Length
 	}
 	return 0
 }
 
-func (m *FlameSnapshot) GetFlameSnapshotEntryList() []*FlameSnapshotEntry {
+func (m *Snapshot) GetSnapshotEntryList() []*SnapshotEntry {
 	if m != nil {
-		return m.FlameSnapshotEntryList
-	}
-	return nil
-}
-
-type FlameIndexField struct {
-	FlameIndexFieldType  FlameIndexField_FlameIndexFieldType `protobuf:"varint,1,opt,name=flameIndexFieldType,proto3,enum=pb.FlameIndexField_FlameIndexFieldType" json:"flameIndexFieldType,omitempty"`
-	Name                 string                              `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Analyzer             string                              `protobuf:"bytes,3,opt,name=analyzer,proto3" json:"analyzer,omitempty"`
-	Enabled              bool                                `protobuf:"varint,4,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	Index                bool                                `protobuf:"varint,5,opt,name=index,proto3" json:"index,omitempty"`
-	Store                bool                                `protobuf:"varint,6,opt,name=store,proto3" json:"store,omitempty"`
-	IncludeTermVectors   bool                                `protobuf:"varint,7,opt,name=includeTermVectors,proto3" json:"includeTermVectors,omitempty"`
-	IncludeInAll         bool                                `protobuf:"varint,8,opt,name=includeInAll,proto3" json:"includeInAll,omitempty"`
-	DocValues            bool                                `protobuf:"varint,9,opt,name=docValues,proto3" json:"docValues,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                            `json:"-"`
-	XXX_unrecognized     []byte                              `json:"-"`
-	XXX_sizecache        int32                               `json:"-"`
-}
-
-func (m *FlameIndexField) Reset()         { *m = FlameIndexField{} }
-func (m *FlameIndexField) String() string { return proto.CompactTextString(m) }
-func (*FlameIndexField) ProtoMessage()    {}
-func (*FlameIndexField) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{6}
-}
-
-func (m *FlameIndexField) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameIndexField.Unmarshal(m, b)
-}
-func (m *FlameIndexField) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameIndexField.Marshal(b, m, deterministic)
-}
-func (m *FlameIndexField) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameIndexField.Merge(m, src)
-}
-func (m *FlameIndexField) XXX_Size() int {
-	return xxx_messageInfo_FlameIndexField.Size(m)
-}
-func (m *FlameIndexField) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameIndexField.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameIndexField proto.InternalMessageInfo
-
-func (m *FlameIndexField) GetFlameIndexFieldType() FlameIndexField_FlameIndexFieldType {
-	if m != nil {
-		return m.FlameIndexFieldType
-	}
-	return FlameIndexField_TEXT
-}
-
-func (m *FlameIndexField) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *FlameIndexField) GetAnalyzer() string {
-	if m != nil {
-		return m.Analyzer
-	}
-	return ""
-}
-
-func (m *FlameIndexField) GetEnabled() bool {
-	if m != nil {
-		return m.Enabled
-	}
-	return false
-}
-
-func (m *FlameIndexField) GetIndex() bool {
-	if m != nil {
-		return m.Index
-	}
-	return false
-}
-
-func (m *FlameIndexField) GetStore() bool {
-	if m != nil {
-		return m.Store
-	}
-	return false
-}
-
-func (m *FlameIndexField) GetIncludeTermVectors() bool {
-	if m != nil {
-		return m.IncludeTermVectors
-	}
-	return false
-}
-
-func (m *FlameIndexField) GetIncludeInAll() bool {
-	if m != nil {
-		return m.IncludeInAll
-	}
-	return false
-}
-
-func (m *FlameIndexField) GetDocValues() bool {
-	if m != nil {
-		return m.DocValues
-	}
-	return false
-}
-
-type FlameIndexDocument struct {
-	Name                 string             `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Default              bool               `protobuf:"varint,2,opt,name=default,proto3" json:"default,omitempty"`
-	FlameIndexFieldList  []*FlameIndexField `protobuf:"bytes,3,rep,name=flameIndexFieldList,proto3" json:"flameIndexFieldList,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
-}
-
-func (m *FlameIndexDocument) Reset()         { *m = FlameIndexDocument{} }
-func (m *FlameIndexDocument) String() string { return proto.CompactTextString(m) }
-func (*FlameIndexDocument) ProtoMessage()    {}
-func (*FlameIndexDocument) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{7}
-}
-
-func (m *FlameIndexDocument) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameIndexDocument.Unmarshal(m, b)
-}
-func (m *FlameIndexDocument) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameIndexDocument.Marshal(b, m, deterministic)
-}
-func (m *FlameIndexDocument) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameIndexDocument.Merge(m, src)
-}
-func (m *FlameIndexDocument) XXX_Size() int {
-	return xxx_messageInfo_FlameIndexDocument.Size(m)
-}
-func (m *FlameIndexDocument) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameIndexDocument.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameIndexDocument proto.InternalMessageInfo
-
-func (m *FlameIndexDocument) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *FlameIndexDocument) GetDefault() bool {
-	if m != nil {
-		return m.Default
-	}
-	return false
-}
-
-func (m *FlameIndexDocument) GetFlameIndexFieldList() []*FlameIndexField {
-	if m != nil {
-		return m.FlameIndexFieldList
-	}
-	return nil
-}
-
-type FlameIndexMeta struct {
-	Namespace              []byte                `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	Version                uint32                `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"`
-	Enabled                bool                  `protobuf:"varint,3,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	Default                bool                  `protobuf:"varint,4,opt,name=default,proto3" json:"default,omitempty"`
-	CreatedAt              uint64                `protobuf:"varint,5,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
-	UpdatedAt              uint64                `protobuf:"varint,6,opt,name=updatedAt,proto3" json:"updatedAt,omitempty"`
-	FlameIndexDocumentList []*FlameIndexDocument `protobuf:"bytes,7,rep,name=flameIndexDocumentList,proto3" json:"flameIndexDocumentList,omitempty"`
-	XXX_NoUnkeyedLiteral   struct{}              `json:"-"`
-	XXX_unrecognized       []byte                `json:"-"`
-	XXX_sizecache          int32                 `json:"-"`
-}
-
-func (m *FlameIndexMeta) Reset()         { *m = FlameIndexMeta{} }
-func (m *FlameIndexMeta) String() string { return proto.CompactTextString(m) }
-func (*FlameIndexMeta) ProtoMessage()    {}
-func (*FlameIndexMeta) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{8}
-}
-
-func (m *FlameIndexMeta) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameIndexMeta.Unmarshal(m, b)
-}
-func (m *FlameIndexMeta) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameIndexMeta.Marshal(b, m, deterministic)
-}
-func (m *FlameIndexMeta) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameIndexMeta.Merge(m, src)
-}
-func (m *FlameIndexMeta) XXX_Size() int {
-	return xxx_messageInfo_FlameIndexMeta.Size(m)
-}
-func (m *FlameIndexMeta) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameIndexMeta.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameIndexMeta proto.InternalMessageInfo
-
-func (m *FlameIndexMeta) GetNamespace() []byte {
-	if m != nil {
-		return m.Namespace
-	}
-	return nil
-}
-
-func (m *FlameIndexMeta) GetVersion() uint32 {
-	if m != nil {
-		return m.Version
-	}
-	return 0
-}
-
-func (m *FlameIndexMeta) GetEnabled() bool {
-	if m != nil {
-		return m.Enabled
-	}
-	return false
-}
-
-func (m *FlameIndexMeta) GetDefault() bool {
-	if m != nil {
-		return m.Default
-	}
-	return false
-}
-
-func (m *FlameIndexMeta) GetCreatedAt() uint64 {
-	if m != nil {
-		return m.CreatedAt
-	}
-	return 0
-}
-
-func (m *FlameIndexMeta) GetUpdatedAt() uint64 {
-	if m != nil {
-		return m.UpdatedAt
-	}
-	return 0
-}
-
-func (m *FlameIndexMeta) GetFlameIndexDocumentList() []*FlameIndexDocument {
-	if m != nil {
-		return m.FlameIndexDocumentList
-	}
-	return nil
-}
-
-type FlameIndexMetaList struct {
-	FlameIndexMetaList   []*FlameIndexMeta `protobuf:"bytes,1,rep,name=flameIndexMetaList,proto3" json:"flameIndexMetaList,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *FlameIndexMetaList) Reset()         { *m = FlameIndexMetaList{} }
-func (m *FlameIndexMetaList) String() string { return proto.CompactTextString(m) }
-func (*FlameIndexMetaList) ProtoMessage()    {}
-func (*FlameIndexMetaList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{9}
-}
-
-func (m *FlameIndexMetaList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameIndexMetaList.Unmarshal(m, b)
-}
-func (m *FlameIndexMetaList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameIndexMetaList.Marshal(b, m, deterministic)
-}
-func (m *FlameIndexMetaList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameIndexMetaList.Merge(m, src)
-}
-func (m *FlameIndexMetaList) XXX_Size() int {
-	return xxx_messageInfo_FlameIndexMetaList.Size(m)
-}
-func (m *FlameIndexMetaList) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameIndexMetaList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameIndexMetaList proto.InternalMessageInfo
-
-func (m *FlameIndexMetaList) GetFlameIndexMetaList() []*FlameIndexMeta {
-	if m != nil {
-		return m.FlameIndexMetaList
-	}
-	return nil
-}
-
-type FlameNamespaceList struct {
-	FlameNamespaceList   [][]byte `protobuf:"bytes,1,rep,name=flameNamespaceList,proto3" json:"flameNamespaceList,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *FlameNamespaceList) Reset()         { *m = FlameNamespaceList{} }
-func (m *FlameNamespaceList) String() string { return proto.CompactTextString(m) }
-func (*FlameNamespaceList) ProtoMessage()    {}
-func (*FlameNamespaceList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{10}
-}
-
-func (m *FlameNamespaceList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameNamespaceList.Unmarshal(m, b)
-}
-func (m *FlameNamespaceList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameNamespaceList.Marshal(b, m, deterministic)
-}
-func (m *FlameNamespaceList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameNamespaceList.Merge(m, src)
-}
-func (m *FlameNamespaceList) XXX_Size() int {
-	return xxx_messageInfo_FlameNamespaceList.Size(m)
-}
-func (m *FlameNamespaceList) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameNamespaceList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameNamespaceList proto.InternalMessageInfo
-
-func (m *FlameNamespaceList) GetFlameNamespaceList() [][]byte {
-	if m != nil {
-		return m.FlameNamespaceList
-	}
-	return nil
-}
-
-type FlameUser struct {
-	FlameUserType        FlameUser_FlameUserType `protobuf:"varint,1,opt,name=flameUserType,proto3,enum=pb.FlameUser_FlameUserType" json:"flameUserType,omitempty"`
-	Roles                string                  `protobuf:"bytes,2,opt,name=roles,proto3" json:"roles,omitempty"`
-	Username             string                  `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
-	Password             string                  `protobuf:"bytes,4,opt,name=password,proto3" json:"password,omitempty"`
-	CreatedAt            uint64                  `protobuf:"varint,5,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
-	UpdatedAt            uint64                  `protobuf:"varint,6,opt,name=updatedAt,proto3" json:"updatedAt,omitempty"`
-	UserData             []byte                  `protobuf:"bytes,7,opt,name=userData,proto3" json:"userData,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
-	XXX_unrecognized     []byte                  `json:"-"`
-	XXX_sizecache        int32                   `json:"-"`
-}
-
-func (m *FlameUser) Reset()         { *m = FlameUser{} }
-func (m *FlameUser) String() string { return proto.CompactTextString(m) }
-func (*FlameUser) ProtoMessage()    {}
-func (*FlameUser) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{11}
-}
-
-func (m *FlameUser) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameUser.Unmarshal(m, b)
-}
-func (m *FlameUser) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameUser.Marshal(b, m, deterministic)
-}
-func (m *FlameUser) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameUser.Merge(m, src)
-}
-func (m *FlameUser) XXX_Size() int {
-	return xxx_messageInfo_FlameUser.Size(m)
-}
-func (m *FlameUser) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameUser.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameUser proto.InternalMessageInfo
-
-func (m *FlameUser) GetFlameUserType() FlameUser_FlameUserType {
-	if m != nil {
-		return m.FlameUserType
-	}
-	return FlameUser_SUPER_USER
-}
-
-func (m *FlameUser) GetRoles() string {
-	if m != nil {
-		return m.Roles
-	}
-	return ""
-}
-
-func (m *FlameUser) GetUsername() string {
-	if m != nil {
-		return m.Username
-	}
-	return ""
-}
-
-func (m *FlameUser) GetPassword() string {
-	if m != nil {
-		return m.Password
-	}
-	return ""
-}
-
-func (m *FlameUser) GetCreatedAt() uint64 {
-	if m != nil {
-		return m.CreatedAt
-	}
-	return 0
-}
-
-func (m *FlameUser) GetUpdatedAt() uint64 {
-	if m != nil {
-		return m.UpdatedAt
-	}
-	return 0
-}
-
-func (m *FlameUser) GetUserData() []byte {
-	if m != nil {
-		return m.UserData
-	}
-	return nil
-}
-
-type FlameUserList struct {
-	FlameUserList        []*FlameUser `protobuf:"bytes,1,rep,name=flameUserList,proto3" json:"flameUserList,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
-	XXX_unrecognized     []byte       `json:"-"`
-	XXX_sizecache        int32        `json:"-"`
-}
-
-func (m *FlameUserList) Reset()         { *m = FlameUserList{} }
-func (m *FlameUserList) String() string { return proto.CompactTextString(m) }
-func (*FlameUserList) ProtoMessage()    {}
-func (*FlameUserList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{12}
-}
-
-func (m *FlameUserList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameUserList.Unmarshal(m, b)
-}
-func (m *FlameUserList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameUserList.Marshal(b, m, deterministic)
-}
-func (m *FlameUserList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameUserList.Merge(m, src)
-}
-func (m *FlameUserList) XXX_Size() int {
-	return xxx_messageInfo_FlameUserList.Size(m)
-}
-func (m *FlameUserList) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameUserList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameUserList proto.InternalMessageInfo
-
-func (m *FlameUserList) GetFlameUserList() []*FlameUser {
-	if m != nil {
-		return m.FlameUserList
-	}
-	return nil
-}
-
-type FlameUsernameList struct {
-	FlameUsernameList    []string `protobuf:"bytes,1,rep,name=flameUsernameList,proto3" json:"flameUsernameList,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *FlameUsernameList) Reset()         { *m = FlameUsernameList{} }
-func (m *FlameUsernameList) String() string { return proto.CompactTextString(m) }
-func (*FlameUsernameList) ProtoMessage()    {}
-func (*FlameUsernameList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{13}
-}
-
-func (m *FlameUsernameList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameUsernameList.Unmarshal(m, b)
-}
-func (m *FlameUsernameList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameUsernameList.Marshal(b, m, deterministic)
-}
-func (m *FlameUsernameList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameUsernameList.Merge(m, src)
-}
-func (m *FlameUsernameList) XXX_Size() int {
-	return xxx_messageInfo_FlameUsernameList.Size(m)
-}
-func (m *FlameUsernameList) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameUsernameList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameUsernameList proto.InternalMessageInfo
-
-func (m *FlameUsernameList) GetFlameUsernameList() []string {
-	if m != nil {
-		return m.FlameUsernameList
-	}
-	return nil
-}
-
-type FlameAccessControl struct {
-	Username             string   `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Namespace            []byte   `protobuf:"bytes,2,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	Permission           []byte   `protobuf:"bytes,3,opt,name=permission,proto3" json:"permission,omitempty"`
-	CreatedAt            uint64   `protobuf:"varint,4,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
-	UpdatedAt            uint64   `protobuf:"varint,5,opt,name=updatedAt,proto3" json:"updatedAt,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *FlameAccessControl) Reset()         { *m = FlameAccessControl{} }
-func (m *FlameAccessControl) String() string { return proto.CompactTextString(m) }
-func (*FlameAccessControl) ProtoMessage()    {}
-func (*FlameAccessControl) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{14}
-}
-
-func (m *FlameAccessControl) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameAccessControl.Unmarshal(m, b)
-}
-func (m *FlameAccessControl) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameAccessControl.Marshal(b, m, deterministic)
-}
-func (m *FlameAccessControl) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameAccessControl.Merge(m, src)
-}
-func (m *FlameAccessControl) XXX_Size() int {
-	return xxx_messageInfo_FlameAccessControl.Size(m)
-}
-func (m *FlameAccessControl) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameAccessControl.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameAccessControl proto.InternalMessageInfo
-
-func (m *FlameAccessControl) GetUsername() string {
-	if m != nil {
-		return m.Username
-	}
-	return ""
-}
-
-func (m *FlameAccessControl) GetNamespace() []byte {
-	if m != nil {
-		return m.Namespace
-	}
-	return nil
-}
-
-func (m *FlameAccessControl) GetPermission() []byte {
-	if m != nil {
-		return m.Permission
-	}
-	return nil
-}
-
-func (m *FlameAccessControl) GetCreatedAt() uint64 {
-	if m != nil {
-		return m.CreatedAt
-	}
-	return 0
-}
-
-func (m *FlameAccessControl) GetUpdatedAt() uint64 {
-	if m != nil {
-		return m.UpdatedAt
-	}
-	return 0
-}
-
-type FlameAccessControlList struct {
-	FlameAccessControlList []*FlameAccessControl `protobuf:"bytes,1,rep,name=flameAccessControlList,proto3" json:"flameAccessControlList,omitempty"`
-	XXX_NoUnkeyedLiteral   struct{}              `json:"-"`
-	XXX_unrecognized       []byte                `json:"-"`
-	XXX_sizecache          int32                 `json:"-"`
-}
-
-func (m *FlameAccessControlList) Reset()         { *m = FlameAccessControlList{} }
-func (m *FlameAccessControlList) String() string { return proto.CompactTextString(m) }
-func (*FlameAccessControlList) ProtoMessage()    {}
-func (*FlameAccessControlList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{15}
-}
-
-func (m *FlameAccessControlList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameAccessControlList.Unmarshal(m, b)
-}
-func (m *FlameAccessControlList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameAccessControlList.Marshal(b, m, deterministic)
-}
-func (m *FlameAccessControlList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameAccessControlList.Merge(m, src)
-}
-func (m *FlameAccessControlList) XXX_Size() int {
-	return xxx_messageInfo_FlameAccessControlList.Size(m)
-}
-func (m *FlameAccessControlList) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameAccessControlList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameAccessControlList proto.InternalMessageInfo
-
-func (m *FlameAccessControlList) GetFlameAccessControlList() []*FlameAccessControl {
-	if m != nil {
-		return m.FlameAccessControlList
-	}
-	return nil
-}
-
-type FlameProposal struct {
-	FlameProposalType    FlameProposal_FlameProposalType `protobuf:"varint,1,opt,name=flameProposalType,proto3,enum=pb.FlameProposal_FlameProposalType" json:"flameProposalType,omitempty"`
-	FlameProposalData    []byte                          `protobuf:"bytes,2,opt,name=flameProposalData,proto3" json:"flameProposalData,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                        `json:"-"`
-	XXX_unrecognized     []byte                          `json:"-"`
-	XXX_sizecache        int32                           `json:"-"`
-}
-
-func (m *FlameProposal) Reset()         { *m = FlameProposal{} }
-func (m *FlameProposal) String() string { return proto.CompactTextString(m) }
-func (*FlameProposal) ProtoMessage()    {}
-func (*FlameProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_388b6a0687b80922, []int{16}
-}
-
-func (m *FlameProposal) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlameProposal.Unmarshal(m, b)
-}
-func (m *FlameProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlameProposal.Marshal(b, m, deterministic)
-}
-func (m *FlameProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlameProposal.Merge(m, src)
-}
-func (m *FlameProposal) XXX_Size() int {
-	return xxx_messageInfo_FlameProposal.Size(m)
-}
-func (m *FlameProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlameProposal.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FlameProposal proto.InternalMessageInfo
-
-func (m *FlameProposal) GetFlameProposalType() FlameProposal_FlameProposalType {
-	if m != nil {
-		return m.FlameProposalType
-	}
-	return FlameProposal_BATCH_ACTION
-}
-
-func (m *FlameProposal) GetFlameProposalData() []byte {
-	if m != nil {
-		return m.FlameProposalData
+		return m.SnapshotEntryList
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterEnum("pb.FlameAction_FlameActionType", FlameAction_FlameActionType_name, FlameAction_FlameActionType_value)
-	proto.RegisterEnum("pb.FlameIndexField_FlameIndexFieldType", FlameIndexField_FlameIndexFieldType_name, FlameIndexField_FlameIndexFieldType_value)
-	proto.RegisterEnum("pb.FlameUser_FlameUserType", FlameUser_FlameUserType_name, FlameUser_FlameUserType_value)
-	proto.RegisterEnum("pb.FlameProposal_FlameProposalType", FlameProposal_FlameProposalType_name, FlameProposal_FlameProposalType_value)
-	proto.RegisterType((*FlameEntry)(nil), "pb.FlameEntry")
-	proto.RegisterType((*FlameAction)(nil), "pb.FlameAction")
-	proto.RegisterType((*FlameBatchAction)(nil), "pb.FlameBatchAction")
-	proto.RegisterType((*FlameBatchRead)(nil), "pb.FlameBatchRead")
-	proto.RegisterType((*FlameSnapshotEntry)(nil), "pb.FlameSnapshotEntry")
-	proto.RegisterType((*FlameSnapshot)(nil), "pb.FlameSnapshot")
-	proto.RegisterType((*FlameIndexField)(nil), "pb.FlameIndexField")
-	proto.RegisterType((*FlameIndexDocument)(nil), "pb.FlameIndexDocument")
-	proto.RegisterType((*FlameIndexMeta)(nil), "pb.FlameIndexMeta")
-	proto.RegisterType((*FlameIndexMetaList)(nil), "pb.FlameIndexMetaList")
-	proto.RegisterType((*FlameNamespaceList)(nil), "pb.FlameNamespaceList")
-	proto.RegisterType((*FlameUser)(nil), "pb.FlameUser")
-	proto.RegisterType((*FlameUserList)(nil), "pb.FlameUserList")
-	proto.RegisterType((*FlameUsernameList)(nil), "pb.FlameUsernameList")
-	proto.RegisterType((*FlameAccessControl)(nil), "pb.FlameAccessControl")
-	proto.RegisterType((*FlameAccessControlList)(nil), "pb.FlameAccessControlList")
-	proto.RegisterType((*FlameProposal)(nil), "pb.FlameProposal")
+	proto.RegisterType((*SnapshotEntry)(nil), "pb.SnapshotEntry")
+	proto.RegisterType((*Snapshot)(nil), "pb.Snapshot")
 }
 
 func init() { proto.RegisterFile("flamed.proto", fileDescriptor_388b6a0687b80922) }
 
 var fileDescriptor_388b6a0687b80922 = []byte{
-	// 1079 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xcd, 0x6e, 0xeb, 0x44,
-	0x14, 0xae, 0xe3, 0x34, 0x3f, 0x27, 0x69, 0xeb, 0x4e, 0x7b, 0x2b, 0x03, 0x57, 0x50, 0x0d, 0x0b,
-	0xba, 0x40, 0x11, 0xea, 0x95, 0x90, 0x60, 0xe7, 0x26, 0xbe, 0xdc, 0x48, 0xcd, 0x0f, 0x53, 0xf7,
-	0x52, 0x56, 0x91, 0x1b, 0x4f, 0x68, 0x84, 0x6b, 0x47, 0xb6, 0x73, 0xa1, 0x3c, 0x01, 0x2c, 0x79,
-	0x09, 0x16, 0x48, 0xf0, 0x0e, 0xac, 0x79, 0x29, 0x34, 0xc7, 0x63, 0x67, 0xc6, 0x49, 0x61, 0xc1,
-	0x6e, 0xce, 0x77, 0xce, 0xf9, 0x3c, 0xe7, 0xe7, 0xb3, 0x0d, 0xdd, 0x45, 0xe8, 0x3f, 0xf2, 0xa0,
-	0xb7, 0x4a, 0xe2, 0x2c, 0x26, 0xb5, 0xd5, 0x3d, 0x65, 0x00, 0xaf, 0x05, 0xe6, 0x46, 0x59, 0xf2,
-	0x44, 0x5e, 0x42, 0x3b, 0xf2, 0x1f, 0x79, 0xba, 0xf2, 0xe7, 0xdc, 0x36, 0xce, 0x8d, 0x8b, 0x2e,
-	0xdb, 0x00, 0xc4, 0x02, 0xf3, 0x7b, 0xfe, 0x64, 0xd7, 0x10, 0x17, 0x47, 0x72, 0x0a, 0xfb, 0xef,
-	0xfc, 0x70, 0xcd, 0x6d, 0x13, 0xb1, 0xdc, 0xa0, 0x7f, 0x1b, 0xd0, 0x41, 0x52, 0x67, 0x9e, 0x2d,
-	0xe3, 0x88, 0x0c, 0xe1, 0x68, 0xb1, 0x31, 0xbd, 0xa7, 0x55, 0xce, 0x7d, 0x78, 0xf9, 0x51, 0x6f,
-	0x75, 0xdf, 0x53, 0x22, 0xd5, 0xb3, 0x08, 0x63, 0xd5, 0x3c, 0xd2, 0x03, 0x58, 0x94, 0xd7, 0xc5,
-	0x9b, 0x74, 0x2e, 0x0f, 0x4b, 0x16, 0x44, 0x99, 0x12, 0x41, 0x1d, 0x38, 0xaa, 0x70, 0x12, 0x80,
-	0x46, 0x9f, 0xb9, 0x8e, 0xe7, 0x5a, 0x7b, 0xe2, 0x7c, 0x3b, 0x1d, 0x88, 0xb3, 0x21, 0xce, 0x03,
-	0xf7, 0xda, 0xf5, 0x5c, 0xab, 0x26, 0xce, 0xce, 0x74, 0xea, 0x8e, 0x07, 0x96, 0x49, 0x47, 0x60,
-	0x21, 0xc5, 0x95, 0x9f, 0xcd, 0x1f, 0x64, 0x45, 0x5f, 0x68, 0x15, 0x5d, 0x2f, 0xd3, 0xcc, 0x36,
-	0xce, 0xcd, 0x8b, 0xce, 0xe5, 0x51, 0xa5, 0x22, 0x56, 0x8d, 0xa3, 0x6f, 0xe0, 0x70, 0x43, 0xc7,
-	0xb8, 0x1f, 0x90, 0xcf, 0xe1, 0x70, 0x73, 0x63, 0x85, 0xab, 0x5a, 0x57, 0x25, 0x8a, 0x7e, 0x09,
-	0x04, 0xbd, 0x37, 0x91, 0xbf, 0x4a, 0x1f, 0xe2, 0x2c, 0x1f, 0xa1, 0x05, 0xe6, 0x7a, 0x19, 0xc8,
-	0xe1, 0x89, 0x23, 0x21, 0x50, 0x0f, 0xfc, 0xcc, 0x97, 0x73, 0xc3, 0x33, 0xfd, 0xd5, 0x80, 0x03,
-	0x2d, 0x99, 0xd8, 0xd0, 0x7c, 0xc7, 0x93, 0x74, 0x19, 0x47, 0x98, 0x7b, 0xc0, 0x0a, 0x93, 0x9c,
-	0x41, 0x23, 0xe4, 0xd1, 0x77, 0xd9, 0x03, 0x32, 0xd4, 0x99, 0xb4, 0xc8, 0x18, 0xce, 0x16, 0x5b,
-	0xcf, 0xc7, 0xfb, 0x9b, 0x78, 0xff, 0xb3, 0xf2, 0xfe, 0x5a, 0x04, 0x7b, 0x26, 0x8b, 0xfe, 0x61,
-	0xca, 0x61, 0x0d, 0xa3, 0x80, 0xff, 0xf8, 0x7a, 0xc9, 0xc3, 0x80, 0x7c, 0x0b, 0x27, 0x0b, 0x1d,
-	0x52, 0xd6, 0xe7, 0x93, 0xf2, 0x01, 0x1b, 0x77, 0xd5, 0xc6, 0x35, 0xda, 0xc5, 0x21, 0xda, 0x22,
-	0x56, 0x1b, 0x8b, 0x6a, 0x33, 0x3c, 0x93, 0xf7, 0xa1, 0xe5, 0x47, 0x7e, 0xf8, 0xf4, 0x13, 0x4f,
-	0x70, 0xa5, 0xdb, 0xac, 0xb4, 0x45, 0x83, 0x78, 0xe4, 0xdf, 0x87, 0x3c, 0xb0, 0xeb, 0xe7, 0xc6,
-	0x45, 0x8b, 0x15, 0xa6, 0x50, 0xc1, 0x52, 0x70, 0xdb, 0xfb, 0x88, 0xe7, 0x86, 0x40, 0xd3, 0x2c,
-	0x4e, 0xb8, 0xdd, 0xc8, 0x51, 0x34, 0x48, 0x0f, 0xc8, 0x32, 0x9a, 0x87, 0xeb, 0x80, 0x7b, 0x3c,
-	0x79, 0x7c, 0xcb, 0xe7, 0x59, 0x9c, 0xa4, 0x76, 0x13, 0x43, 0x76, 0x78, 0x08, 0x85, 0xae, 0x44,
-	0x87, 0x91, 0x13, 0x86, 0x76, 0x0b, 0x23, 0x35, 0x4c, 0xa8, 0x36, 0x88, 0xe7, 0x6f, 0x85, 0xf6,
-	0x52, 0xbb, 0x8d, 0x01, 0x1b, 0x80, 0x7e, 0x03, 0x27, 0x3b, 0x7a, 0x42, 0x5a, 0x50, 0xf7, 0xdc,
-	0x3b, 0xcf, 0xda, 0x23, 0x1d, 0x68, 0x8e, 0x6f, 0x47, 0x2e, 0x1b, 0xf6, 0x2d, 0x43, 0x18, 0x57,
-	0x93, 0xc9, 0xb5, 0xeb, 0x8c, 0xad, 0x1a, 0x39, 0x80, 0xf6, 0x57, 0xee, 0x64, 0x36, 0x9d, 0x0c,
-	0xc7, 0x9e, 0x65, 0x0a, 0x53, 0x68, 0x65, 0xe6, 0x0d, 0x47, 0xae, 0x55, 0xa7, 0xbf, 0x18, 0x72,
-	0x01, 0x91, 0x79, 0x10, 0xcf, 0xd7, 0x8f, 0x3c, 0xca, 0xca, 0xbe, 0x1a, 0x4a, 0x5f, 0x6d, 0x68,
-	0x06, 0x7c, 0xe1, 0xaf, 0xc3, 0x0c, 0xdb, 0xdd, 0x62, 0x85, 0x49, 0xdc, 0xad, 0x01, 0x2b, 0x1b,
-	0x74, 0xb2, 0x63, 0xc0, 0x6c, 0x57, 0x3c, 0xfd, 0xb9, 0x26, 0x65, 0x85, 0xf8, 0x88, 0x67, 0xfe,
-	0x7f, 0xbc, 0xcb, 0x94, 0x75, 0xaf, 0xe9, 0xeb, 0xae, 0xcc, 0xd9, 0xd4, 0xe7, 0xac, 0x54, 0x51,
-	0xd7, 0xab, 0x78, 0x09, 0xed, 0x79, 0xc2, 0xfd, 0x8c, 0x07, 0x4e, 0x86, 0x5b, 0x50, 0x67, 0x1b,
-	0x40, 0x78, 0xd7, 0xab, 0x40, 0x7a, 0x1b, 0xb9, 0xb7, 0x04, 0x4a, 0x19, 0x69, 0x5d, 0xc4, 0x26,
-	0x34, 0x2b, 0x32, 0xd2, 0x22, 0xd8, 0x33, 0x59, 0xf4, 0x4e, 0x9d, 0x8a, 0xe8, 0x84, 0x40, 0xc9,
-	0x15, 0x90, 0xc5, 0x16, 0x2a, 0x5f, 0x34, 0x44, 0x7f, 0x82, 0xf0, 0xb2, 0x1d, 0xd1, 0x74, 0x20,
-	0x99, 0xc7, 0x45, 0x17, 0x91, 0xb9, 0x27, 0x99, 0x35, 0x14, 0x99, 0xbb, 0x6c, 0x87, 0x87, 0xfe,
-	0x56, 0x83, 0x36, 0xd2, 0xdc, 0xa6, 0x3c, 0x21, 0x0e, 0x1c, 0x2c, 0x0a, 0x43, 0x91, 0xf6, 0x07,
-	0xe5, 0x95, 0x84, 0x63, 0x73, 0x42, 0x39, 0xeb, 0x19, 0x42, 0x68, 0x49, 0x1c, 0xf2, 0x54, 0x2a,
-	0x39, 0x37, 0x84, 0x94, 0xd7, 0x29, 0x4f, 0x70, 0x15, 0xa5, 0x94, 0x0b, 0x5b, 0xf8, 0x56, 0x7e,
-	0x9a, 0xfe, 0x10, 0x27, 0xb9, 0x96, 0xdb, 0xac, 0xb4, 0xff, 0xd7, 0x28, 0xe5, 0x33, 0x07, 0xe2,
-	0x6d, 0xdb, 0xc4, 0x8d, 0x2b, 0x6d, 0xfa, 0x99, 0x7c, 0xe1, 0x96, 0xd7, 0x3e, 0x04, 0xb8, 0xb9,
-	0x9d, 0xba, 0x6c, 0x76, 0x7b, 0xe3, 0x32, 0x6b, 0x8f, 0x1c, 0x41, 0x67, 0x3c, 0x61, 0x23, 0xe7,
-	0x3a, 0x07, 0x0c, 0x3a, 0x50, 0x32, 0xb0, 0xd3, 0xaf, 0x94, 0x5e, 0x29, 0xe3, 0x3b, 0xd0, 0x7a,
-	0xc5, 0xf4, 0x18, 0xea, 0xc0, 0x71, 0xe9, 0x13, 0xc5, 0x23, 0xd3, 0xa7, 0x70, 0xbc, 0xa8, 0x82,
-	0xc8, 0xd6, 0x66, 0xdb, 0x0e, 0xfa, 0x7b, 0x21, 0x74, 0x67, 0x3e, 0xe7, 0x69, 0xda, 0x8f, 0xa3,
-	0x2c, 0x89, 0x43, 0xad, 0xc3, 0x46, 0xa5, 0xc3, 0x9a, 0xf8, 0x6a, 0x55, 0xf1, 0x7d, 0x08, 0xb0,
-	0xe2, 0xc9, 0xe3, 0x32, 0x45, 0xfd, 0xe5, 0xff, 0x0e, 0x0a, 0xa2, 0xcf, 0xa0, 0xfe, 0xaf, 0x33,
-	0xd8, 0xaf, 0xcc, 0x80, 0x3e, 0xc0, 0xd9, 0xf6, 0x5d, 0xb1, 0xe8, 0x42, 0x68, 0x5b, 0x1e, 0xd9,
-	0xc7, 0x33, 0xe5, 0xdb, 0xad, 0x44, 0xb0, 0x67, 0xb2, 0xe8, 0x5f, 0xa6, 0x1c, 0xd0, 0x34, 0x89,
-	0x57, 0x71, 0xea, 0x87, 0xe4, 0x6b, 0xd9, 0xd6, 0x02, 0x50, 0x16, 0xfa, 0xe3, 0x92, 0xbc, 0x70,
-	0xea, 0x16, 0x2e, 0xf6, 0x76, 0x76, 0x39, 0xa9, 0x02, 0x1c, 0x6c, 0xbe, 0xe4, 0xdb, 0x0e, 0xfa,
-	0x67, 0x4d, 0x4e, 0x5b, 0xe3, 0xb0, 0xa0, 0x7b, 0xe5, 0x78, 0xfd, 0x37, 0x33, 0xa7, 0xef, 0x0d,
-	0x27, 0xe3, 0x7c, 0xd7, 0xf2, 0x7f, 0x20, 0xb9, 0x6b, 0x02, 0xc8, 0x7f, 0x84, 0x72, 0xa0, 0x26,
-	0x80, 0xfc, 0x6f, 0x28, 0x07, 0x4c, 0xf2, 0x02, 0x8e, 0x65, 0xca, 0x70, 0x3c, 0x70, 0xef, 0x66,
-	0x23, 0xd7, 0x73, 0xac, 0xba, 0x80, 0x65, 0xa2, 0x02, 0xef, 0x0b, 0x58, 0xa6, 0x2b, 0x70, 0x83,
-	0xbc, 0x07, 0x2f, 0x24, 0x89, 0xd3, 0xef, 0xbb, 0x37, 0x37, 0xb3, 0xfe, 0x64, 0xec, 0xb1, 0xc9,
-	0xb5, 0xd5, 0x14, 0x2e, 0x49, 0x54, 0x71, 0xb5, 0x84, 0x4b, 0x92, 0x55, 0x5c, 0x6d, 0x21, 0xa2,
-	0xbc, 0x34, 0xbc, 0x25, 0x90, 0x53, 0xb0, 0x72, 0x5b, 0x79, 0x6c, 0x87, 0xd8, 0x70, 0x5a, 0x34,
-	0x40, 0xcb, 0xef, 0xde, 0x37, 0xf0, 0x4f, 0xf8, 0xd5, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xf7,
-	0x5d, 0xb6, 0xbb, 0x19, 0x0b, 0x00, 0x00,
+	// 161 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0xcb, 0x49, 0xcc,
+	0x4d, 0x4d, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2a, 0x48, 0x52, 0x32, 0xe5, 0xe2,
+	0x0d, 0xce, 0x4b, 0x2c, 0x28, 0xce, 0xc8, 0x2f, 0x71, 0xcd, 0x2b, 0x29, 0xaa, 0x14, 0x12, 0xe0,
+	0x62, 0x2e, 0xcd, 0x4c, 0x91, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x09, 0x02, 0x31, 0x85, 0x84, 0xb8,
+	0x58, 0x52, 0x12, 0x4b, 0x12, 0x25, 0x98, 0xc0, 0x42, 0x60, 0xb6, 0x52, 0x2d, 0x17, 0x07, 0x4c,
+	0x9b, 0x90, 0x04, 0x17, 0x7b, 0x59, 0x6a, 0x51, 0x71, 0x66, 0x7e, 0x1e, 0x58, 0x17, 0x6f, 0x10,
+	0x8c, 0x2b, 0x24, 0xc6, 0xc5, 0x96, 0x93, 0x9a, 0x97, 0x5e, 0x92, 0x01, 0xd6, 0xcb, 0x12, 0x04,
+	0xe5, 0x09, 0xd9, 0x73, 0x09, 0x16, 0x23, 0x5b, 0xea, 0x93, 0x59, 0x5c, 0x22, 0xc1, 0xac, 0xc0,
+	0xac, 0xc1, 0x6d, 0x24, 0xa8, 0x57, 0x90, 0xa4, 0x87, 0xe2, 0xa2, 0x20, 0x4c, 0xb5, 0x49, 0x6c,
+	0x60, 0x0f, 0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x97, 0xfd, 0xca, 0x23, 0xd0, 0x00, 0x00,
+	0x00,
 }
