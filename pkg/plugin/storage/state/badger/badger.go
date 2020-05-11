@@ -19,6 +19,10 @@ func (i *Iterator) Next() {
 	i.mBadgerIterator.Next()
 }
 
+func (i *Iterator) Rewind() {
+	i.mBadgerIterator.Rewind()
+}
+
 func (i *Iterator) Close() {
 	i.mBadgerIterator.Close()
 }

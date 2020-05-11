@@ -1,10 +1,12 @@
 package storaged
 
 import (
+	"encoding/json"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/x"
+	"go.uber.org/zap"
 	"io"
 )
 
@@ -97,16 +99,21 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 	}
 
 	for idx, e := range entries {
-		pp := &pb.FlameProposal{}
+		entries[idx].Result = sm.Result{Value: uint64(len(entries[idx].Cmd))}
 
+		pp := &pb.Proposal{}
 		if err := proto.Unmarshal(e.Cmd, pp); err != nil {
-			return nil, err
+			internalLogger.Error("proto unmarshal error", zap.Error(err))
+			continue
 		}
 
-		if err := s.mStorage.ApplyProposal(pp, false); err == nil {
-			entries[idx].Result = sm.Result{Value: uint64(len(entries[idx].Cmd))}
-		} else {
-			return nil, err
+		pr := s.mStorage.ApplyProposal(pp)
+		if pr != nil {
+			if data, err := json.Marshal(pr); err == nil {
+				entries[idx].Result.Data = data
+			} else {
+				internalLogger.Error("json marshal error", zap.Error(err))
+			}
 		}
 	}
 
@@ -132,7 +139,7 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	return s.mStorage.Lookup(input, false)
+	return s.mStorage.Lookup(input)
 }
 
 func (s *Storaged) PrepareSnapshot() (interface{}, error) {

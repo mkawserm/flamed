@@ -41,11 +41,14 @@ func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir strin
 func SimpleStoragedConfiguration(path string, secretKey []byte) iface.IStoragedConfiguration {
 	return &StoragedConfiguration{
 		StoragedConfigurationInput: StoragedConfigurationInput{
-			AutoIndexMeta:    true,
-			IndexEnable:      true,
-			StoragePath:      path,
-			StorageSecretKey: secretKey,
-		}}
+			AutoIndexMeta:         true,
+			IndexEnable:           true,
+			StateStoragePath:      path + "/state",
+			StateStorageSecretKey: secretKey,
+			IndexStoragePath:      path + "/index",
+			IndexStorageSecretKey: secretKey,
+		},
+		TransactionProcessorMap: make(map[string]iface.ITransactionProcessor)}
 }
 
 func SimpleClusterConfiguration(clusterID uint64, clusterName string, initialMembers map[uint64]string, join bool) iface.IClusterConfiguration {

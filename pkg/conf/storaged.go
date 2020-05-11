@@ -1,31 +1,34 @@
 package conf
 
 import (
-	"encoding/json"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/plugin/storage/index/blevescorch"
-	smBadger "github.com/mkawserm/flamed/pkg/plugin/storage/statemachine/badger"
+	sBadger "github.com/mkawserm/flamed/pkg/plugin/storage/state/badger"
 )
 
 type StoragedConfigurationInput struct {
-	AutoIndexMeta    bool   `json:"autoIndexMeta"`
-	CacheSize        int    `json:"cacheSize"`
-	BatchSize        int    `json:"batchSize"`
-	StoragePath      string `json:"storagePath"`
-	StorageSecretKey []byte `json:"storageSecretKey"`
+	CacheSize int `json:"cacheSize"`
+	BatchSize int `json:"batchSize"`
 
-	IndexEnable bool `json:"indexEnable"`
+	IndexEnable   bool `json:"indexEnable"`
+	AutoIndexMeta bool `json:"autoIndexMeta"`
 
-	StoragePluginIndex        iface.IIndexStorage        `json:"-"`
-	StoragePluginStateMachine iface.IStateMachineStorage `json:"-"`
+	StateStoragePath      string `json:"stateStoragePath"`
+	StateStorageSecretKey []byte `json:"stateStorageSecretKey"`
 
-	KVStorageCustomConfiguration        interface{} `json:"-"`
-	IndexStorageCustomConfiguration     interface{} `json:"-"`
-	KVRaftLogStorageCustomConfiguration interface{} `json:"-"`
+	IndexStoragePath      string `json:"indexStoragePath"`
+	IndexStorageSecretKey []byte `json:"indexStorageSecretKey"`
+
+	StoragePluginIndex iface.IIndexStorage `json:"-"`
+	StoragePluginState iface.IStateStorage `json:"-"`
+
+	StateStorageCustomConfiguration interface{} `json:"-"`
+	IndexStorageCustomConfiguration interface{} `json:"-"`
 }
 
 type StoragedConfiguration struct {
 	StoragedConfigurationInput StoragedConfigurationInput
+	TransactionProcessorMap    map[string]iface.ITransactionProcessor
 }
 
 func (s *StoragedConfiguration) AutoIndexMeta() bool {
@@ -36,19 +39,27 @@ func (s *StoragedConfiguration) IndexEnable() bool {
 	return s.StoragedConfigurationInput.IndexEnable
 }
 
-func (s *StoragedConfiguration) StoragePath() string {
-	return s.StoragedConfigurationInput.StoragePath
+func (s *StoragedConfiguration) StateStoragePath() string {
+	return s.StoragedConfigurationInput.StateStoragePath
 }
 
-func (s *StoragedConfiguration) StorageSecretKey() []byte {
-	return s.StoragedConfigurationInput.StorageSecretKey
+func (s *StoragedConfiguration) StateStorageSecretKey() []byte {
+	return s.StoragedConfigurationInput.StateStorageSecretKey
 }
 
-func (s *StoragedConfiguration) StoragePluginStateMachine() iface.IStateMachineStorage {
-	if s.StoragedConfigurationInput.StoragePluginStateMachine == nil {
-		return &smBadger.Badger{}
+func (s *StoragedConfiguration) IndexStoragePath() string {
+	return s.StoragedConfigurationInput.IndexStoragePath
+}
+
+func (s *StoragedConfiguration) IndexStorageSecretKey() []byte {
+	return s.StoragedConfigurationInput.IndexStorageSecretKey
+}
+
+func (s *StoragedConfiguration) StoragePluginState() iface.IStateStorage {
+	if s.StoragedConfigurationInput.StoragePluginState == nil {
+		return &sBadger.Badger{}
 	} else {
-		return s.StoragedConfigurationInput.StoragePluginStateMachine
+		return s.StoragedConfigurationInput.StoragePluginState
 	}
 }
 
@@ -60,8 +71,8 @@ func (s *StoragedConfiguration) StoragePluginIndex() iface.IIndexStorage {
 	}
 }
 
-func (s *StoragedConfiguration) StateMachineStorageCustomConfiguration() interface{} {
-	return s.StoragedConfigurationInput.KVStorageCustomConfiguration
+func (s *StoragedConfiguration) StateStorageCustomConfiguration() interface{} {
+	return s.StoragedConfigurationInput.StateStorageCustomConfiguration
 }
 
 func (s *StoragedConfiguration) IndexStorageCustomConfiguration() interface{} {
@@ -82,14 +93,16 @@ func (s *StoragedConfiguration) BatchSize() int {
 	return s.StoragedConfigurationInput.BatchSize
 }
 
-func (s *StoragedConfiguration) IndexObject(_, value []byte) interface{} {
-	data := make(map[string]interface{})
-	if err := json.Unmarshal(value, &data); err == nil {
-		return data
-	} else {
-		//internalLogger.Error("IndexObject json unmarshal error",
-		//	zap.Error(err),
-		//	zap.String("namespace", string(namespace)))
-		return nil
+func (s *StoragedConfiguration) GetTransactionProcessor(family, version string) iface.ITransactionProcessor {
+	val, found := s.TransactionProcessorMap[family+"::"+version]
+
+	if found {
+		return val
 	}
+
+	return nil
+}
+
+func (s *StoragedConfiguration) AddTransactionProcessor(tp iface.ITransactionProcessor) {
+	s.TransactionProcessorMap[tp.Family()+"::"+tp.Version()] = tp
 }

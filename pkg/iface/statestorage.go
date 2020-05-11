@@ -6,6 +6,7 @@ type IStateStorageIterator interface {
 	Next()
 	Close()
 	Valid() bool
+	Rewind()
 	Seek(key []byte)
 	StateSnapshot() *pb.StateSnapshot
 	ValidForPrefix(prefix []byte) bool

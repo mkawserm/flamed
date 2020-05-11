@@ -1,7 +1,6 @@
 package iface
 
 import (
-	"github.com/mkawserm/flamed/pkg/pb"
 	"io"
 )
 
@@ -34,7 +33,7 @@ type IStorage interface {
 	Close() error
 	RunGC()
 
-	ChangeSecretKey(oldSecretKey []byte, newSecretKey []byte) error
+	ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte) error
 
 	PrepareSnapshot() (interface{}, error)
 	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
@@ -43,6 +42,5 @@ type IStorage interface {
 	SaveAppliedIndex(u uint64) error
 	QueryAppliedIndex() (uint64, error)
 
-	Lookup(input interface{}, checkValidity bool) (interface{}, error)
-	ApplyProposal(pp *pb.FlameProposal, checkValidity bool) error
+	Lookup(input interface{}) (interface{}, error)
 }
