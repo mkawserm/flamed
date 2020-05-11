@@ -293,7 +293,10 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 	}
 
 	if err := txn.Commit(); err == nil {
-		/* TODO: SEND INDEX DATA TO BE PROCESSED */
+		if len(indexDataContainer) != 0 {
+			/* TODO: SEND INDEX DATA TO BE PROCESSED */
+
+		}
 
 		pr.Status = 1
 		return pr
