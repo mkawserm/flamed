@@ -13,8 +13,11 @@ type IStorageConfiguration interface {
 	IndexEnable() bool
 	AutoIndexMeta() bool
 
-	StoragePath() string
-	StorageSecretKey() []byte
+	StateStoragePath() string
+	StateStorageSecretKey() []byte
+
+	IndexStoragePath() string
+	IndexStorageSecretKey() []byte
 
 	StoragePluginIndex() IIndexStorage
 	StoragePluginState() IStateStorage

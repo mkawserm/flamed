@@ -1,7 +1,5 @@
 package iface
 
-import "io"
-
 type IStateSnapshot interface {
 	GetUid() []byte
 	GetData() []byte
@@ -30,16 +28,10 @@ type IStateStorageTransaction interface {
 }
 
 type IStateStorage interface {
-	Open(path string, secretKey []byte, configuration interface{}) error
-	Close() error
-
 	RunGC()
-
+	Close() error
 	NewTransaction() IStateStorageTransaction
-
-	PrepareSnapshot() (interface{}, error)
-	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
-	RecoverFromSnapshot(r io.Reader) error
-
+	NewReadOnlyTransaction() IStateStorageTransaction
+	Open(path string, secretKey []byte, configuration interface{}) error
 	ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte) error
 }
