@@ -1,13 +1,20 @@
 syntax = "proto3";
 package pb;
 
-message SnapshotEntry {
+message StateSnapshot {
   bytes uid = 1;
   bytes data = 2;
 }
 
-message Snapshot {
-  uint32 version = 1;
-  uint64 length = 2;
-  repeated SnapshotEntry snapshotEntryList = 3;
+message Transaction {
+  bytes namespace = 1;
+  string family = 2;
+  string version = 3;
+  bytes payload = 4;
+}
+
+message Proposal {
+  string uuid = 1;
+  fixed64 createdAt = 2;
+  repeated Transaction transactions = 3;
 }

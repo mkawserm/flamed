@@ -573,7 +573,7 @@ func (b *Badger) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 			internalLogger.Error("sm value copy error", zap.Error(err))
 			return x.ErrFailedToSaveSnapshot
 		} else {
-			entry := &pb.SnapshotEntry{
+			entry := &pb.StateSnapshot{
 				Uid:  item.Key(),
 				Data: value,
 			}
@@ -634,7 +634,7 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
-		entry := &pb.SnapshotEntry{}
+		entry := &pb.StateSnapshot{}
 		if err := proto.Unmarshal(data, entry); err != nil {
 			internalLogger.Error("sm unmarshal error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
