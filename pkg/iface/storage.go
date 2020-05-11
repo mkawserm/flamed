@@ -24,6 +24,8 @@ type IStorageConfiguration interface {
 
 	StateStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
+
+	GetTransactionProcessor(family, version string) ITransactionProcessor
 }
 
 type IStorage interface {
