@@ -10,20 +10,17 @@ type IStorageConfiguration interface {
 	CacheSize() int
 	BatchSize() int
 
-	AutoIndexMeta() bool
 	IndexEnable() bool
+	AutoIndexMeta() bool
 
 	StoragePath() string
 	StorageSecretKey() []byte
 
 	StoragePluginIndex() IIndexStorage
-	StoragePluginStateMachine() IStateMachineStorage
+	StoragePluginState() IStateStorage
 
+	StateStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
-	StateMachineStorageCustomConfiguration() interface{}
-
-	/*IndexObject*/
-	IIndexObject
 }
 
 type IStorage interface {
