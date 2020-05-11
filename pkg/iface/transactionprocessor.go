@@ -6,6 +6,6 @@ type ITransactionProcessor interface {
 	Family() string
 	Version() string
 	Apply(context *context.Context,
-		stateStorageContext IStateStorageContext,
+		stateContext IStateContext,
 		transaction ITransaction) ITransactionProcessorResponse
 }

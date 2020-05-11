@@ -1,6 +1,6 @@
 package iface
 
-type IStateStorageContext interface {
+type IStateContext interface {
 	GetState(address []byte) ([]byte, error)
 	SetState(address []byte, payload []byte) error
 	DeleteState(address []byte) error
