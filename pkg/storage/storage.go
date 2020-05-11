@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	badgerDb "github.com/dgraph-io/badger/v2"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
@@ -13,6 +14,37 @@ import (
 	"go.uber.org/zap"
 	"io"
 )
+
+type StateContext struct {
+}
+
+func (s *StateContext) GetState(address []byte) ([]byte, error) {
+	return nil, nil
+}
+
+func (s *StateContext) SetState(address []byte, payload []byte) error {
+	return nil
+}
+
+func (s *StateContext) DeleteState(address []byte) error {
+	return nil
+}
+
+func (s *StateContext) SetIndex(id string, data interface{}) error {
+	return nil
+}
+
+func (s *StateContext) DeleteIndex(id string) error {
+	return nil
+}
+
+func (s *StateContext) Commit() error {
+	return nil
+}
+
+func (s *StateContext) Discard() {
+
+}
 
 type Storage struct {
 	mStateStoragePath          string
@@ -225,9 +257,35 @@ func (s *Storage) Lookup(input interface{}) (interface{}, error) {
 	return nil, nil
 }
 
-func (s *Storage) ApplyProposal(proposal *pb.Proposal) *variant.ProposalResponse {
+func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *variant.ProposalResponse {
+	stateContext := &StateContext{}
+	defer stateContext.Discard()
 
-	return nil
+	pr := variant.NewProposalResponse(0)
+	for _, t := range proposal.Transactions {
+		tp := s.mConfiguration.GetTransactionProcessor(t.Family, t.Version)
+		if tp == nil {
+			pr.Status = 0
+			pr.ErrorCode = 0
+			pr.ErrorText = "Transaction family:" + t.Family + " Version:" + t.Version + " not found"
+			return pr
+		}
+
+		tpr := tp.Apply(ctx, stateContext, t)
+		pr.Append(tpr)
+		if tpr.Status == 0 {
+			return pr
+		}
+	}
+
+	if err := stateContext.Commit(); err == nil {
+		pr.Status = 1
+		return pr
+	} else {
+		pr.Status = 0
+		pr.ErrorText = "state commit failed"
+		return pr
+	}
 }
 
 //func (s *Storage) CreateIndexMeta(meta *pb.FlameIndexMeta) error {

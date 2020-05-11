@@ -1,7 +1,7 @@
 package variant
 
 type TransactionProcessorResponse struct {
-	Status    uint8  `json:"status"`    /* 0 - failed, 1 - success */
+	Status    uint8  `json:"status"`    /* 0 - rejected, 1 - accepted */
 	ErrorCode uint32 `json:"errorCode"` /* error code */
 	ErrorText string `json:"errorText"` /* failure reason short message */
 }

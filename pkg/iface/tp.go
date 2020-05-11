@@ -9,7 +9,7 @@ import (
 type ITransactionProcessor interface {
 	Family() string
 	Version() string
-	Apply(context *context.Context,
+	Apply(ctx context.Context,
 		stateContext IStateContext,
-		transaction *pb.Transaction) variant.TransactionProcessorResponse
+		transaction *pb.Transaction) *variant.TransactionProcessorResponse
 }
