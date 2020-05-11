@@ -18,8 +18,9 @@ import (
 type IndexDataContainer map[string][]*variant.IndexData
 
 type StateContext struct {
-	mTxn           iface.IStateStorageTransaction
+	mIndexStorage  iface.IIndexStorage
 	mIndexDataList []*variant.IndexData
+	mTxn           iface.IStateStorageTransaction
 }
 
 func (s *StateContext) GetState(key []byte) ([]byte, error) {
@@ -35,6 +36,10 @@ func (s *StateContext) DeleteState(key []byte) error {
 }
 
 func (s *StateContext) SetIndex(id string, data interface{}) error {
+	if s.mIndexStorage == nil {
+		return nil
+	}
+
 	s.mIndexDataList = append(s.mIndexDataList, &variant.IndexData{
 		ID:     id,
 		Data:   data,
@@ -44,11 +49,30 @@ func (s *StateContext) SetIndex(id string, data interface{}) error {
 }
 
 func (s *StateContext) DeleteIndex(id string) error {
+	if s.mIndexStorage == nil {
+		return nil
+	}
+
 	s.mIndexDataList = append(s.mIndexDataList, &variant.IndexData{
 		ID:     id,
 		Action: variant.DELETE,
 	})
 	return nil
+}
+
+func (s *StateContext) SetIndexMeta(meta *pb.FlameIndexMeta) error {
+	if s.mIndexStorage == nil {
+		return nil
+	}
+	return s.mIndexStorage.SetIndexMeta(meta)
+}
+
+func (s *StateContext) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+	if s.mIndexStorage == nil {
+		return nil
+	}
+
+	return s.mIndexStorage.DeleteIndexMeta(meta)
 }
 
 type Storage struct {
@@ -280,6 +304,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 
 		stateContext := &StateContext{
 			mTxn:           txn,
+			mIndexStorage:  s.mIndexStorage,
 			mIndexDataList: make([]*variant.IndexData, 0),
 		}
 		tpr := tp.Apply(ctx, stateContext, t)
@@ -293,9 +318,11 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 	}
 
 	if err := txn.Commit(); err == nil {
-		if len(indexDataContainer) != 0 {
-			/* TODO: SEND INDEX DATA TO BE PROCESSED */
+		if s.mConfiguration.IndexEnable() {
+			if len(indexDataContainer) != 0 {
+				/* TODO: SEND INDEX DATA TO BE PROCESSED */
 
+			}
 		}
 
 		pr.Status = 1
@@ -308,7 +335,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 	}
 }
 
-//func (s *Storage) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
+//func (s *Storage) SetIndexMeta(meta *pb.FlameIndexMeta) error {
 //	defer func() {
 //		_ = internalLogger.Sync()
 //	}()
@@ -706,15 +733,15 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 //			}
 //		}
 //
-//		if err := s.CreateIndexMeta(indexMeta); err != nil {
-//			internalLogger.Error("CreateIndexMeta error", zap.Error(err))
+//		if err := s.SetIndexMeta(indexMeta); err != nil {
+//			internalLogger.Error("SetIndexMeta error", zap.Error(err))
 //			return err
 //		} else {
 //			if !s.mConfiguration.IndexEnable() {
 //				return nil
 //			}
-//			if err := s.mIndexStorage.CreateIndexMeta(indexMeta); err != nil {
-//				internalLogger.Error("IndexStorage CreateIndexMeta error", zap.Error(err))
+//			if err := s.mIndexStorage.SetIndexMeta(indexMeta); err != nil {
+//				internalLogger.Error("IndexStorage SetIndexMeta error", zap.Error(err))
 //				return err
 //			} else {
 //				return nil
@@ -919,9 +946,9 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 //				CreatedAt: uint64(time.Now().UnixNano()),
 //				UpdatedAt: uint64(time.Now().UnixNano()),
 //			}
-//			err := s.mIndexStorage.CreateIndexMeta(flameMeta)
+//			err := s.mIndexStorage.SetIndexMeta(flameMeta)
 //			if err != nil {
-//				internalLogger.Error("CreateIndexMeta failure",
+//				internalLogger.Error("SetIndexMeta failure",
 //					zap.Error(err),
 //					zap.String("namespace", k))
 //			}
@@ -950,8 +977,8 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 //			return false
 //		}
 //
-//		if err := s.mIndexStorage.CreateIndexMeta(indexMeta); err != nil {
-//			internalLogger.Error("CreateIndexMeta failure", zap.Error(err))
+//		if err := s.mIndexStorage.SetIndexMeta(indexMeta); err != nil {
+//			internalLogger.Error("SetIndexMeta failure", zap.Error(err))
 //			errFound = true
 //			return false
 //		}
@@ -1216,8 +1243,3 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	internalLogger.Debug("storage snapshot saved")
 	return nil
 }
-
-//type internalIndexHolder struct {
-//	namespace string
-//	indexData []*variant.IndexData
-//}

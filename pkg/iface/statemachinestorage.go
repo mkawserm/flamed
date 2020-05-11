@@ -33,7 +33,7 @@ type IStateMachineStorage interface {
 
 	//ApplyAction(action *pb.FlameAction) error
 
-	//CreateIndexMeta(meta *pb.FlameIndexMeta) error
+	//SetIndexMeta(meta *pb.FlameIndexMeta) error
 	//IsIndexMetaExists(meta *pb.FlameIndexMeta) bool
 	////GetIndexMeta(meta *pb.FlameIndexMeta) error
 	////GetAllIndexMeta() ([]*pb.FlameIndexMeta, error)

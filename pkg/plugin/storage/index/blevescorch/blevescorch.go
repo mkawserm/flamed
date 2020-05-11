@@ -29,7 +29,7 @@ func (b *BleveScorch) Open(path string, secretKey []byte, configuration interfac
 	return nil
 }
 
-func (b *BleveScorch) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
+func (b *BleveScorch) SetIndexMeta(meta *pb.FlameIndexMeta) error {
 	p := b.path + "/" + string(meta.Namespace)
 	if b.isPathExists(p) {
 		b.removeAll(p)
@@ -52,7 +52,7 @@ func (b *BleveScorch) CreateIndexMeta(meta *pb.FlameIndexMeta) error {
 }
 
 func (b *BleveScorch) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
-	return b.CreateIndexMeta(meta)
+	return b.SetIndexMeta(meta)
 }
 
 func (b *BleveScorch) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
