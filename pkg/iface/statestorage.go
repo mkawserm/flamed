@@ -26,9 +26,10 @@ type IStateStorageTransaction interface {
 
 type IStateStorage interface {
 	RunGC()
+	Open() error
 	Close() error
 	NewTransaction() IStateStorageTransaction
 	NewReadOnlyTransaction() IStateStorageTransaction
-	Open(path string, secretKey []byte, configuration interface{}) error
+	Setup(path string, secretKey []byte, configuration interface{})
 	ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte) error
 }
