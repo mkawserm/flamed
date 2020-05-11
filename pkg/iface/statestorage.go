@@ -8,20 +8,20 @@ type IStateSnapshot interface {
 }
 
 type IStateStorageIterator interface {
-	Seek(key []byte)
-	Valid() bool
-	ValidForPrefix(prefix []byte) bool
 	Next()
 	Close()
+	Valid() bool
+	Seek(key []byte)
 	StateSnapshot() IStateSnapshot
+	ValidForPrefix(prefix []byte) bool
 }
 
 type IStateStorageTransaction interface {
-	Get(key []byte) ([]byte, error)
-	Set(key []byte, value []byte) error
-	Delete(key []byte) error
 	Discard()
 	Commit() error
+	Delete(key []byte) error
+	Get(key []byte) ([]byte, error)
+	Set(key []byte, value []byte) error
 
 	ForwardIterator() IStateStorageIterator
 	ReverseIterator() IStateStorageIterator
