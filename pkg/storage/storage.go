@@ -18,9 +18,14 @@ import (
 type IndexDataContainer map[string][]*variant.IndexData
 
 type StateContext struct {
+	mAutoIndexMeta bool
 	mIndexStorage  iface.IIndexStorage
 	mIndexDataList []*variant.IndexData
 	mTxn           iface.IStateStorageTransaction
+}
+
+func (s *StateContext) AutoIndexMeta() bool {
+	return s.mAutoIndexMeta
 }
 
 func (s *StateContext) GetState(key []byte) ([]byte, error) {
@@ -60,14 +65,22 @@ func (s *StateContext) DeleteIndex(id string) error {
 	return nil
 }
 
-func (s *StateContext) SetIndexMeta(meta *pb.FlameIndexMeta) error {
+func (s *StateContext) CanIndex(namespace string) bool {
+	if s.mIndexStorage == nil {
+		return false
+	}
+
+	return s.mIndexStorage.CanIndex(namespace)
+}
+
+func (s *StateContext) SetIndexMeta(meta *pb.IndexMeta) error {
 	if s.mIndexStorage == nil {
 		return nil
 	}
 	return s.mIndexStorage.SetIndexMeta(meta)
 }
 
-func (s *StateContext) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
 	if s.mIndexStorage == nil {
 		return nil
 	}
@@ -303,6 +316,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 		}
 
 		stateContext := &StateContext{
+			mAutoIndexMeta: s.mConfiguration.AutoIndexMeta(),
 			mTxn:           txn,
 			mIndexStorage:  s.mIndexStorage,
 			mIndexDataList: make([]*variant.IndexData, 0),

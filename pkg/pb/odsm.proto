@@ -29,50 +29,35 @@ message FlameBatchRead {
   repeated FlameEntry flameEntryList = 1;
 }
 
-message FlameIndexField {
-  enum FlameIndexFieldType {
-    TEXT = 0;
-    NUMERIC = 1;
-    BOOLEAN = 2;
-    GEO_POINT = 3;
-    DATE_TIME = 4;
-  }
-
-  FlameIndexFieldType flameIndexFieldType = 1;
-
-  string name = 2;
-  string analyzer = 3;
-  bool enabled = 4;
-  bool index = 5;
-  bool store = 6;
-  bool includeTermVectors = 7;
-  bool includeInAll = 8;
-  bool docValues = 9;
-}
-
-message FlameIndexDocument {
-  string name = 1;
-  bool default = 2;
-  repeated FlameIndexField flameIndexFieldList = 3;
-}
-
-message FlameIndexMeta {
-  bytes namespace = 1;
-  uint32 version = 2;
-  bool enabled = 3;
-  bool default = 4;
-  uint64 createdAt = 5;
-  uint64 updatedAt = 6;
-  repeated FlameIndexDocument flameIndexDocumentList = 7;
-}
-
-message FlameIndexMetaList {
-  repeated FlameIndexMeta flameIndexMetaList = 1;
-}
-
 message FlameNamespaceList {
   repeated bytes flameNamespaceList = 1;
 }
+
+message FlameProposal {
+  enum FlameProposalType {
+    BATCH_ACTION = 0; /* FlameBatchAction */
+
+    CREATE_USER = 1; /* FlameUser */
+    UPDATE_USER = 2; /* FlameUser */
+    DELETE_USER = 3; /* FlameUser */
+
+    CREATE_INDEX_META = 4; /* FlameIndexMeta */
+    UPDATE_INDEX_META = 5; /* FlameIndexMeta */
+    DELETE_INDEX_META = 6; /* FlameIndexMeta */
+
+    CREATE_ACCESS_CONTROL = 7; /* FlameAccessControl */
+    UPDATE_ACCESS_CONTROL = 8; /* FlameAccessControl */
+    DELETE_ACCESS_CONTROL = 9; /* FlameAccessControl */
+
+    BATCH_USER = 10;
+    BATCH_INDEX_META = 11;
+    BATCH_ACCESS_CONTROL = 12;
+  }
+
+  FlameProposalType flameProposalType = 1;
+  bytes flameProposalData = 2;
+}
+
 
 message FlameUser {
   enum FlameUserType {
@@ -114,29 +99,4 @@ message FlameAccessControl {
 
 message FlameAccessControlList {
   repeated FlameAccessControl flameAccessControlList = 1;
-}
-
-message FlameProposal {
-  enum FlameProposalType {
-    BATCH_ACTION = 0; /* FlameBatchAction */
-
-    CREATE_USER = 1; /* FlameUser */
-    UPDATE_USER = 2; /* FlameUser */
-    DELETE_USER = 3; /* FlameUser */
-
-    CREATE_INDEX_META = 4; /* FlameIndexMeta */
-    UPDATE_INDEX_META = 5; /* FlameIndexMeta */
-    DELETE_INDEX_META = 6; /* FlameIndexMeta */
-
-    CREATE_ACCESS_CONTROL = 7; /* FlameAccessControl */
-    UPDATE_ACCESS_CONTROL = 8; /* FlameAccessControl */
-    DELETE_ACCESS_CONTROL = 9; /* FlameAccessControl */
-
-    BATCH_USER = 10;
-    BATCH_INDEX_META = 11;
-    BATCH_ACCESS_CONTROL = 12;
-  }
-
-  FlameProposalType flameProposalType = 1;
-  bytes flameProposalData = 2;
 }

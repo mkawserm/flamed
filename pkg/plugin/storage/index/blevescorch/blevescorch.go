@@ -29,7 +29,7 @@ func (b *BleveScorch) Open(path string, secretKey []byte, configuration interfac
 	return nil
 }
 
-func (b *BleveScorch) SetIndexMeta(meta *pb.FlameIndexMeta) error {
+func (b *BleveScorch) SetIndexMeta(meta *pb.IndexMeta) error {
 	p := b.path + "/" + string(meta.Namespace)
 	if b.isPathExists(p) {
 		b.removeAll(p)
@@ -51,15 +51,37 @@ func (b *BleveScorch) SetIndexMeta(meta *pb.FlameIndexMeta) error {
 	return nil
 }
 
-func (b *BleveScorch) UpdateIndexMeta(meta *pb.FlameIndexMeta) error {
+func (b *BleveScorch) UpdateIndexMeta(meta *pb.IndexMeta) error {
 	return b.SetIndexMeta(meta)
 }
 
-func (b *BleveScorch) DeleteIndexMeta(meta *pb.FlameIndexMeta) error {
+func (b *BleveScorch) DeleteIndexMeta(meta *pb.IndexMeta) error {
 	p := b.path + "/" + string(meta.Namespace)
 	if b.isPathExists(p) {
 		b.removeAll(p)
 	}
+
+	return nil
+}
+
+func (b *BleveScorch) DefaultIndexMeta(namespace string) error {
+	p := b.path + "/" + namespace
+	if b.isPathExists(p) {
+		b.removeAll(p)
+	}
+	indexMapping := bleveMapping.NewIndexMapping()
+	index, err := bleveSearch.NewUsing(p,
+		indexMapping,
+		scorch.Name,
+		scorch.Name,
+		nil)
+
+	if err != nil {
+		internalLogger.Debug("error while adding default index meta", zap.Error(err))
+		return x.ErrFailedToCreateIndexMeta
+	}
+
+	_ = index.Close()
 
 	return nil
 }
@@ -122,7 +144,7 @@ func (b *BleveScorch) removeAll(path string) {
 	_ = os.RemoveAll(path)
 }
 
-func (b *BleveScorch) getMapping(_ *pb.FlameIndexMeta) *bleveMapping.IndexMappingImpl {
+func (b *BleveScorch) getMapping(_ *pb.IndexMeta) *bleveMapping.IndexMappingImpl {
 	indexMapping := bleveMapping.NewIndexMapping()
 	return indexMapping
 }

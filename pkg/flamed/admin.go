@@ -373,7 +373,7 @@ func (a *Admin) DeleteAccessControl(ac *pb.FlameAccessControl, timeout time.Dura
 	}
 }
 
-func (a *Admin) CreateIndexMeta(meta *pb.FlameIndexMeta, timeout time.Duration) error {
+func (a *Admin) CreateIndexMeta(meta *pb.IndexMeta, timeout time.Duration) error {
 	if !utility.IsNamespaceValid(meta.Namespace) {
 		return x.ErrInvalidNamespace
 	}
@@ -401,7 +401,7 @@ func (a *Admin) CreateIndexMeta(meta *pb.FlameIndexMeta, timeout time.Duration) 
 	}
 }
 
-func (a *Admin) UpdateIndexMeta(meta *pb.FlameIndexMeta, timeout time.Duration) error {
+func (a *Admin) UpdateIndexMeta(meta *pb.IndexMeta, timeout time.Duration) error {
 	if !utility.IsNamespaceValid(meta.Namespace) {
 		return x.ErrInvalidNamespace
 	}
@@ -429,7 +429,7 @@ func (a *Admin) UpdateIndexMeta(meta *pb.FlameIndexMeta, timeout time.Duration) 
 	}
 }
 
-func (a *Admin) DeleteIndexMeta(meta *pb.FlameIndexMeta, timeout time.Duration) error {
+func (a *Admin) DeleteIndexMeta(meta *pb.IndexMeta, timeout time.Duration) error {
 	if !utility.IsNamespaceValid(meta.Namespace) {
 		return x.ErrInvalidNamespace
 	}

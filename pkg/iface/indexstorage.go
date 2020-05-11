@@ -9,8 +9,9 @@ type IIndexStorage interface {
 	Open(path string, secretKey []byte, configuration interface{}) error
 	Close() error
 
-	SetIndexMeta(meta *pb.FlameIndexMeta) error
-	DeleteIndexMeta(meta *pb.FlameIndexMeta) error
+	SetIndexMeta(meta *pb.IndexMeta) error
+	DeleteIndexMeta(meta *pb.IndexMeta) error
+	DefaultIndexMeta(namespace string) error
 
 	ApplyIndex(namespace string, data []*variant.IndexData) error
 	CanIndex(namespace string) bool

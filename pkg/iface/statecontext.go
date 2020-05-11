@@ -10,6 +10,8 @@ type IStateContext interface {
 	SetIndex(id string, data interface{}) error
 	DeleteIndex(id string) error
 
-	SetIndexMeta(meta *pb.FlameIndexMeta) error
-	DeleteIndexMeta(meta *pb.FlameIndexMeta) error
+	CanIndex(namespace string) bool
+	SetIndexMeta(meta *pb.IndexMeta) error
+	DeleteIndexMeta(meta *pb.IndexMeta) error
+	AutoIndexMeta() bool
 }
