@@ -2,6 +2,7 @@ package x
 
 import "errors"
 
+var ErrKeyDoesNotExists = errors.New("key does not exists")
 var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 
 var ErrEmptyBatch = errors.New("empty batch")
