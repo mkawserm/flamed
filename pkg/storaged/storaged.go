@@ -23,10 +23,6 @@ type Storaged struct {
 	mStoragedConfiguration iface.IStoragedConfiguration
 }
 
-func (s *Storaged) GetStorage() iface.IStorage {
-	return s.mStorage
-}
-
 func (s *Storaged) SetConfiguration(configuration iface.IStoragedConfiguration) bool {
 	if s.mStorage != nil {
 		return false
@@ -85,6 +81,10 @@ func (s *Storaged) Sync() error {
 }
 
 func (s *Storaged) Close() error {
+	internalLogger.Debug("storaged Close")
+	defer func() {
+		internalLogger.Debug("storaged Close done")
+	}()
 	if s.mStorage == nil {
 		return nil
 	}
@@ -94,10 +94,12 @@ func (s *Storaged) Close() error {
 }
 
 func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
+	internalLogger.Debug("storaged Update")
 	if s.mStorage == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
 
+	internalLogger.Debug("", zap.Int("entriesLength", len(entries)))
 	for idx, e := range entries {
 		entries[idx].Result = sm.Result{Value: uint64(len(entries[idx].Cmd))}
 
@@ -131,15 +133,18 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 
 	s.mLastApplied = entries[len(entries)-1].Index
 
+	internalLogger.Debug("storaged Update done")
 	return entries, nil
 }
 
 func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
+	internalLogger.Debug("storaged Lookup")
 	if s.mStorage == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
-
-	return s.mStorage.Lookup(input)
+	r, err := s.mStorage.Lookup(input)
+	internalLogger.Debug("storaged Lookup done")
+	return r, err
 }
 
 func (s *Storaged) PrepareSnapshot() (interface{}, error) {
