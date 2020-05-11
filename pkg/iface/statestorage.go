@@ -1,16 +1,13 @@
 package iface
 
-type IStateSnapshot interface {
-	GetUid() []byte
-	GetData() []byte
-}
+import "github.com/mkawserm/flamed/pkg/pb"
 
 type IStateStorageIterator interface {
 	Next()
 	Close()
 	Valid() bool
 	Seek(key []byte)
-	StateSnapshot() IStateSnapshot
+	StateSnapshot() *pb.StateSnapshot
 	ValidForPrefix(prefix []byte) bool
 }
 
