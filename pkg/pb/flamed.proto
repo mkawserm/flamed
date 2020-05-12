@@ -15,8 +15,9 @@ message Transaction {
 
 message Proposal {
   string uuid = 1;
-  fixed64 createdAt = 2;
-  repeated Transaction transactions = 3;
+  bytes meta = 2;
+  fixed64 createdAt = 4;
+  repeated Transaction transactions = 5;
 }
 
 enum IndexFieldType {
