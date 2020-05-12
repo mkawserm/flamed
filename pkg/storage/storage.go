@@ -248,7 +248,9 @@ func (s *Storage) Close() error {
 func (s *Storage) RunGC() {
 	s.mStateStorage.RunGC()
 	if s.mConfiguration.IndexEnable() {
-		//s.mIndexStorage.
+		if s.mIndexStorage != nil {
+			s.mIndexStorage.RunGC()
+		}
 	}
 }
 

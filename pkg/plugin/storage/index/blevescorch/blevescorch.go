@@ -123,6 +123,10 @@ func (b *BleveScorch) Close() error {
 	return nil
 }
 
+func (b *BleveScorch) RunGC() {
+
+}
+
 func (b *BleveScorch) CanIndex(namespace string) bool {
 	return b.isPathExists(b.path + "/" + namespace)
 }

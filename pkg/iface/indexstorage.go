@@ -15,4 +15,6 @@ type IIndexStorage interface {
 
 	ApplyIndex(namespace string, data []*variant.IndexData) error
 	CanIndex(namespace string) bool
+
+	RunGC()
 }
