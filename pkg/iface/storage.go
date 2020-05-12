@@ -18,8 +18,8 @@ type IStorageConfiguration interface {
 	IndexStoragePath() string
 	IndexStorageSecretKey() []byte
 
-	StoragePluginIndex() IIndexStorage
 	StoragePluginState() IStateStorage
+	StoragePluginIndex() IIndexStorage
 
 	StateStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}

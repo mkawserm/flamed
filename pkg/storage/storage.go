@@ -123,7 +123,7 @@ func (s *StateContext) UpsertIndexMeta(meta *pb.IndexMeta) error {
 		return nil
 	}
 
-	return s.mStorage.SetIndexMeta(meta)
+	return s.mStorage.UpsertIndexMeta(meta)
 }
 
 func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
@@ -432,7 +432,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 	}
 }
 
-func (s *Storage) SetIndexMeta(meta *pb.IndexMeta) error {
+func (s *Storage) UpsertIndexMeta(meta *pb.IndexMeta) error {
 	if s.mIndexStorage == nil {
 		return nil
 	}
