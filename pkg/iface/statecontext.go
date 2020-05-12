@@ -5,7 +5,22 @@ import (
 	"github.com/mkawserm/flamed/pkg/variant"
 )
 
+type IStateIterator interface {
+	Next()
+	Close()
+	Valid() bool
+	Rewind()
+	Seek(key []byte)
+	StateSnapshot() *pb.StateSnapshot
+	ValidForPrefix(prefix []byte) bool
+}
+
 type IStateContext interface {
+	GetForwardIterator() IStateIterator
+	GetReverseIterator() IStateIterator
+	GetKeyOnlyForwardIterator() IStateIterator
+	GetKeyOnlyReverseIterator() IStateIterator
+
 	GetState(key []byte) ([]byte, error)
 	SetState(key []byte, value []byte) error
 	DeleteState(key []byte) error

@@ -18,9 +18,26 @@ import (
 type IndexDataContainer map[string][]*variant.IndexData
 
 type StateContext struct {
+	mReadOnly      bool
 	mStorage       *Storage
 	mIndexDataList []*variant.IndexData
 	mTxn           iface.IStateStorageTransaction
+}
+
+func (s *StateContext) GetForwardIterator() iface.IStateIterator {
+	return s.mTxn.ForwardIterator()
+}
+
+func (s *StateContext) GetReverseIterator() iface.IStateIterator {
+	return s.mTxn.ReverseIterator()
+}
+
+func (s *StateContext) GetKeyOnlyForwardIterator() iface.IStateIterator {
+	return s.mTxn.KeyOnlyForwardIterator()
+}
+
+func (s *StateContext) GetKeyOnlyReverseIterator() iface.IStateIterator {
+	return s.mTxn.KeyOnlyReverseIterator()
 }
 
 func (s *StateContext) GetState(key []byte) ([]byte, error) {
@@ -28,14 +45,26 @@ func (s *StateContext) GetState(key []byte) ([]byte, error) {
 }
 
 func (s *StateContext) SetState(key []byte, value []byte) error {
+	if s.mReadOnly {
+		return nil
+	}
+
 	return s.mTxn.Set(key, value)
 }
 
 func (s *StateContext) DeleteState(key []byte) error {
+	if s.mReadOnly {
+		return nil
+	}
+
 	return s.mTxn.Delete(key)
 }
 
 func (s *StateContext) SetIndex(id string, data interface{}) error {
+	if s.mReadOnly {
+		return nil
+	}
+
 	if !s.mStorage.IndexEnable() {
 		return nil
 	}
@@ -49,6 +78,10 @@ func (s *StateContext) SetIndex(id string, data interface{}) error {
 }
 
 func (s *StateContext) DeleteIndex(id string) error {
+	if s.mReadOnly {
+		return nil
+	}
+
 	if !s.mStorage.IndexEnable() {
 		return nil
 	}
@@ -73,18 +106,34 @@ func (s *StateContext) CanIndex(namespace string) bool {
 }
 
 func (s *StateContext) SetIndexMeta(meta *pb.IndexMeta) error {
+	if s.mReadOnly {
+		return nil
+	}
+
 	return s.mStorage.SetIndexMeta(meta)
 }
 
 func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
+	if s.mReadOnly {
+		return nil
+	}
+
 	return s.mStorage.DeleteIndexMeta(meta)
 }
 
 func (s *StateContext) DefaultIndexMeta(namespace string) error {
+	if s.mReadOnly {
+		return nil
+	}
+
 	return s.mStorage.DefaultIndexMeta(namespace)
 }
 
 func (s *StateContext) ApplyIndex(namespace string, data []*variant.IndexData) error {
+	if s.mReadOnly {
+		return nil
+	}
+
 	return s.mStorage.ApplyIndex(namespace, data)
 }
 
@@ -294,9 +343,24 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 	return uidutil.ByteSliceToUint64(data), nil
 }
 
-func (s *Storage) Lookup(_ variant.LookupRequest) (interface{}, error) {
-
-	return nil, nil
+func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
+	if len(request.TPFamily) != 0 && len(request.TPVersion) != 0 {
+		tp := s.mConfiguration.GetTransactionProcessor(request.TPFamily, request.TPVersion)
+		if tp == nil {
+			return nil, x.ErrTPNotFound
+		} else {
+			readOnlyTxn := s.mStateStorage.NewReadOnlyTransaction()
+			defer readOnlyTxn.Discard()
+			readOnlyStateContext := &StateContext{
+				mReadOnly: true,
+				mStorage:  s,
+				mTxn:      readOnlyTxn,
+			}
+			return tp.Lookup(readOnlyStateContext, request)
+		}
+	} else {
+		return nil, nil
+	}
 }
 
 func (s *Storage) Search(_ variant.SearchRequest) (interface{}, error) {
@@ -320,6 +384,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 		}
 
 		stateContext := &StateContext{
+			mReadOnly:      false,
 			mStorage:       s,
 			mTxn:           txn,
 			mIndexDataList: make([]*variant.IndexData, 0),
