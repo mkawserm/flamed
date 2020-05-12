@@ -18,14 +18,13 @@ import (
 type IndexDataContainer map[string][]*variant.IndexData
 
 type StateContext struct {
-	mAutoIndexMeta bool
-	mIndexStorage  iface.IIndexStorage
+	mStorage       *Storage
 	mIndexDataList []*variant.IndexData
 	mTxn           iface.IStateStorageTransaction
 }
 
 func (s *StateContext) AutoIndexMeta() bool {
-	return s.mAutoIndexMeta
+	return s.mStorage.AutoIndexMeta()
 }
 
 func (s *StateContext) GetState(key []byte) ([]byte, error) {
@@ -41,7 +40,7 @@ func (s *StateContext) DeleteState(key []byte) error {
 }
 
 func (s *StateContext) SetIndex(id string, data interface{}) error {
-	if s.mIndexStorage == nil {
+	if !s.mStorage.IndexEnable() {
 		return nil
 	}
 
@@ -54,7 +53,7 @@ func (s *StateContext) SetIndex(id string, data interface{}) error {
 }
 
 func (s *StateContext) DeleteIndex(id string) error {
-	if s.mIndexStorage == nil {
+	if !s.mStorage.IndexEnable() {
 		return nil
 	}
 
@@ -66,26 +65,19 @@ func (s *StateContext) DeleteIndex(id string) error {
 }
 
 func (s *StateContext) CanIndex(namespace string) bool {
-	if s.mIndexStorage == nil {
+	if !s.mStorage.IndexEnable() {
 		return false
 	}
 
-	return s.mIndexStorage.CanIndex(namespace)
+	return s.mStorage.CanIndex(namespace)
 }
 
 func (s *StateContext) SetIndexMeta(meta *pb.IndexMeta) error {
-	if s.mIndexStorage == nil {
-		return nil
-	}
-	return s.mIndexStorage.SetIndexMeta(meta)
+	return s.mStorage.SetIndexMeta(meta)
 }
 
 func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
-	if s.mIndexStorage == nil {
-		return nil
-	}
-
-	return s.mIndexStorage.DeleteIndexMeta(meta)
+	return s.mStorage.DeleteIndexMeta(meta)
 }
 
 type Storage struct {
@@ -316,9 +308,8 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 		}
 
 		stateContext := &StateContext{
-			mAutoIndexMeta: s.mConfiguration.AutoIndexMeta(),
+			mStorage:       s,
 			mTxn:           txn,
-			mIndexStorage:  s.mIndexStorage,
 			mIndexDataList: make([]*variant.IndexData, 0),
 		}
 		tpr := tp.Apply(ctx, stateContext, t)
@@ -347,6 +338,38 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 		pr.ErrorText = "state commit failed"
 		return pr
 	}
+}
+
+func (s *Storage) SetIndexMeta(meta *pb.IndexMeta) error {
+	if s.mIndexStorage == nil {
+		return nil
+	}
+
+	return s.mIndexStorage.SetIndexMeta(meta)
+}
+
+func (s *Storage) DeleteIndexMeta(meta *pb.IndexMeta) error {
+	if s.mIndexStorage == nil {
+		return nil
+	}
+
+	return s.mIndexStorage.DeleteIndexMeta(meta)
+}
+
+func (s *Storage) CanIndex(namespace string) bool {
+	if s.mIndexStorage == nil {
+		return false
+	}
+
+	return s.mIndexStorage.CanIndex(namespace)
+}
+
+func (s *Storage) IndexEnable() bool {
+	return s.mConfiguration.IndexEnable()
+}
+
+func (s *Storage) AutoIndexMeta() bool {
+	return s.mConfiguration.AutoIndexMeta()
 }
 
 //func (s *Storage) SetIndexMeta(meta *pb.FlameIndexMeta) error {
