@@ -294,8 +294,12 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 	return uidutil.ByteSliceToUint64(data), nil
 }
 
-func (s *Storage) Lookup(input interface{}) (interface{}, error) {
+func (s *Storage) Lookup(_ variant.LookupRequest) (interface{}, error) {
 
+	return nil, nil
+}
+
+func (s *Storage) Search(_ variant.SearchRequest) (interface{}, error) {
 	return nil, nil
 }
 

@@ -41,6 +41,4 @@ type IStorage interface {
 
 	SaveAppliedIndex(u uint64) error
 	QueryAppliedIndex() (uint64, error)
-
-	Lookup(input interface{}) (interface{}, error)
 }

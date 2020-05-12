@@ -6,6 +6,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
 	"io"
@@ -142,9 +143,19 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 	if s.mStorage == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
-	r, err := s.mStorage.Lookup(input)
+
+	if lookupRequest, ok := input.(variant.LookupRequest); ok {
+		r, err := s.mStorage.Lookup(lookupRequest)
+		internalLogger.Debug("storaged Lookup done")
+		return r, err
+	} else if searchRequest, ok := input.(variant.SearchRequest); ok {
+		r, err := s.mStorage.Search(searchRequest)
+		internalLogger.Debug("storaged Lookup done")
+		return r, err
+	}
+
 	internalLogger.Debug("storaged Lookup done")
-	return r, err
+	return nil, x.ErrInvalidLookupInput
 }
 
 func (s *Storaged) PrepareSnapshot() (interface{}, error) {
