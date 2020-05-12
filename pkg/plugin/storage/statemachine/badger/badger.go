@@ -669,7 +669,7 @@ func (b *Badger) RecoverFromSnapshot(r io.Reader) error {
 	return nil
 }
 
-//func (b *Badger) SetIndexMeta(meta *pb.FlameIndexMeta) error {
+//func (b *Badger) UpsertIndexMeta(meta *pb.FlameIndexMeta) error {
 //	defer func() {
 //		_ = internalLogger.Sync()
 //	}()

@@ -53,7 +53,7 @@ func (s *StateContext) GetState(key []byte) (*pb.StateEntry, error) {
 	}
 }
 
-func (s *StateContext) SetState(key []byte, entry *pb.StateEntry) error {
+func (s *StateContext) UpsertState(key []byte, entry *pb.StateEntry) error {
 	if s.mReadOnly {
 		return nil
 	}
@@ -73,7 +73,7 @@ func (s *StateContext) DeleteState(key []byte) error {
 	return s.mTxn.Delete(key)
 }
 
-func (s *StateContext) SetIndex(id string, data interface{}) error {
+func (s *StateContext) UpsertIndex(id string, data interface{}) error {
 	if s.mReadOnly {
 		return nil
 	}
@@ -85,7 +85,7 @@ func (s *StateContext) SetIndex(id string, data interface{}) error {
 	s.mIndexDataList = append(s.mIndexDataList, &variant.IndexData{
 		ID:     id,
 		Data:   data,
-		Action: variant.SET,
+		Action: variant.UPSERT,
 	})
 	return nil
 }
@@ -118,7 +118,7 @@ func (s *StateContext) CanIndex(namespace string) bool {
 	return s.mStorage.CanIndex(namespace)
 }
 
-func (s *StateContext) SetIndexMeta(meta *pb.IndexMeta) error {
+func (s *StateContext) UpsertIndexMeta(meta *pb.IndexMeta) error {
 	if s.mReadOnly {
 		return nil
 	}
@@ -435,7 +435,7 @@ func (s *Storage) SetIndexMeta(meta *pb.IndexMeta) error {
 		return nil
 	}
 
-	return s.mIndexStorage.SetIndexMeta(meta)
+	return s.mIndexStorage.UpsertIndexMeta(meta)
 }
 
 func (s *Storage) DeleteIndexMeta(meta *pb.IndexMeta) error {
@@ -477,7 +477,7 @@ func (s *Storage) DefaultIndexMeta(namespace string) error {
 	return s.mIndexStorage.DefaultIndexMeta(namespace)
 }
 
-//func (s *Storage) SetIndexMeta(meta *pb.FlameIndexMeta) error {
+//func (s *Storage) UpsertIndexMeta(meta *pb.FlameIndexMeta) error {
 //	defer func() {
 //		_ = internalLogger.Sync()
 //	}()
@@ -875,15 +875,15 @@ func (s *Storage) DefaultIndexMeta(namespace string) error {
 //			}
 //		}
 //
-//		if err := s.SetIndexMeta(indexMeta); err != nil {
-//			internalLogger.Error("SetIndexMeta error", zap.Error(err))
+//		if err := s.UpsertIndexMeta(indexMeta); err != nil {
+//			internalLogger.Error("UpsertIndexMeta error", zap.Error(err))
 //			return err
 //		} else {
 //			if !s.mConfiguration.IndexEnable() {
 //				return nil
 //			}
-//			if err := s.mIndexStorage.SetIndexMeta(indexMeta); err != nil {
-//				internalLogger.Error("IndexStorage SetIndexMeta error", zap.Error(err))
+//			if err := s.mIndexStorage.UpsertIndexMeta(indexMeta); err != nil {
+//				internalLogger.Error("IndexStorage UpsertIndexMeta error", zap.Error(err))
 //				return err
 //			} else {
 //				return nil
@@ -1088,9 +1088,9 @@ func (s *Storage) DefaultIndexMeta(namespace string) error {
 //				CreatedAt: uint64(time.Now().UnixNano()),
 //				UpdatedAt: uint64(time.Now().UnixNano()),
 //			}
-//			err := s.mIndexStorage.SetIndexMeta(flameMeta)
+//			err := s.mIndexStorage.UpsertIndexMeta(flameMeta)
 //			if err != nil {
-//				internalLogger.Error("SetIndexMeta failure",
+//				internalLogger.Error("UpsertIndexMeta failure",
 //					zap.Error(err),
 //					zap.String("namespace", k))
 //			}
@@ -1119,8 +1119,8 @@ func (s *Storage) DefaultIndexMeta(namespace string) error {
 //			return false
 //		}
 //
-//		if err := s.mIndexStorage.SetIndexMeta(indexMeta); err != nil {
-//			internalLogger.Error("SetIndexMeta failure", zap.Error(err))
+//		if err := s.mIndexStorage.UpsertIndexMeta(indexMeta); err != nil {
+//			internalLogger.Error("UpsertIndexMeta failure", zap.Error(err))
 //			errFound = true
 //			return false
 //		}

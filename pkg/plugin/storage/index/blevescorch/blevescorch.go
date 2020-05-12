@@ -29,7 +29,7 @@ func (b *BleveScorch) Open(path string, secretKey []byte, configuration interfac
 	return nil
 }
 
-func (b *BleveScorch) SetIndexMeta(meta *pb.IndexMeta) error {
+func (b *BleveScorch) UpsertIndexMeta(meta *pb.IndexMeta) error {
 	p := b.path + "/" + string(meta.Namespace)
 	if b.isPathExists(p) {
 		b.removeAll(p)
@@ -49,10 +49,6 @@ func (b *BleveScorch) SetIndexMeta(meta *pb.IndexMeta) error {
 	_ = index.Close()
 
 	return nil
-}
-
-func (b *BleveScorch) UpdateIndexMeta(meta *pb.IndexMeta) error {
-	return b.SetIndexMeta(meta)
 }
 
 func (b *BleveScorch) DeleteIndexMeta(meta *pb.IndexMeta) error {
@@ -101,7 +97,7 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 
 	batch := index.NewBatch()
 	for idx := range data {
-		if data[idx].Action == variant.SET {
+		if data[idx].Action == variant.UPSERT {
 			err = batch.Index(data[idx].ID, data[idx].Data)
 			if err != nil {
 				internalLogger.Debug("indexing error", zap.Error(err))

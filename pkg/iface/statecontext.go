@@ -22,15 +22,15 @@ type IStateContext interface {
 	GetKeyOnlyReverseIterator() IStateIterator
 
 	GetState(key []byte) (*pb.StateEntry, error)
-	SetState(key []byte, entry *pb.StateEntry) error
+	UpsertState(key []byte, entry *pb.StateEntry) error
 	DeleteState(key []byte) error
 
-	SetIndex(id string, data interface{}) error
+	UpsertIndex(id string, data interface{}) error
 	DeleteIndex(id string) error
 
 	AutoIndexMeta() bool
 	CanIndex(namespace string) bool
-	SetIndexMeta(meta *pb.IndexMeta) error
+	UpsertIndexMeta(meta *pb.IndexMeta) error
 	DeleteIndexMeta(meta *pb.IndexMeta) error
 	DefaultIndexMeta(namespace string) error
 	ApplyIndex(namespace string, data []*variant.IndexData) error

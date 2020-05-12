@@ -9,7 +9,7 @@ type IIndexStorage interface {
 	Open(path string, secretKey []byte, configuration interface{}) error
 	Close() error
 
-	SetIndexMeta(meta *pb.IndexMeta) error
+	UpsertIndexMeta(meta *pb.IndexMeta) error
 	DeleteIndexMeta(meta *pb.IndexMeta) error
 	DefaultIndexMeta(namespace string) error
 
