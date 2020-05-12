@@ -6,6 +6,13 @@ message StateSnapshot {
   bytes data = 2;
 }
 
+message StateEntry {
+  bytes namespace = 1;
+  string family = 2;
+  string version = 3;
+  bytes payload = 4;
+}
+
 message Transaction {
   bytes namespace = 1;
   string family = 2;

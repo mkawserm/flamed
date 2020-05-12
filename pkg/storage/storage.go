@@ -40,16 +40,29 @@ func (s *StateContext) GetKeyOnlyReverseIterator() iface.IStateIterator {
 	return s.mTxn.KeyOnlyReverseIterator()
 }
 
-func (s *StateContext) GetState(key []byte) ([]byte, error) {
-	return s.mTxn.Get(key)
+func (s *StateContext) GetState(key []byte) (*pb.StateEntry, error) {
+	if data, err := s.mTxn.Get(key); err == nil {
+		entry := &pb.StateEntry{}
+		if err := proto.Unmarshal(data, entry); err == nil {
+			return entry, nil
+		} else {
+			return nil, err
+		}
+	} else {
+		return nil, err
+	}
 }
 
-func (s *StateContext) SetState(key []byte, value []byte) error {
+func (s *StateContext) SetState(key []byte, entry *pb.StateEntry) error {
 	if s.mReadOnly {
 		return nil
 	}
 
-	return s.mTxn.Set(key, value)
+	if data, err := proto.Marshal(entry); err == nil {
+		return s.mTxn.Set(key, data)
+	} else {
+		return err
+	}
 }
 
 func (s *StateContext) DeleteState(key []byte) error {

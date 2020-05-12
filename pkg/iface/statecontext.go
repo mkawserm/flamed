@@ -21,8 +21,8 @@ type IStateContext interface {
 	GetKeyOnlyForwardIterator() IStateIterator
 	GetKeyOnlyReverseIterator() IStateIterator
 
-	GetState(key []byte) ([]byte, error)
-	SetState(key []byte, value []byte) error
+	GetState(key []byte) (*pb.StateEntry, error)
+	SetState(key []byte, entry *pb.StateEntry) error
 	DeleteState(key []byte) error
 
 	SetIndex(id string, data interface{}) error
