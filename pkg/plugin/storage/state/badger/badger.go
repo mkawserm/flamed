@@ -260,6 +260,10 @@ func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey 
 		EncryptionKeyRotationDuration: 10 * 24 * time.Hour,
 	}
 
+	if b.mDbConfiguration.EncryptionKeyRotationDuration <= 0 {
+		opt.EncryptionKeyRotationDuration = b.mDbConfiguration.EncryptionKeyRotationDuration
+	}
+
 	kr, err := badgerDb.OpenKeyRegistry(opt)
 	if err != nil {
 		internalLogger.Error("state::badger open key registry failure", zap.Error(err))
