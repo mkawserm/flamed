@@ -357,8 +357,8 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 }
 
 func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
-	if len(request.TPFamily) != 0 && len(request.TPVersion) != 0 {
-		tp := s.mConfiguration.GetTransactionProcessor(request.TPFamily, request.TPVersion)
+	if len(request.Family) != 0 && len(request.Version) != 0 {
+		tp := s.mConfiguration.GetTransactionProcessor(request.Family, request.Version)
 		if tp == nil {
 			return nil, x.ErrTPNotFound
 		} else {

@@ -7,8 +7,8 @@ type LookupRequest struct {
 	Context context.Context `json:"-"`
 
 	Namespace []byte `json:"namespace"`
-	TPFamily  string `json:"tpFamily"`
-	TPVersion string `json:"tpVersion"`
+	Family    string `json:"family"`
+	Version   string `json:"version"`
 }
 
 type SearchRequest struct {
