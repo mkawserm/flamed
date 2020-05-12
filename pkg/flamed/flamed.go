@@ -3,7 +3,10 @@ package flamed
 import (
 	"github.com/lni/dragonboat/v3"
 	"github.com/lni/dragonboat/v3/config"
+	sm "github.com/lni/dragonboat/v3/statemachine"
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/pb"
+	"time"
 )
 
 type Flamed struct {
@@ -53,6 +56,14 @@ func (f *Flamed) GetNodeHostInfo() *dragonboat.NodeHostInfo {
 
 func (f *Flamed) NewClusterAdmin(clusterID uint64) *ClusterAdmin {
 	return f.mNodeHost.NewClusterAdmin(clusterID)
+}
+
+func (f *Flamed) Read(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
+	return f.mNodeHost.managedSyncRead(clusterID, query, timeout)
+}
+
+func (f *Flamed) Write(clusterID uint64, pp *pb.Proposal, timeout time.Duration) (sm.Result, error) {
+	return f.mNodeHost.managedSyncApplyProposal(clusterID, pp, timeout)
 }
 
 func NewFlamed() *Flamed {
