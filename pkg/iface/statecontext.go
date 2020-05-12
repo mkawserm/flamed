@@ -1,6 +1,9 @@
 package iface
 
-import "github.com/mkawserm/flamed/pkg/pb"
+import (
+	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/variant"
+)
 
 type IStateContext interface {
 	GetState(key []byte) ([]byte, error)
@@ -10,8 +13,10 @@ type IStateContext interface {
 	SetIndex(id string, data interface{}) error
 	DeleteIndex(id string) error
 
+	AutoIndexMeta() bool
 	CanIndex(namespace string) bool
 	SetIndexMeta(meta *pb.IndexMeta) error
 	DeleteIndexMeta(meta *pb.IndexMeta) error
-	AutoIndexMeta() bool
+	DefaultIndexMeta(namespace string) error
+	ApplyIndex(namespace string, data []*variant.IndexData) error
 }

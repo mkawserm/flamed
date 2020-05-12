@@ -23,10 +23,6 @@ type StateContext struct {
 	mTxn           iface.IStateStorageTransaction
 }
 
-func (s *StateContext) AutoIndexMeta() bool {
-	return s.mStorage.AutoIndexMeta()
-}
-
 func (s *StateContext) GetState(key []byte) ([]byte, error) {
 	return s.mTxn.Get(key)
 }
@@ -64,6 +60,10 @@ func (s *StateContext) DeleteIndex(id string) error {
 	return nil
 }
 
+func (s *StateContext) AutoIndexMeta() bool {
+	return s.mStorage.AutoIndexMeta()
+}
+
 func (s *StateContext) CanIndex(namespace string) bool {
 	if !s.mStorage.IndexEnable() {
 		return false
@@ -78,6 +78,14 @@ func (s *StateContext) SetIndexMeta(meta *pb.IndexMeta) error {
 
 func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
 	return s.mStorage.DeleteIndexMeta(meta)
+}
+
+func (s *StateContext) DefaultIndexMeta(namespace string) error {
+	return s.mStorage.DefaultIndexMeta(namespace)
+}
+
+func (s *StateContext) ApplyIndex(namespace string, data []*variant.IndexData) error {
+	return s.mStorage.ApplyIndex(namespace, data)
 }
 
 type Storage struct {
@@ -370,6 +378,21 @@ func (s *Storage) IndexEnable() bool {
 
 func (s *Storage) AutoIndexMeta() bool {
 	return s.mConfiguration.AutoIndexMeta()
+}
+
+func (s *Storage) ApplyIndex(namespace string, data []*variant.IndexData) error {
+	if s.mIndexStorage == nil {
+		return nil
+	}
+	return s.mIndexStorage.ApplyIndex(namespace, data)
+}
+
+func (s *Storage) DefaultIndexMeta(namespace string) error {
+	if s.mIndexStorage == nil {
+		return nil
+	}
+
+	return s.mIndexStorage.DefaultIndexMeta(namespace)
 }
 
 //func (s *Storage) SetIndexMeta(meta *pb.FlameIndexMeta) error {
