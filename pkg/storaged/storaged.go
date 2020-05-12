@@ -109,7 +109,6 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 			internalLogger.Error("proto unmarshal error", zap.Error(err))
 			continue
 		}
-		//ctx := context.WithTimeout(context.Background(), time.Minute*5)
 		pr := s.mStorage.ApplyProposal(context.TODO(), pp)
 		if pr != nil {
 			if data, err := json.Marshal(pr); err == nil {
