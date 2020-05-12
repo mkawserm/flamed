@@ -23,6 +23,10 @@ func (f *Flamed) StopCluster(clusterID uint64) error {
 	return f.mNodeHost.StopCluster(clusterID)
 }
 
+func (f *Flamed) IsClusterIDExists(clusterID uint64) bool {
+	return f.mNodeHost.IsClusterIDExists(clusterID)
+}
+
 func (f *Flamed) StopNode() {
 	f.mNodeHost.StopNode()
 }
@@ -49,14 +53,6 @@ func (f *Flamed) GetNodeHostInfo() *dragonboat.NodeHostInfo {
 
 func (f *Flamed) NewClusterAdmin(clusterID uint64) *ClusterAdmin {
 	return f.mNodeHost.NewClusterAdmin(clusterID)
-}
-
-func (f *Flamed) NewAdmin(clusterID uint64) *Admin {
-	return f.mNodeHost.NewAdmin(clusterID)
-}
-
-func (f *Flamed) NewStorageManager(clusterID uint64) *StorageManager {
-	return f.mNodeHost.NewStorageManager(clusterID)
 }
 
 func NewFlamed() *Flamed {

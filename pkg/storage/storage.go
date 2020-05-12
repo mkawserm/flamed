@@ -371,7 +371,7 @@ func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
 				mStorage:  s,
 				mTxn:      readOnlyTxn,
 			}
-			return tp.Lookup(readOnlyStateContext, request)
+			return tp.Lookup(request.Context, readOnlyStateContext, request.Query)
 		}
 	} else {
 		return nil, nil

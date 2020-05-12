@@ -5,6 +5,7 @@ import "errors"
 var ErrKeyDoesNotExists = errors.New("key does not exists")
 var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 var ErrTPNotFound = errors.New("transaction processor not found")
+var ErrClusterNotFound = errors.New("cluster not found")
 
 var ErrEmptyBatch = errors.New("empty batch")
 var ErrFailedToReadFlameEntry = errors.New("failed to read flame entry")

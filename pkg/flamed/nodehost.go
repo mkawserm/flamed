@@ -1,13 +1,18 @@
 package flamed
 
 import (
+	"context"
+	"github.com/golang/protobuf/proto"
 	"github.com/lni/dragonboat/v3"
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/lni/dragonboat/v3/raftpb"
+	sm "github.com/lni/dragonboat/v3/statemachine"
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 	"sync"
+	"time"
 )
 
 type NodeHost struct {
@@ -192,6 +197,13 @@ func (n *NodeHost) TotalCluster() int {
 	return len(n.mClusterMap)
 }
 
+func (n *NodeHost) IsClusterIDExists(clusterID uint64) bool {
+	n.mMutex.Lock()
+	defer n.mMutex.Unlock()
+	_, found := n.mClusterMap[clusterID]
+	return found
+}
+
 func (n *NodeHost) ClusterIDList() []uint64 {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
@@ -229,58 +241,39 @@ func (n *NodeHost) NewClusterAdmin(clusterID uint64) *ClusterAdmin {
 	}
 }
 
-func (n *NodeHost) NewAdmin(clusterID uint64) *Admin {
-	n.mMutex.Lock()
-	defer n.mMutex.Unlock()
-	if _, ok := n.mClusterMap[clusterID]; !ok {
-		return nil
+func (n *NodeHost) managedSyncRead(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
+	if !n.IsClusterIDExists(clusterID) {
+		return nil, x.ErrClusterNotFound
 	}
 
-	return &Admin{
-		mClusterID:          clusterID,
-		mDragonboatNodeHost: n.mNodeHost,
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	d, e := n.mNodeHost.SyncRead(ctx, clusterID, query)
+	cancel()
+
+	return d, e
 }
 
-func (n *NodeHost) NewStorageManager(clusterID uint64) *StorageManager {
-	n.mMutex.Lock()
-	defer n.mMutex.Unlock()
-	if _, ok := n.mClusterMap[clusterID]; !ok {
-		return nil
+func (n *NodeHost) managedSyncApplyProposal(clusterID uint64,
+	pp *pb.Proposal,
+	timeout time.Duration) (sm.Result, error) {
+	if !n.IsClusterIDExists(clusterID) {
+		return sm.Result{}, x.ErrClusterNotFound
 	}
 
-	return &StorageManager{
-		mClusterID:          clusterID,
-		mDragonboatNodeHost: n.mNodeHost,
-		mCacheSize:          n.mStoragedConfiguration.CacheSize(),
+	cmd, err := proto.Marshal(pp)
+	if err != nil {
+		return sm.Result{}, err
 	}
+
+	ctx, cancel := context.WithTimeout(context.TODO(), timeout)
+	session := n.mNodeHost.GetNoOPSession(clusterID)
+	r, err := n.mNodeHost.SyncPropose(ctx, session, cmd)
+	cancel()
+
+	_ = n.mNodeHost.SyncCloseSession(context.TODO(), session)
+
+	return r, err
 }
-
-//func (n *NodeHost) ManagedSyncRead(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
-//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-//	d, e := n.mNodeHost.SyncRead(ctx, clusterID, query)
-//	cancel()
-//
-//	return d, e
-//}
-//
-//func (n *NodeHost) ManagedSyncApplyProposal(clusterID uint64,
-//	pp *pb.FlameProposal,
-//	timeout time.Duration) (sm.Result, error) {
-//	cmd, err := proto.Marshal(pp)
-//	if err != nil {
-//		return sm.Result{}, err
-//	}
-//
-//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-//	session := n.mNodeHost.GetNoOPSession(clusterID)
-//	r, err := n.mNodeHost.SyncPropose(ctx, session, cmd)
-//	cancel()
-//
-//	_ = n.mNodeHost.SyncCloseSession(context.Background(), session)
-//
-//	return r, err
-//}
 
 //func (n *NodeHost) GetLeaderID(clusterID uint64) (uint64, bool, error) {
 //	return n.mNodeHost.GetLeaderID(clusterID)

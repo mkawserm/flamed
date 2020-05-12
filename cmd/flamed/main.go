@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/conf"
-	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/utility"
+	//"github.com/mkawserm/flamed/pkg/pb"
+	//"github.com/mkawserm/flamed/pkg/utility"
 	"os"
 	"strings"
-	"time"
+	//"time"
 )
 import "github.com/mkawserm/flamed/pkg/flamed"
 
@@ -54,8 +54,8 @@ func main() {
 		panic(err)
 	}
 
-	manager1 := flame1.NewStorageManager(clusterId)
-	admin1 := flame1.NewAdmin(clusterId)
+	//manager1 := flame1.NewStorageManager(clusterId)
+	//admin1 := flame1.NewAdmin(clusterId)
 
 	//// flame 2
 	//flame2 := flamed.NewFlamed()
@@ -112,6 +112,7 @@ func main() {
 
 	for l {
 		fmt.Printf(">> ")
+		fmt.Printf("[%d]", counter)
 		text, _ := reader.ReadString('\n')
 		t := strings.Trim(text, "\n")
 
@@ -134,8 +135,8 @@ func main() {
 
 		switch t {
 		case "ai1":
-			index := admin1.QueryAppliedIndex(3 * time.Minute)
-			fmt.Println(index)
+			//index := admin1.QueryAppliedIndex(3 * time.Minute)
+			//fmt.Println(index)
 		//case "ai2":
 		//	index := admin2.QueryAppliedIndex(3 * time.Minute)
 		//	fmt.Println(index)
@@ -144,21 +145,21 @@ func main() {
 		//	fmt.Println(index)
 
 		case "p1":
-			counter = counter + 1
-			key := fmt.Sprintf("counter-%d", counter)
-			co := &CounterObject{}
-			fmt.Println("counter to propose:", counter)
-			b := manager1.NewBatch("test")
-
-			co.Counter = counter
-			b.Create([]byte(key), getJson(co))
-
-			//co.Counter = counter + 1
-			//b.Create([]byte("counter2"), getJson(co))
-
-			if err := manager1.ApplyBatch(b, 3*time.Minute); err != nil {
-				fmt.Println(err)
-			}
+			//counter = counter + 1
+			//key := fmt.Sprintf("counter-%d", counter)
+			//co := &CounterObject{}
+			//fmt.Println("counter to propose:", counter)
+			//b := manager1.NewBatch("test")
+			//
+			//co.Counter = counter
+			//b.Create([]byte(key), getJson(co))
+			//
+			////co.Counter = counter + 1
+			////b.Create([]byte("counter2"), getJson(co))
+			//
+			//if err := manager1.ApplyBatch(b, 3*time.Minute); err != nil {
+			//	fmt.Println(err)
+			//}
 
 		//case "p2":
 		//	counter = counter + 1
@@ -193,23 +194,23 @@ func main() {
 		//		fmt.Println(err)
 		//	}
 		case "r1":
-			e := &pb.FlameEntry{
-				Namespace: []byte("test"),
-				Key:       []byte("counter-1"),
-			}
-
-			if err := manager1.Read(e, 3*time.Minute); err != nil {
-				fmt.Println(err)
-			} else {
-				co := &CounterObject{}
-				err := json.Unmarshal(e.Value, co)
-				if err != nil {
-					fmt.Println(err)
-				}
-
-				fmt.Println("Counter:", co.Counter)
-				counter = co.Counter
-			}
+			//e := &pb.FlameEntry{
+			//	Namespace: []byte("test"),
+			//	Key:       []byte("counter-1"),
+			//}
+			//
+			//if err := manager1.Read(e, 3*time.Minute); err != nil {
+			//	fmt.Println(err)
+			//} else {
+			//	co := &CounterObject{}
+			//	err := json.Unmarshal(e.Value, co)
+			//	if err != nil {
+			//		fmt.Println(err)
+			//	}
+			//
+			//	fmt.Println("Counter:", co.Counter)
+			//	counter = co.Counter
+			//}
 		//case "r2":
 		//	e := &pb.FlameEntry{
 		//		Namespace: []byte("test"),
@@ -247,24 +248,24 @@ func main() {
 		//		counter = co.Counter
 		//	}
 		case "i1":
-			data, err := manager1.Iterate(&pb.FlameEntry{
-				Namespace: []byte("test"),
-			}, 0, 3*time.Minute)
-
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			fmt.Println(data)
-
-			co := &CounterObject{}
-			err = json.Unmarshal(data[len(data)-1].Value, co)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			fmt.Println("Counter:", co.Counter)
-			counter = co.Counter
+			//data, err := manager1.Iterate(&pb.FlameEntry{
+			//	Namespace: []byte("test"),
+			//}, 0, 3*time.Minute)
+			//
+			//if err != nil {
+			//	fmt.Println(err)
+			//}
+			//
+			//fmt.Println(data)
+			//
+			//co := &CounterObject{}
+			//err = json.Unmarshal(data[len(data)-1].Value, co)
+			//if err != nil {
+			//	fmt.Println(err)
+			//}
+			//
+			//fmt.Println("Counter:", co.Counter)
+			//counter = co.Counter
 
 			//data, err = manager1.Iterate(data[0], 1, 3*time.Minute)
 			//
@@ -308,10 +309,10 @@ func main() {
 			//
 			//cancel()
 		case "ci1":
-			nodeHostInfo := flame1.GetNodeHostInfo()
-			if b, err := json.Marshal(utility.LowerCamelCaseMarshaller{Value: nodeHostInfo}); err == nil {
-				fmt.Println(string(b))
-			}
+			//nodeHostInfo := flame1.GetNodeHostInfo()
+			//if b, err := json.Marshal(utility.LowerCamelCaseMarshaller{Value: nodeHostInfo}); err == nil {
+			//	fmt.Println(string(b))
+			//}
 		//case "ci2":
 		//	nodeHostInfo := flame2.GetNodeHostInfo()
 		//	if b, err := json.Marshal(utility.LowerCamelCaseMarshaller{Value: nodeHostInfo}); err == nil {
