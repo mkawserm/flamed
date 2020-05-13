@@ -4,6 +4,7 @@ import (
 	bleveSearch "github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/index/scorch"
 	bleveMapping "github.com/blevesearch/bleve/mapping"
+	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
@@ -97,7 +98,7 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 
 	batch := index.NewBatch()
 	for idx := range data {
-		if data[idx].Action == variant.UPSERT {
+		if data[idx].Action == constant.UPSERT {
 			err = batch.Index(data[idx].ID, data[idx].Data)
 			if err != nil {
 				internalLogger.Debug("indexing error", zap.Error(err))
@@ -105,7 +106,7 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 			}
 		}
 
-		if data[idx].Action == variant.DELETE {
+		if data[idx].Action == constant.DELETE {
 			batch.Delete(data[idx].ID)
 		}
 	}

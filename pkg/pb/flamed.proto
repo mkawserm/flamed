@@ -7,17 +7,17 @@ message StateSnapshot {
 }
 
 message StateEntry {
-  bytes namespace = 1;
-  string familyName = 2;
-  string familyVersion = 3;
-  bytes payload = 4;
+  bytes payload = 1;
+  bytes namespace = 2;
+  string familyName = 3;
+  string familyVersion = 4;
 }
 
 message Transaction {
-  bytes namespace = 1;
-  string familyName = 2;
-  string familyVersion = 3;
-  bytes payload = 4;
+  bytes payload = 1;
+  bytes namespace = 2;
+  string familyName = 3;
+  string familyVersion = 4;
 }
 
 message Proposal {

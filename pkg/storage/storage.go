@@ -86,7 +86,7 @@ func (s *StateContext) UpsertIndex(id string, data interface{}) error {
 	s.mIndexDataList = append(s.mIndexDataList, &variant.IndexData{
 		ID:     id,
 		Data:   data,
-		Action: variant.UPSERT,
+		Action: constant.UPSERT,
 	})
 	return nil
 }
@@ -102,7 +102,7 @@ func (s *StateContext) DeleteIndex(id string) error {
 
 	s.mIndexDataList = append(s.mIndexDataList, &variant.IndexData{
 		ID:     id,
-		Action: variant.DELETE,
+		Action: constant.DELETE,
 	})
 	return nil
 }
