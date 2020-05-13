@@ -44,7 +44,10 @@ type INodeConfiguration interface {
 	LogDBFactory() config.LogDBFactoryFunc
 	RaftRPCFactory() config.RaftRPCFactoryFunc
 
+	NotifyCommit() bool
+	LogDBConfig() config.LogDBConfig
+
+	SystemTickerPrecision() time.Duration
 	RaftEventListener() raftio.IRaftEventListener
 	SystemEventListener() raftio.ISystemEventListener
-	SystemTickerPrecision() time.Duration
 }

@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"github.com/lni/dragonboat/v3/config"
 	"github.com/mkawserm/flamed/pkg/iface"
 )
 
@@ -35,6 +36,9 @@ func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir strin
 		EnableMetrics:                 false,
 		MaxSnapshotSendBytesPerSecond: 0,
 		MaxSnapshotRecvBytesPerSecond: 0,
+
+		LogDBConfig:  config.GetSmallMemLogDBConfig(),
+		NotifyCommit: false,
 	}}
 }
 

@@ -108,7 +108,11 @@ func (n *NodeHost) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 		MaxSnapshotSendBytesPerSecond: nodeConfiguration.MaxSnapshotSendBytesPerSecond(),
 		MaxSnapshotRecvBytesPerSecond: nodeConfiguration.MaxSnapshotRecvBytesPerSecond(),
 
-		LogDBFactory:          nodeConfiguration.LogDBFactory(),
+		NotifyCommit: nodeConfiguration.NotifyCommit(),
+
+		LogDBConfig:  nodeConfiguration.LogDBConfig(),
+		LogDBFactory: nodeConfiguration.LogDBFactory(),
+
 		RaftRPCFactory:        nodeConfiguration.RaftRPCFactory(),
 		RaftEventListener:     nodeConfiguration.RaftEventListener(),
 		SystemEventListener:   nodeConfiguration.SystemEventListener(),

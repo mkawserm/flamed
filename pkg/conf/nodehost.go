@@ -46,6 +46,9 @@ type NodeHostConfigurationInput struct {
 
 	SystemTickerPrecision time.Duration `json:"systemTickerPrecision"`
 
+	NotifyCommit bool `json:"notifyCommit"`
+
+	LogDBConfig         config.LogDBConfig          `json:"-"`
 	LogDBFactory        config.LogDBFactoryFunc     `json:"-"`
 	RaftRPCFactory      config.RaftRPCFactoryFunc   `json:"-"`
 	RaftEventListener   raftio.IRaftEventListener   `json:"-"`
@@ -185,4 +188,12 @@ func (n *NodeHostConfiguration) SystemEventListener() raftio.ISystemEventListene
 
 func (n *NodeHostConfiguration) SystemTickerPrecision() time.Duration {
 	return n.NodeHostConfigurationInput.SystemTickerPrecision
+}
+
+func (n *NodeHostConfiguration) NotifyCommit() bool {
+	return n.NodeHostConfigurationInput.NotifyCommit
+}
+
+func (n *NodeHostConfiguration) LogDBConfig() config.LogDBConfig {
+	return n.NodeHostConfigurationInput.LogDBConfig
 }
