@@ -1,6 +1,9 @@
 package iface
 
-import "github.com/mkawserm/flamed/pkg/pb"
+import (
+	"github.com/mkawserm/flamed/pkg/pb"
+	"time"
+)
 
 type IStateStorageIterator interface {
 	Next()
@@ -32,5 +35,6 @@ type IStateStorage interface {
 	NewTransaction() IStateStorageTransaction
 	NewReadOnlyTransaction() IStateStorageTransaction
 	Setup(path string, secretKey []byte, configuration interface{})
-	ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte) error
+	ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte,
+		encryptionKeyRotationDuration time.Duration) error
 }

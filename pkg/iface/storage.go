@@ -2,6 +2,7 @@ package iface
 
 import (
 	"io"
+	"time"
 )
 
 type IStorageConfiguration interface {
@@ -33,7 +34,10 @@ type IStorage interface {
 	Close() error
 	RunGC()
 
-	ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte) error
+	ChangeSecretKey(path string,
+		oldSecretKey []byte,
+		newSecretKey []byte,
+		encryptionKeyRotationDuration time.Duration) error
 
 	PrepareSnapshot() (interface{}, error)
 	SaveSnapshot(snapshotContext interface{}, w io.Writer) error

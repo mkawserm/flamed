@@ -248,7 +248,7 @@ func (b *Badger) RunGC() {
 	}
 }
 
-func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte) error {
+func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte, encryptionKeyRotationDuration time.Duration) error {
 	defer func() {
 		_ = internalLogger.Sync()
 	}()
@@ -257,11 +257,11 @@ func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey 
 		Dir:                           path,
 		ReadOnly:                      true,
 		EncryptionKey:                 oldSecretKey,
-		EncryptionKeyRotationDuration: 10 * 24 * time.Hour,
+		EncryptionKeyRotationDuration: encryptionKeyRotationDuration,
 	}
 
-	if b.mDbConfiguration.EncryptionKeyRotationDuration <= 0 {
-		opt.EncryptionKeyRotationDuration = b.mDbConfiguration.EncryptionKeyRotationDuration
+	if opt.EncryptionKeyRotationDuration <= 0 {
+		opt.EncryptionKeyRotationDuration = 10 * 24 * time.Hour
 	}
 
 	kr, err := badgerDb.OpenKeyRegistry(opt)

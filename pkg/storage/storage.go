@@ -13,6 +13,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
 	"io"
+	"time"
 )
 
 type IndexDataContainer map[string][]*variant.IndexData
@@ -254,8 +255,15 @@ func (s *Storage) RunGC() {
 	}
 }
 
-func (s *Storage) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte) error {
-	return s.mStateStorage.ChangeSecretKey(path, oldSecretKey, newSecretKey)
+func (s *Storage) ChangeSecretKey(path string,
+	oldSecretKey []byte,
+	newSecretKey []byte,
+	encryptionKeyRotationDuration time.Duration) error {
+
+	return s.mStateStorage.ChangeSecretKey(path,
+		oldSecretKey,
+		newSecretKey,
+		encryptionKeyRotationDuration)
 }
 
 func (s *Storage) Create(namespace []byte, key []byte, value []byte) error {
