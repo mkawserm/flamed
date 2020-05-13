@@ -5,8 +5,8 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 )
 
-func SimpleNodeHostConfiguration(nodeID uint64, nodeHostDir string, walDir string, raftAddress string) iface.INodeConfiguration {
-	return &NodeHostConfiguration{NodeHostConfigurationInput: NodeHostConfigurationInput{
+func SimpleNodeConfiguration(nodeID uint64, nodeHostDir string, walDir string, raftAddress string) iface.INodeConfiguration {
+	return &NodeConfiguration{NodeConfigurationInput: NodeConfigurationInput{
 		NodeID:                        nodeID,
 		NodeHostDir:                   nodeHostDir,
 		WALDir:                        walDir,
@@ -62,4 +62,16 @@ func SimpleClusterConfiguration(clusterID uint64, clusterName string, initialMem
 		InitialMembers: initialMembers,
 		Join:           join,
 	}}
+}
+
+func SimpleFlamedConfiguration(nodeID uint64,
+	nodeHostDir string,
+	walDir string,
+	raftAddress string,
+	path string,
+	secretKey []byte) iface.IFlamedConfiguration {
+	return &FlamedConfiguration{
+		NodeConfigurationInput:     SimpleNodeConfiguration(nodeID, nodeHostDir, walDir, raftAddress),
+		StoragedConfigurationInput: SimpleStoragedConfiguration(path, secretKey),
+	}
 }

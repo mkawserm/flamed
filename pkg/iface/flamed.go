@@ -1,6 +1,6 @@
 package iface
 
 type IFlamedConfiguration interface {
-	INodeConfiguration
-	IStoragedConfiguration
+	NodeConfiguration() INodeConfiguration
+	StoragedConfiguration() IStoragedConfiguration
 }

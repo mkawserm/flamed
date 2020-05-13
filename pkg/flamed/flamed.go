@@ -10,12 +10,12 @@ import (
 )
 
 type Flamed struct {
-	mNodeHost *NodeHost
+	mNodeHost *Node
 }
 
-func (f *Flamed) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
-	storagedConfiguration iface.IStoragedConfiguration) error {
-	return f.mNodeHost.ConfigureNode(nodeConfiguration, storagedConfiguration)
+func (f *Flamed) Configure(flamedConfiguration iface.IFlamedConfiguration) error {
+	return f.mNodeHost.ConfigureNode(flamedConfiguration.NodeConfiguration(),
+		flamedConfiguration.StoragedConfiguration())
 }
 
 func (f *Flamed) StartCluster(clusterConfiguration iface.IClusterConfiguration) error {
@@ -67,5 +67,5 @@ func (f *Flamed) Write(clusterID uint64, pp *pb.Proposal, timeout time.Duration)
 }
 
 func NewFlamed() *Flamed {
-	return &Flamed{mNodeHost: &NodeHost{}}
+	return &Flamed{mNodeHost: &Node{}}
 }

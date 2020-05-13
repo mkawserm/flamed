@@ -34,10 +34,14 @@ func main() {
 	flame1 := flamed.NewFlamed()
 	defer flame1.StopNode()
 
-	err := flame1.ConfigureNode(
-		conf.SimpleNodeHostConfiguration(1, "/tmp/1/nh", "/tmp/1/wal", "localhost:63001"),
-		conf.SimpleStoragedConfiguration("/tmp/1/storage", nil),
-	)
+	configuration := conf.SimpleFlamedConfiguration(1,
+		"/tmp/1/nh",
+		"/tmp/1/wal",
+		"localhost:63001",
+		"/tmp/1/storage",
+		nil)
+
+	err := flame1.Configure(configuration)
 
 	if err != nil {
 		panic(err)
@@ -61,8 +65,8 @@ func main() {
 	//flame2 := flamed.NewFlamed()
 	//defer flame2.StopNode()
 	//
-	//err = flame2.ConfigureNode(
-	//	conf.SimpleNodeHostConfiguration(2, "/tmp/2/nh", "/tmp/2/wal", "localhost:63002"),
+	//err = flame2.Configure(
+	//	conf.SimpleNodeConfiguration(2, "/tmp/2/nh", "/tmp/2/wal", "localhost:63002"),
 	//	conf.SimpleStoragedConfiguration("/tmp/2/storage", nil),
 	//)
 	//
@@ -85,8 +89,8 @@ func main() {
 	//flame3 := flamed.NewFlamed()
 	//defer flame3.StopNode()
 	//
-	//err = flame3.ConfigureNode(
-	//	conf.SimpleNodeHostConfiguration(3, "/tmp/3/nh", "/tmp/3/wal", "localhost:63003"),
+	//err = flame3.Configure(
+	//	conf.SimpleNodeConfiguration(3, "/tmp/3/nh", "/tmp/3/wal", "localhost:63003"),
 	//	conf.SimpleStoragedConfiguration("/tmp/3/storage", nil),
 	//)
 	//
