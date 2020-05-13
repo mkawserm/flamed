@@ -15,7 +15,7 @@ message Payload {
   uint32 value = 3; /* 2^32 - 1 */
 }
 
-message StateData {
+message IntKeyState {
   string name = 1;
   uint32 value = 2;
 }

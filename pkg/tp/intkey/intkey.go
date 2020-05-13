@@ -33,7 +33,7 @@ func (i *IntKey) Lookup(_ context.Context,
 			return nil, err
 		}
 
-		stateData := &StateData{}
+		stateData := &IntKeyState{}
 
 		if err := proto.Unmarshal(entry.Payload, stateData); err != nil {
 			return nil, err
@@ -59,7 +59,7 @@ func (i *IntKey) insert(tpr *variant.TransactionProcessorResponse,
 		return tpr
 	}
 
-	stateData := &StateData{
+	stateData := &IntKeyState{
 		Name:  payload.Name,
 		Value: payload.Value,
 	}
@@ -123,7 +123,7 @@ func (i *IntKey) upsert(tpr *variant.TransactionProcessorResponse,
 	address []byte,
 	payload *Payload) *variant.TransactionProcessorResponse {
 
-	stateData := &StateData{
+	stateData := &IntKeyState{
 		Name:  payload.Name,
 		Value: payload.Value,
 	}
@@ -170,7 +170,7 @@ func (i *IntKey) increment(tpr *variant.TransactionProcessorResponse,
 		return tpr
 	}
 
-	stateData := &StateData{}
+	stateData := &IntKeyState{}
 
 	if err := proto.Unmarshal(entry.Payload, stateData); err != nil {
 		tpr.Status = 0
@@ -224,7 +224,7 @@ func (i *IntKey) decrement(tpr *variant.TransactionProcessorResponse,
 		return tpr
 	}
 
-	stateData := &StateData{}
+	stateData := &IntKeyState{}
 
 	if err := proto.Unmarshal(entry.Payload, stateData); err != nil {
 		tpr.Status = 0
