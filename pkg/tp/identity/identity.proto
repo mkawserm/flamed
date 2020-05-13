@@ -1,7 +1,5 @@
 syntax = "proto3";
-package pb;
-
-//option go_package = "pkg/pb";
+package identity;
 
 message FlameEntry {
   bytes namespace = 1;

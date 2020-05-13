@@ -1,0 +1,16 @@
+syntax = "proto3";
+package intkey;
+
+enum Verb {
+  INSERT = 0;
+  UPSERT = 1;
+  DELETE = 2;
+  INCREMENT = 3;
+  DECREMENT = 4;
+}
+
+message Payload {
+  Verb verb = 1;
+  string name = 2; /* Max 20 character */
+  uint32 value = 3; /* 2^32 - 1 */
+}

@@ -2,7 +2,6 @@ package utility
 
 import (
 	"bytes"
-	"github.com/mkawserm/flamed/pkg/pb"
 )
 
 func IsNamespaceValid(namespace []byte) bool {
@@ -25,10 +24,10 @@ func IsUsernameValid(username string) bool {
 	return len(username) >= 3
 }
 
-func IsFlameUserValid(user *pb.FlameUser) bool {
-	if len(user.Username) >= 3 && len(user.Password) >= 6 {
-		return true
-	} else {
-		return false
-	}
-}
+//func IsFlameUserValid(user *pb.FlameUser) bool {
+//	if len(user.Username) >= 3 && len(user.Password) >= 6 {
+//		return true
+//	} else {
+//		return false
+//	}
+//}
