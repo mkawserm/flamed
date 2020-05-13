@@ -28,8 +28,18 @@ func (i *IntKey) Lookup(_ context.Context,
 	if request, ok := query.(Request); ok {
 		address := crypto.GetStateAddressFromStringKey(i.FamilyName(), request.Name)
 		address = uidutil.GetUid([]byte(request.Namespace), address)
+		entry, err := readOnlyStateContext.GetState(address)
+		if err != nil {
+			return nil, err
+		}
 
-		return readOnlyStateContext.GetState(address)
+		stateData := &StateData{}
+
+		if err := proto.Unmarshal(entry.Payload, stateData); err != nil {
+			return nil, err
+		}
+
+		return stateData, nil
 	} else {
 		return nil, x.ErrUnknownLookupRequest
 	}
