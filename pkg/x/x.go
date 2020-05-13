@@ -7,6 +7,8 @@ var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 var ErrTPNotFound = errors.New("transaction processor not found")
 var ErrClusterNotFound = errors.New("cluster not found")
 var ErrUnknownLookupRequest = errors.New("unknown lookup request")
+var ErrUnknownValue = errors.New("unknown value")
+var ErrUnexpectedNilValue = errors.New("unexpected nil value")
 
 var ErrEmptyBatch = errors.New("empty batch")
 var ErrFailedToReadFlameEntry = errors.New("failed to read flame entry")
