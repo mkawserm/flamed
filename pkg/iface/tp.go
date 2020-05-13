@@ -7,8 +7,8 @@ import (
 )
 
 type ITransactionProcessor interface {
-	Family() string
-	Version() string
+	FamilyName() string
+	FamilyVersion() string
 	Lookup(ctx context.Context, readOnlyStateContext IStateContext, query interface{}) (interface{}, error)
 	Apply(ctx context.Context,
 		stateContext IStateContext,

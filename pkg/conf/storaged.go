@@ -104,5 +104,5 @@ func (s *StoragedConfiguration) GetTransactionProcessor(family, version string) 
 }
 
 func (s *StoragedConfiguration) AddTransactionProcessor(tp iface.ITransactionProcessor) {
-	s.TransactionProcessorMap[tp.Family()+"::"+tp.Version()] = tp
+	s.TransactionProcessorMap[tp.FamilyName()+"::"+tp.FamilyVersion()] = tp
 }

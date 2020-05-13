@@ -8,15 +8,15 @@ message StateSnapshot {
 
 message StateEntry {
   bytes namespace = 1;
-  string family = 2;
-  string version = 3;
+  string familyName = 2;
+  string familyVersion = 3;
   bytes payload = 4;
 }
 
 message Transaction {
   bytes namespace = 1;
-  string family = 2;
-  string version = 3;
+  string familyName = 2;
+  string familyVersion = 3;
   bytes payload = 4;
 }
 

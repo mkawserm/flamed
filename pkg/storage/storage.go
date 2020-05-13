@@ -367,8 +367,8 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 }
 
 func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
-	if len(request.Family) != 0 && len(request.Version) != 0 {
-		tp := s.mConfiguration.GetTransactionProcessor(request.Family, request.Version)
+	if len(request.FamilyName) != 0 && len(request.FamilyVersion) != 0 {
+		tp := s.mConfiguration.GetTransactionProcessor(request.FamilyName, request.FamilyVersion)
 		if tp == nil {
 			return nil, x.ErrTPNotFound
 		} else {
@@ -398,11 +398,11 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *var
 
 	pr := variant.NewProposalResponse(0)
 	for _, t := range proposal.Transactions {
-		tp := s.mConfiguration.GetTransactionProcessor(t.Family, t.Version)
+		tp := s.mConfiguration.GetTransactionProcessor(t.FamilyName, t.FamilyVersion)
 		if tp == nil {
 			pr.Status = 0
 			pr.ErrorCode = 0
-			pr.ErrorText = "Transaction family:" + t.Family + " Version:" + t.Version + " not found"
+			pr.ErrorText = "Transaction family name:" + t.FamilyName + " family version:" + t.FamilyVersion + " not found"
 			return pr
 		}
 
@@ -1092,7 +1092,7 @@ func (s *Storage) DefaultIndexMeta(namespace string) error {
 //			//internalLogger.Info("no index found, creating new one", zap.String("namespace",k))
 //			flameMeta := &pb.FlameIndexMeta{
 //				Namespace: []byte(k),
-//				Version:   1,
+//				FamilyVersion:   1,
 //				Enabled:   true,
 //				Default:   true,
 //				CreatedAt: uint64(time.Now().UnixNano()),
@@ -1195,7 +1195,7 @@ func (s *Storage) DefaultIndexMeta(namespace string) error {
 //		if s.mConfiguration.AutoIndexMeta() {
 //			indexMeta = &pb.FlameIndexMeta{
 //				Namespace: namespace,
-//				Version:   1,
+//				FamilyVersion:   1,
 //				Enabled:   true,
 //				Default:   true,
 //				CreatedAt: uint64(time.Now().UnixNano()),
