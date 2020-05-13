@@ -169,9 +169,15 @@ func (i *IntKey) increment(tpr *variant.TransactionProcessorResponse,
 		return tpr
 	}
 
-	//TODO: overflow check
-	stateData.Value = stateData.Value + payload.Value
+	var temp = uint64(stateData.Value) + uint64(payload.Value)
 
+	if temp > 4294967295 {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "range exceed"
+		return tpr
+	}
+	stateData.Value = stateData.Value + payload.Value
 	stateBytes, err := proto.Marshal(stateData)
 	if err != nil {
 		tpr.Status = 0
@@ -217,7 +223,14 @@ func (i *IntKey) decrement(tpr *variant.TransactionProcessorResponse,
 		return tpr
 	}
 
-	//TODO: overflow check
+	var temp = int64(stateData.Value) - int64(payload.Value)
+	if temp < 0 {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "range exceed"
+		return tpr
+	}
+
 	stateData.Value = stateData.Value - payload.Value
 
 	stateBytes, err := proto.Marshal(stateData)
