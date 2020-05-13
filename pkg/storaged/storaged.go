@@ -146,11 +146,11 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 
 	if lookupRequest, ok := input.(variant.LookupRequest); ok {
 		r, err := s.mStorage.Lookup(lookupRequest)
-		internalLogger.Debug("storaged Lookup done")
+		internalLogger.Debug("storaged Lookup done with LookupRequest")
 		return r, err
 	} else if searchRequest, ok := input.(variant.SearchRequest); ok {
 		r, err := s.mStorage.Search(searchRequest)
-		internalLogger.Debug("storaged Lookup done")
+		internalLogger.Debug("storaged Lookup done with SearchRequest")
 		return r, err
 	}
 
