@@ -37,7 +37,7 @@ message ProposalResponse {
   uint32 status = 1; /* 0 - rejected, 1 - accepted */
   uint32 errorCode = 2; /* error code */
   string errorText = 3; /* failure reason short message */
-  repeated TransactionProcessorResponse transactionProcessorResponseList = 4;
+  repeated TransactionProcessorResponse transactionProcessorResponses = 4;
 }
 
 enum IndexFieldType {
