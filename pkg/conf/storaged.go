@@ -106,3 +106,8 @@ func (s *StoragedConfiguration) GetTransactionProcessor(family, version string) 
 func (s *StoragedConfiguration) AddTransactionProcessor(tp iface.ITransactionProcessor) {
 	s.TransactionProcessorMap[tp.FamilyName()+"::"+tp.FamilyVersion()] = tp
 }
+
+func (s *StoragedConfiguration) IsTransactionProcessorExists(family, version string) bool {
+	_, found := s.TransactionProcessorMap[family+"::"+version]
+	return found
+}

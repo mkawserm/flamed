@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/conf"
+	"github.com/mkawserm/flamed/pkg/tp/intkey"
 	//"github.com/mkawserm/flamed/pkg/pb"
 	//"github.com/mkawserm/flamed/pkg/utility"
 	"os"
@@ -40,6 +41,8 @@ func main() {
 		"localhost:63001",
 		"/tmp/1/storage",
 		nil)
+
+	configuration.StoragedConfiguration().AddTransactionProcessor(&intkey.IntKey{})
 
 	err := flame1.Configure(configuration)
 

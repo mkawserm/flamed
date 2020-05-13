@@ -25,6 +25,8 @@ type IStorageConfiguration interface {
 	StateStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
 
+	IsTransactionProcessorExists(family, version string) bool
+	AddTransactionProcessor(tp ITransactionProcessor)
 	GetTransactionProcessor(family, version string) ITransactionProcessor
 }
 
