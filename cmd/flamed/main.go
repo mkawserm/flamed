@@ -2,10 +2,11 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/conf"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
+	"time"
+
 	//"github.com/mkawserm/flamed/pkg/pb"
 	//"github.com/mkawserm/flamed/pkg/utility"
 	"os"
@@ -14,17 +15,17 @@ import (
 )
 import "github.com/mkawserm/flamed/pkg/flamed"
 
-type CounterObject struct {
-	Counter uint64 `json:"counter"`
-}
-
-func getJson(object *CounterObject) []byte {
-	if data, err := json.Marshal(object); err == nil {
-		return data
-	} else {
-		return nil
-	}
-}
+//type CounterObject struct {
+//	Counter uint64 `json:"counter"`
+//}
+//
+//func getJson(object *CounterObject) []byte {
+//	if data, err := json.Marshal(object); err == nil {
+//		return data
+//	} else {
+//		return nil
+//	}
+//}
 
 func main() {
 	//members := map[uint64]string{1: "localhost:63001", 2: "localhost:63002", 3: "localhost:63003"}
@@ -56,6 +57,14 @@ func main() {
 	//panic("asdasd")
 
 	err = flame1.StartCluster(clusterConfig)
+
+	if err != nil {
+		panic(err)
+	}
+
+	intKeyClient := intkey.Client{}
+
+	err = intKeyClient.Setup("test", clusterId, flame1)
 
 	if err != nil {
 		panic(err)
@@ -115,11 +124,10 @@ func main() {
 	l := true
 	reader := bufio.NewReader(os.Stdin)
 
-	var counter uint64 = 0
-
+	//var counter uint64 = 0
 	for l {
 		fmt.Printf(">> ")
-		fmt.Printf("[%d]", counter)
+		//fmt.Printf("[%d]", counter)
 		text, _ := reader.ReadString('\n')
 		t := strings.Trim(text, "\n")
 
@@ -141,6 +149,31 @@ func main() {
 		//}
 
 		switch t {
+		case "view":
+			intKeyState, err := intKeyClient.GetIntKeyState("counter", 3*time.Minute)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(intKeyState)
+
+		case "insert":
+			pr, err := intKeyClient.Insert("counter", 1, 3*time.Minute)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(pr)
+		case "increment":
+			pr, err := intKeyClient.Increment("counter", 1, 3*time.Minute)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(pr)
+		case "decrement":
+			pr, err := intKeyClient.Decrement("counter", 1, 3*time.Minute)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(pr)
 		case "ai1":
 			//index := admin1.QueryAppliedIndex(3 * time.Minute)
 			//fmt.Println(index)

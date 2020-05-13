@@ -1,7 +1,8 @@
 package intkey
 
 import (
-	"fmt"
+	"encoding/json"
+	"github.com/mkawserm/flamed/pkg/variant"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -24,7 +25,14 @@ func (c *Client) GetIntKeyState(name string, timeout time.Duration) (*IntKeyStat
 		Namespace: c.mNamespace,
 	}
 
-	r, err := c.mRW.Read(c.mClusterID, request, timeout)
+	lookupRequest := variant.LookupRequest{
+		Query:         request,
+		Context:       nil,
+		FamilyName:    Name,
+		FamilyVersion: Version,
+	}
+
+	r, err := c.mRW.Read(c.mClusterID, lookupRequest, timeout)
 
 	if err != nil {
 		return nil, err
@@ -37,11 +45,11 @@ func (c *Client) GetIntKeyState(name string, timeout time.Duration) (*IntKeyStat
 	return nil, x.ErrUnknownValue
 }
 
-func (c *Client) applyPayload(payload *Payload, timeout time.Duration) error {
+func (c *Client) sendProposal(payload *Payload, timeout time.Duration) (*variant.ProposalResponse, error) {
 	payloadBytes, err := proto.Marshal(payload)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	uuidValue := uuid.New()
@@ -61,77 +69,78 @@ func (c *Client) applyPayload(payload *Payload, timeout time.Duration) error {
 	r, err := c.mRW.Write(c.mClusterID, proposal, timeout)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	fmt.Println(r.Value)
-	fmt.Println(r.Data)
-	fmt.Println(err)
+	pr := &variant.ProposalResponse{}
 
-	return nil
+	if err := json.Unmarshal(r.Data, pr); err != nil {
+		return nil, err
+	}
+
+	return pr, nil
 }
 
-func (c *Client) Insert(name string, value uint32, timeout time.Duration) error {
+func (c *Client) Insert(name string, value uint32, timeout time.Duration) (*variant.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_INSERT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.applyPayload(payload, timeout)
+	return c.sendProposal(payload, timeout)
 }
 
-func (c *Client) Upsert(name string, value uint32, timeout time.Duration) error {
+func (c *Client) Upsert(name string, value uint32, timeout time.Duration) (*variant.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_UPSERT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.applyPayload(payload, timeout)
+	return c.sendProposal(payload, timeout)
 }
 
-func (c *Client) Delete(name string, timeout time.Duration) error {
+func (c *Client) Delete(name string, timeout time.Duration) (*variant.ProposalResponse, error) {
 	payload := &Payload{
 		Verb: Verb_DELETE,
 		Name: name,
 	}
 
-	return c.applyPayload(payload, timeout)
+	return c.sendProposal(payload, timeout)
 }
 
-func (c *Client) Increment(name string, value uint32, timeout time.Duration) error {
+func (c *Client) Increment(name string, value uint32, timeout time.Duration) (*variant.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_INCREMENT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.applyPayload(payload, timeout)
+	return c.sendProposal(payload, timeout)
 }
 
-func (c *Client) Decrement(name string, value uint32, timeout time.Duration) error {
+func (c *Client) Decrement(name string, value uint32, timeout time.Duration) (*variant.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_DECREMENT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.applyPayload(payload, timeout)
+	return c.sendProposal(payload, timeout)
 }
 
-func NewClient(namespace string, clusterID uint64, rw iface.IRW) (*Client, error) {
+func (c *Client) Setup(namespace string, clusterID uint64, rw iface.IRW) error {
 	if !utility.IsNamespaceValid([]byte(namespace)) {
-		return nil, x.ErrInvalidNamespace
+		return x.ErrInvalidNamespace
 	}
 
 	if rw == nil {
-		return nil, x.ErrUnexpectedNilValue
+		return x.ErrUnexpectedNilValue
 	}
 
-	return &Client{
-		mRW:        rw,
-		mClusterID: clusterID,
-		mNamespace: namespace,
-	}, nil
+	c.mClusterID = clusterID
+	c.mRW = rw
+	c.mNamespace = namespace
+	return nil
 }
