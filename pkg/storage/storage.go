@@ -382,7 +382,7 @@ func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
 			return tp.Lookup(request.Context, readOnlyStateContext, request.Query)
 		}
 	} else {
-		return nil, nil
+		return nil, x.ErrTPNotFound
 	}
 }
 

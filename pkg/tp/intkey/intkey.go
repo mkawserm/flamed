@@ -8,6 +8,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/variant"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 type IntKey struct {
@@ -24,8 +25,14 @@ func (i *IntKey) FamilyVersion() string {
 func (i *IntKey) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {
+	if request, ok := query.(Request); ok {
+		address := crypto.GetStateAddressFromStringKey(i.FamilyName(), request.Name)
+		address = uidutil.GetUid([]byte(request.Namespace), address)
 
-	return nil, nil
+		return readOnlyStateContext.GetState(address)
+	} else {
+		return nil, x.ErrUnknownLookupRequest
+	}
 }
 
 func (i *IntKey) insert(tpr *variant.TransactionProcessorResponse,
@@ -38,7 +45,7 @@ func (i *IntKey) insert(tpr *variant.TransactionProcessorResponse,
 	if entry != nil {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "state already exists, can not insert"
+		tpr.ErrorText = "state already exists so can not insert"
 		return tpr
 	}
 
@@ -149,7 +156,7 @@ func (i *IntKey) increment(tpr *variant.TransactionProcessorResponse,
 	if entry == nil {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "state does not exists can not increment"
+		tpr.ErrorText = "state does not exists so can not increment"
 		return tpr
 	}
 
@@ -197,7 +204,7 @@ func (i *IntKey) decrement(tpr *variant.TransactionProcessorResponse,
 	if entry == nil {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "state does not exists can not increment"
+		tpr.ErrorText = "state does not exists can not decrement"
 		return tpr
 	}
 
@@ -262,7 +269,14 @@ func (i *IntKey) Apply(_ context.Context,
 		return tpr
 	}
 
-	address := crypto.GetStateAddressFromStringKey(transaction.FamilyName, payload.Name)
+	if len(payload.Name) > 20 {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "name length can not exceed 20 characters"
+		return tpr
+	}
+
+	address := crypto.GetStateAddressFromStringKey(i.FamilyName(), payload.Name)
 	address = uidutil.GetUid(transaction.Namespace, address)
 
 	if payload.Verb == Verb_INSERT {

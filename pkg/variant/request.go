@@ -6,7 +6,6 @@ type LookupRequest struct {
 	Query   interface{}     `json:"-"`
 	Context context.Context `json:"-"`
 
-	Namespace     []byte `json:"namespace"`
 	FamilyName    string `json:"familyName"`
 	FamilyVersion string `json:"familyVersion"`
 }
