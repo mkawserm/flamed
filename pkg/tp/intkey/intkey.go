@@ -7,7 +7,6 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/uidutil"
-	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 )
 
@@ -45,11 +44,11 @@ func (i *IntKey) Lookup(_ context.Context,
 	}
 }
 
-func (i *IntKey) insert(tpr *variant.TransactionProcessorResponse,
+func (i *IntKey) insert(tpr *pb.TransactionProcessorResponse,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction,
 	address []byte,
-	payload *Payload) *variant.TransactionProcessorResponse {
+	payload *Payload) *pb.TransactionProcessorResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry != nil {
@@ -93,8 +92,8 @@ func (i *IntKey) insert(tpr *variant.TransactionProcessorResponse,
 	}
 }
 
-func (i *IntKey) delete(tpr *variant.TransactionProcessorResponse,
-	stateContext iface.IStateContext, address []byte) *variant.TransactionProcessorResponse {
+func (i *IntKey) delete(tpr *pb.TransactionProcessorResponse,
+	stateContext iface.IStateContext, address []byte) *pb.TransactionProcessorResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
@@ -117,11 +116,11 @@ func (i *IntKey) delete(tpr *variant.TransactionProcessorResponse,
 	}
 }
 
-func (i *IntKey) upsert(tpr *variant.TransactionProcessorResponse,
+func (i *IntKey) upsert(tpr *pb.TransactionProcessorResponse,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction,
 	address []byte,
-	payload *Payload) *variant.TransactionProcessorResponse {
+	payload *Payload) *pb.TransactionProcessorResponse {
 
 	stateData := &IntKeyState{
 		Name:  payload.Name,
@@ -157,10 +156,10 @@ func (i *IntKey) upsert(tpr *variant.TransactionProcessorResponse,
 	}
 }
 
-func (i *IntKey) increment(tpr *variant.TransactionProcessorResponse,
+func (i *IntKey) increment(tpr *pb.TransactionProcessorResponse,
 	stateContext iface.IStateContext,
 	address []byte,
-	payload *Payload) *variant.TransactionProcessorResponse {
+	payload *Payload) *pb.TransactionProcessorResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
@@ -211,10 +210,10 @@ func (i *IntKey) increment(tpr *variant.TransactionProcessorResponse,
 	}
 }
 
-func (i *IntKey) decrement(tpr *variant.TransactionProcessorResponse,
+func (i *IntKey) decrement(tpr *pb.TransactionProcessorResponse,
 	stateContext iface.IStateContext,
 	address []byte,
-	payload *Payload) *variant.TransactionProcessorResponse {
+	payload *Payload) *pb.TransactionProcessorResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
@@ -268,9 +267,9 @@ func (i *IntKey) decrement(tpr *variant.TransactionProcessorResponse,
 
 func (i *IntKey) Apply(_ context.Context,
 	stateContext iface.IStateContext,
-	transaction *pb.Transaction) *variant.TransactionProcessorResponse {
+	transaction *pb.Transaction) *pb.TransactionProcessorResponse {
 
-	tpr := &variant.TransactionProcessorResponse{
+	tpr := &pb.TransactionProcessorResponse{
 		Status:    0,
 		ErrorCode: 0,
 		ErrorText: "",

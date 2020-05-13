@@ -2,7 +2,6 @@ package storaged
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
@@ -112,10 +111,10 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 		}
 		pr := s.mStorage.ApplyProposal(context.TODO(), pp)
 		if pr != nil {
-			if data, err := json.Marshal(pr); err == nil {
+			if data, err := proto.Marshal(pr); err == nil {
 				entries[idx].Result.Data = data
 			} else {
-				internalLogger.Error("json marshal error", zap.Error(err))
+				internalLogger.Error("proto marshal error", zap.Error(err))
 			}
 		}
 	}

@@ -390,13 +390,13 @@ func (s *Storage) Search(_ variant.SearchRequest) (interface{}, error) {
 	return nil, nil
 }
 
-func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *variant.ProposalResponse {
+func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *pb.ProposalResponse {
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
 
 	var indexDataContainer = make(IndexDataContainer)
 
-	pr := variant.NewProposalResponse(0)
+	pr := pb.NewProposalResponse(0)
 	for _, t := range proposal.Transactions {
 		tp := s.mConfiguration.GetTransactionProcessor(t.FamilyName, t.FamilyVersion)
 		if tp == nil {

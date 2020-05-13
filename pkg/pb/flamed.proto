@@ -27,6 +27,19 @@ message Proposal {
   repeated Transaction transactions = 5;
 }
 
+message TransactionProcessorResponse {
+  uint32 status = 1; /* 0 - rejected, 1 - accepted */
+  uint32 errorCode = 2; /* error code */
+  string errorText = 3; /* failure reason short message */
+}
+
+message ProposalResponse {
+  uint32 status = 1; /* 0 - rejected, 1 - accepted */
+  uint32 errorCode = 2; /* error code */
+  string errorText = 3; /* failure reason short message */
+  repeated TransactionProcessorResponse transactionProcessorResponseList = 4;
+}
+
 enum IndexFieldType {
   TEXT = 0;
   NUMERIC = 1;

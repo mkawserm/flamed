@@ -1,7 +1,6 @@
 package intkey
 
 import (
-	"encoding/json"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"time"
 
@@ -45,7 +44,7 @@ func (c *Client) GetIntKeyState(name string, timeout time.Duration) (*IntKeyStat
 	return nil, x.ErrUnknownValue
 }
 
-func (c *Client) sendProposal(payload *Payload, timeout time.Duration) (*variant.ProposalResponse, error) {
+func (c *Client) sendProposal(payload *Payload, timeout time.Duration) (*pb.ProposalResponse, error) {
 	payloadBytes, err := proto.Marshal(payload)
 
 	if err != nil {
@@ -72,16 +71,16 @@ func (c *Client) sendProposal(payload *Payload, timeout time.Duration) (*variant
 		return nil, err
 	}
 
-	pr := &variant.ProposalResponse{}
+	pr := &pb.ProposalResponse{}
 
-	if err := json.Unmarshal(r.Data, pr); err != nil {
+	if err := proto.Unmarshal(r.Data, pr); err != nil {
 		return nil, err
 	}
 
 	return pr, nil
 }
 
-func (c *Client) Insert(name string, value uint32, timeout time.Duration) (*variant.ProposalResponse, error) {
+func (c *Client) Insert(name string, value uint32, timeout time.Duration) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_INSERT,
 		Name:  name,
@@ -91,7 +90,7 @@ func (c *Client) Insert(name string, value uint32, timeout time.Duration) (*vari
 	return c.sendProposal(payload, timeout)
 }
 
-func (c *Client) Upsert(name string, value uint32, timeout time.Duration) (*variant.ProposalResponse, error) {
+func (c *Client) Upsert(name string, value uint32, timeout time.Duration) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_UPSERT,
 		Name:  name,
@@ -101,7 +100,7 @@ func (c *Client) Upsert(name string, value uint32, timeout time.Duration) (*vari
 	return c.sendProposal(payload, timeout)
 }
 
-func (c *Client) Delete(name string, timeout time.Duration) (*variant.ProposalResponse, error) {
+func (c *Client) Delete(name string, timeout time.Duration) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb: Verb_DELETE,
 		Name: name,
@@ -110,7 +109,7 @@ func (c *Client) Delete(name string, timeout time.Duration) (*variant.ProposalRe
 	return c.sendProposal(payload, timeout)
 }
 
-func (c *Client) Increment(name string, value uint32, timeout time.Duration) (*variant.ProposalResponse, error) {
+func (c *Client) Increment(name string, value uint32, timeout time.Duration) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_INCREMENT,
 		Name:  name,
@@ -120,7 +119,7 @@ func (c *Client) Increment(name string, value uint32, timeout time.Duration) (*v
 	return c.sendProposal(payload, timeout)
 }
 
-func (c *Client) Decrement(name string, value uint32, timeout time.Duration) (*variant.ProposalResponse, error) {
+func (c *Client) Decrement(name string, value uint32, timeout time.Duration) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_DECREMENT,
 		Name:  name,
