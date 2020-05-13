@@ -14,3 +14,8 @@ message Payload {
   string name = 2; /* Max 20 character */
   uint32 value = 3; /* 2^32 - 1 */
 }
+
+message StateData {
+  string name = 1;
+  uint32 value = 2;
+}
