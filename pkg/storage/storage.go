@@ -416,6 +416,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *pb.
 		pr.Append(tpr)
 
 		if tpr.Status == 0 {
+			pr.ErrorText = "proposal rejected"
 			return pr
 		} else {
 			indexDataContainer[string(t.Namespace)] = stateContext.mIndexDataList
@@ -435,7 +436,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *pb.
 	} else {
 		indexDataContainer = nil
 		pr.Status = 0
-		pr.ErrorText = "state commit failed"
+		pr.ErrorText = "proposal rejected because of commit failure"
 		return pr
 	}
 }
