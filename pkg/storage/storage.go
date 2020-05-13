@@ -802,7 +802,7 @@ func (s *Storage) DefaultIndexMeta(namespace string) error {
 //	if err != nil {
 //		return nil, err
 //	}
-//	v.AppliedIndex = o
+//	v.GetAppliedIndex = o
 //	return v, nil
 //}
 //

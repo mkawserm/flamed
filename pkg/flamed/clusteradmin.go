@@ -84,7 +84,7 @@ func (c *ClusterAdmin) RequestSnapshot(clusterID uint64,
 	return num, err
 }
 
-func (c *ClusterAdmin) AppliedIndex(timeout time.Duration) (uint64, error) {
+func (c *ClusterAdmin) GetAppliedIndex(timeout time.Duration) (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	request := variant.LookupRequest{
 		Query:   pb.AppliedIndexQuery{},

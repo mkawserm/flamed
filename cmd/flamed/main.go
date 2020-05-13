@@ -65,11 +65,11 @@ func main() {
 	intKeyClient := intkey.Client{}
 
 	err = intKeyClient.Setup("test", clusterId, flame1)
-
 	if err != nil {
 		panic(err)
 	}
 
+	clusterAdmin := flame1.NewClusterAdmin(clusterId)
 	//manager1 := flame1.NewStorageManager(clusterId)
 	//admin1 := flame1.NewAdmin(clusterId)
 
@@ -175,8 +175,12 @@ func main() {
 			}
 			fmt.Println(pr)
 		case "ai1":
-			//index := admin1.QueryAppliedIndex(3 * time.Minute)
-			//fmt.Println(index)
+			index, err := clusterAdmin.GetAppliedIndex(3 * time.Minute)
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(index)
+			}
 		//case "ai2":
 		//	index := admin2.QueryAppliedIndex(3 * time.Minute)
 		//	fmt.Println(index)

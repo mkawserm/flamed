@@ -58,7 +58,7 @@ package flamed
 //	if err != nil {
 //		return 0
 //	} else {
-//		return q.AppliedIndex
+//		return q.GetAppliedIndex
 //	}
 //}
 //
