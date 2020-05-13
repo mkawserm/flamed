@@ -382,6 +382,9 @@ func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
 			return tp.Lookup(request.Context, readOnlyStateContext, request.Query)
 		}
 	} else {
+		if _, ok := request.Query.(pb.AppliedIndexQuery); ok {
+			return s.QueryAppliedIndex()
+		}
 		return nil, x.ErrTPNotFound
 	}
 }

@@ -3,6 +3,8 @@ package flamed
 import (
 	"context"
 	"github.com/lni/dragonboat/v3"
+	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/variant"
 	"time"
 )
 
@@ -80,4 +82,20 @@ func (c *ClusterAdmin) RequestSnapshot(clusterID uint64,
 	num, err := c.mDragonboatNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
 	cancel()
 	return num, err
+}
+
+func (c *ClusterAdmin) AppliedIndex(timeout time.Duration) (uint64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	request := variant.LookupRequest{
+		Query:   pb.AppliedIndexQuery{},
+		Context: ctx,
+	}
+	d, e := c.mDragonboatNodeHost.SyncRead(ctx, c.mClusterID, request)
+	cancel()
+
+	if e != nil {
+		return 0, e
+	}
+
+	return d.(uint64), e
 }

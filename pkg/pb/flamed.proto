@@ -79,3 +79,7 @@ message IndexMeta {
 message IndexMetaList {
   repeated IndexMeta indexMetaList = 1;
 }
+
+message AppliedIndexQuery {
+  uint64 appliedIndex = 1;
+}
