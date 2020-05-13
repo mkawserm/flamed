@@ -2,8 +2,11 @@ package intkey
 
 import (
 	"context"
+	"github.com/golang/protobuf/proto"
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/variant"
 )
 
@@ -11,11 +14,11 @@ type IntKey struct {
 }
 
 func (i *IntKey) FamilyName() string {
-	return "intkey"
+	return Name
 }
 
 func (i *IntKey) FamilyVersion() string {
-	return "1.0"
+	return Version
 }
 
 func (i *IntKey) Lookup(_ context.Context,
@@ -25,9 +28,257 @@ func (i *IntKey) Lookup(_ context.Context,
 	return nil, nil
 }
 
+func (i *IntKey) insert(tpr *variant.TransactionProcessorResponse,
+	stateContext iface.IStateContext,
+	transaction *pb.Transaction,
+	address []byte,
+	payload *Payload) *variant.TransactionProcessorResponse {
+
+	entry, _ := stateContext.GetState(address)
+	if entry != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "state already exists, can not insert"
+		return tpr
+	}
+
+	stateData := &StateData{
+		Name:  payload.Name,
+		Value: payload.Value,
+	}
+
+	stateBytes, err := proto.Marshal(stateData)
+
+	if err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
+	entry = &pb.StateEntry{
+		Payload:       stateBytes,
+		Namespace:     transaction.Namespace,
+		FamilyName:    transaction.FamilyName,
+		FamilyVersion: transaction.FamilyVersion,
+	}
+
+	if err := stateContext.UpsertState(address, entry); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	} else {
+		tpr.Status = 1
+		tpr.ErrorCode = 0
+		tpr.ErrorText = ""
+		return tpr
+	}
+}
+
+func (i *IntKey) delete(tpr *variant.TransactionProcessorResponse,
+	stateContext iface.IStateContext, address []byte) *variant.TransactionProcessorResponse {
+
+	entry, _ := stateContext.GetState(address)
+	if entry == nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "state does not exists, can not delete"
+		return tpr
+	}
+
+	if err := stateContext.DeleteState(address); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	} else {
+		tpr.Status = 1
+		tpr.ErrorCode = 0
+		tpr.ErrorText = ""
+		return tpr
+	}
+}
+
+func (i *IntKey) upsert(tpr *variant.TransactionProcessorResponse,
+	stateContext iface.IStateContext,
+	transaction *pb.Transaction,
+	address []byte,
+	payload *Payload) *variant.TransactionProcessorResponse {
+
+	stateData := &StateData{
+		Name:  payload.Name,
+		Value: payload.Value,
+	}
+
+	stateBytes, err := proto.Marshal(stateData)
+
+	if err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
+	entry := &pb.StateEntry{
+		Payload:       stateBytes,
+		Namespace:     transaction.Namespace,
+		FamilyName:    transaction.FamilyName,
+		FamilyVersion: transaction.FamilyVersion,
+	}
+
+	if err := stateContext.UpsertState(address, entry); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	} else {
+		tpr.Status = 1
+		tpr.ErrorCode = 0
+		tpr.ErrorText = ""
+		return tpr
+	}
+}
+
+func (i *IntKey) increment(tpr *variant.TransactionProcessorResponse,
+	stateContext iface.IStateContext,
+	address []byte,
+	payload *Payload) *variant.TransactionProcessorResponse {
+
+	entry, _ := stateContext.GetState(address)
+	if entry == nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "state does not exists can not increment"
+		return tpr
+	}
+
+	stateData := &StateData{}
+
+	if err := proto.Unmarshal(entry.Payload, stateData); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
+	//TODO: overflow check
+	stateData.Value = stateData.Value + payload.Value
+
+	stateBytes, err := proto.Marshal(stateData)
+	if err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
+	entry.Payload = stateBytes
+
+	if err := stateContext.UpsertState(address, entry); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	} else {
+		tpr.Status = 1
+		tpr.ErrorCode = 0
+		tpr.ErrorText = ""
+		return tpr
+	}
+}
+
+func (i *IntKey) decrement(tpr *variant.TransactionProcessorResponse,
+	stateContext iface.IStateContext,
+	address []byte,
+	payload *Payload) *variant.TransactionProcessorResponse {
+
+	entry, _ := stateContext.GetState(address)
+	if entry == nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "state does not exists can not increment"
+		return tpr
+	}
+
+	stateData := &StateData{}
+
+	if err := proto.Unmarshal(entry.Payload, stateData); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
+	//TODO: overflow check
+	stateData.Value = stateData.Value - payload.Value
+
+	stateBytes, err := proto.Marshal(stateData)
+	if err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
+	entry.Payload = stateBytes
+
+	if err := stateContext.UpsertState(address, entry); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	} else {
+		tpr.Status = 1
+		tpr.ErrorCode = 0
+		tpr.ErrorText = ""
+		return tpr
+	}
+}
+
 func (i *IntKey) Apply(_ context.Context,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction) *variant.TransactionProcessorResponse {
 
-	return nil
+	tpr := &variant.TransactionProcessorResponse{
+		Status:    0,
+		ErrorCode: 0,
+		ErrorText: "",
+	}
+
+	payload := &Payload{}
+
+	if err := proto.Unmarshal(transaction.Payload, payload); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
+	if len(payload.Name) == 0 {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "name can not be empty"
+		return tpr
+	}
+
+	address := crypto.GetStateAddressFromStringKey(transaction.FamilyName, payload.Name)
+	address = uidutil.GetUid(transaction.Namespace, address)
+
+	if payload.Verb == Verb_INSERT {
+		return i.insert(tpr, stateContext, transaction, address, payload)
+	} else if payload.Verb == Verb_UPSERT {
+		return i.upsert(tpr, stateContext, transaction, address, payload)
+	} else if payload.Verb == Verb_INCREMENT {
+		return i.increment(tpr, stateContext, address, payload)
+	} else if payload.Verb == Verb_DECREMENT {
+		return i.decrement(tpr, stateContext, address, payload)
+	} else if payload.Verb == Verb_DELETE {
+		return i.delete(tpr, stateContext, address)
+	} else {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "unknown verb"
+		return tpr
+	}
 }
