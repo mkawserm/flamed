@@ -410,7 +410,12 @@ func (s *Storage) Search(_ variant.SearchRequest) (interface{}, error) {
 	return nil, nil
 }
 
-func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *pb.ProposalResponse {
+func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entryIndex uint64) *pb.ProposalResponse {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	internalLogger.Info("entry index", zap.Uint64("entryIndex", entryIndex))
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
 

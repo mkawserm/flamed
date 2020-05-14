@@ -109,7 +109,7 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 			internalLogger.Error("proto unmarshal error", zap.Error(err))
 			continue
 		}
-		pr := s.mStorage.ApplyProposal(context.TODO(), pp)
+		pr := s.mStorage.ApplyProposal(context.TODO(), pp, e.Index)
 		if pr != nil {
 			if data, err := proto.Marshal(pr); err == nil {
 				entries[idx].Result.Data = data
