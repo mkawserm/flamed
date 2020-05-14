@@ -16,7 +16,8 @@ cover-html:
 
 protobuf:
 	@protoc -I=./pkg/pb --go_out=./pkg/pb flamed.proto
-#	@protoc -I=./pkg/pb --go_out=./pkg/pb odsm.proto
+	@protoc -I=./pkg/tp/identity --go_out=./pkg/tp/identity identity.proto
+	@protoc -I=./pkg/tp/index --go_out=./pkg/tp/index index.proto
 	@protoc -I=./pkg/tp/intkey --go_out=./pkg/tp/intkey intkey.proto
 
 push:
