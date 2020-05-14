@@ -40,7 +40,7 @@ message ProposalResponse {
   uint32 status = 2; /* 0 - rejected, 1 - accepted */
   uint32 errorCode = 3; /* error code */
   string errorText = 4; /* failure reason short message */
-  repeated TransactionResponse transactionProcessorResponses = 5;
+  repeated TransactionResponse transactionResponses = 5;
 }
 
 message AppliedIndexQuery {
