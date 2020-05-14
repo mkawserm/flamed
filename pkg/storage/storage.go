@@ -418,6 +418,8 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *pb.
 	var indexMetaActionContainer = make(IndexMetaActionContainer)
 
 	pr := pb.NewProposalResponse(0)
+	pr.Uuid = proposal.Uuid
+
 	for _, t := range proposal.Transactions {
 		tp := s.mConfiguration.GetTransactionProcessor(t.FamilyName, t.FamilyVersion)
 		if tp == nil {

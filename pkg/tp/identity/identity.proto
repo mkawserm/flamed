@@ -69,7 +69,8 @@ message FlameUser {
   string password = 4;
   uint64 createdAt = 5;
   uint64 updatedAt = 6;
-  bytes userData = 7;
+  bytes data = 7;
+  bytes meta = 8;
 }
 
 message FlameUserList {
@@ -93,6 +94,8 @@ message FlameAccessControl {
                         */
   uint64 createdAt = 4;
   uint64 updatedAt = 5;
+  bytes data = 6;
+  bytes meta = 7;
 }
 
 message FlameAccessControlList {

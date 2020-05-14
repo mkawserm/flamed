@@ -270,9 +270,11 @@ func (i *IntKey) Apply(_ context.Context,
 	transaction *pb.Transaction) *pb.TransactionProcessorResponse {
 
 	tpr := &pb.TransactionProcessorResponse{
-		Status:    0,
-		ErrorCode: 0,
-		ErrorText: "",
+		Status:        0,
+		ErrorCode:     0,
+		ErrorText:     "",
+		FamilyName:    Name,
+		FamilyVersion: Version,
 	}
 
 	payload := &Payload{}

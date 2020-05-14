@@ -20,6 +20,14 @@ message Transaction {
   string familyVersion = 4;
 }
 
+message TransactionProcessorResponse {
+  uint32 status = 1; /* 0 - rejected, 1 - accepted */
+  uint32 errorCode = 2; /* error code */
+  string errorText = 3; /* failure reason short message */
+  string familyName = 4;
+  string familyVersion = 5;
+}
+
 message Proposal {
   bytes uuid = 1;
   bytes meta = 2;
@@ -27,17 +35,12 @@ message Proposal {
   repeated Transaction transactions = 5;
 }
 
-message TransactionProcessorResponse {
-  uint32 status = 1; /* 0 - rejected, 1 - accepted */
-  uint32 errorCode = 2; /* error code */
-  string errorText = 3; /* failure reason short message */
-}
-
 message ProposalResponse {
-  uint32 status = 1; /* 0 - rejected, 1 - accepted */
-  uint32 errorCode = 2; /* error code */
-  string errorText = 3; /* failure reason short message */
-  repeated TransactionProcessorResponse transactionProcessorResponses = 4;
+  bytes uuid = 1;
+  uint32 status = 2; /* 0 - rejected, 1 - accepted */
+  uint32 errorCode = 3; /* error code */
+  string errorText = 4; /* failure reason short message */
+  repeated TransactionProcessorResponse transactionProcessorResponses = 5;
 }
 
 message AppliedIndexQuery {
