@@ -2,6 +2,7 @@ package constant
 
 const UPSERT int8 = 1
 const DELETE int8 = 2
+const DEFAULT int8 = 3
 
 const IndexMetaNamespace string = "00"
 const UserNamespace string = "01"

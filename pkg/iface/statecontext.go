@@ -2,7 +2,6 @@ package iface
 
 import (
 	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/variant"
 )
 
 type IStateIterator interface {
@@ -33,5 +32,5 @@ type IStateContext interface {
 	UpsertIndexMeta(meta *pb.IndexMeta) error
 	DeleteIndexMeta(meta *pb.IndexMeta) error
 	DefaultIndexMeta(namespace string) error
-	ApplyIndex(namespace string, data []*variant.IndexData) error
+	//ApplyIndex(namespace string, data []*variant.IndexData) error
 }

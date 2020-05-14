@@ -17,12 +17,14 @@ import (
 )
 
 type IndexDataContainer map[string][]*variant.IndexData
+type IndexMetaActionContainer map[string][]*variant.IndexMetaAction
 
 type StateContext struct {
-	mReadOnly      bool
-	mStorage       *Storage
-	mIndexDataList []*variant.IndexData
-	mTxn           iface.IStateStorageTransaction
+	mReadOnly            bool
+	mStorage             *Storage
+	mIndexDataList       []*variant.IndexData
+	mIndexMetaActionList []*variant.IndexMetaAction
+	mTxn                 iface.IStateStorageTransaction
 }
 
 func (s *StateContext) GetForwardIterator() iface.IStateIterator {
@@ -124,7 +126,12 @@ func (s *StateContext) UpsertIndexMeta(meta *pb.IndexMeta) error {
 		return nil
 	}
 
-	return s.mStorage.UpsertIndexMeta(meta)
+	m := &variant.IndexMetaAction{
+		Action:    constant.UPSERT,
+		IndexMeta: meta,
+	}
+	s.mIndexMetaActionList = append(s.mIndexMetaActionList, m)
+	return nil
 }
 
 func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
@@ -132,7 +139,12 @@ func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
 		return nil
 	}
 
-	return s.mStorage.DeleteIndexMeta(meta)
+	m := &variant.IndexMetaAction{
+		Action:    constant.DELETE,
+		IndexMeta: meta,
+	}
+	s.mIndexMetaActionList = append(s.mIndexMetaActionList, m)
+	return nil
 }
 
 func (s *StateContext) DefaultIndexMeta(namespace string) error {
@@ -140,16 +152,21 @@ func (s *StateContext) DefaultIndexMeta(namespace string) error {
 		return nil
 	}
 
-	return s.mStorage.DefaultIndexMeta(namespace)
-}
-
-func (s *StateContext) ApplyIndex(namespace string, data []*variant.IndexData) error {
-	if s.mReadOnly {
-		return nil
+	m := &variant.IndexMetaAction{
+		Action:    constant.DEFAULT,
+		IndexMeta: &pb.IndexMeta{Namespace: []byte(namespace)},
 	}
-
-	return s.mStorage.ApplyIndex(namespace, data)
+	s.mIndexMetaActionList = append(s.mIndexMetaActionList, m)
+	return nil
 }
+
+//func (s *StateContext) ApplyIndex(namespace string, data []*variant.IndexData) error {
+//	if s.mReadOnly {
+//		return nil
+//	}
+//
+//	return s.mStorage.ApplyIndex(namespace, data)
+//}
 
 type Storage struct {
 	mStateStoragePath          string
@@ -398,6 +415,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *pb.
 	defer txn.Discard()
 
 	var indexDataContainer = make(IndexDataContainer)
+	var indexMetaActionContainer = make(IndexMetaActionContainer)
 
 	pr := pb.NewProposalResponse(0)
 	for _, t := range proposal.Transactions {
@@ -410,10 +428,11 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *pb.
 		}
 
 		stateContext := &StateContext{
-			mReadOnly:      false,
-			mStorage:       s,
-			mTxn:           txn,
-			mIndexDataList: make([]*variant.IndexData, 0),
+			mReadOnly:            false,
+			mStorage:             s,
+			mTxn:                 txn,
+			mIndexDataList:       make([]*variant.IndexData, 0),
+			mIndexMetaActionList: make([]*variant.IndexMetaAction, 0),
 		}
 		tpr := tp.Apply(ctx, stateContext, t)
 		pr.Append(tpr)
@@ -423,14 +442,43 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *pb.
 			return pr
 		} else {
 			indexDataContainer[string(t.Namespace)] = stateContext.mIndexDataList
+			indexMetaActionContainer[string(t.Namespace)] = stateContext.mIndexMetaActionList
 		}
 	}
 
 	if err := txn.Commit(); err == nil {
 		if s.mConfiguration.IndexEnable() {
+
+			//NOTE: update index meta
+			if len(indexMetaActionContainer) != 0 {
+				for _, v := range indexMetaActionContainer {
+					for _, v2 := range v {
+						if v2.Action == constant.UPSERT {
+							err := s.mIndexStorage.UpsertIndexMeta(v2.IndexMeta)
+							if err != nil {
+								internalLogger.Error("upsert index error", zap.Error(err))
+							}
+						}
+						if v2.Action == constant.DELETE {
+							err := s.mIndexStorage.DeleteIndexMeta(v2.IndexMeta)
+							if err != nil {
+								internalLogger.Error("delete index error", zap.Error(err))
+							}
+						}
+
+						if v2.Action == constant.DEFAULT {
+							err := s.mIndexStorage.DefaultIndexMeta(string(v2.IndexMeta.Namespace))
+							if err != nil {
+								internalLogger.Error("default index error", zap.Error(err))
+							}
+						}
+					}
+				}
+			}
+
+			//NOTE: index data
 			if len(indexDataContainer) != 0 {
 				/* TODO: SEND INDEX DATA TO BE PROCESSED */
-
 			}
 		}
 
@@ -438,6 +486,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal) *pb.
 		return pr
 	} else {
 		indexDataContainer = nil
+		indexMetaActionContainer = nil
 		pr.Status = 0
 		pr.ErrorText = "proposal rejected because of commit failure"
 		return pr
