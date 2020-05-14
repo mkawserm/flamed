@@ -232,7 +232,7 @@ func (n *Node) GetNodeHostInfo() *dragonboat.NodeHostInfo {
 	return n.mNodeHost.GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: false})
 }
 
-func (n *Node) NewClusterAdmin(clusterID uint64) *ClusterAdmin {
+func (n *Node) NewClusterAdmin(clusterID uint64, timeout time.Duration) *ClusterAdmin {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 	if _, ok := n.mClusterMap[clusterID]; !ok {
@@ -240,6 +240,7 @@ func (n *Node) NewClusterAdmin(clusterID uint64) *ClusterAdmin {
 	}
 
 	return &ClusterAdmin{
+		mTimeout:            timeout,
 		mClusterID:          clusterID,
 		mDragonboatNodeHost: n.mNodeHost,
 	}

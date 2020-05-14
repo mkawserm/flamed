@@ -10,7 +10,12 @@ import (
 
 type ClusterAdmin struct {
 	mClusterID          uint64
+	mTimeout            time.Duration
 	mDragonboatNodeHost *dragonboat.NodeHost
+}
+
+func (c *ClusterAdmin) UpdateTimeout(timeout time.Duration) {
+	c.mTimeout = timeout
 }
 
 func (c *ClusterAdmin) GetLeaderID() (uint64, bool, error) {
@@ -21,8 +26,8 @@ func (c *ClusterAdmin) HasNodeInfo(nodeID uint64) bool {
 	return c.mDragonboatNodeHost.HasNodeInfo(c.mClusterID, nodeID)
 }
 
-func (c *ClusterAdmin) AddNode(nodeID uint64, address string, timeout time.Duration, configChangeIndex uint64) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+func (c *ClusterAdmin) AddNode(nodeID uint64, address string, configChangeIndex uint64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	err := c.mDragonboatNodeHost.SyncRequestAddNode(ctx,
 		c.mClusterID,
 		nodeID,
@@ -32,8 +37,8 @@ func (c *ClusterAdmin) AddNode(nodeID uint64, address string, timeout time.Durat
 	return err
 }
 
-func (c *ClusterAdmin) AddObserver(nodeID uint64, address string, timeout time.Duration, configChangeIndex uint64) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+func (c *ClusterAdmin) AddObserver(nodeID uint64, address string, configChangeIndex uint64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	err := c.mDragonboatNodeHost.SyncRequestAddObserver(ctx,
 		c.mClusterID,
 		nodeID,
@@ -43,8 +48,8 @@ func (c *ClusterAdmin) AddObserver(nodeID uint64, address string, timeout time.D
 	return err
 }
 
-func (c *ClusterAdmin) AddWitness(nodeID uint64, address string, timeout time.Duration, configChangeIndex uint64) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+func (c *ClusterAdmin) AddWitness(nodeID uint64, address string, configChangeIndex uint64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	err := c.mDragonboatNodeHost.SyncRequestAddWitness(ctx,
 		c.mClusterID,
 		nodeID,
@@ -54,8 +59,8 @@ func (c *ClusterAdmin) AddWitness(nodeID uint64, address string, timeout time.Du
 	return err
 }
 
-func (c *ClusterAdmin) DeleteNode(nodeID uint64, timeout time.Duration, configChangeIndex uint64) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+func (c *ClusterAdmin) DeleteNode(nodeID uint64, configChangeIndex uint64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	err := c.mDragonboatNodeHost.SyncRequestDeleteNode(ctx,
 		c.mClusterID,
 		nodeID,
@@ -65,7 +70,6 @@ func (c *ClusterAdmin) DeleteNode(nodeID uint64, timeout time.Duration, configCh
 }
 
 func (c *ClusterAdmin) RequestSnapshot(clusterID uint64,
-	timeout time.Duration,
 	compactionOverhead uint64,
 	exportPath string,
 	exported bool,
@@ -78,14 +82,14 @@ func (c *ClusterAdmin) RequestSnapshot(clusterID uint64,
 		OverrideCompactionOverhead: overrideCompactionOverhead,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	num, err := c.mDragonboatNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
 	cancel()
 	return num, err
 }
 
-func (c *ClusterAdmin) GetAppliedIndex(timeout time.Duration) (uint64, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+func (c *ClusterAdmin) GetAppliedIndex() (uint64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	request := variant.LookupRequest{
 		Query:   pb.AppliedIndexQuery{},
 		Context: ctx,

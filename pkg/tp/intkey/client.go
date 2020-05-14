@@ -16,9 +16,14 @@ type Client struct {
 	mRW        iface.IRW
 	mClusterID uint64
 	mNamespace string
+	mTimeout   time.Duration
 }
 
-func (c *Client) GetIntKeyState(name string, timeout time.Duration) (*IntKeyState, error) {
+func (c *Client) UpdateTimeout(timeout time.Duration) {
+	c.mTimeout = timeout
+}
+
+func (c *Client) GetIntKeyState(name string) (*IntKeyState, error) {
 	request := Request{
 		Name:      name,
 		Namespace: c.mNamespace,
@@ -31,7 +36,7 @@ func (c *Client) GetIntKeyState(name string, timeout time.Duration) (*IntKeyStat
 		FamilyVersion: Version,
 	}
 
-	r, err := c.mRW.Read(c.mClusterID, lookupRequest, timeout)
+	r, err := c.mRW.Read(c.mClusterID, lookupRequest, c.mTimeout)
 
 	if err != nil {
 		return nil, err
@@ -44,7 +49,7 @@ func (c *Client) GetIntKeyState(name string, timeout time.Duration) (*IntKeyStat
 	return nil, x.ErrUnknownValue
 }
 
-func (c *Client) sendProposal(payload *Payload, timeout time.Duration) (*pb.ProposalResponse, error) {
+func (c *Client) sendProposal(payload *Payload) (*pb.ProposalResponse, error) {
 	payloadBytes, err := proto.Marshal(payload)
 
 	if err != nil {
@@ -65,7 +70,7 @@ func (c *Client) sendProposal(payload *Payload, timeout time.Duration) (*pb.Prop
 		},
 	}
 
-	r, err := c.mRW.Write(c.mClusterID, proposal, timeout)
+	r, err := c.mRW.Write(c.mClusterID, proposal, c.mTimeout)
 
 	if err != nil {
 		return nil, err
@@ -80,56 +85,56 @@ func (c *Client) sendProposal(payload *Payload, timeout time.Duration) (*pb.Prop
 	return pr, nil
 }
 
-func (c *Client) Insert(name string, value uint32, timeout time.Duration) (*pb.ProposalResponse, error) {
+func (c *Client) Insert(name string, value uint32) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_INSERT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.sendProposal(payload, timeout)
+	return c.sendProposal(payload)
 }
 
-func (c *Client) Upsert(name string, value uint32, timeout time.Duration) (*pb.ProposalResponse, error) {
+func (c *Client) Upsert(name string, value uint32) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_UPSERT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.sendProposal(payload, timeout)
+	return c.sendProposal(payload)
 }
 
-func (c *Client) Delete(name string, timeout time.Duration) (*pb.ProposalResponse, error) {
+func (c *Client) Delete(name string) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb: Verb_DELETE,
 		Name: name,
 	}
 
-	return c.sendProposal(payload, timeout)
+	return c.sendProposal(payload)
 }
 
-func (c *Client) Increment(name string, value uint32, timeout time.Duration) (*pb.ProposalResponse, error) {
+func (c *Client) Increment(name string, value uint32) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_INCREMENT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.sendProposal(payload, timeout)
+	return c.sendProposal(payload)
 }
 
-func (c *Client) Decrement(name string, value uint32, timeout time.Duration) (*pb.ProposalResponse, error) {
+func (c *Client) Decrement(name string, value uint32) (*pb.ProposalResponse, error) {
 	payload := &Payload{
 		Verb:  Verb_DECREMENT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.sendProposal(payload, timeout)
+	return c.sendProposal(payload)
 }
 
-func (c *Client) Setup(namespace string, clusterID uint64, rw iface.IRW) error {
+func (c *Client) Setup(namespace string, clusterID uint64, rw iface.IRW, timeout time.Duration) error {
 	if !utility.IsNamespaceValid([]byte(namespace)) {
 		return x.ErrInvalidNamespace
 	}
@@ -141,5 +146,6 @@ func (c *Client) Setup(namespace string, clusterID uint64, rw iface.IRW) error {
 	c.mClusterID = clusterID
 	c.mRW = rw
 	c.mNamespace = namespace
+	c.mTimeout = timeout
 	return nil
 }

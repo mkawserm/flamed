@@ -64,12 +64,12 @@ func main() {
 
 	intKeyClient := intkey.Client{}
 
-	err = intKeyClient.Setup("test", clusterId, flame1)
+	err = intKeyClient.Setup("test", clusterId, flame1, 3*time.Minute)
 	if err != nil {
 		panic(err)
 	}
 
-	clusterAdmin := flame1.NewClusterAdmin(clusterId)
+	clusterAdmin := flame1.NewClusterAdmin(clusterId, 3*time.Minute)
 	//manager1 := flame1.NewStorageManager(clusterId)
 	//admin1 := flame1.NewAdmin(clusterId)
 
@@ -150,32 +150,32 @@ func main() {
 
 		switch t {
 		case "view":
-			intKeyState, err := intKeyClient.GetIntKeyState("counter", 3*time.Minute)
+			intKeyState, err := intKeyClient.GetIntKeyState("counter")
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(intKeyState)
 
 		case "insert":
-			pr, err := intKeyClient.Insert("counter", 1, 3*time.Minute)
+			pr, err := intKeyClient.Insert("counter", 1)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(pr)
 		case "increment":
-			pr, err := intKeyClient.Increment("counter", 1, 3*time.Minute)
+			pr, err := intKeyClient.Increment("counter", 1)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(pr)
 		case "decrement":
-			pr, err := intKeyClient.Decrement("counter", 1, 3*time.Minute)
+			pr, err := intKeyClient.Decrement("counter", 1)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(pr)
 		case "ai1":
-			index, err := clusterAdmin.GetAppliedIndex(3 * time.Minute)
+			index, err := clusterAdmin.GetAppliedIndex()
 			if err != nil {
 				fmt.Println(err)
 			} else {
