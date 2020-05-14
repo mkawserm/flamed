@@ -42,8 +42,8 @@ func main() {
 		"/tmp/1/storage",
 		nil)
 
-	configuration.StoragedConfiguration().AddTransactionProcessor(&indexmeta.IndexMeta{})
 	configuration.StoragedConfiguration().AddTransactionProcessor(&intkey.IntKey{})
+	configuration.StoragedConfiguration().AddTransactionProcessor(&indexmeta.IndexMeta{})
 
 	err := flame1.Configure(configuration)
 
