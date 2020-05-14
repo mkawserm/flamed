@@ -20,7 +20,7 @@ message Transaction {
   string familyVersion = 4;
 }
 
-message TransactionProcessorResponse {
+message TransactionResponse {
   uint32 status = 1; /* 0 - rejected, 1 - accepted */
   uint32 errorCode = 2; /* error code */
   string errorText = 3; /* failure reason short message */
@@ -40,7 +40,7 @@ message ProposalResponse {
   uint32 status = 2; /* 0 - rejected, 1 - accepted */
   uint32 errorCode = 3; /* error code */
   string errorText = 4; /* failure reason short message */
-  repeated TransactionProcessorResponse transactionProcessorResponses = 5;
+  repeated TransactionResponse transactionProcessorResponses = 5;
 }
 
 message AppliedIndexQuery {

@@ -44,11 +44,11 @@ func (i *IntKey) Lookup(_ context.Context,
 	}
 }
 
-func (i *IntKey) insert(tpr *pb.TransactionProcessorResponse,
+func (i *IntKey) insert(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction,
 	address []byte,
-	payload *Payload) *pb.TransactionProcessorResponse {
+	payload *Payload) *pb.TransactionResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry != nil {
@@ -92,8 +92,8 @@ func (i *IntKey) insert(tpr *pb.TransactionProcessorResponse,
 	}
 }
 
-func (i *IntKey) delete(tpr *pb.TransactionProcessorResponse,
-	stateContext iface.IStateContext, address []byte) *pb.TransactionProcessorResponse {
+func (i *IntKey) delete(tpr *pb.TransactionResponse,
+	stateContext iface.IStateContext, address []byte) *pb.TransactionResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
@@ -116,11 +116,11 @@ func (i *IntKey) delete(tpr *pb.TransactionProcessorResponse,
 	}
 }
 
-func (i *IntKey) upsert(tpr *pb.TransactionProcessorResponse,
+func (i *IntKey) upsert(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction,
 	address []byte,
-	payload *Payload) *pb.TransactionProcessorResponse {
+	payload *Payload) *pb.TransactionResponse {
 
 	stateData := &IntKeyState{
 		Name:  payload.Name,
@@ -156,10 +156,10 @@ func (i *IntKey) upsert(tpr *pb.TransactionProcessorResponse,
 	}
 }
 
-func (i *IntKey) increment(tpr *pb.TransactionProcessorResponse,
+func (i *IntKey) increment(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte,
-	payload *Payload) *pb.TransactionProcessorResponse {
+	payload *Payload) *pb.TransactionResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
@@ -210,10 +210,10 @@ func (i *IntKey) increment(tpr *pb.TransactionProcessorResponse,
 	}
 }
 
-func (i *IntKey) decrement(tpr *pb.TransactionProcessorResponse,
+func (i *IntKey) decrement(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte,
-	payload *Payload) *pb.TransactionProcessorResponse {
+	payload *Payload) *pb.TransactionResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
@@ -267,9 +267,9 @@ func (i *IntKey) decrement(tpr *pb.TransactionProcessorResponse,
 
 func (i *IntKey) Apply(_ context.Context,
 	stateContext iface.IStateContext,
-	transaction *pb.Transaction) *pb.TransactionProcessorResponse {
+	transaction *pb.Transaction) *pb.TransactionResponse {
 
-	tpr := &pb.TransactionProcessorResponse{
+	tpr := &pb.TransactionResponse{
 		Status:        0,
 		ErrorCode:     0,
 		ErrorText:     "",
