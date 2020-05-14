@@ -455,38 +455,10 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 
 	if err := txn.Commit(); err == nil {
 		if s.mConfiguration.IndexEnable() {
-
 			//NOTE: update index meta
-			if len(indexMetaActionContainer) != 0 {
-				for _, v := range indexMetaActionContainer {
-					for _, v2 := range v {
-						if v2.Action == constant.UPSERT {
-							err := s.mIndexStorage.UpsertIndexMeta(v2.IndexMeta)
-							if err != nil {
-								internalLogger.Error("upsert index error", zap.Error(err))
-							}
-						}
-						if v2.Action == constant.DELETE {
-							err := s.mIndexStorage.DeleteIndexMeta(v2.IndexMeta)
-							if err != nil {
-								internalLogger.Error("delete index error", zap.Error(err))
-							}
-						}
-
-						if v2.Action == constant.DEFAULT {
-							err := s.mIndexStorage.DefaultIndexMeta(string(v2.IndexMeta.Namespace))
-							if err != nil {
-								internalLogger.Error("default index error", zap.Error(err))
-							}
-						}
-					}
-				}
-			}
-
+			s.updateIndexMetaOfIndexStorage(indexMetaActionContainer)
 			//NOTE: index data
-			if len(indexDataContainer) != 0 {
-				/* TODO: SEND INDEX DATA TO BE PROCESSED */
-			}
+			s.updateIndexOfIndexStorage(indexDataContainer)
 		}
 
 		pr.Status = 1
@@ -545,6 +517,44 @@ func (s *Storage) DefaultIndexMeta(namespace string) error {
 	}
 
 	return s.mIndexStorage.DefaultIndexMeta(namespace)
+}
+
+func (s *Storage) updateIndexOfIndexStorage(indexDataContainer IndexDataContainer) {
+	if len(indexDataContainer) == 0 {
+		return
+	}
+
+	/* TODO: SEND INDEX DATA TO BE PROCESSED */
+}
+
+func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMetaActionContainer) {
+	if len(indexMetaActionContainer) == 0 {
+		return
+	}
+
+	for _, v := range indexMetaActionContainer {
+		for _, v2 := range v {
+			if v2.Action == constant.UPSERT {
+				err := s.mIndexStorage.UpsertIndexMeta(v2.IndexMeta)
+				if err != nil {
+					internalLogger.Error("upsert index error", zap.Error(err))
+				}
+			}
+			if v2.Action == constant.DELETE {
+				err := s.mIndexStorage.DeleteIndexMeta(v2.IndexMeta)
+				if err != nil {
+					internalLogger.Error("delete index error", zap.Error(err))
+				}
+			}
+
+			if v2.Action == constant.DEFAULT {
+				err := s.mIndexStorage.DefaultIndexMeta(string(v2.IndexMeta.Namespace))
+				if err != nil {
+					internalLogger.Error("default index error", zap.Error(err))
+				}
+			}
+		}
+	}
 }
 
 //func (s *Storage) UpsertIndexMeta(meta *pb.FlameIndexMeta) error {
