@@ -415,7 +415,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		_ = internalLogger.Sync()
 	}()
 
-	internalLogger.Info("entry index", zap.Uint64("entryIndex", entryIndex))
+	internalLogger.Info("entry indexmeta", zap.Uint64("entryIndex", entryIndex))
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
 
@@ -455,9 +455,9 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 
 	if err := txn.Commit(); err == nil {
 		if s.mConfiguration.IndexEnable() {
-			//NOTE: update index meta
+			//NOTE: update indexmeta meta
 			s.updateIndexMetaOfIndexStorage(indexMetaActionContainer)
-			//NOTE: index data
+			//NOTE: indexmeta data
 			s.updateIndexOfIndexStorage(indexDataContainer)
 		}
 
@@ -537,20 +537,20 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 			if v2.Action == constant.UPSERT {
 				err := s.mIndexStorage.UpsertIndexMeta(v2.IndexMeta)
 				if err != nil {
-					internalLogger.Error("upsert index error", zap.Error(err))
+					internalLogger.Error("upsert indexmeta error", zap.Error(err))
 				}
 			}
 			if v2.Action == constant.DELETE {
 				err := s.mIndexStorage.DeleteIndexMeta(v2.IndexMeta)
 				if err != nil {
-					internalLogger.Error("delete index error", zap.Error(err))
+					internalLogger.Error("delete indexmeta error", zap.Error(err))
 				}
 			}
 
 			if v2.Action == constant.DEFAULT {
 				err := s.mIndexStorage.DefaultIndexMeta(string(v2.IndexMeta.Namespace))
 				if err != nil {
-					internalLogger.Error("default index error", zap.Error(err))
+					internalLogger.Error("default indexmeta error", zap.Error(err))
 				}
 			}
 		}
@@ -939,7 +939,7 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 //		}
 //		err = s.directIndex(batchAction)
 //		if err != nil {
-//			internalLogger.Error("batch action direct index error", zap.Error(err))
+//			internalLogger.Error("batch action direct indexmeta error", zap.Error(err))
 //		}
 //
 //		return nil
@@ -1159,7 +1159,7 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 //
 //	for k, v := range s.getIndexHolderMap(batchAction) {
 //		if !s.mIndexStorage.CanIndex(k) && s.mConfiguration.AutoIndexMeta() {
-//			//internalLogger.Info("no index found, creating new one", zap.String("namespace",k))
+//			//internalLogger.Info("no indexmeta found, creating new one", zap.String("namespace",k))
 //			flameMeta := &pb.FlameIndexMeta{
 //				Namespace: []byte(k),
 //				FamilyVersion:   1,
@@ -1234,7 +1234,7 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 //			err := s.directIndex(batchAction)
 //			if err != nil {
 //				errFound = true
-//				internalLogger.Error("direct index failed",
+//				internalLogger.Error("direct indexmeta failed",
 //					zap.Error(err))
 //				return false
 //			}
@@ -1301,7 +1301,7 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 //			err := s.directIndex(batchAction)
 //			if err != nil {
 //				errDirectIndex = true
-//				internalLogger.Error("direct index failed",
+//				internalLogger.Error("direct indexmeta failed",
 //					zap.Error(err),
 //					zap.String("namespace", string(namespace)))
 //				return false

@@ -3,13 +3,14 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/mkawserm/flamed/pkg/conf"
 	"github.com/mkawserm/flamed/pkg/flamed"
-	"github.com/mkawserm/flamed/pkg/tp/index"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 )
 
@@ -41,8 +42,8 @@ func main() {
 		"/tmp/1/storage",
 		nil)
 
+	configuration.StoragedConfiguration().AddTransactionProcessor(&indexmeta.IndexMeta{})
 	configuration.StoragedConfiguration().AddTransactionProcessor(&intkey.IntKey{})
-	configuration.StoragedConfiguration().AddTransactionProcessor(&index.Index{})
 
 	err := flame1.Configure(configuration)
 
@@ -68,6 +69,7 @@ func main() {
 		panic(err)
 	}
 
+	admin := flame1.NewAdmin(clusterId, 3*time.Minute)
 	clusterAdmin := flame1.NewClusterAdmin(clusterId, 3*time.Minute)
 	//manager1 := flame1.NewStorageManager(clusterId)
 	//admin1 := flame1.NewAdmin(clusterId)
@@ -148,6 +150,41 @@ func main() {
 		//}
 
 		switch t {
+		case "view_index_meta":
+			meta, err := admin.GetIndexMeta([]byte("test"))
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(meta)
+			}
+
+		case "upsert_index_meta":
+			meta := &pb.IndexMeta{
+				Namespace: []byte("test"),
+				Version:   1,
+				Enabled:   true,
+				Default:   true,
+				CreatedAt: uint64(time.Now().UnixNano()),
+				UpdatedAt: uint64(time.Now().UnixNano()),
+			}
+			pr, err := admin.UpsertIndexMeta(meta)
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(pr)
+			}
+
+		case "delete_index_meta":
+			meta := &pb.IndexMeta{
+				Namespace: []byte("test"),
+			}
+			pr, err := admin.DeleteIndexMeta(meta)
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(pr)
+			}
+
 		case "view":
 			intKeyState, err := intKeyClient.GetIntKeyState("counter")
 			if err != nil {
@@ -181,11 +218,11 @@ func main() {
 				fmt.Println(index)
 			}
 		//case "ai2":
-		//	index := admin2.QueryAppliedIndex(3 * time.Minute)
-		//	fmt.Println(index)
+		//	indexmeta := admin2.QueryAppliedIndex(3 * time.Minute)
+		//	fmt.Println(indexmeta)
 		//case "ai3":
-		//	index := admin3.QueryAppliedIndex(3 * time.Minute)
-		//	fmt.Println(index)
+		//	indexmeta := admin3.QueryAppliedIndex(3 * time.Minute)
+		//	fmt.Println(indexmeta)
 
 		case "p1":
 			//counter = counter + 1

@@ -30,12 +30,12 @@ var ErrFailedToApplyBatchToStorage = errors.New("failed to apply batch to the st
 //var ErrFailedToApplyActionToStorage = errors.New("failed to apply action to the storage")
 var ErrFailedToApplyProposal = errors.New("failed to apply proposal")
 
-var ErrFailedToCreateIndexMeta = errors.New("failed to create index meta")
-var ErrFailedToGetIndexMeta = errors.New("failed to get index meta")
+var ErrFailedToCreateIndexMeta = errors.New("failed to create indexmeta meta")
+var ErrFailedToGetIndexMeta = errors.New("failed to get indexmeta meta")
 
-//var ErrFailedToGetAllIndexMeta = errors.New("failed to get all index meta")
-var ErrFailedToUpdateIndexMeta = errors.New("failed to update index meta")
-var ErrFailedToDeleteIndexMeta = errors.New("failed to delete index meta")
+//var ErrFailedToGetAllIndexMeta = errors.New("failed to get all indexmeta meta")
+var ErrFailedToUpdateIndexMeta = errors.New("failed to update indexmeta meta")
+var ErrFailedToDeleteIndexMeta = errors.New("failed to delete indexmeta meta")
 
 var ErrInvalidUser = errors.New("invalid user: username length must be minimum 3 " +
 	"and password length must be minimum 6")
@@ -55,9 +55,9 @@ var ErrFailedToUpdateAccessControl = errors.New("failed to update access control
 var ErrFailedToDeleteAccessControl = errors.New("failed to delete access control")
 var ErrFailedToIterate = errors.New("failed to iterate")
 
-var ErrFailedToApplyIndex = errors.New("failed to apply index")
-var ErrFailedToCreateIndex = errors.New("failed to create index")
-var ErrFailedToUpdateIndex = errors.New("failed to update index")
+var ErrFailedToApplyIndex = errors.New("failed to apply indexmeta")
+var ErrFailedToCreateIndex = errors.New("failed to create indexmeta")
+var ErrFailedToUpdateIndex = errors.New("failed to update indexmeta")
 
 var ErrInvalidNamespace = errors.New("invalid namespace: namespace should start with a letter and minimum 3 characters and can not contain `::`")
 
@@ -76,7 +76,7 @@ var ErrFailedToSaveSnapshot = errors.New("failed to save snapshot")
 var ErrFailedToRecoverFromSnapshot = errors.New("failed to recover from snapshot")
 
 //var ErrInvalidSnapshotContext = errors.New("invalid snapshot context")
-var ErrLastIndexIsNotMovingForward = errors.New("last index is not moving forward")
+var ErrLastIndexIsNotMovingForward = errors.New("last indexmeta is not moving forward")
 
 var ErrStorageIsNotReady = errors.New("storage is not ready")
 var ErrNodeIsNotReady = errors.New("node is not ready")

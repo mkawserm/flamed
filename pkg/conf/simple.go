@@ -49,7 +49,7 @@ func SimpleStoragedConfiguration(path string, secretKey []byte) iface.IStoragedC
 			IndexEnable:           true,
 			StateStoragePath:      path + "/state",
 			StateStorageSecretKey: secretKey,
-			IndexStoragePath:      path + "/index",
+			IndexStoragePath:      path + "/indexmeta",
 			IndexStorageSecretKey: secretKey,
 		},
 		TransactionProcessorMap: make(map[string]iface.ITransactionProcessor)}

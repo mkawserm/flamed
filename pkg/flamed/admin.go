@@ -1,5 +1,121 @@
 package flamed
 
+import (
+	"context"
+	"github.com/golang/protobuf/proto"
+	"github.com/mkawserm/flamed/pkg/constant"
+	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
+	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/variant"
+	"github.com/mkawserm/flamed/pkg/x"
+	"time"
+)
+
+type Admin struct {
+	mRW        iface.IRW
+	mClusterID uint64
+	mTimeout   time.Duration
+}
+
+func (a *Admin) UpdateTimeout(timeout time.Duration) {
+	a.mTimeout = timeout
+}
+
+func (a *Admin) GetIndexMeta(namespace []byte) (*pb.IndexMeta, error) {
+	if !utility.IsNamespaceValid(namespace) {
+		return nil, x.ErrInvalidNamespace
+	}
+
+	lookupRequest := variant.LookupRequest{
+		Query:         namespace,
+		Context:       context.TODO(),
+		FamilyName:    indexmeta.Name,
+		FamilyVersion: indexmeta.Version,
+	}
+
+	output, err := a.mRW.Read(a.mClusterID, lookupRequest, a.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if v, ok := output.(*pb.IndexMeta); ok {
+		return v, nil
+	} else {
+		return nil, x.ErrUnknownValue
+	}
+}
+
+func (a *Admin) UpsertIndexMeta(meta *pb.IndexMeta) (*pb.ProposalResponse, error) {
+	if !utility.IsNamespaceValid(meta.Namespace) {
+		return nil, x.ErrInvalidNamespace
+	}
+
+	payload := &pb.IndexMetaPayload{
+		Action:    pb.Action_UPSERT,
+		IndexMeta: meta,
+	}
+
+	payloadBytes, err := proto.Marshal(payload)
+
+	if err != nil {
+		return nil, err
+	}
+
+	proposal := pb.NewProposal()
+	proposal.AddTransaction([]byte(constant.IndexMetaNamespace), indexmeta.Name, indexmeta.Version, payloadBytes)
+
+	r, err := a.mRW.Write(a.mClusterID, proposal, a.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	pr := &pb.ProposalResponse{}
+
+	if err := proto.Unmarshal(r.Data, pr); err != nil {
+		return nil, err
+	}
+
+	return pr, nil
+}
+
+func (a *Admin) DeleteIndexMeta(meta *pb.IndexMeta) (*pb.ProposalResponse, error) {
+	if !utility.IsNamespaceValid(meta.Namespace) {
+		return nil, x.ErrInvalidNamespace
+	}
+
+	payload := &pb.IndexMetaPayload{
+		Action:    pb.Action_DELETE,
+		IndexMeta: meta,
+	}
+
+	payloadBytes, err := proto.Marshal(payload)
+
+	if err != nil {
+		return nil, err
+	}
+
+	proposal := pb.NewProposal()
+	proposal.AddTransaction([]byte(constant.IndexMetaNamespace), indexmeta.Name, indexmeta.Version, payloadBytes)
+
+	r, err := a.mRW.Write(a.mClusterID, proposal, a.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	pr := &pb.ProposalResponse{}
+
+	if err := proto.Unmarshal(r.Data, pr); err != nil {
+		return nil, err
+	}
+
+	return pr, nil
+}
+
 //
 //import (
 //	"context"

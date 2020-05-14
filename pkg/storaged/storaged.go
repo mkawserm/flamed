@@ -119,7 +119,7 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 		}
 	}
 
-	// save the applied index to the DB.
+	// save the applied indexmeta to the DB.
 	idx := entries[len(entries)-1].Index
 	err := s.saveAppliedIndex(idx)
 
@@ -181,7 +181,7 @@ func (s *Storaged) RecoverFromSnapshot(r io.Reader, _ <-chan struct{}) error {
 		return err
 	}
 
-	// update the last applied index from the DB.
+	// update the last applied indexmeta from the DB.
 	newLastApplied, err := s.queryAppliedIndex()
 	if err != nil || newLastApplied == 0 {
 		return x.ErrLastIndexIsNotMovingForward

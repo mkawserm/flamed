@@ -1,4 +1,4 @@
-package index
+package indexmeta
 
 import (
 	"context"
@@ -6,30 +6,51 @@ import (
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 )
 
-type Index struct {
+type IndexMeta struct {
 }
 
-func (i *Index) FamilyName() string {
+func (i *IndexMeta) FamilyName() string {
 	return Name
 }
 
-func (i *Index) FamilyVersion() string {
+func (i *IndexMeta) FamilyVersion() string {
 	return Version
 }
 
-func (i *Index) Lookup(_ context.Context,
+func (i *IndexMeta) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {
 
-	return nil, nil
+	var namespace []byte
+
+	if v, ok := query.([]byte); ok {
+		namespace = v
+	} else {
+		return nil, x.ErrInvalidLookupInput
+	}
+	address := uidutil.GetUid([]byte(constant.IndexMetaNamespace), namespace)
+
+	entry, err := readOnlyStateContext.GetState(address)
+
+	if err != nil {
+		return nil, err
+	}
+
+	indexMeta := &pb.IndexMeta{}
+	if err := proto.Unmarshal(entry.Payload, indexMeta); err != nil {
+		return nil, err
+	}
+
+	return indexMeta, nil
 }
 
-func (i *Index) upsert(tpr *pb.TransactionResponse,
+func (i *IndexMeta) upsert(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction,
 	address []byte,
@@ -63,7 +84,7 @@ func (i *Index) upsert(tpr *pb.TransactionResponse,
 	}
 }
 
-func (i *Index) delete(tpr *pb.TransactionResponse,
+func (i *IndexMeta) delete(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte) *pb.TransactionResponse {
 	if err := stateContext.DeleteState(address); err != nil {
@@ -79,7 +100,7 @@ func (i *Index) delete(tpr *pb.TransactionResponse,
 	}
 }
 
-func (i *Index) Apply(_ context.Context,
+func (i *IndexMeta) Apply(_ context.Context,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction) *pb.TransactionResponse {
 
@@ -91,7 +112,7 @@ func (i *Index) Apply(_ context.Context,
 		FamilyVersion: Version,
 	}
 
-	payload := &IndexPayload{}
+	payload := &pb.IndexMetaPayload{}
 
 	if err := proto.Unmarshal(transaction.Payload, payload); err != nil {
 		tpr.Status = 0
@@ -103,7 +124,7 @@ func (i *Index) Apply(_ context.Context,
 	if payload.IndexMeta == nil {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "index meta can not be nil"
+		tpr.ErrorText = "indexmeta meta can not be nil"
 		return tpr
 	}
 
@@ -116,13 +137,13 @@ func (i *Index) Apply(_ context.Context,
 
 	address := uidutil.GetUid([]byte(constant.IndexMetaNamespace), payload.IndexMeta.Namespace)
 
-	if payload.Action == Action_UPSERT {
+	if payload.Action == pb.Action_UPSERT {
 		r := i.upsert(tpr, stateContext, transaction, address, payload.IndexMeta)
 		if r.Status == 1 {
 			_ = stateContext.UpsertIndexMeta(payload.IndexMeta)
 		}
 		return r
-	} else if payload.Action == Action_DELETE {
+	} else if payload.Action == pb.Action_DELETE {
 		r := i.delete(tpr, stateContext, address)
 		if r.Status == 1 {
 			_ = stateContext.DeleteIndexMeta(payload.IndexMeta)

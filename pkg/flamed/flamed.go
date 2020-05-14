@@ -58,6 +58,14 @@ func (f *Flamed) NewClusterAdmin(clusterID uint64, timeout time.Duration) *Clust
 	return f.mNodeHost.NewClusterAdmin(clusterID, timeout)
 }
 
+func (f *Flamed) NewAdmin(clusterID uint64, timeout time.Duration) *Admin {
+	return &Admin{
+		mRW:        f,
+		mClusterID: clusterID,
+		mTimeout:   timeout,
+	}
+}
+
 func (f *Flamed) Read(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
 	return f.mNodeHost.managedSyncRead(clusterID, query, timeout)
 }

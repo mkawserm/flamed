@@ -1,3 +1,3 @@
 package intkey
 
-const Name = "intkey"
+const Name = "IntKey"

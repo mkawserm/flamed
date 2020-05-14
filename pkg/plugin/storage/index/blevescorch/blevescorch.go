@@ -43,7 +43,7 @@ func (b *BleveScorch) UpsertIndexMeta(meta *pb.IndexMeta) error {
 		nil)
 
 	if err != nil {
-		internalLogger.Debug("error while adding index meta", zap.Error(err))
+		internalLogger.Debug("error while adding indexmeta meta", zap.Error(err))
 		return x.ErrFailedToCreateIndexMeta
 	}
 
@@ -74,7 +74,7 @@ func (b *BleveScorch) DefaultIndexMeta(namespace string) error {
 		nil)
 
 	if err != nil {
-		internalLogger.Debug("error while adding default index meta", zap.Error(err))
+		internalLogger.Debug("error while adding default indexmeta meta", zap.Error(err))
 		return x.ErrFailedToCreateIndexMeta
 	}
 
@@ -88,7 +88,7 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 	index, err := bleveSearch.OpenUsing(p, nil)
 
 	if err != nil {
-		internalLogger.Debug("index db opening error", zap.Error(err))
+		internalLogger.Debug("indexmeta db opening error", zap.Error(err))
 		return x.ErrFailedToApplyIndex
 	}
 
