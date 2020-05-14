@@ -3,17 +3,15 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/mkawserm/flamed/pkg/conf"
-	"github.com/mkawserm/flamed/pkg/tp/intkey"
-	"time"
-
-	//"github.com/mkawserm/flamed/pkg/pb"
-	//"github.com/mkawserm/flamed/pkg/utility"
 	"os"
 	"strings"
-	//"time"
+	"time"
+
+	"github.com/mkawserm/flamed/pkg/conf"
+	"github.com/mkawserm/flamed/pkg/flamed"
+	"github.com/mkawserm/flamed/pkg/tp/index"
+	"github.com/mkawserm/flamed/pkg/tp/intkey"
 )
-import "github.com/mkawserm/flamed/pkg/flamed"
 
 //type CounterObject struct {
 //	Counter uint64 `json:"counter"`
@@ -44,6 +42,7 @@ func main() {
 		nil)
 
 	configuration.StoragedConfiguration().AddTransactionProcessor(&intkey.IntKey{})
+	configuration.StoragedConfiguration().AddTransactionProcessor(&index.Index{})
 
 	err := flame1.Configure(configuration)
 

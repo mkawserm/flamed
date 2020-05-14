@@ -15,9 +15,10 @@ cover-html:
 	@go tool cover -html=cover.out
 
 protobuf:
-	@protoc -I=./pkg/pb --go_out=./pkg/pb flamed.proto
-	@protoc -I=./pkg/tp/identity --go_out=./pkg/tp/identity identity.proto
-	@protoc -I=./pkg/tp/intkey --go_out=./pkg/tp/intkey intkey.proto
+	@protoc -I=./ -I=./pkg/pb --go_out=./pkg/pb flamed.proto
+	@protoc -I=./ -I=./pkg/tp/intkey --go_out=./pkg/tp/intkey intkey.proto
+	@protoc -I=./ -I=./pkg/tp/identity --go_out=./pkg/tp/identity identity.proto
+	@protoc -I=./ -I=./pkg/tp/index --go_out=./pkg/tp/index index.proto
 
 push:
 	git push

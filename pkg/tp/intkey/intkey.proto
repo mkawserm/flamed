@@ -9,13 +9,13 @@ enum Verb {
   DECREMENT = 4;
 }
 
-message Payload {
-  Verb verb = 1;
-  string name = 2; /* Max 20 character */
-  uint32 value = 3; /* 2^32 - 1 */
-}
-
 message IntKeyState {
   string name = 1;
   uint32 value = 2;
+}
+
+message IntKeyPayload {
+  Verb verb = 1;
+  string name = 2; /* Max 20 character */
+  uint32 value = 3; /* 2^32 - 1 */
 }

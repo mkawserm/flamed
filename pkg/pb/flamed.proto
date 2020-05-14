@@ -1,6 +1,8 @@
 syntax = "proto3";
 package pb;
 
+//option go_package = "github.com/mkawserm/flamed/pkg/pb";
+
 message StateSnapshot {
   bytes uid = 1;
   bytes data = 2;
@@ -31,7 +33,8 @@ message TransactionResponse {
 message Proposal {
   bytes uuid = 1;
   bytes meta = 2;
-  fixed64 createdAt = 4;
+  bool remote = 3;
+  uint64 createdAt = 4;
   repeated Transaction transactions = 5;
 }
 

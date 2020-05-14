@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/google/uuid"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
@@ -49,26 +48,15 @@ func (c *Client) GetIntKeyState(name string) (*IntKeyState, error) {
 	return nil, x.ErrUnknownValue
 }
 
-func (c *Client) sendProposal(payload *Payload) (*pb.ProposalResponse, error) {
+func (c *Client) sendProposal(payload *IntKeyPayload) (*pb.ProposalResponse, error) {
 	payloadBytes, err := proto.Marshal(payload)
 
 	if err != nil {
 		return nil, err
 	}
 
-	uuidValue := uuid.New()
-	proposal := &pb.Proposal{
-		Uuid:      uuidValue[:],
-		CreatedAt: uint64(time.Now().UnixNano()),
-		Transactions: []*pb.Transaction{
-			{
-				Payload:       payloadBytes,
-				Namespace:     []byte(c.mNamespace),
-				FamilyName:    Name,
-				FamilyVersion: Version,
-			},
-		},
-	}
+	proposal := pb.NewProposal()
+	proposal.AddTransaction([]byte(c.mNamespace), Name, Version, payloadBytes)
 
 	r, err := c.mRW.Write(c.mClusterID, proposal, c.mTimeout)
 
@@ -86,52 +74,52 @@ func (c *Client) sendProposal(payload *Payload) (*pb.ProposalResponse, error) {
 }
 
 func (c *Client) Insert(name string, value uint32) (*pb.ProposalResponse, error) {
-	payload := &Payload{
+	intKeyPayload := &IntKeyPayload{
 		Verb:  Verb_INSERT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.sendProposal(payload)
+	return c.sendProposal(intKeyPayload)
 }
 
 func (c *Client) Upsert(name string, value uint32) (*pb.ProposalResponse, error) {
-	payload := &Payload{
+	intKeyPayload := &IntKeyPayload{
 		Verb:  Verb_UPSERT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.sendProposal(payload)
+	return c.sendProposal(intKeyPayload)
 }
 
 func (c *Client) Delete(name string) (*pb.ProposalResponse, error) {
-	payload := &Payload{
+	intKeyPayload := &IntKeyPayload{
 		Verb: Verb_DELETE,
 		Name: name,
 	}
 
-	return c.sendProposal(payload)
+	return c.sendProposal(intKeyPayload)
 }
 
 func (c *Client) Increment(name string, value uint32) (*pb.ProposalResponse, error) {
-	payload := &Payload{
+	intKeyPayload := &IntKeyPayload{
 		Verb:  Verb_INCREMENT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.sendProposal(payload)
+	return c.sendProposal(intKeyPayload)
 }
 
 func (c *Client) Decrement(name string, value uint32) (*pb.ProposalResponse, error) {
-	payload := &Payload{
+	intKeyPayload := &IntKeyPayload{
 		Verb:  Verb_DECREMENT,
 		Name:  name,
 		Value: value,
 	}
 
-	return c.sendProposal(payload)
+	return c.sendProposal(intKeyPayload)
 }
 
 func (c *Client) Setup(namespace string, clusterID uint64, rw iface.IRW, timeout time.Duration) error {

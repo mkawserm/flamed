@@ -48,7 +48,7 @@ func (i *IntKey) insert(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction,
 	address []byte,
-	payload *Payload) *pb.TransactionResponse {
+	payload *IntKeyPayload) *pb.TransactionResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry != nil {
@@ -120,7 +120,7 @@ func (i *IntKey) upsert(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction,
 	address []byte,
-	payload *Payload) *pb.TransactionResponse {
+	payload *IntKeyPayload) *pb.TransactionResponse {
 
 	stateData := &IntKeyState{
 		Name:  payload.Name,
@@ -159,7 +159,7 @@ func (i *IntKey) upsert(tpr *pb.TransactionResponse,
 func (i *IntKey) increment(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte,
-	payload *Payload) *pb.TransactionResponse {
+	payload *IntKeyPayload) *pb.TransactionResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
@@ -213,7 +213,7 @@ func (i *IntKey) increment(tpr *pb.TransactionResponse,
 func (i *IntKey) decrement(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte,
-	payload *Payload) *pb.TransactionResponse {
+	payload *IntKeyPayload) *pb.TransactionResponse {
 
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
@@ -277,7 +277,7 @@ func (i *IntKey) Apply(_ context.Context,
 		FamilyVersion: Version,
 	}
 
-	payload := &Payload{}
+	payload := &IntKeyPayload{}
 
 	if err := proto.Unmarshal(transaction.Payload, payload); err != nil {
 		tpr.Status = 0
