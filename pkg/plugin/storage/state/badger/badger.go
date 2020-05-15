@@ -79,11 +79,11 @@ func (t *Transaction) Get(key []byte) ([]byte, error) {
 	item, err := t.mBadgerTxn.Get(key)
 
 	if err == badgerDb.ErrKeyNotFound {
-		return nil, x.ErrKeyDoesNotExists
+		return nil, x.ErrKeyNotFound
 	}
 
 	if item == nil {
-		return nil, x.ErrKeyDoesNotExists
+		return nil, x.ErrKeyNotFound
 	}
 
 	if val, err := item.ValueCopy(nil); err == nil {

@@ -251,7 +251,7 @@ func (n *Node) managedSyncRead(clusterID uint64, query interface{}, timeout time
 		return nil, x.ErrClusterNotFound
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.TODO(), timeout)
 	d, e := n.mNodeHost.SyncRead(ctx, clusterID, query)
 	cancel()
 

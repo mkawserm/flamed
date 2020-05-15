@@ -323,8 +323,8 @@ func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
 	defer txn.Discard()
 
 	if val, err := txn.Get(uid); err != nil {
-		if err == x.ErrKeyDoesNotExists {
-			return nil, x.ErrKeyDoesNotExists
+		if err == x.ErrKeyNotFound {
+			return nil, x.ErrStateNotFound
 		} else {
 			internalLogger.Error("read failure", zap.Error(err))
 			return nil, x.ErrFailedToReadDataFromStorage
@@ -362,10 +362,21 @@ func (s *Storage) Delete(namespace []byte, key []byte) error {
 }
 
 func (s *Storage) SaveAppliedIndex(u uint64) error {
-	return s.Create(
-		[]byte(constant.AppliedIndexNamespace),
-		[]byte(constant.AppliedIndexKey),
-		crypto.Uint64ToByteSlice(u))
+	entry := &pb.StateEntry{
+		Payload:       crypto.Uint64ToByteSlice(u),
+		Namespace:     []byte(constant.AppliedIndexNamespace),
+		FamilyName:    "-",
+		FamilyVersion: "-",
+	}
+
+	if data, err := proto.Marshal(entry); err != nil {
+		return err
+	} else {
+		return s.Create(
+			[]byte(constant.AppliedIndexNamespace),
+			[]byte(constant.AppliedIndexKey),
+			data)
+	}
 }
 
 func (s *Storage) QueryAppliedIndex() (uint64, error) {
@@ -373,14 +384,20 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 		[]byte(constant.AppliedIndexNamespace),
 		[]byte(constant.AppliedIndexKey))
 
-	if err == x.ErrKeyDoesNotExists {
+	if err == x.ErrStateNotFound {
 		return 0, nil
 	}
 
 	if err != nil {
 		return 0, err
 	}
-	return crypto.ByteSliceToUint64(data), nil
+
+	entry := &pb.StateEntry{}
+
+	if err := proto.Unmarshal(data, entry); err != nil {
+		return 0, err
+	}
+	return crypto.ByteSliceToUint64(entry.Payload), nil
 }
 
 func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
