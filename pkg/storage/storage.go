@@ -363,10 +363,8 @@ func (s *Storage) Delete(namespace []byte, key []byte) error {
 
 func (s *Storage) SaveAppliedIndex(u uint64) error {
 	entry := &pb.StateEntry{
-		Payload:       crypto.Uint64ToByteSlice(u),
-		Namespace:     []byte(constant.AppliedIndexNamespace),
-		FamilyName:    "-",
-		FamilyVersion: "-",
+		Payload:   crypto.Uint64ToByteSlice(u),
+		Namespace: []byte(constant.AppliedIndexNamespace),
 	}
 
 	if data, err := proto.Marshal(entry); err != nil {
