@@ -128,7 +128,7 @@ func (c *ClusterAdmin) RunStorageGC() {
 	}
 }
 
-func (c *ClusterAdmin) FullIndex() {
+func (c *ClusterAdmin) BuildIndex() {
 	defer func() {
 		_ = internalLogger.Sync()
 	}()
@@ -141,6 +141,6 @@ func (c *ClusterAdmin) FullIndex() {
 	c.mStorageTaskQueue <- variant.Task{
 		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
 		Name:    "storage-task",
-		Command: "full-index",
+		Command: "build-index",
 	}
 }

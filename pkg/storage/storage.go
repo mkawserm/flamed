@@ -783,7 +783,7 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	return nil
 }
 
-func (s *Storage) FullIndex() {
+func (s *Storage) BuildIndex() {
 	if !s.mConfiguration.IndexEnable() {
 		return
 	}
@@ -791,11 +791,11 @@ func (s *Storage) FullIndex() {
 	s.mIndexTaskQueue <- variant.Task{
 		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
 		Name:    "index-task",
-		Command: "full-index",
+		Command: "build-index",
 	}
 }
 
-func (s *Storage) fullIndex() error {
+func (s *Storage) buildIndex() error {
 	if !s.mConfiguration.IndexEnable() {
 		return nil
 	}
@@ -950,8 +950,8 @@ func (s *Storage) storageTaskQueueHandler() {
 		switch task.Command {
 		case "gc":
 			s.RunGC()
-		case "full-index":
-			s.FullIndex()
+		case "build-index":
+			s.BuildIndex()
 		case "done":
 			internalLogger.Info("storage task queue handler finished")
 			break
@@ -989,8 +989,8 @@ func (s *Storage) indexTaskQueueHandler() {
 				}
 			}
 
-		case "full-index":
-			err := s.fullIndex()
+		case "build-index":
+			err := s.buildIndex()
 			if err != nil {
 				internalLogger.Error("index error", zap.Error(err))
 			}

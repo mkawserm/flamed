@@ -145,7 +145,7 @@ func main() {
 		switch t {
 		case "fi":
 			fmt.Println("full index")
-			clusterAdmin.FullIndex()
+			clusterAdmin.BuildIndex()
 
 		case "gc":
 			fmt.Println("running gc")
