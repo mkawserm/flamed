@@ -5,22 +5,27 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 )
 
-func SimpleNodeConfiguration(nodeID uint64, nodeHostDir string, walDir string, raftAddress string) iface.INodeConfiguration {
+func SimpleRaftConfiguration(nodeID uint64) iface.IRaftConfiguration {
+	return &RaftConfiguration{RaftConfigurationInput: RaftConfigurationInput{
+		NodeID:                 nodeID,
+		CheckQuorum:            true,
+		ElectionRTT:            5,
+		HeartbeatRTT:           1,
+		SnapshotEntries:        100,
+		CompactionOverhead:     5,
+		OrderedConfigChange:    false,
+		MaxInMemLogSize:        0,
+		DisableAutoCompactions: false,
+		IsObserver:             false,
+		IsWitness:              false,
+		Quiesce:                false,
+	}}
+}
+
+func SimpleNodeConfiguration(nodeHostDir string, walDir string, raftAddress string) iface.INodeConfiguration {
 	return &NodeConfiguration{NodeConfigurationInput: NodeConfigurationInput{
-		NodeID:                        nodeID,
 		NodeHostDir:                   nodeHostDir,
 		WALDir:                        walDir,
-		CheckQuorum:                   true,
-		ElectionRTT:                   5,
-		HeartbeatRTT:                  1,
-		SnapshotEntries:               100,
-		CompactionOverhead:            5,
-		OrderedConfigChange:           false,
-		MaxInMemLogSize:               0,
-		DisableAutoCompactions:        false,
-		IsObserver:                    false,
-		IsWitness:                     false,
-		Quiesce:                       false,
 		DeploymentID:                  1,
 		RTTMillisecond:                200,
 		RaftAddress:                   raftAddress,

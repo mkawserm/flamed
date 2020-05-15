@@ -21,7 +21,6 @@ type Node struct {
 	mIsNodeReady bool
 
 	mNodeHost              *dragonboat.NodeHost
-	mRaftConfiguration     config.Config
 	mNodeHostConfiguration config.NodeHostConfig
 	mNodeConfiguration     iface.INodeConfiguration
 
@@ -67,23 +66,6 @@ func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration) error {
 
 	n.mNodeConfiguration = nodeConfiguration
 
-	n.mRaftConfiguration = config.Config{
-		NodeID:                  nodeConfiguration.NodeID(),
-		CheckQuorum:             nodeConfiguration.CheckQuorum(),
-		ElectionRTT:             nodeConfiguration.ElectionRTT(),
-		HeartbeatRTT:            nodeConfiguration.HeartbeatRTT(),
-		SnapshotEntries:         nodeConfiguration.SnapshotEntries(),
-		CompactionOverhead:      nodeConfiguration.CompactionOverhead(),
-		OrderedConfigChange:     nodeConfiguration.OrderedConfigChange(),
-		MaxInMemLogSize:         nodeConfiguration.MaxInMemLogSize(),
-		SnapshotCompressionType: raftpb.Snappy,
-		EntryCompressionType:    raftpb.Snappy,
-		DisableAutoCompactions:  nodeConfiguration.DisableAutoCompactions(),
-		IsObserver:              nodeConfiguration.IsObserver(),
-		IsWitness:               nodeConfiguration.IsWitness(),
-		Quiesce:                 nodeConfiguration.Quiesce(),
-	}
-
 	n.mNodeHostConfiguration = config.NodeHostConfig{
 		DeploymentID:                  nodeConfiguration.DeploymentID(),
 		WALDir:                        nodeConfiguration.WALDir(),
@@ -126,7 +108,8 @@ func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration) error {
 }
 
 func (n *Node) StartOnDiskCluster(clusterConfiguration iface.IOnDiskClusterConfiguration,
-	storagedConfiguration iface.IStoragedConfiguration) error {
+	storagedConfiguration iface.IStoragedConfiguration,
+	raftConfiguration iface.IRaftConfiguration) error {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 
@@ -139,19 +122,35 @@ func (n *Node) StartOnDiskCluster(clusterConfiguration iface.IOnDiskClusterConfi
 	}
 	//n.mStoragedConfiguration = storagedConfiguration
 
-	n.mRaftConfiguration.ClusterID = clusterConfiguration.ClusterID()
+	rc := config.Config{
+		NodeID:                  raftConfiguration.NodeID(),
+		CheckQuorum:             raftConfiguration.CheckQuorum(),
+		ElectionRTT:             raftConfiguration.ElectionRTT(),
+		HeartbeatRTT:            raftConfiguration.HeartbeatRTT(),
+		SnapshotEntries:         raftConfiguration.SnapshotEntries(),
+		CompactionOverhead:      raftConfiguration.CompactionOverhead(),
+		OrderedConfigChange:     raftConfiguration.OrderedConfigChange(),
+		MaxInMemLogSize:         raftConfiguration.MaxInMemLogSize(),
+		SnapshotCompressionType: raftpb.Snappy,
+		EntryCompressionType:    raftpb.Snappy,
+		DisableAutoCompactions:  raftConfiguration.DisableAutoCompactions(),
+		IsObserver:              raftConfiguration.IsObserver(),
+		IsWitness:               raftConfiguration.IsWitness(),
+		Quiesce:                 raftConfiguration.Quiesce(),
+	}
+
+	rc.ClusterID = clusterConfiguration.ClusterID()
 
 	err := n.mNodeHost.StartOnDiskCluster(clusterConfiguration.InitialMembers(),
 		clusterConfiguration.Join(),
-		clusterConfiguration.StateMachine(storagedConfiguration), n.mRaftConfiguration)
+		clusterConfiguration.StateMachine(storagedConfiguration), rc)
 
 	if err != nil {
-		n.mRaftConfiguration.ClusterID = 0
 		return err
 	}
 
-	n.mClusterMap[n.mRaftConfiguration.ClusterID] = clusterConfiguration.ClusterName()
-	n.mClusterStorageTaskQueue[n.mRaftConfiguration.ClusterID] = storagedConfiguration.StorageTaskQueue()
+	n.mClusterMap[rc.ClusterID] = clusterConfiguration.ClusterName()
+	n.mClusterStorageTaskQueue[rc.ClusterID] = storagedConfiguration.StorageTaskQueue()
 	//n.mNodeHost.GetNoOPSession(clusterConfiguration.ClusterID())
 
 	return nil
@@ -189,7 +188,6 @@ func (n *Node) StopNode() {
 
 	n.mNodeHost = nil
 	n.mNodeConfiguration = nil
-	n.mRaftConfiguration = config.Config{}
 	n.mNodeHostConfiguration = config.NodeHostConfig{}
 
 	n.mClusterMap = make(map[uint64]string)

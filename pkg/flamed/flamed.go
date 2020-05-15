@@ -18,8 +18,11 @@ func (f *Flamed) ConfigureNode(nodeConfiguration iface.INodeConfiguration) error
 }
 
 func (f *Flamed) StartOnDiskCluster(clusterConfiguration iface.IOnDiskClusterConfiguration,
-	storagedConfiguration iface.IStoragedConfiguration) error {
-	return f.mNodeHost.StartOnDiskCluster(clusterConfiguration, storagedConfiguration)
+	storagedConfiguration iface.IStoragedConfiguration,
+	raftConfiguration iface.IRaftConfiguration) error {
+	return f.mNodeHost.StartOnDiskCluster(clusterConfiguration,
+		storagedConfiguration,
+		raftConfiguration)
 }
 
 func (f *Flamed) StopCluster(clusterID uint64) error {

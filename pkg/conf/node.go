@@ -7,25 +7,8 @@ import (
 )
 
 type NodeConfigurationInput struct {
-	NodeID      uint64 `json:"nodeId"`
-	NodeHostDir string `json:"nodeHostDir"`
-	WALDir      string `json:"walDir"`
-
-	CheckQuorum  bool   `json:"checkQuorum"`
-	ElectionRTT  uint64 `json:"electionRTT"`
-	HeartbeatRTT uint64 `json:"heartbeatRTT"`
-
-	SnapshotEntries     uint64 `json:"snapshotEntries"`
-	CompactionOverhead  uint64 `json:"compactionOverhead"`
-	OrderedConfigChange bool   `json:"orderedConfigChange"`
-	MaxInMemLogSize     uint64 `json:"maxInMemLogSize"`
-
-	DisableAutoCompactions bool `json:"disableAutoCompactions"`
-
-	IsObserver bool `json:"isObserver"`
-	IsWitness  bool `json:"isWitness"`
-	Quiesce    bool `json:"quiesce"`
-
+	NodeHostDir    string `json:"nodeHostDir"`
+	WALDir         string `json:"walDir"`
 	DeploymentID   uint64 `json:"deploymentId"`
 	RTTMillisecond uint64 `json:"rttMillisecond"`
 
@@ -59,10 +42,7 @@ type NodeConfiguration struct {
 	NodeConfigurationInput NodeConfigurationInput
 }
 
-func (n *NodeConfiguration) NodeID() uint64 {
-	return n.NodeConfigurationInput.NodeID
-}
-
+/*Dragonboat NodeHostConfig*/
 func (n *NodeConfiguration) NodeHostDir() string {
 	return n.NodeConfigurationInput.NodeHostDir
 }
@@ -71,51 +51,6 @@ func (n *NodeConfiguration) WALDir() string {
 	return n.NodeConfigurationInput.WALDir
 }
 
-func (n *NodeConfiguration) CheckQuorum() bool {
-	return n.NodeConfigurationInput.CheckQuorum
-}
-
-func (n *NodeConfiguration) ElectionRTT() uint64 {
-	return n.NodeConfigurationInput.ElectionRTT
-}
-
-func (n *NodeConfiguration) HeartbeatRTT() uint64 {
-	return n.NodeConfigurationInput.HeartbeatRTT
-}
-
-func (n *NodeConfiguration) SnapshotEntries() uint64 {
-	return n.NodeConfigurationInput.SnapshotEntries
-}
-
-func (n *NodeConfiguration) CompactionOverhead() uint64 {
-	return n.NodeConfigurationInput.CompactionOverhead
-}
-
-func (n *NodeConfiguration) OrderedConfigChange() bool {
-	return n.NodeConfigurationInput.OrderedConfigChange
-}
-
-func (n *NodeConfiguration) MaxInMemLogSize() uint64 {
-	return n.NodeConfigurationInput.MaxInMemLogSize
-}
-
-func (n *NodeConfiguration) DisableAutoCompactions() bool {
-	return n.NodeConfigurationInput.DisableAutoCompactions
-}
-
-func (n *NodeConfiguration) IsObserver() bool {
-	return n.NodeConfigurationInput.IsObserver
-}
-
-func (n *NodeConfiguration) IsWitness() bool {
-	return n.NodeConfigurationInput.IsWitness
-}
-
-func (n *NodeConfiguration) Quiesce() bool {
-	return n.NodeConfigurationInput.Quiesce
-}
-
-/*Dragonboat NodeHostConfig*/
 func (n *NodeConfiguration) DeploymentID() uint64 {
 	return n.NodeConfigurationInput.DeploymentID
 }

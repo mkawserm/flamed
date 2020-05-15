@@ -25,10 +25,12 @@ func main() {
 	flame1 := flamed.NewFlamed()
 	defer flame1.StopNode()
 
-	nodeConfiguration := conf.SimpleNodeConfiguration(1,
+	nodeConfiguration := conf.SimpleNodeConfiguration(
 		"/tmp/1/nh",
 		"/tmp/1/wal",
 		"localhost:63001")
+
+	raftConfiguration := conf.SimpleRaftConfiguration(1)
 
 	storagedConfiguration := conf.SimpleStoragedConfiguration("/tmp/1/storage", nil)
 	storagedConfiguration.AddTransactionProcessor(&user.User{})
@@ -47,7 +49,7 @@ func main() {
 	fmt.Println(clusterConfig.InitialMembers())
 	//panic("asdasd")
 
-	err = flame1.StartOnDiskCluster(clusterConfig, storagedConfiguration)
+	err = flame1.StartOnDiskCluster(clusterConfig, storagedConfiguration, raftConfiguration)
 
 	if err != nil {
 		panic(err)

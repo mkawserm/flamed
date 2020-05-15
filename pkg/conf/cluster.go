@@ -32,10 +32,10 @@ func (c *OnDiskClusterConfiguration) ClusterName() string {
 
 func (c *OnDiskClusterConfiguration) InitialMembers() map[uint64]string {
 	if c.OnDiskClusterConfigurationInput.InitialMembers == nil {
-		return map[uint64]string{}
-	} else {
-		return c.OnDiskClusterConfigurationInput.InitialMembers
+		c.OnDiskClusterConfigurationInput.InitialMembers = map[uint64]string{}
 	}
+
+	return c.OnDiskClusterConfigurationInput.InitialMembers
 }
 
 func (c *OnDiskClusterConfiguration) Join() bool {
@@ -44,8 +44,8 @@ func (c *OnDiskClusterConfiguration) Join() bool {
 
 func (c *OnDiskClusterConfiguration) StateMachine(sc iface.IStoragedConfiguration) func(uint64, uint64) sm.IOnDiskStateMachine {
 	if c.OnDiskClusterConfigurationInput.StateMachine == nil {
-		return storaged.NewStoraged(sc)
-	} else {
-		return c.OnDiskClusterConfigurationInput.StateMachine
+		c.OnDiskClusterConfigurationInput.StateMachine = storaged.NewStoraged(sc)
 	}
+
+	return c.OnDiskClusterConfigurationInput.StateMachine
 }
