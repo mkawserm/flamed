@@ -786,7 +786,7 @@ func (s *Storage) storageTaskQueueHandler() {
 	defer func() {
 		_ = internalLogger.Sync()
 	}()
-	internalLogger.Info("storage task queue handler started...")
+	internalLogger.Info("storage task queue handler started")
 
 	q := s.mConfiguration.StorageTaskQueue()
 	if q == nil {
