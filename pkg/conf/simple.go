@@ -37,7 +37,7 @@ func SimpleNodeConfiguration(nodeID uint64, nodeHostDir string, walDir string, r
 		MaxSnapshotSendBytesPerSecond: 0,
 		MaxSnapshotRecvBytesPerSecond: 0,
 
-		LogDBConfig:  config.GetSmallMemLogDBConfig(),
+		LogDBConfig:  config.GetTinyMemLogDBConfig(),
 		NotifyCommit: false,
 	}}
 }
