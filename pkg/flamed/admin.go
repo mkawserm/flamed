@@ -69,7 +69,7 @@ func (a *Admin) UpsertUser(u *pb.User) (*pb.ProposalResponse, error) {
 		return nil, x.ErrInvalidUsername
 	}
 
-	if len(u.Password) == 0 {
+	if len(u.Password) < 6 {
 		return nil, x.ErrInvalidPassword
 	}
 

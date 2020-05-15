@@ -140,10 +140,10 @@ func (i *User) Apply(_ context.Context,
 		return tpr
 	}
 
-	if len(payload.User.Password) == 0 {
+	if len(payload.User.Password) < 6 {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "password can not be empty"
+		tpr.ErrorText = "password length must be greater than 5"
 		return tpr
 	}
 
