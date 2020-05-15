@@ -235,21 +235,7 @@ func (b *Badger) RunGC() {
 	if b.mDb == nil {
 		return
 	}
-
-	ticker := time.NewTicker(5 * time.Minute)
-	defer ticker.Stop()
-
-	for range ticker.C {
-	again:
-		if b.mDb == nil {
-			return
-		}
-
-		err := b.mDb.RunValueLogGC(b.mDbConfiguration.GCDiscardRatio)
-		if err == nil {
-			goto again
-		}
-	}
+	_ = b.mDb.RunValueLogGC(b.mDbConfiguration.GCDiscardRatio)
 }
 
 func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte, encryptionKeyRotationDuration time.Duration) error {

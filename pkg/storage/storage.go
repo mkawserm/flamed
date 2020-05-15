@@ -275,12 +275,18 @@ func (s *Storage) Close() error {
 }
 
 func (s *Storage) RunGC() {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	internalLogger.Info("running storage gc")
 	s.mStateStorage.RunGC()
 	if s.mConfiguration.IndexEnable() {
 		if s.mIndexStorage != nil {
 			s.mIndexStorage.RunGC()
 		}
 	}
+	internalLogger.Info("storage gc finished")
 }
 
 func (s *Storage) ChangeSecretKey(path string,
