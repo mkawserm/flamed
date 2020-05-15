@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	badgerDb "github.com/dgraph-io/badger/v2"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
@@ -245,6 +246,7 @@ func (s *Storage) Open() error {
 		}
 	}
 
+	go s.storageTaskQueueHandler()
 	return nil
 }
 
@@ -260,6 +262,15 @@ func (s *Storage) Close() error {
 		return err2
 	}
 
+	if s.mConfiguration.StorageTaskQueue() != nil {
+		s.mConfiguration.StorageTaskQueue() <- variant.Task{
+			ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+			Name:    "storage-task",
+			Command: "done",
+		}
+	}
+
+	s.mConfiguration = nil
 	return nil
 }
 
@@ -760,4 +771,34 @@ func (s *Storage) directIndex(indexDataContainer IndexDataContainer) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) storageTaskQueueHandler() {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+	internalLogger.Info("storage task queue handler started...")
+
+	q := s.mConfiguration.StorageTaskQueue()
+	if q == nil {
+		return
+	}
+
+	internalLogger.Info("entering into forever loop")
+	for {
+		task := <-q
+		internalLogger.Info("executing task",
+			zap.String("id", task.ID),
+			zap.String("name", task.Name),
+			zap.String("command", task.Command),
+		)
+		_ = internalLogger.Sync()
+
+		switch task.Command {
+		case "gc":
+			s.RunGC()
+		case "done":
+			break
+		}
+	}
 }

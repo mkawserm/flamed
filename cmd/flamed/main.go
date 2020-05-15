@@ -25,19 +25,18 @@ func main() {
 	flame1 := flamed.NewFlamed()
 	defer flame1.StopNode()
 
-	configuration := conf.SimpleFlamedConfiguration(1,
+	nodeConfiguration := conf.SimpleNodeConfiguration(1,
 		"/tmp/1/nh",
 		"/tmp/1/wal",
-		"localhost:63001",
-		"/tmp/1/storage",
-		nil)
+		"localhost:63001")
 
-	configuration.StoragedConfiguration().AddTransactionProcessor(&user.User{})
-	configuration.StoragedConfiguration().AddTransactionProcessor(&intkey.IntKey{})
-	configuration.StoragedConfiguration().AddTransactionProcessor(&indexmeta.IndexMeta{})
-	configuration.StoragedConfiguration().AddTransactionProcessor(&accesscontrol.AccessControl{})
+	storagedConfiguration := conf.SimpleStoragedConfiguration("/tmp/1/storage", nil)
+	storagedConfiguration.AddTransactionProcessor(&user.User{})
+	storagedConfiguration.AddTransactionProcessor(&intkey.IntKey{})
+	storagedConfiguration.AddTransactionProcessor(&indexmeta.IndexMeta{})
+	storagedConfiguration.AddTransactionProcessor(&accesscontrol.AccessControl{})
 
-	err := flame1.Configure(configuration)
+	err := flame1.ConfigureNode(nodeConfiguration)
 
 	if err != nil {
 		panic(err)
@@ -48,7 +47,7 @@ func main() {
 	fmt.Println(clusterConfig.InitialMembers())
 	//panic("asdasd")
 
-	err = flame1.StartCluster(clusterConfig)
+	err = flame1.StartOnDiskCluster(clusterConfig, storagedConfiguration)
 
 	if err != nil {
 		panic(err)
@@ -70,7 +69,7 @@ func main() {
 	//flame2 := flamed.NewFlamed()
 	//defer flame2.StopNode()
 	//
-	//err = flame2.Configure(
+	//err = flame2.ConfigureNode(
 	//	conf.SimpleNodeConfiguration(2, "/tmp/2/nh", "/tmp/2/wal", "localhost:63002"),
 	//	conf.SimpleStoragedConfiguration("/tmp/2/storage", nil),
 	//)
@@ -79,7 +78,7 @@ func main() {
 	//	panic(err)
 	//}
 	//
-	//err = flame2.StartCluster(
+	//err = flame2.StartOnDiskCluster(
 	//	conf.SimpleClusterConfiguration(clusterId, "example", nil, true),
 	//)
 	//
@@ -94,7 +93,7 @@ func main() {
 	//flame3 := flamed.NewFlamed()
 	//defer flame3.StopNode()
 	//
-	//err = flame3.Configure(
+	//err = flame3.ConfigureNode(
 	//	conf.SimpleNodeConfiguration(3, "/tmp/3/nh", "/tmp/3/wal", "localhost:63003"),
 	//	conf.SimpleStoragedConfiguration("/tmp/3/storage", nil),
 	//)
@@ -103,7 +102,7 @@ func main() {
 	//	panic(err)
 	//}
 	//
-	//err = flame3.StartCluster(
+	//err = flame3.StartOnDiskCluster(
 	//	conf.SimpleClusterConfiguration(clusterId, "example", nil, true),
 	//)
 	//
@@ -142,6 +141,9 @@ func main() {
 		//}
 
 		switch t {
+		case "gc":
+			fmt.Println("running gc")
+			clusterAdmin.RunStorageGC()
 		case "view_index_meta":
 			meta, err := admin.GetIndexMeta([]byte("test"))
 			if err != nil {

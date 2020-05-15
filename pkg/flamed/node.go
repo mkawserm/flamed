@@ -10,6 +10,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 	"sync"
 	"time"
@@ -24,9 +25,8 @@ type Node struct {
 	mNodeHostConfiguration config.NodeHostConfig
 	mNodeConfiguration     iface.INodeConfiguration
 
-	mStoragedConfiguration iface.IStoragedConfiguration
-
-	mClusterMap map[uint64]string
+	mClusterMap              map[uint64]string
+	mClusterStorageTaskQueue map[uint64]variant.TaskQueue
 }
 
 func (n *Node) isStoragedConfigurationOk(storagedConfiguration iface.IStoragedConfiguration) bool {
@@ -49,18 +49,12 @@ func (n *Node) isStoragedConfigurationOk(storagedConfiguration iface.IStoragedCo
 	return true
 }
 
-func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
-	storagedConfiguration iface.IStoragedConfiguration) error {
-
+func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration) error {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 
 	if n.mIsNodeReady {
 		return x.ErrNodeAlreadyConfigured
-	}
-
-	if !n.isStoragedConfigurationOk(storagedConfiguration) {
-		return x.ErrInvalidStoragedConfiguration
 	}
 
 	if !utility.MkPath(nodeConfiguration.NodeHostDir()) {
@@ -72,7 +66,6 @@ func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 	}
 
 	n.mNodeConfiguration = nodeConfiguration
-	n.mStoragedConfiguration = storagedConfiguration
 
 	n.mRaftConfiguration = config.Config{
 		NodeID:                  nodeConfiguration.NodeID(),
@@ -127,11 +120,13 @@ func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration,
 	}
 
 	n.mClusterMap = make(map[uint64]string)
+	n.mClusterStorageTaskQueue = make(map[uint64]variant.TaskQueue)
 
 	return nil
 }
 
-func (n *Node) StartCluster(clusterConfiguration iface.IClusterConfiguration) error {
+func (n *Node) StartOnDiskCluster(clusterConfiguration iface.IOnDiskClusterConfiguration,
+	storagedConfiguration iface.IStoragedConfiguration) error {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 
@@ -139,11 +134,16 @@ func (n *Node) StartCluster(clusterConfiguration iface.IClusterConfiguration) er
 		return x.ErrNodeIsNotReady
 	}
 
+	if !n.isStoragedConfigurationOk(storagedConfiguration) {
+		return x.ErrInvalidStoragedConfiguration
+	}
+	//n.mStoragedConfiguration = storagedConfiguration
+
 	n.mRaftConfiguration.ClusterID = clusterConfiguration.ClusterID()
 
 	err := n.mNodeHost.StartOnDiskCluster(clusterConfiguration.InitialMembers(),
 		clusterConfiguration.Join(),
-		clusterConfiguration.StateMachine(n.mStoragedConfiguration), n.mRaftConfiguration)
+		clusterConfiguration.StateMachine(storagedConfiguration), n.mRaftConfiguration)
 
 	if err != nil {
 		n.mRaftConfiguration.ClusterID = 0
@@ -151,6 +151,7 @@ func (n *Node) StartCluster(clusterConfiguration iface.IClusterConfiguration) er
 	}
 
 	n.mClusterMap[n.mRaftConfiguration.ClusterID] = clusterConfiguration.ClusterName()
+	n.mClusterStorageTaskQueue[n.mRaftConfiguration.ClusterID] = storagedConfiguration.StorageTaskQueue()
 	//n.mNodeHost.GetNoOPSession(clusterConfiguration.ClusterID())
 
 	return nil
@@ -169,6 +170,7 @@ func (n *Node) StopCluster(clusterID uint64) error {
 	}
 
 	delete(n.mClusterMap, clusterID)
+	delete(n.mClusterStorageTaskQueue, clusterID)
 
 	return nil
 }
@@ -187,7 +189,6 @@ func (n *Node) StopNode() {
 
 	n.mNodeHost = nil
 	n.mNodeConfiguration = nil
-	n.mStoragedConfiguration = nil
 	n.mRaftConfiguration = config.Config{}
 	n.mNodeHostConfiguration = config.NodeHostConfig{}
 
@@ -201,7 +202,7 @@ func (n *Node) TotalCluster() int {
 	return len(n.mClusterMap)
 }
 
-func (n *Node) IsClusterIDExists(clusterID uint64) bool {
+func (n *Node) IsClusterIDAvailable(clusterID uint64) bool {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 	_, found := n.mClusterMap[clusterID]
@@ -243,11 +244,12 @@ func (n *Node) NewClusterAdmin(clusterID uint64, timeout time.Duration) *Cluster
 		mTimeout:            timeout,
 		mClusterID:          clusterID,
 		mDragonboatNodeHost: n.mNodeHost,
+		mStorageTaskQueue:   n.mClusterStorageTaskQueue[clusterID],
 	}
 }
 
 func (n *Node) managedSyncRead(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
-	if !n.IsClusterIDExists(clusterID) {
+	if !n.IsClusterIDAvailable(clusterID) {
 		return nil, x.ErrClusterNotFound
 	}
 
@@ -261,7 +263,7 @@ func (n *Node) managedSyncRead(clusterID uint64, query interface{}, timeout time
 func (n *Node) managedSyncApplyProposal(clusterID uint64,
 	pp *pb.Proposal,
 	timeout time.Duration) (sm.Result, error) {
-	if !n.IsClusterIDExists(clusterID) {
+	if !n.IsClusterIDAvailable(clusterID) {
 		return sm.Result{}, x.ErrClusterNotFound
 	}
 

@@ -4,6 +4,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/plugin/storage/index/blevescorch"
 	sBadger "github.com/mkawserm/flamed/pkg/plugin/storage/state/badger"
+	"github.com/mkawserm/flamed/pkg/variant"
 )
 
 type StoragedConfigurationInput struct {
@@ -12,6 +13,8 @@ type StoragedConfigurationInput struct {
 
 	IndexEnable   bool `json:"indexEnable"`
 	AutoIndexMeta bool `json:"autoIndexMeta"`
+
+	StorageTaskQueue variant.TaskQueue `json:"-"`
 
 	StateStoragePath      string `json:"stateStoragePath"`
 	StateStorageSecretKey []byte `json:"stateStorageSecretKey"`
@@ -39,6 +42,14 @@ func (s *StoragedConfiguration) IndexEnable() bool {
 	return s.StoragedConfigurationInput.IndexEnable
 }
 
+func (s *StoragedConfiguration) StorageTaskQueue() variant.TaskQueue {
+	if s.StoragedConfigurationInput.StorageTaskQueue == nil {
+		s.StoragedConfigurationInput.StorageTaskQueue = make(variant.TaskQueue, 100)
+	}
+
+	return s.StoragedConfigurationInput.StorageTaskQueue
+}
+
 func (s *StoragedConfiguration) StateStoragePath() string {
 	return s.StoragedConfigurationInput.StateStoragePath
 }
@@ -57,18 +68,18 @@ func (s *StoragedConfiguration) IndexStorageSecretKey() []byte {
 
 func (s *StoragedConfiguration) StoragePluginState() iface.IStateStorage {
 	if s.StoragedConfigurationInput.StoragePluginState == nil {
-		return &sBadger.Badger{}
-	} else {
-		return s.StoragedConfigurationInput.StoragePluginState
+		s.StoragedConfigurationInput.StoragePluginState = &sBadger.Badger{}
 	}
+
+	return s.StoragedConfigurationInput.StoragePluginState
 }
 
 func (s *StoragedConfiguration) StoragePluginIndex() iface.IIndexStorage {
 	if s.StoragedConfigurationInput.StoragePluginIndex == nil {
-		return &blevescorch.BleveScorch{}
-	} else {
-		return nil
+		s.StoragedConfigurationInput.StoragePluginIndex = &blevescorch.BleveScorch{}
 	}
+
+	return s.StoragedConfigurationInput.StoragePluginIndex
 }
 
 func (s *StoragedConfiguration) StateStorageCustomConfiguration() interface{} {

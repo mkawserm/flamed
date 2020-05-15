@@ -55,23 +55,11 @@ func SimpleStoragedConfiguration(path string, secretKey []byte) iface.IStoragedC
 		TransactionProcessorMap: make(map[string]iface.ITransactionProcessor)}
 }
 
-func SimpleClusterConfiguration(clusterID uint64, clusterName string, initialMembers map[uint64]string, join bool) iface.IClusterConfiguration {
+func SimpleClusterConfiguration(clusterID uint64, clusterName string, initialMembers map[uint64]string, join bool) iface.IOnDiskClusterConfiguration {
 	return &ClusterConfiguration{ClusterConfigurationInput: ClusterConfigurationInput{
 		ClusterID:      clusterID,
 		ClusterName:    clusterName,
 		InitialMembers: initialMembers,
 		Join:           join,
 	}}
-}
-
-func SimpleFlamedConfiguration(nodeID uint64,
-	nodeHostDir string,
-	walDir string,
-	raftAddress string,
-	path string,
-	secretKey []byte) iface.IFlamedConfiguration {
-	return &FlamedConfiguration{
-		NodeConfigurationInput:     SimpleNodeConfiguration(nodeID, nodeHostDir, walDir, raftAddress),
-		StoragedConfigurationInput: SimpleStoragedConfiguration(path, secretKey),
-	}
 }

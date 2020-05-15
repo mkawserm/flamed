@@ -2,6 +2,7 @@ package flamed
 
 import (
 	"context"
+	"fmt"
 	"github.com/lni/dragonboat/v3"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
@@ -12,6 +13,7 @@ import (
 type ClusterAdmin struct {
 	mClusterID          uint64
 	mTimeout            time.Duration
+	mStorageTaskQueue   variant.TaskQueue
 	mDragonboatNodeHost *dragonboat.NodeHost
 }
 
@@ -106,5 +108,22 @@ func (c *ClusterAdmin) GetAppliedIndex() (uint64, error) {
 		return v, nil
 	} else {
 		return 0, x.ErrUnknownValue
+	}
+}
+
+func (c *ClusterAdmin) RunStorageGC() {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	if c.mStorageTaskQueue == nil {
+		internalLogger.Debug("storage task queue is nil")
+		return
+	}
+
+	c.mStorageTaskQueue <- variant.Task{
+		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+		Name:    "storage-task",
+		Command: "gc",
 	}
 }

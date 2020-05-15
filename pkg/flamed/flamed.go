@@ -13,21 +13,21 @@ type Flamed struct {
 	mNodeHost *Node
 }
 
-func (f *Flamed) Configure(flamedConfiguration iface.IFlamedConfiguration) error {
-	return f.mNodeHost.ConfigureNode(flamedConfiguration.NodeConfiguration(),
-		flamedConfiguration.StoragedConfiguration())
+func (f *Flamed) ConfigureNode(nodeConfiguration iface.INodeConfiguration) error {
+	return f.mNodeHost.ConfigureNode(nodeConfiguration)
 }
 
-func (f *Flamed) StartCluster(clusterConfiguration iface.IClusterConfiguration) error {
-	return f.mNodeHost.StartCluster(clusterConfiguration)
+func (f *Flamed) StartOnDiskCluster(clusterConfiguration iface.IOnDiskClusterConfiguration,
+	storagedConfiguration iface.IStoragedConfiguration) error {
+	return f.mNodeHost.StartOnDiskCluster(clusterConfiguration, storagedConfiguration)
 }
 
 func (f *Flamed) StopCluster(clusterID uint64) error {
 	return f.mNodeHost.StopCluster(clusterID)
 }
 
-func (f *Flamed) IsClusterIDExists(clusterID uint64) bool {
-	return f.mNodeHost.IsClusterIDExists(clusterID)
+func (f *Flamed) IsClusterIDAvailable(clusterID uint64) bool {
+	return f.mNodeHost.IsClusterIDAvailable(clusterID)
 }
 
 func (f *Flamed) StopNode() {

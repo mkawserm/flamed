@@ -1,6 +1,7 @@
 package iface
 
 import (
+	"github.com/mkawserm/flamed/pkg/variant"
 	"io"
 	"time"
 )
@@ -12,6 +13,8 @@ type IStorageConfiguration interface {
 
 	IndexEnable() bool
 	AutoIndexMeta() bool
+
+	StorageTaskQueue() variant.TaskQueue
 
 	StateStoragePath() string
 	StateStorageSecretKey() []byte
