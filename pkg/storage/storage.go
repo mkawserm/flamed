@@ -807,6 +807,7 @@ func (s *Storage) storageTaskQueueHandler() {
 		case "gc":
 			s.RunGC()
 		case "done":
+			internalLogger.Info("storage task queue handler finished")
 			break
 		}
 	}
