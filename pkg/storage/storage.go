@@ -524,7 +524,12 @@ func (s *Storage) updateIndexOfIndexStorage(indexDataContainer IndexDataContaine
 		return
 	}
 
-	/* TODO: SEND INDEX DATA TO BE PROCESSED */
+	/* TODO: SEND INDEX DATA TO BE PROCESSED USING GO CHANNEL */
+	err := s.directIndex(indexDataContainer)
+
+	if err != nil {
+		internalLogger.Error("directIndex error", zap.Error(err))
+	}
 }
 
 func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMetaActionContainer) {
@@ -695,5 +700,46 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	}
 
 	internalLogger.Debug("storage snapshot saved")
+	return nil
+}
+
+func (s *Storage) directIndex(indexDataContainer IndexDataContainer) error {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	if indexDataContainer == nil {
+		return nil
+	}
+
+	for k, v := range indexDataContainer {
+		if !s.mIndexStorage.CanIndex(k) && s.mConfiguration.AutoIndexMeta() {
+			//internalLogger.Info("no indexmeta found, creating new one", zap.String("namespace",k))
+			indexMeta := &pb.IndexMeta{
+				Namespace: []byte(k),
+				Version:   1,
+				Enabled:   true,
+				Default:   true,
+				CreatedAt: uint64(time.Now().UnixNano()),
+				UpdatedAt: uint64(time.Now().UnixNano()),
+			}
+			err := s.mIndexStorage.UpsertIndexMeta(indexMeta)
+			if err != nil {
+				internalLogger.Error("UpsertIndexMeta failure",
+					zap.Error(err),
+					zap.String("namespace", k))
+			}
+		}
+
+		if s.mIndexStorage.CanIndex(k) {
+			err := s.mIndexStorage.ApplyIndex(k, v)
+			if err != nil {
+				internalLogger.Error("ApplyIndex failure",
+					zap.Error(err),
+					zap.String("namespace", k))
+			}
+		}
+	}
+
 	return nil
 }

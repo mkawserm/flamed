@@ -22,6 +22,18 @@ func GetUid(namespace []byte, key []byte) []byte {
 	}
 }
 
+func StateAddressByteSliceToHexString(address []byte) string {
+	return hex.EncodeToString(address)
+}
+
+func StateAddressHexStringToByteSlice(address string) []byte {
+	b, err := hex.DecodeString(address)
+	if err != nil {
+		return nil
+	}
+	return b
+}
+
 func GetUidString(namespace []byte, key []byte) string {
 	src := GetUid(namespace, key)
 	return hex.EncodeToString(src)
