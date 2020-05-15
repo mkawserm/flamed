@@ -74,17 +74,32 @@ message IndexDocument {
   string name = 1;
   bool enabled = 2;
   bool default = 3;
-  repeated IndexField indexFieldList = 4;
+  bool dynamic = 4;
+  repeated IndexField indexFieldList = 5;
 }
 
 message IndexMeta {
   bytes namespace = 1;
   uint32 version = 2;
+
   bool enabled = 3;
   bool default = 4;
-  uint64 createdAt = 5;
-  uint64 updatedAt = 6;
-  repeated IndexDocument indexDocumentList = 7;
+
+  bool indexDynamic = 5;
+  bool storeDynamic = 6;
+  bool docValuesDynamic = 7;
+
+  string defaultType = 8;
+  string defaultAnalyzer = 9;
+  string defaultDateTimeParser = 10;
+  string defaultField = 11;
+
+  string typeField = 12;
+
+  uint64 createdAt = 13;
+  uint64 updatedAt = 14;
+
+  repeated IndexDocument indexDocumentList = 15;
 }
 
 message IndexMetaList {
