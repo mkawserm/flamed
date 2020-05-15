@@ -96,10 +96,12 @@ message IndexMeta {
 
   string typeField = 12;
 
-  uint64 createdAt = 13;
-  uint64 updatedAt = 14;
+  bytes customAnalysis = 13;
 
-  repeated IndexDocument indexDocumentList = 15;
+  uint64 createdAt = 14;
+  uint64 updatedAt = 15;
+
+  repeated IndexDocument indexDocumentList = 16;
 }
 
 message IndexMetaList {
