@@ -12,9 +12,9 @@ type StoragedConfigurationInput struct {
 	BatchSize int `json:"batchSize"`
 	QueueSize int `json:"queueSize"`
 
-	IndexEnable                        bool `json:"indexEnable"`
-	AutoIndexMeta                      bool `json:"autoIndexMeta"`
-	BuildIndexAfterRecoverFromSnapshot bool `json:"buildIndexAfterRecoverFromSnapshot"`
+	IndexEnable    bool `json:"indexEnable"`
+	AutoIndexMeta  bool `json:"autoIndexMeta"`
+	AutoBuildIndex bool `json:"autoBuildIndex"`
 
 	StorageTaskQueue variant.TaskQueue `json:"-"`
 
@@ -40,8 +40,8 @@ func (s *StoragedConfiguration) AutoIndexMeta() bool {
 	return s.StoragedConfigurationInput.AutoIndexMeta
 }
 
-func (s *StoragedConfiguration) BuildIndexAfterRecoverFromSnapshot() bool {
-	return s.StoragedConfigurationInput.BuildIndexAfterRecoverFromSnapshot
+func (s *StoragedConfiguration) AutoBuildIndex() bool {
+	return s.StoragedConfigurationInput.AutoBuildIndex
 }
 
 func (s *StoragedConfiguration) IndexEnable() bool {

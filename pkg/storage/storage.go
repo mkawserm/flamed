@@ -598,6 +598,10 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 				if err != nil {
 					internalLogger.Error("upsert indexmeta error", zap.Error(err))
 				}
+
+				if s.mConfiguration.AutoBuildIndex() {
+					s.BuildIndexByNamespace(v2.IndexMeta.Namespace)
+				}
 			}
 			if v2.Action == constant.DELETE {
 				err := s.mIndexStorage.DeleteIndexMeta(v2.IndexMeta)
@@ -610,6 +614,10 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 				err := s.mIndexStorage.DefaultIndexMeta(string(v2.IndexMeta.Namespace))
 				if err != nil {
 					internalLogger.Error("default indexmeta error", zap.Error(err))
+				}
+
+				if s.mConfiguration.AutoBuildIndex() {
+					s.BuildIndexByNamespace(v2.IndexMeta.Namespace)
 				}
 			}
 		}
@@ -721,7 +729,7 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 	}
 
 	internalLogger.Debug("storage recovered from snapshot")
-	if s.mConfiguration.BuildIndexAfterRecoverFromSnapshot() {
+	if s.mConfiguration.AutoBuildIndex() {
 		s.BuildIndex()
 	}
 	return nil

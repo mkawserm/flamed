@@ -57,7 +57,7 @@ func SimpleStoragedConfiguration(path string, secretKey []byte) iface.IStoragedC
 			IndexStoragePath:      path + "/index",
 			IndexStorageSecretKey: secretKey,
 
-			BuildIndexAfterRecoverFromSnapshot: true,
+			AutoBuildIndex: true,
 		},
 		TransactionProcessorMap: make(map[string]iface.ITransactionProcessor)}
 }
