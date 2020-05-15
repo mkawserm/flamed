@@ -430,7 +430,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		_ = internalLogger.Sync()
 	}()
 
-	internalLogger.Info("entry indexmeta", zap.Uint64("entryIndex", entryIndex))
+	internalLogger.Info("raft entry index", zap.Uint64("entryIndex", entryIndex))
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
 
@@ -460,6 +460,8 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		pr.Append(tpr)
 
 		if tpr.Status == 0 {
+			pr.Status = 0
+			pr.ErrorCode = 0
 			pr.ErrorText = "proposal rejected"
 			return pr
 		} else {
@@ -482,6 +484,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		indexDataContainer = nil
 		indexMetaActionContainer = nil
 		pr.Status = 0
+		pr.ErrorCode = 0
 		pr.ErrorText = "proposal rejected because of commit failure"
 		return pr
 	}
