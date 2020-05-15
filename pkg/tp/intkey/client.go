@@ -12,9 +12,9 @@ import (
 )
 
 type Client struct {
-	mRW        iface.IRW
 	mClusterID uint64
 	mNamespace string
+	mRW        iface.IRW
 	mTimeout   time.Duration
 }
 
@@ -122,7 +122,7 @@ func (c *Client) Decrement(name string, value uint32) (*pb.ProposalResponse, err
 	return c.sendProposal(intKeyPayload)
 }
 
-func (c *Client) Setup(namespace string, clusterID uint64, rw iface.IRW, timeout time.Duration) error {
+func (c *Client) Setup(clusterID uint64, namespace string, rw iface.IRW, timeout time.Duration) error {
 	if !utility.IsNamespaceValid([]byte(namespace)) {
 		return x.ErrInvalidNamespace
 	}
@@ -132,8 +132,8 @@ func (c *Client) Setup(namespace string, clusterID uint64, rw iface.IRW, timeout
 	}
 
 	c.mClusterID = clusterID
-	c.mRW = rw
 	c.mNamespace = namespace
+	c.mRW = rw
 	c.mTimeout = timeout
 	return nil
 }

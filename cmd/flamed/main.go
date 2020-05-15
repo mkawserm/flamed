@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/tp/accesscontrol"
 	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
 	"github.com/mkawserm/flamed/pkg/tp/user"
 	"os"
@@ -46,6 +47,7 @@ func main() {
 	configuration.StoragedConfiguration().AddTransactionProcessor(&user.User{})
 	configuration.StoragedConfiguration().AddTransactionProcessor(&intkey.IntKey{})
 	configuration.StoragedConfiguration().AddTransactionProcessor(&indexmeta.IndexMeta{})
+	configuration.StoragedConfiguration().AddTransactionProcessor(&accesscontrol.AccessControl{})
 
 	err := flame1.Configure(configuration)
 
@@ -66,7 +68,7 @@ func main() {
 
 	intKeyClient := intkey.Client{}
 
-	err = intKeyClient.Setup("test", clusterId, flame1, 3*time.Minute)
+	err = intKeyClient.Setup(clusterId, "test", flame1, 3*time.Minute)
 	if err != nil {
 		panic(err)
 	}

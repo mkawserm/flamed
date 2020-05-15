@@ -1,4 +1,4 @@
-package user
+package accesscontrol
 
 import (
 	"context"
@@ -12,34 +12,39 @@ import (
 	"github.com/mkawserm/flamed/pkg/x"
 )
 
-type User struct {
+type AccessControl struct {
 }
 
-func (i *User) FamilyName() string {
+func (c *AccessControl) FamilyName() string {
 	return Name
 }
 
-func (i *User) FamilyVersion() string {
+func (c *AccessControl) FamilyVersion() string {
 	return Version
 }
 
-func (i *User) Lookup(_ context.Context,
+func (c *AccessControl) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {
 
-	var username string
+	var request Request
 
-	if v, ok := query.(string); ok {
-		username = v
+	if v, ok := query.(Request); ok {
+		request = v
 	} else {
 		return nil, x.ErrInvalidLookupInput
 	}
 
-	if !utility.IsUsernameValid(username) {
+	if !utility.IsNamespaceValid(request.Namespace) {
+		return nil, x.ErrInvalidNamespace
+	}
+
+	if !utility.IsUsernameValid(request.Username) {
 		return nil, x.ErrInvalidUsername
 	}
 
-	address := uidutil.GetUid([]byte(constant.UserNamespace), []byte(username))
+	address := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid([]byte(request.Username), request.Namespace))
 
 	entry, err := readOnlyStateContext.GetState(address)
 
@@ -47,21 +52,21 @@ func (i *User) Lookup(_ context.Context,
 		return nil, err
 	}
 
-	user := &pb.User{}
-	if err := proto.Unmarshal(entry.Payload, user); err != nil {
+	ac := &pb.AccessControl{}
+	if err := proto.Unmarshal(entry.Payload, ac); err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return ac, nil
 }
 
-func (i *User) upsert(tpr *pb.TransactionResponse,
+func (c *AccessControl) upsert(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction,
 	address []byte,
-	user *pb.User) *pb.TransactionResponse {
+	accessControl *pb.AccessControl) *pb.TransactionResponse {
 
-	payload, err := proto.Marshal(user)
+	payload, err := proto.Marshal(accessControl)
 	if err != nil {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
@@ -89,7 +94,7 @@ func (i *User) upsert(tpr *pb.TransactionResponse,
 	}
 }
 
-func (i *User) delete(tpr *pb.TransactionResponse,
+func (c *AccessControl) delete(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte) *pb.TransactionResponse {
 	if err := stateContext.DeleteState(address); err != nil {
@@ -105,7 +110,7 @@ func (i *User) delete(tpr *pb.TransactionResponse,
 	}
 }
 
-func (i *User) Apply(_ context.Context,
+func (c *AccessControl) Apply(_ context.Context,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction) *pb.TransactionResponse {
 
@@ -117,7 +122,7 @@ func (i *User) Apply(_ context.Context,
 		FamilyVersion: Version,
 	}
 
-	payload := &pb.UserPayload{}
+	payload := &pb.AccessControlPayload{}
 
 	if err := proto.Unmarshal(transaction.Payload, payload); err != nil {
 		tpr.Status = 0
@@ -126,33 +131,34 @@ func (i *User) Apply(_ context.Context,
 		return tpr
 	}
 
-	if payload.User == nil {
+	if payload.AccessControl == nil {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "user can not be nil"
+		tpr.ErrorText = "access control can not be nil"
 		return tpr
 	}
 
-	if !utility.IsUsernameValid(payload.User.Username) {
+	if !utility.IsNamespaceValid(payload.AccessControl.Namespace) {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "invalid namespace"
+		return tpr
+	}
+
+	if !utility.IsUsernameValid(payload.AccessControl.Username) {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "invalid username"
 		return tpr
 	}
 
-	if len(payload.User.Password) == 0 {
-		tpr.Status = 0
-		tpr.ErrorCode = 0
-		tpr.ErrorText = "password can not be empty"
-		return tpr
-	}
-
-	address := uidutil.GetUid([]byte(constant.UserNamespace), []byte(payload.User.Username))
+	address := uidutil.GetUid([]byte(constant.AccessControlNamespace),
+		uidutil.GetUid([]byte(payload.AccessControl.Username), payload.AccessControl.Namespace))
 
 	if payload.Action == pb.Action_UPSERT {
-		return i.upsert(tpr, stateContext, transaction, address, payload.User)
+		return c.upsert(tpr, stateContext, transaction, address, payload.AccessControl)
 	} else if payload.Action == pb.Action_DELETE {
-		return i.delete(tpr, stateContext, address)
+		return c.delete(tpr, stateContext, address)
 	} else {
 		tpr.Status = 0
 		tpr.ErrorCode = 0

@@ -1,11 +1,13 @@
 package flamed
 
 import (
+	"bytes"
 	"context"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/tp/accesscontrol"
 	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
 	"github.com/mkawserm/flamed/pkg/tp/user"
 	"github.com/mkawserm/flamed/pkg/utility"
@@ -15,13 +17,26 @@ import (
 )
 
 type Admin struct {
-	mRW        iface.IRW
 	mClusterID uint64
+	mRW        iface.IRW
 	mTimeout   time.Duration
 }
 
 func (a *Admin) UpdateTimeout(timeout time.Duration) {
 	a.mTimeout = timeout
+}
+
+func (a *Admin) IsUserExists(username string) bool {
+	u, err := a.GetUser(username)
+	if err != nil {
+		return false
+	}
+
+	if u.Username == username {
+		return true
+	}
+
+	return false
 }
 
 func (a *Admin) GetUser(username string) (*pb.User, error) {
@@ -105,6 +120,134 @@ func (a *Admin) DeleteUser(username string) (*pb.ProposalResponse, error) {
 
 	proposal := pb.NewProposal()
 	proposal.AddTransaction([]byte(constant.UserNamespace), user.Name, user.Version, payloadBytes)
+
+	r, err := a.mRW.Write(a.mClusterID, proposal, a.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	pr := &pb.ProposalResponse{}
+
+	if err := proto.Unmarshal(r.Data, pr); err != nil {
+		return nil, err
+	}
+
+	return pr, nil
+}
+
+func (a *Admin) IsAccessControlExists(namespace []byte, username string) bool {
+	ac, err := a.GetAccessControl(namespace, username)
+	if err != nil {
+		return false
+	}
+
+	if bytes.Equal(ac.Namespace, namespace) && ac.Username == username {
+		return true
+	}
+
+	return false
+}
+
+func (a *Admin) GetAccessControl(namespace []byte, username string) (*pb.AccessControl, error) {
+	if !utility.IsNamespaceValid(namespace) {
+		return nil, x.ErrInvalidNamespace
+	}
+
+	if !utility.IsUsernameValid(username) {
+		return nil, x.ErrInvalidUsername
+	}
+
+	lookupRequest := variant.LookupRequest{
+		Query: accesscontrol.Request{
+			Username:  username,
+			Namespace: namespace,
+		},
+
+		Context:       context.TODO(),
+		FamilyName:    accesscontrol.Name,
+		FamilyVersion: accesscontrol.Version,
+	}
+
+	output, err := a.mRW.Read(a.mClusterID, lookupRequest, a.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if v, ok := output.(*pb.AccessControl); ok {
+		return v, nil
+	} else {
+		return nil, x.ErrUnknownValue
+	}
+}
+
+func (a *Admin) UpsertAccessControl(ac *pb.AccessControl) (*pb.ProposalResponse, error) {
+	if !utility.IsNamespaceValid(ac.Namespace) {
+		return nil, x.ErrInvalidNamespace
+	}
+
+	if !utility.IsUsernameValid(ac.Username) {
+		return nil, x.ErrInvalidUsername
+	}
+
+	payload := &pb.AccessControlPayload{
+		Action:        pb.Action_UPSERT,
+		AccessControl: ac,
+	}
+
+	payloadBytes, err := proto.Marshal(payload)
+
+	if err != nil {
+		return nil, err
+	}
+
+	proposal := pb.NewProposal()
+	proposal.AddTransaction([]byte(constant.AccessControlNamespace),
+		accesscontrol.Name,
+		accesscontrol.Version,
+		payloadBytes)
+
+	r, err := a.mRW.Write(a.mClusterID, proposal, a.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	pr := &pb.ProposalResponse{}
+
+	if err := proto.Unmarshal(r.Data, pr); err != nil {
+		return nil, err
+	}
+
+	return pr, nil
+}
+
+func (a *Admin) DeleteAccessControl(namespace []byte, username string) (*pb.ProposalResponse, error) {
+	if !utility.IsNamespaceValid(namespace) {
+		return nil, x.ErrInvalidNamespace
+	}
+
+	if !utility.IsUsernameValid(username) {
+		return nil, x.ErrInvalidUsername
+	}
+
+	payload := &pb.AccessControlPayload{
+		Action:        pb.Action_DELETE,
+		AccessControl: &pb.AccessControl{Username: username, Namespace: namespace},
+	}
+
+	payloadBytes, err := proto.Marshal(payload)
+
+	if err != nil {
+		return nil, err
+	}
+
+	proposal := pb.NewProposal()
+	proposal.AddTransaction([]byte(constant.AccessControlNamespace),
+		accesscontrol.Name,
+		accesscontrol.Version,
+		payloadBytes)
 
 	r, err := a.mRW.Write(a.mClusterID, proposal, a.mTimeout)
 
