@@ -149,10 +149,9 @@ func (b *Badger) Setup(path string, secretKey []byte, configuration interface{})
 
 	if configuration == nil {
 		b.mDbConfiguration.BadgerOptions.Truncate = true
-		b.mDbConfiguration.BadgerOptions.TableLoadingMode = badgerDbOptions.LoadToRAM
+		b.mDbConfiguration.BadgerOptions.TableLoadingMode = badgerDbOptions.MemoryMap
 		b.mDbConfiguration.BadgerOptions.ValueLogLoadingMode = badgerDbOptions.MemoryMap
 		b.mDbConfiguration.BadgerOptions.Compression = badgerDbOptions.Snappy
-		b.mDbConfiguration.BadgerOptions.Logger = logger.S(Name)
 	} else {
 		if opts, ok := configuration.(Configuration); ok {
 			b.mDbConfiguration.BadgerOptions = opts.BadgerOptions
@@ -163,6 +162,7 @@ func (b *Badger) Setup(path string, secretKey []byte, configuration interface{})
 		}
 	}
 
+	b.mDbConfiguration.BadgerOptions.Logger = logger.S(Name)
 	b.mDbConfiguration.BadgerOptions.EncryptionKey = secretKey
 
 	if b.mDbConfiguration.GoroutineNumber <= 0 {
