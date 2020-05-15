@@ -232,10 +232,15 @@ func (b *Badger) Close() error {
 }
 
 func (b *Badger) RunGC() {
-	if b.mDb == nil {
-		return
+	for {
+		if b.mDb == nil {
+			return
+		}
+		err := b.mDb.RunValueLogGC(b.mDbConfiguration.GCDiscardRatio)
+		if err != nil {
+			break
+		}
 	}
-	_ = b.mDb.RunValueLogGC(b.mDbConfiguration.GCDiscardRatio)
 }
 
 func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte, encryptionKeyRotationDuration time.Duration) error {
