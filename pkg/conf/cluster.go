@@ -6,7 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/storaged"
 )
 
-type ClusterConfigurationInput struct {
+type OnDiskClusterConfigurationInput struct {
 	ClusterID      uint64                                      `json:"clusterID"`
 	ClusterName    string                                      `json:"clusterName"`
 	InitialMembers map[uint64]string                           `json:"initialMembers"`
@@ -14,38 +14,38 @@ type ClusterConfigurationInput struct {
 	StateMachine   func(uint64, uint64) sm.IOnDiskStateMachine `json:"-"`
 }
 
-type ClusterConfiguration struct {
-	ClusterConfigurationInput ClusterConfigurationInput
+type OnDiskClusterConfiguration struct {
+	OnDiskClusterConfigurationInput OnDiskClusterConfigurationInput
 }
 
-func (c *ClusterConfiguration) ClusterID() uint64 {
-	if c.ClusterConfigurationInput.ClusterID == 0 {
+func (c *OnDiskClusterConfiguration) ClusterID() uint64 {
+	if c.OnDiskClusterConfigurationInput.ClusterID == 0 {
 		return 1
 	} else {
-		return c.ClusterConfigurationInput.ClusterID
+		return c.OnDiskClusterConfigurationInput.ClusterID
 	}
 }
 
-func (c *ClusterConfiguration) ClusterName() string {
-	return c.ClusterConfigurationInput.ClusterName
+func (c *OnDiskClusterConfiguration) ClusterName() string {
+	return c.OnDiskClusterConfigurationInput.ClusterName
 }
 
-func (c *ClusterConfiguration) InitialMembers() map[uint64]string {
-	if c.ClusterConfigurationInput.InitialMembers == nil {
+func (c *OnDiskClusterConfiguration) InitialMembers() map[uint64]string {
+	if c.OnDiskClusterConfigurationInput.InitialMembers == nil {
 		return map[uint64]string{}
 	} else {
-		return c.ClusterConfigurationInput.InitialMembers
+		return c.OnDiskClusterConfigurationInput.InitialMembers
 	}
 }
 
-func (c *ClusterConfiguration) Join() bool {
-	return c.ClusterConfigurationInput.Join
+func (c *OnDiskClusterConfiguration) Join() bool {
+	return c.OnDiskClusterConfigurationInput.Join
 }
 
-func (c *ClusterConfiguration) StateMachine(sc iface.IStoragedConfiguration) func(uint64, uint64) sm.IOnDiskStateMachine {
-	if c.ClusterConfigurationInput.StateMachine == nil {
+func (c *OnDiskClusterConfiguration) StateMachine(sc iface.IStoragedConfiguration) func(uint64, uint64) sm.IOnDiskStateMachine {
+	if c.OnDiskClusterConfigurationInput.StateMachine == nil {
 		return storaged.NewStoraged(sc)
 	} else {
-		return c.ClusterConfigurationInput.StateMachine
+		return c.OnDiskClusterConfigurationInput.StateMachine
 	}
 }

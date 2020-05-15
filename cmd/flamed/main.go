@@ -42,7 +42,7 @@ func main() {
 		panic(err)
 	}
 
-	clusterConfig := conf.SimpleClusterConfiguration(clusterId, "example", members, false)
+	clusterConfig := conf.SimpleOnDiskClusterConfiguration(clusterId, "example", members, false)
 
 	fmt.Println(clusterConfig.InitialMembers())
 	//panic("asdasd")
@@ -79,7 +79,7 @@ func main() {
 	//}
 	//
 	//err = flame2.StartOnDiskCluster(
-	//	conf.SimpleClusterConfiguration(clusterId, "example", nil, true),
+	//	conf.SimpleOnDiskClusterConfiguration(clusterId, "example", nil, true),
 	//)
 	//
 	//if err != nil {
@@ -103,7 +103,7 @@ func main() {
 	//}
 	//
 	//err = flame3.StartOnDiskCluster(
-	//	conf.SimpleClusterConfiguration(clusterId, "example", nil, true),
+	//	conf.SimpleOnDiskClusterConfiguration(clusterId, "example", nil, true),
 	//)
 	//
 	//if err != nil {
