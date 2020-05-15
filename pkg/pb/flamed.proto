@@ -3,20 +3,6 @@ package pb;
 
 //option go_package = "github.com/mkawserm/flamed/pkg/pb";
 
-enum Action {
-  GET = 0;
-  INSERT = 1;
-  UPDATE = 2;
-  UPSERT = 3;
-  DELETE = 4;
-  DEFAULT = 5;
-}
-
-enum UserType {
-  SUPER_USER = 0;
-  NORMAL_USER = 1;
-}
-
 message StateSnapshot {
   bytes uid = 1;
   bytes data = 2;
@@ -104,9 +90,23 @@ message IndexMetaList {
   repeated IndexMeta indexMetaList = 1;
 }
 
+enum Action {
+  GET = 0;
+  INSERT = 1;
+  UPDATE = 2;
+  UPSERT = 3;
+  DELETE = 4;
+  DEFAULT = 5;
+}
+
 message IndexMetaPayload {
   Action action = 1;
   IndexMeta indexMeta = 2;
+}
+
+enum UserType {
+  SUPER_USER = 0;
+  NORMAL_USER = 1;
 }
 
 message User {
@@ -139,10 +139,10 @@ message AccessControl {
   bytes permission = 3; /* First 1 byte is considered as permission.
                             Counted right to left bit
                             Permission format:
-                              first byte read,
-                              second byte write,
-                              third byte update,
-                              fourth byte delete
+                              first bit read,
+                              second bit write,
+                              third bit update,
+                              fourth bit delete
                         */
   uint64 createdAt = 4;
   uint64 updatedAt = 5;
