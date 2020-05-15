@@ -5,6 +5,7 @@ import (
 	"github.com/lni/dragonboat/v3"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
+	"github.com/mkawserm/flamed/pkg/x"
 	"time"
 )
 
@@ -101,5 +102,9 @@ func (c *ClusterAdmin) GetAppliedIndex() (uint64, error) {
 		return 0, e
 	}
 
-	return d.(uint64), e
+	if v, ok := d.(uint64); ok {
+		return v, nil
+	} else {
+		return 0, x.ErrUnknownValue
+	}
 }
