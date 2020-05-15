@@ -721,6 +721,9 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 	}
 
 	internalLogger.Debug("storage recovered from snapshot")
+	if s.mConfiguration.BuildIndexAfterRecoverFromSnapshot() {
+		s.BuildIndex()
+	}
 	return nil
 }
 
@@ -795,6 +798,19 @@ func (s *Storage) BuildIndex() {
 	}
 }
 
+func (s *Storage) BuildIndexByNamespace(namespace []byte) {
+	if !s.mConfiguration.IndexEnable() {
+		return
+	}
+
+	s.mIndexTaskQueue <- variant.Task{
+		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+		Name:    "index-task",
+		Command: "build-index-by-namespace",
+		Payload: namespace,
+	}
+}
+
 func (s *Storage) buildIndex() error {
 	if !s.mConfiguration.IndexEnable() {
 		return nil
@@ -827,6 +843,99 @@ func (s *Storage) buildIndex() error {
 	indexDataList := make([]*variant.IndexData, 0, 100)
 	oldNamespace := ""
 	for it.Seek([]byte("A")); it.Valid(); it.Next() {
+		snap := it.StateSnapshot()
+		if snap != nil {
+			entry := &pb.StateEntry{}
+			if err := proto.Unmarshal(snap.Data, entry); err != nil {
+				return err
+			}
+			tp := s.mConfiguration.GetTransactionProcessor(entry.FamilyName, entry.FamilyVersion)
+			if tp == nil {
+				continue
+			}
+
+			indexData := tp.IndexObject(entry.Payload)
+			if indexData == nil {
+				continue
+			}
+
+			indexDataList = append(indexDataList, &variant.IndexData{
+				ID:     crypto.StateAddressByteSliceToHexString(snap.Address),
+				Data:   indexData,
+				Action: constant.UPSERT,
+			})
+
+			currentNamespace := string(entry.Namespace)
+			if oldNamespace != currentNamespace {
+				if len(indexDataList) != 0 {
+					indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
+					err := s.directIndex(indexDataContainer)
+					if err != nil {
+						internalLogger.Error("indexing error", zap.Error(err))
+					}
+					indexDataList = make([]*variant.IndexData, 0, 100)
+				}
+
+				oldNamespace = currentNamespace
+			}
+
+			if len(indexDataList) == 100 {
+				indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
+				err := s.directIndex(indexDataContainer)
+				if err != nil {
+					internalLogger.Error("indexing error", zap.Error(err))
+				}
+				indexDataList = make([]*variant.IndexData, 0, 100)
+			}
+		}
+	}
+
+	if len(indexDataList) != 0 {
+		indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
+		err := s.directIndex(indexDataContainer)
+		if err != nil {
+			internalLogger.Error("indexing error", zap.Error(err))
+		}
+	}
+
+	return nil
+}
+
+func (s *Storage) buildIndexByNamespace(namespace []byte) error {
+	if !s.mConfiguration.IndexEnable() {
+		return nil
+	}
+
+	txn := s.mStateStorage.NewReadOnlyTransaction()
+	it := txn.ForwardIterator()
+	defer it.Close()
+
+	data, err := txn.Get(crypto.GetStateAddress([]byte(constant.IndexMetaNamespace), namespace))
+
+	if err != x.ErrKeyNotFound && err != nil {
+		return err
+	}
+
+	if data != nil {
+		entry := &pb.StateEntry{}
+		if err := proto.Unmarshal(data, entry); err != nil {
+			return err
+		}
+
+		indexMeta := &pb.IndexMeta{}
+		if err := proto.Unmarshal(entry.Payload, indexMeta); err != nil {
+			return err
+		}
+
+		if err := s.mIndexStorage.UpsertIndexMeta(indexMeta); err != nil {
+			internalLogger.Error("UpsertIndexMeta failure", zap.Error(err))
+			return err
+		}
+	}
+
+	indexDataList := make([]*variant.IndexData, 0, 100)
+	oldNamespace := ""
+	for it.Seek(namespace); it.ValidForPrefix(namespace); it.Next() {
 		snap := it.StateSnapshot()
 		if snap != nil {
 			entry := &pb.StateEntry{}
@@ -950,8 +1059,15 @@ func (s *Storage) storageTaskQueueHandler() {
 		switch task.Command {
 		case "gc":
 			s.RunGC()
+
 		case "build-index":
 			s.BuildIndex()
+
+		case "build-index-by-namespace":
+			if v, ok := task.Payload.([]byte); ok {
+				s.BuildIndexByNamespace(v)
+			}
+
 		case "done":
 			internalLogger.Info("storage task queue handler finished")
 			break
@@ -981,6 +1097,7 @@ func (s *Storage) indexTaskQueueHandler() {
 		_ = internalLogger.Sync()
 
 		switch task.Command {
+
 		case "index-data-container":
 			if indexDataContainer, ok := task.Payload.(IndexDataContainer); ok {
 				err := s.directIndex(indexDataContainer)
@@ -993,6 +1110,14 @@ func (s *Storage) indexTaskQueueHandler() {
 			err := s.buildIndex()
 			if err != nil {
 				internalLogger.Error("index error", zap.Error(err))
+			}
+
+		case "build-index-by-namespace":
+			if v, ok := task.Payload.([]byte); ok {
+				err := s.buildIndexByNamespace(v)
+				if err != nil {
+					internalLogger.Error("index error", zap.Error(err))
+				}
 			}
 
 		case "done":

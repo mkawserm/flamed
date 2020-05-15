@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/lni/dragonboat/v3"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 	"time"
@@ -142,5 +143,27 @@ func (c *ClusterAdmin) BuildIndex() {
 		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
 		Name:    "storage-task",
 		Command: "build-index",
+	}
+}
+
+func (c *ClusterAdmin) BuildIndexByNamespace(namespace []byte) {
+	if !utility.IsNamespaceValid(namespace) {
+		return
+	}
+
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	if c.mStorageTaskQueue == nil {
+		internalLogger.Debug("storage task queue is nil")
+		return
+	}
+
+	c.mStorageTaskQueue <- variant.Task{
+		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+		Name:    "storage-task",
+		Command: "build-index-by-namespace",
+		Payload: namespace,
 	}
 }

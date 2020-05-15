@@ -14,6 +14,7 @@ type IStorageConfiguration interface {
 
 	IndexEnable() bool
 	AutoIndexMeta() bool
+	BuildIndexAfterRecoverFromSnapshot() bool
 
 	StorageTaskQueue() variant.TaskQueue
 
