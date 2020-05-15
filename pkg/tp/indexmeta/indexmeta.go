@@ -87,6 +87,14 @@ func (i *IndexMeta) upsert(tpr *pb.TransactionResponse,
 func (i *IndexMeta) delete(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte) *pb.TransactionResponse {
+
+	if _, err := stateContext.GetState(address); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
 	if err := stateContext.DeleteState(address); err != nil {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
