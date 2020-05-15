@@ -4,7 +4,7 @@ package pb;
 //option go_package = "github.com/mkawserm/flamed/pkg/pb";
 
 message StateSnapshot {
-  bytes uid = 1;
+  bytes address = 1;
   bytes data = 2;
 }
 

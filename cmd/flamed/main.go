@@ -143,6 +143,10 @@ func main() {
 		//}
 
 		switch t {
+		case "fi":
+			fmt.Println("full index")
+			clusterAdmin.FullIndex()
+
 		case "gc":
 			fmt.Println("running gc")
 			clusterAdmin.RunStorageGC()

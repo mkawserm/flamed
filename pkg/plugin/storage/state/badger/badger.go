@@ -43,7 +43,7 @@ func (i *Iterator) StateSnapshot() *pb.StateSnapshot {
 	}
 
 	ss := &pb.StateSnapshot{}
-	ss.Uid = item.Key()
+	ss.Address = item.Key()
 
 	if value, err := item.ValueCopy(nil); err == nil {
 		ss.Data = value

@@ -10,6 +10,7 @@ import (
 type StoragedConfigurationInput struct {
 	CacheSize int `json:"cacheSize"`
 	BatchSize int `json:"batchSize"`
+	QueueSize int `json:"queueSize"`
 
 	IndexEnable   bool `json:"indexEnable"`
 	AutoIndexMeta bool `json:"autoIndexMeta"`
@@ -102,6 +103,13 @@ func (s *StoragedConfiguration) BatchSize() int {
 		s.StoragedConfigurationInput.BatchSize = 100
 	}
 	return s.StoragedConfigurationInput.BatchSize
+}
+
+func (s *StoragedConfiguration) QueueSize() int {
+	if s.StoragedConfigurationInput.QueueSize <= 0 {
+		s.StoragedConfigurationInput.QueueSize = 100
+	}
+	return s.StoragedConfigurationInput.QueueSize
 }
 
 func (s *StoragedConfiguration) GetTransactionProcessor(family, version string) iface.ITransactionProcessor {

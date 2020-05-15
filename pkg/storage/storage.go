@@ -181,6 +181,8 @@ type Storage struct {
 	mIndexStorageConfiguration interface{}
 
 	mConfiguration iface.IStorageConfiguration
+
+	mIndexTaskQueue variant.TaskQueue
 }
 
 func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bool {
@@ -244,6 +246,9 @@ func (s *Storage) Open() error {
 		if err2 != nil {
 			return err2
 		}
+
+		s.mIndexTaskQueue = make(variant.TaskQueue, s.mConfiguration.QueueSize())
+		go s.indexTaskQueueHandler()
 	}
 
 	go s.storageTaskQueueHandler()
@@ -258,6 +263,13 @@ func (s *Storage) Close() error {
 	}
 
 	if s.mConfiguration.IndexEnable() {
+		s.mIndexTaskQueue <- variant.Task{
+			ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+			Name:    "index-task",
+			Command: "done",
+		}
+		close(s.mIndexTaskQueue)
+		s.mIndexTaskQueue = nil
 		err2 := s.mIndexStorage.Close()
 		return err2
 	}
@@ -491,7 +503,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		if s.mConfiguration.IndexEnable() {
 			//NOTE: update indexmeta meta
 			s.updateIndexMetaOfIndexStorage(indexMetaActionContainer)
-			//NOTE: indexmeta data
+			//NOTE: index data
 			s.updateIndexOfIndexStorage(indexDataContainer)
 		}
 
@@ -559,12 +571,19 @@ func (s *Storage) updateIndexOfIndexStorage(indexDataContainer IndexDataContaine
 		return
 	}
 
-	/* TODO: SEND INDEX DATA TO BE PROCESSED USING GO CHANNEL */
-	err := s.directIndex(indexDataContainer)
-
-	if err != nil {
-		internalLogger.Error("directIndex error", zap.Error(err))
+	/* NOTE: INDEX DATA TO BE PROCESSED USING GO CHANNEL */
+	s.mIndexTaskQueue <- variant.Task{
+		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+		Name:    "index-task",
+		Command: "index-data-container",
+		Payload: indexDataContainer,
 	}
+
+	//err := s.directIndex(indexDataContainer)
+	//
+	//if err != nil {
+	//	internalLogger.Error("directIndex error", zap.Error(err))
+	//}
 }
 
 func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMetaActionContainer) {
@@ -633,6 +652,8 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
 
+	//indexDataContainer := make(IndexDataContainer)
+
 	for i := uint64(0); ; i++ {
 		if _, err := io.ReadFull(r, sz); err == io.ErrUnexpectedEOF || err == io.EOF {
 			break
@@ -648,13 +669,34 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
-		entry := &pb.StateSnapshot{}
-		if err := proto.Unmarshal(data, entry); err != nil {
+		snap := &pb.StateSnapshot{}
+		if err := proto.Unmarshal(data, snap); err != nil {
 			internalLogger.Error("sm unmarshal error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
-		if err := txn.Set(entry.Uid, entry.Data); err == badgerDb.ErrTxnTooBig {
+		//entry := &pb.StateEntry{}
+		//if err := proto.Unmarshal(snap.Data, entry); err == nil {
+		//	if entry.FamilyName != "" {
+		//		if entry.FamilyName == "IndexMeta" {
+		//			meta := &pb.IndexMeta{}
+		//			if err := proto.Unmarshal(entry.Payload, meta); err!=nil {
+		//
+		//			}
+		//		} else {
+		//			tp := s.mConfiguration.GetTransactionProcessor(entry.FamilyName,
+		//				entry.FamilyVersion)
+		//			if tp != nil {
+		//				obj := tp.IndexObject(entry.Payload)
+		//				if obj != nil {
+		//
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
+
+		if err := txn.Set(snap.Address, snap.Data); err == badgerDb.ErrTxnTooBig {
 			if err := txn.Commit(); err != nil {
 				internalLogger.Error("txn commit error", zap.Error(err))
 				return x.ErrFailedToRecoverFromSnapshot
@@ -662,7 +704,7 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 
 			txn = s.mStateStorage.NewTransaction()
 
-			if err := txn.Set(entry.Uid, entry.Data); err != nil {
+			if err := txn.Set(snap.Address, snap.Data); err != nil {
 				internalLogger.Error("txn set error", zap.Error(err))
 				return x.ErrFailedToRecoverFromSnapshot
 			}
@@ -741,6 +783,108 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	return nil
 }
 
+func (s *Storage) FullIndex() {
+	if !s.mConfiguration.IndexEnable() {
+		return
+	}
+
+	s.mIndexTaskQueue <- variant.Task{
+		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+		Name:    "index-task",
+		Command: "full-index",
+	}
+}
+
+func (s *Storage) fullIndex() error {
+	if !s.mConfiguration.IndexEnable() {
+		return nil
+	}
+
+	txn := s.mStateStorage.NewReadOnlyTransaction()
+	it := txn.ForwardIterator()
+	defer it.Close()
+
+	for it.Seek([]byte(constant.IndexMetaNamespace)); it.ValidForPrefix([]byte(constant.IndexMetaNamespace)); it.Next() {
+		snap := it.StateSnapshot()
+		if snap != nil {
+			entry := &pb.StateEntry{}
+			if err := proto.Unmarshal(snap.Data, entry); err != nil {
+				return err
+			}
+
+			indexMeta := &pb.IndexMeta{}
+			if err := proto.Unmarshal(entry.Payload, indexMeta); err != nil {
+				return err
+			}
+
+			if err := s.mIndexStorage.UpsertIndexMeta(indexMeta); err != nil {
+				internalLogger.Error("UpsertIndexMeta failure", zap.Error(err))
+				return err
+			}
+		}
+	}
+
+	indexDataList := make([]*variant.IndexData, 0, 100)
+	oldNamespace := ""
+	for it.Seek([]byte("A")); it.Valid(); it.Next() {
+		snap := it.StateSnapshot()
+		if snap != nil {
+			entry := &pb.StateEntry{}
+			if err := proto.Unmarshal(snap.Data, entry); err != nil {
+				return err
+			}
+			tp := s.mConfiguration.GetTransactionProcessor(entry.FamilyName, entry.FamilyVersion)
+			if tp == nil {
+				continue
+			}
+
+			indexData := tp.IndexObject(entry.Payload)
+			if indexData == nil {
+				continue
+			}
+
+			indexDataList = append(indexDataList, &variant.IndexData{
+				ID:     crypto.StateAddressByteSliceToHexString(snap.Address),
+				Data:   indexData,
+				Action: constant.UPSERT,
+			})
+
+			currentNamespace := string(entry.Namespace)
+			if oldNamespace != currentNamespace {
+				if len(indexDataList) != 0 {
+					indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
+					err := s.directIndex(indexDataContainer)
+					if err != nil {
+						internalLogger.Error("indexing error", zap.Error(err))
+					}
+					indexDataList = make([]*variant.IndexData, 0, 100)
+				}
+
+				oldNamespace = currentNamespace
+			}
+
+			if len(indexDataList) == 100 {
+				indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
+				err := s.directIndex(indexDataContainer)
+				if err != nil {
+					internalLogger.Error("indexing error", zap.Error(err))
+				}
+				indexDataList = make([]*variant.IndexData, 0, 100)
+			}
+		}
+	}
+
+	if len(indexDataList) != 0 {
+		indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
+		err := s.directIndex(indexDataContainer)
+		if err != nil {
+			internalLogger.Error("indexing error", zap.Error(err))
+		}
+	}
+
+	return nil
+}
+
 func (s *Storage) directIndex(indexDataContainer IndexDataContainer) error {
 	defer func() {
 		_ = internalLogger.Sync()
@@ -806,8 +950,53 @@ func (s *Storage) storageTaskQueueHandler() {
 		switch task.Command {
 		case "gc":
 			s.RunGC()
+		case "full-index":
+			s.FullIndex()
 		case "done":
 			internalLogger.Info("storage task queue handler finished")
+			break
+		}
+	}
+}
+
+func (s *Storage) indexTaskQueueHandler() {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+	internalLogger.Info("index task queue handler started")
+
+	if s.mIndexTaskQueue == nil {
+		return
+	}
+
+	internalLogger.Info("entering into forever loop")
+
+	for {
+		task := <-s.mIndexTaskQueue
+		internalLogger.Info("executing task",
+			zap.String("id", task.ID),
+			zap.String("name", task.Name),
+			zap.String("command", task.Command),
+		)
+		_ = internalLogger.Sync()
+
+		switch task.Command {
+		case "index-data-container":
+			if indexDataContainer, ok := task.Payload.(IndexDataContainer); ok {
+				err := s.directIndex(indexDataContainer)
+				if err != nil {
+					internalLogger.Error("index error", zap.Error(err))
+				}
+			}
+
+		case "full-index":
+			err := s.fullIndex()
+			if err != nil {
+				internalLogger.Error("index error", zap.Error(err))
+			}
+
+		case "done":
+			internalLogger.Info("index task queue handler finished")
 			break
 		}
 	}

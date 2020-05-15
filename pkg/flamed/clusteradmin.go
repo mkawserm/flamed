@@ -127,3 +127,20 @@ func (c *ClusterAdmin) RunStorageGC() {
 		Command: "gc",
 	}
 }
+
+func (c *ClusterAdmin) FullIndex() {
+	defer func() {
+		_ = internalLogger.Sync()
+	}()
+
+	if c.mStorageTaskQueue == nil {
+		internalLogger.Debug("storage task queue is nil")
+		return
+	}
+
+	c.mStorageTaskQueue <- variant.Task{
+		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+		Name:    "storage-task",
+		Command: "full-index",
+	}
+}

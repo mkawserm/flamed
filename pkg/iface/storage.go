@@ -10,6 +10,7 @@ type IStorageConfiguration interface {
 	/*Storage Config*/
 	CacheSize() int
 	BatchSize() int
+	QueueSize() int
 
 	IndexEnable() bool
 	AutoIndexMeta() bool
