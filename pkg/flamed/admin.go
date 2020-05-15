@@ -18,8 +18,8 @@ import (
 
 type Admin struct {
 	mClusterID uint64
-	mRW        iface.IRW
 	mTimeout   time.Duration
+	mRW        iface.IReaderWriter
 }
 
 func (a *Admin) UpdateTimeout(timeout time.Duration) {

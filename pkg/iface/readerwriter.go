@@ -18,7 +18,7 @@ type IWriter interface {
 		timeout time.Duration) (sm.Result, error)
 }
 
-type IRW interface {
+type IReaderWriter interface {
 	IReader
 	IWriter
 }

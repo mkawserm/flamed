@@ -14,8 +14,8 @@ import (
 type Client struct {
 	mClusterID uint64
 	mNamespace string
-	mRW        iface.IRW
 	mTimeout   time.Duration
+	mRW        iface.IReaderWriter
 }
 
 func (c *Client) UpdateTimeout(timeout time.Duration) {
@@ -122,7 +122,7 @@ func (c *Client) Decrement(name string, value uint32) (*pb.ProposalResponse, err
 	return c.sendProposal(intKeyPayload)
 }
 
-func (c *Client) Setup(clusterID uint64, namespace string, rw iface.IRW, timeout time.Duration) error {
+func (c *Client) Setup(clusterID uint64, namespace string, rw iface.IReaderWriter, timeout time.Duration) error {
 	if !utility.IsNamespaceValid([]byte(namespace)) {
 		return x.ErrInvalidNamespace
 	}
