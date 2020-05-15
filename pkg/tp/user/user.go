@@ -136,14 +136,14 @@ func (i *User) Apply(_ context.Context,
 	if !utility.IsUsernameValid(payload.User.Username) {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "invalid username"
+		tpr.ErrorText = "invalid username: username length must be greater than 2"
 		return tpr
 	}
 
-	if len(payload.User.Password) < 6 {
+	if !utility.IsPasswordValid(payload.User.Password) {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "password length must be greater than 5"
+		tpr.ErrorText = "invalid password: password length must be greater than 5"
 		return tpr
 	}
 

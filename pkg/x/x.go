@@ -9,7 +9,7 @@ var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 var ErrTPNotFound = errors.New("transaction processor not found")
 var ErrUnknownLookupRequest = errors.New("unknown lookup request")
 
-var ErrInvalidPassword = errors.New("invalid password")
+var ErrInvalidPassword = errors.New("password length must be greater than 5")
 var ErrUnexpectedNilValue = errors.New("unexpected nil value")
 
 var ErrInvalidConfiguration = errors.New("invalid configuration")
@@ -24,8 +24,7 @@ var ErrFailedToDeleteDataFromStorage = errors.New("failed to delete data from th
 
 var ErrFailedToCreateIndexMeta = errors.New("failed to create indexmeta meta")
 
-var ErrInvalidUsername = errors.New("invalid user: username length must be minimum 3 " +
-	"and password length must be minimum 6")
+var ErrInvalidUsername = errors.New("username length must be greater than 2")
 
 var ErrFailedToApplyIndex = errors.New("failed to apply indexmeta")
 var ErrFailedToCreateIndex = errors.New("failed to create indexmeta")
