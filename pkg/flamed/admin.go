@@ -136,8 +136,8 @@ func (a *Admin) DeleteUser(username string) (*pb.ProposalResponse, error) {
 	return pr, nil
 }
 
-func (a *Admin) IsAccessControlExists(namespace []byte, username string) bool {
-	ac, err := a.GetAccessControl(namespace, username)
+func (a *Admin) IsAccessControlExists(username string, namespace []byte) bool {
+	ac, err := a.GetAccessControl(username, namespace)
 	if err != nil {
 		return false
 	}
@@ -149,7 +149,7 @@ func (a *Admin) IsAccessControlExists(namespace []byte, username string) bool {
 	return false
 }
 
-func (a *Admin) GetAccessControl(namespace []byte, username string) (*pb.AccessControl, error) {
+func (a *Admin) GetAccessControl(username string, namespace []byte) (*pb.AccessControl, error) {
 	if !utility.IsNamespaceValid(namespace) {
 		return nil, x.ErrInvalidNamespace
 	}
