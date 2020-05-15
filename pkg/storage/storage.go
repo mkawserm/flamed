@@ -5,9 +5,9 @@ import (
 	badgerDb "github.com/dgraph-io/badger/v2"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
@@ -292,7 +292,7 @@ func (s *Storage) Create(namespace []byte, key []byte, value []byte) error {
 		return x.ErrStorageIsNotReady
 	}
 
-	uid := uidutil.GetUid(namespace, key)
+	uid := crypto.GetStateAddress(namespace, key)
 
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
@@ -318,7 +318,7 @@ func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	uid := uidutil.GetUid(namespace, key)
+	uid := crypto.GetStateAddress(namespace, key)
 	txn := s.mStateStorage.NewReadOnlyTransaction()
 	defer txn.Discard()
 
@@ -343,7 +343,7 @@ func (s *Storage) Delete(namespace []byte, key []byte) error {
 		return x.ErrStorageIsNotReady
 	}
 
-	uid := uidutil.GetUid(namespace, key)
+	uid := crypto.GetStateAddress(namespace, key)
 
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
@@ -365,7 +365,7 @@ func (s *Storage) SaveAppliedIndex(u uint64) error {
 	return s.Create(
 		[]byte(constant.AppliedIndexNamespace),
 		[]byte(constant.AppliedIndexKey),
-		uidutil.Uint64ToByteSlice(u))
+		crypto.Uint64ToByteSlice(u))
 }
 
 func (s *Storage) QueryAppliedIndex() (uint64, error) {
@@ -380,7 +380,7 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return uidutil.ByteSliceToUint64(data), nil
+	return crypto.ByteSliceToUint64(data), nil
 }
 
 func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
@@ -592,7 +592,7 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 		return x.ErrFailedToRecoverFromSnapshot
 	}
 
-	total := uidutil.ByteSliceToUint64(sz)
+	total := crypto.ByteSliceToUint64(sz)
 
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
@@ -603,7 +603,7 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
-		toRead := uidutil.ByteSliceToUint64(sz)
+		toRead := crypto.ByteSliceToUint64(sz)
 		data := make([]byte, toRead)
 		if _, err := io.ReadFull(r, data); err != nil {
 			internalLogger.Error("sm read error", zap.Error(err))
@@ -674,7 +674,7 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	}
 	it.Close()
 
-	if _, err := w.Write(uidutil.Uint64ToByteSlice(total)); err != nil {
+	if _, err := w.Write(crypto.Uint64ToByteSlice(total)); err != nil {
 		internalLogger.Error("storage write error", zap.Error(err))
 		return x.ErrFailedToSaveSnapshot
 	}
@@ -686,7 +686,7 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 		item := it.StateSnapshot()
 		if data, err := proto.Marshal(item); err == nil {
 			dataLength := uint64(len(data))
-			if _, err := w.Write(uidutil.Uint64ToByteSlice(dataLength)); err != nil {
+			if _, err := w.Write(crypto.Uint64ToByteSlice(dataLength)); err != nil {
 				internalLogger.Error("storage write error", zap.Error(err))
 				return x.ErrFailedToSaveSnapshot
 			}

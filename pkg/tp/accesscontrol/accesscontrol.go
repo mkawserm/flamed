@@ -2,12 +2,12 @@ package accesscontrol
 
 import (
 	"context"
+	"github.com/mkawserm/flamed/pkg/crypto"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 )
@@ -43,8 +43,8 @@ func (c *AccessControl) Lookup(_ context.Context,
 		return nil, x.ErrInvalidUsername
 	}
 
-	address := uidutil.GetUid([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid([]byte(request.Username), request.Namespace))
+	address := crypto.GetStateAddress([]byte(constant.AccessControlNamespace),
+		crypto.GetStateAddress([]byte(request.Username), request.Namespace))
 
 	entry, err := readOnlyStateContext.GetState(address)
 
@@ -159,8 +159,8 @@ func (c *AccessControl) Apply(_ context.Context,
 		return tpr
 	}
 
-	address := uidutil.GetUid([]byte(constant.AccessControlNamespace),
-		uidutil.GetUid([]byte(payload.AccessControl.Username), payload.AccessControl.Namespace))
+	address := crypto.GetStateAddress([]byte(constant.AccessControlNamespace),
+		crypto.GetStateAddress([]byte(payload.AccessControl.Username), payload.AccessControl.Namespace))
 
 	if payload.Action == pb.Action_UPSERT {
 		return c.upsert(tpr, stateContext, transaction, address, payload.AccessControl)

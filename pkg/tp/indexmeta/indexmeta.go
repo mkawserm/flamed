@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
-	"github.com/mkawserm/flamed/pkg/uidutil"
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 
@@ -34,7 +34,7 @@ func (i *IndexMeta) Lookup(_ context.Context,
 	} else {
 		return nil, x.ErrInvalidLookupInput
 	}
-	address := uidutil.GetUid([]byte(constant.IndexMetaNamespace), namespace)
+	address := crypto.GetStateAddress([]byte(constant.IndexMetaNamespace), namespace)
 
 	entry, err := readOnlyStateContext.GetState(address)
 
@@ -143,7 +143,7 @@ func (i *IndexMeta) Apply(_ context.Context,
 		return tpr
 	}
 
-	address := uidutil.GetUid([]byte(constant.IndexMetaNamespace), payload.IndexMeta.Namespace)
+	address := crypto.GetStateAddress([]byte(constant.IndexMetaNamespace), payload.IndexMeta.Namespace)
 
 	if payload.Action == pb.Action_UPSERT {
 		r := i.upsert(tpr, stateContext, transaction, address, payload.IndexMeta)

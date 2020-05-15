@@ -2,12 +2,12 @@ package user
 
 import (
 	"context"
+	"github.com/mkawserm/flamed/pkg/crypto"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 )
@@ -39,7 +39,7 @@ func (i *User) Lookup(_ context.Context,
 		return nil, x.ErrInvalidUsername
 	}
 
-	address := uidutil.GetUid([]byte(constant.UserNamespace), []byte(username))
+	address := crypto.GetStateAddress([]byte(constant.UserNamespace), []byte(username))
 
 	entry, err := readOnlyStateContext.GetState(address)
 
@@ -154,7 +154,7 @@ func (i *User) Apply(_ context.Context,
 		return tpr
 	}
 
-	address := uidutil.GetUid([]byte(constant.UserNamespace), []byte(payload.User.Username))
+	address := crypto.GetStateAddress([]byte(constant.UserNamespace), []byte(payload.User.Username))
 
 	if payload.Action == pb.Action_UPSERT {
 		return i.upsert(tpr, stateContext, transaction, address, payload.User)

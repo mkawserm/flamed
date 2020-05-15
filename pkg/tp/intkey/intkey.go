@@ -6,7 +6,6 @@ import (
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/uidutil"
 	"github.com/mkawserm/flamed/pkg/x"
 )
 
@@ -25,8 +24,8 @@ func (i *IntKey) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {
 	if request, ok := query.(Request); ok {
-		address := crypto.GetStateAddressFromStringKey(i.FamilyName(), request.Name)
-		address = uidutil.GetUid([]byte(request.Namespace), address)
+		address := crypto.GetStateHashFromStringKey(i.FamilyName(), request.Name)
+		address = crypto.GetStateAddress([]byte(request.Namespace), address)
 		entry, err := readOnlyStateContext.GetState(address)
 		if err != nil {
 			return nil, err
@@ -300,8 +299,8 @@ func (i *IntKey) Apply(_ context.Context,
 		return tpr
 	}
 
-	address := crypto.GetStateAddressFromStringKey(i.FamilyName(), payload.Name)
-	address = uidutil.GetUid(transaction.Namespace, address)
+	hash := crypto.GetStateHashFromStringKey(i.FamilyName(), payload.Name)
+	address := crypto.GetStateAddress(transaction.Namespace, hash)
 
 	if payload.Verb == Verb_INSERT {
 		return i.insert(tpr, stateContext, transaction, address, payload)
