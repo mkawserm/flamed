@@ -616,18 +616,21 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 	}
 
 	sz := make([]byte, 8)
-	if _, err := io.ReadFull(r, sz); err != nil {
-		internalLogger.Error("read error", zap.Error(err))
-		return x.ErrFailedToRecoverFromSnapshot
-	}
 
-	total := crypto.ByteSliceToUint64(sz)
+	//if _, err := io.ReadFull(r, sz); err != nil {
+	//	internalLogger.Error("read error", zap.Error(err))
+	//	return x.ErrFailedToRecoverFromSnapshot
+	//}
+	//
+	//total := crypto.ByteSliceToUint64(sz)
 
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
 
-	for i := uint64(0); i < total; i++ {
-		if _, err := io.ReadFull(r, sz); err != nil {
+	for i := uint64(0); ; i++ {
+		if _, err := io.ReadFull(r, sz); err == io.ErrUnexpectedEOF || err == io.EOF {
+			break
+		} else if err != nil {
 			internalLogger.Error("sm read error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
@@ -696,19 +699,19 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 
 	defer txn.Discard()
 
-	total := uint64(0)
-	it := txn.KeyOnlyForwardIterator()
-	for it.Rewind(); it.Valid(); it.Next() {
-		total = total + 1
-	}
-	it.Close()
+	//total := uint64(0)
+	//it := txn.KeyOnlyForwardIterator()
+	//for it.Rewind(); it.Valid(); it.Next() {
+	//	total = total + 1
+	//}
+	//it.Close()
+	//
+	//if _, err := w.Write(crypto.Uint64ToByteSlice(total)); err != nil {
+	//	internalLogger.Error("storage write error", zap.Error(err))
+	//	return x.ErrFailedToSaveSnapshot
+	//}
 
-	if _, err := w.Write(crypto.Uint64ToByteSlice(total)); err != nil {
-		internalLogger.Error("storage write error", zap.Error(err))
-		return x.ErrFailedToSaveSnapshot
-	}
-
-	it = txn.ForwardIterator()
+	it := txn.ForwardIterator()
 	defer it.Close()
 
 	for it.Rewind(); it.Valid(); it.Next() {
