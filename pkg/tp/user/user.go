@@ -15,15 +15,19 @@ import (
 type User struct {
 }
 
-func (i *User) FamilyName() string {
+func (u *User) FamilyName() string {
 	return Name
 }
 
-func (i *User) FamilyVersion() string {
+func (u *User) FamilyVersion() string {
 	return Version
 }
 
-func (i *User) Lookup(_ context.Context,
+func (u *User) IndexObject(_ []byte) interface{} {
+	return nil
+}
+
+func (u *User) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {
 
@@ -55,7 +59,7 @@ func (i *User) Lookup(_ context.Context,
 	return user, nil
 }
 
-func (i *User) upsert(tpr *pb.TransactionResponse,
+func (u *User) upsert(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction,
 	address []byte,
@@ -89,7 +93,7 @@ func (i *User) upsert(tpr *pb.TransactionResponse,
 	}
 }
 
-func (i *User) delete(tpr *pb.TransactionResponse,
+func (u *User) delete(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte) *pb.TransactionResponse {
 	if _, err := stateContext.GetState(address); err != nil {
@@ -112,7 +116,7 @@ func (i *User) delete(tpr *pb.TransactionResponse,
 	}
 }
 
-func (i *User) Apply(_ context.Context,
+func (u *User) Apply(_ context.Context,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction) *pb.TransactionResponse {
 
@@ -157,9 +161,9 @@ func (i *User) Apply(_ context.Context,
 	address := crypto.GetStateAddress([]byte(constant.UserNamespace), []byte(payload.User.Username))
 
 	if payload.Action == pb.Action_UPSERT {
-		return i.upsert(tpr, stateContext, transaction, address, payload.User)
+		return u.upsert(tpr, stateContext, transaction, address, payload.User)
 	} else if payload.Action == pb.Action_DELETE {
-		return i.delete(tpr, stateContext, address)
+		return u.delete(tpr, stateContext, address)
 	} else {
 		tpr.Status = 0
 		tpr.ErrorCode = 0

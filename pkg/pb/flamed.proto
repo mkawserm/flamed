@@ -72,8 +72,9 @@ message IndexField {
 
 message IndexDocument {
   string name = 1;
-  bool default = 2;
-  repeated IndexField indexFieldList = 3;
+  bool enabled = 2;
+  bool default = 3;
+  repeated IndexField indexFieldList = 4;
 }
 
 message IndexMeta {

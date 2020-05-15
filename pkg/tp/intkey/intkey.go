@@ -20,12 +20,16 @@ func (i *IntKey) FamilyVersion() string {
 	return Version
 }
 
+func (i *IntKey) IndexObject(_ []byte) interface{} {
+	return nil
+}
+
 func (i *IntKey) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {
 	if request, ok := query.(Request); ok {
-		address := crypto.GetStateHashFromStringKey(i.FamilyName(), request.Name)
-		address = crypto.GetStateAddress([]byte(request.Namespace), address)
+		hash := crypto.GetStateHashFromStringKey(i.FamilyName(), request.Name)
+		address := crypto.GetStateAddress([]byte(request.Namespace), hash)
 		entry, err := readOnlyStateContext.GetState(address)
 		if err != nil {
 			return nil, err

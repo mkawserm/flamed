@@ -23,6 +23,10 @@ func (c *AccessControl) FamilyVersion() string {
 	return Version
 }
 
+func (c *AccessControl) IndexObject(_ []byte) interface{} {
+	return nil
+}
+
 func (c *AccessControl) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {

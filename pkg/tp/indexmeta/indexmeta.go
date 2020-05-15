@@ -23,6 +23,10 @@ func (i *IndexMeta) FamilyVersion() string {
 	return Version
 }
 
+func (i *IndexMeta) IndexObject(_ []byte) interface{} {
+	return nil
+}
+
 func (i *IndexMeta) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {
