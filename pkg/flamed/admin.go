@@ -26,7 +26,7 @@ func (a *Admin) UpdateTimeout(timeout time.Duration) {
 	a.mTimeout = timeout
 }
 
-func (a *Admin) IsUserExists(username string) bool {
+func (a *Admin) IsUserAvailable(username string) bool {
 	u, err := a.GetUser(username)
 	if err != nil {
 		return false
@@ -136,7 +136,7 @@ func (a *Admin) DeleteUser(username string) (*pb.ProposalResponse, error) {
 	return pr, nil
 }
 
-func (a *Admin) IsAccessControlExists(username string, namespace []byte) bool {
+func (a *Admin) IsAccessControlAvailable(username string, namespace []byte) bool {
 	ac, err := a.GetAccessControl(username, namespace)
 	if err != nil {
 		return false
