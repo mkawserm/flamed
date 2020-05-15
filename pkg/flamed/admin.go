@@ -7,6 +7,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
+	"github.com/mkawserm/flamed/pkg/tp/user"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
@@ -21,6 +22,103 @@ type Admin struct {
 
 func (a *Admin) UpdateTimeout(timeout time.Duration) {
 	a.mTimeout = timeout
+}
+
+func (a *Admin) GetUser(username string) (*pb.User, error) {
+	if !utility.IsUsernameValid(username) {
+		return nil, x.ErrInvalidUsername
+	}
+
+	lookupRequest := variant.LookupRequest{
+		Query:         username,
+		Context:       context.TODO(),
+		FamilyName:    user.Name,
+		FamilyVersion: user.Version,
+	}
+
+	output, err := a.mRW.Read(a.mClusterID, lookupRequest, a.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if v, ok := output.(*pb.User); ok {
+		return v, nil
+	} else {
+		return nil, x.ErrUnknownValue
+	}
+}
+
+func (a *Admin) UpsertUser(u *pb.User) (*pb.ProposalResponse, error) {
+	if !utility.IsUsernameValid(u.Username) {
+		return nil, x.ErrInvalidUsername
+	}
+
+	if len(u.Password) == 0 {
+		return nil, x.ErrInvalidPassword
+	}
+
+	payload := &pb.UserPayload{
+		Action: pb.Action_UPSERT,
+		User:   u,
+	}
+
+	payloadBytes, err := proto.Marshal(payload)
+
+	if err != nil {
+		return nil, err
+	}
+
+	proposal := pb.NewProposal()
+	proposal.AddTransaction([]byte(constant.UserNamespace), user.Name, user.Version, payloadBytes)
+
+	r, err := a.mRW.Write(a.mClusterID, proposal, a.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	pr := &pb.ProposalResponse{}
+
+	if err := proto.Unmarshal(r.Data, pr); err != nil {
+		return nil, err
+	}
+
+	return pr, nil
+}
+
+func (a *Admin) DeleteUser(username string) (*pb.ProposalResponse, error) {
+	if !utility.IsUsernameValid(username) {
+		return nil, x.ErrInvalidUsername
+	}
+
+	payload := &pb.UserPayload{
+		Action: pb.Action_DELETE,
+		User:   &pb.User{Username: username},
+	}
+
+	payloadBytes, err := proto.Marshal(payload)
+
+	if err != nil {
+		return nil, err
+	}
+
+	proposal := pb.NewProposal()
+	proposal.AddTransaction([]byte(constant.UserNamespace), user.Name, user.Version, payloadBytes)
+
+	r, err := a.mRW.Write(a.mClusterID, proposal, a.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	pr := &pb.ProposalResponse{}
+
+	if err := proto.Unmarshal(r.Data, pr); err != nil {
+		return nil, err
+	}
+
+	return pr, nil
 }
 
 func (a *Admin) GetIndexMeta(namespace []byte) (*pb.IndexMeta, error) {
@@ -82,14 +180,14 @@ func (a *Admin) UpsertIndexMeta(meta *pb.IndexMeta) (*pb.ProposalResponse, error
 	return pr, nil
 }
 
-func (a *Admin) DeleteIndexMeta(meta *pb.IndexMeta) (*pb.ProposalResponse, error) {
-	if !utility.IsNamespaceValid(meta.Namespace) {
+func (a *Admin) DeleteIndexMeta(namespace []byte) (*pb.ProposalResponse, error) {
+	if !utility.IsNamespaceValid(namespace) {
 		return nil, x.ErrInvalidNamespace
 	}
 
 	payload := &pb.IndexMetaPayload{
 		Action:    pb.Action_DELETE,
-		IndexMeta: meta,
+		IndexMeta: &pb.IndexMeta{Namespace: namespace},
 	}
 
 	payloadBytes, err := proto.Marshal(payload)

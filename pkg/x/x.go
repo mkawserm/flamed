@@ -9,6 +9,7 @@ var ErrClusterNotFound = errors.New("cluster not found")
 var ErrUnknownLookupRequest = errors.New("unknown lookup request")
 var ErrUnknownValue = errors.New("unknown value")
 var ErrUnexpectedNilValue = errors.New("unexpected nil value")
+var ErrInvalidPassword = errors.New("invalid password")
 
 var ErrEmptyBatch = errors.New("empty batch")
 var ErrFailedToReadFlameEntry = errors.New("failed to read flame entry")
@@ -37,7 +38,7 @@ var ErrFailedToGetIndexMeta = errors.New("failed to get indexmeta meta")
 var ErrFailedToUpdateIndexMeta = errors.New("failed to update indexmeta meta")
 var ErrFailedToDeleteIndexMeta = errors.New("failed to delete indexmeta meta")
 
-var ErrInvalidUser = errors.New("invalid user: username length must be minimum 3 " +
+var ErrInvalidUsername = errors.New("invalid user: username length must be minimum 3 " +
 	"and password length must be minimum 6")
 
 var ErrFailedToCreateUser = errors.New("failed to create user")

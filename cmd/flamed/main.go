@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
+	"github.com/mkawserm/flamed/pkg/tp/user"
 	"os"
 	"strings"
 	"time"
@@ -42,6 +43,7 @@ func main() {
 		"/tmp/1/storage",
 		nil)
 
+	configuration.StoragedConfiguration().AddTransactionProcessor(&user.User{})
 	configuration.StoragedConfiguration().AddTransactionProcessor(&intkey.IntKey{})
 	configuration.StoragedConfiguration().AddTransactionProcessor(&indexmeta.IndexMeta{})
 
@@ -175,10 +177,7 @@ func main() {
 			}
 
 		case "delete_index_meta":
-			meta := &pb.IndexMeta{
-				Namespace: []byte("test"),
-			}
-			pr, err := admin.DeleteIndexMeta(meta)
+			pr, err := admin.DeleteIndexMeta([]byte("test"))
 			if err != nil {
 				fmt.Println(err)
 			} else {
