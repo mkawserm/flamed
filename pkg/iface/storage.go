@@ -25,16 +25,17 @@ type IStorageConfiguration interface {
 	StateStorageCustomConfiguration() interface{}
 	IndexStorageCustomConfiguration() interface{}
 
-	IsTransactionProcessorExists(family, version string) bool
 	AddTransactionProcessor(tp ITransactionProcessor)
+	IsTransactionProcessorExists(family, version string) bool
 	GetTransactionProcessor(family, version string) ITransactionProcessor
 }
 
 type IStorage interface {
-	SetConfiguration(configuration IStorageConfiguration) bool
+	RunGC()
 	Open() error
 	Close() error
-	RunGC()
+
+	SetConfiguration(configuration IStorageConfiguration) bool
 
 	ChangeSecretKey(path string,
 		oldSecretKey []byte,
@@ -42,8 +43,8 @@ type IStorage interface {
 		encryptionKeyRotationDuration time.Duration) error
 
 	PrepareSnapshot() (interface{}, error)
-	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
 	RecoverFromSnapshot(r io.Reader) error
+	SaveSnapshot(snapshotContext interface{}, w io.Writer) error
 
 	SaveAppliedIndex(u uint64) error
 	QueryAppliedIndex() (uint64, error)
