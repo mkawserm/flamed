@@ -169,6 +169,10 @@ func (b *Badger) Setup(path string, secretKey []byte, configuration interface{})
 		b.mDbConfiguration.GoroutineNumber = 16
 	}
 
+	if b.mDbConfiguration.GCDiscardRatio <= 0.0 {
+		b.mDbConfiguration.GCDiscardRatio = 0.5
+	}
+
 	if b.mDbConfiguration.LogPrefix == "" {
 		b.mDbConfiguration.LogPrefix = Name
 	}
@@ -177,8 +181,8 @@ func (b *Badger) Setup(path string, secretKey []byte, configuration interface{})
 		b.mDbConfiguration.SliceCap = 100
 	}
 
-	if b.mDbConfiguration.EncryptionKeyRotationDuration <= 0 {
-		b.mDbConfiguration.EncryptionKeyRotationDuration = 10 * 24 * time.Hour
+	if b.mDbConfiguration.BadgerOptions.EncryptionKeyRotationDuration <= 0 {
+		b.mDbConfiguration.BadgerOptions.EncryptionKeyRotationDuration = 10 * 24 * time.Hour
 	}
 }
 
@@ -241,7 +245,7 @@ func (b *Badger) RunGC() {
 			return
 		}
 
-		err := b.mDb.RunValueLogGC(0.5)
+		err := b.mDb.RunValueLogGC(b.mDbConfiguration.GCDiscardRatio)
 		if err == nil {
 			goto again
 		}
