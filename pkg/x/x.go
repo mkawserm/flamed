@@ -2,73 +2,36 @@ package x
 
 import "errors"
 
+var ErrUnknownValue = errors.New("unknown value")
+var ErrClusterNotFound = errors.New("cluster not found")
 var ErrKeyDoesNotExists = errors.New("key does not exists")
 var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 var ErrTPNotFound = errors.New("transaction processor not found")
-var ErrClusterNotFound = errors.New("cluster not found")
 var ErrUnknownLookupRequest = errors.New("unknown lookup request")
-var ErrUnknownValue = errors.New("unknown value")
-var ErrUnexpectedNilValue = errors.New("unexpected nil value")
-var ErrInvalidPassword = errors.New("invalid password")
 
-var ErrEmptyBatch = errors.New("empty batch")
-var ErrFailedToReadFlameEntry = errors.New("failed to read flame entry")
+var ErrInvalidPassword = errors.New("invalid password")
+var ErrUnexpectedNilValue = errors.New("unexpected nil value")
+
 var ErrInvalidConfiguration = errors.New("invalid configuration")
 var ErrStorageIsAlreadyOpen = errors.New("storage is already open")
 var ErrFailedToOpenStorage = errors.New("failed to open the storage")
 var ErrFailedToCloseStorage = errors.New("failed to close the storage")
 var ErrFailedToChangeSecretKey = errors.New("failed to change secret key")
 var ErrFailedToReadDataFromStorage = errors.New("failed to read data from the storage")
-var ErrUidDoesNotExists = errors.New("uid does not exists")
 
-var ErrFailedToReadBatchFromStorage = errors.New("failed to read batch from storage")
-var ErrFailedToDeleteDataFromStorage = errors.New("failed to delete data from the storage")
 var ErrFailedToCreateDataToStorage = errors.New("failed to create data to the storage")
-var ErrFailedToUpdateDataToStorage = errors.New("failed to update data to the storage")
-var ErrFailedToAppendDataToStorage = errors.New("failed to append data to the storage")
-var ErrFailedToApplyBatchToStorage = errors.New("failed to apply batch to the storage")
-
-//var ErrFailedToApplyActionToStorage = errors.New("failed to apply action to the storage")
-var ErrFailedToApplyProposal = errors.New("failed to apply proposal")
+var ErrFailedToDeleteDataFromStorage = errors.New("failed to delete data from the storage")
 
 var ErrFailedToCreateIndexMeta = errors.New("failed to create indexmeta meta")
-var ErrFailedToGetIndexMeta = errors.New("failed to get indexmeta meta")
-
-//var ErrFailedToGetAllIndexMeta = errors.New("failed to get all indexmeta meta")
-var ErrFailedToUpdateIndexMeta = errors.New("failed to update indexmeta meta")
-var ErrFailedToDeleteIndexMeta = errors.New("failed to delete indexmeta meta")
 
 var ErrInvalidUsername = errors.New("invalid user: username length must be minimum 3 " +
 	"and password length must be minimum 6")
 
-var ErrFailedToCreateUser = errors.New("failed to create user")
-var ErrFailedToGetUser = errors.New("failed to get user")
-
-//var ErrFailedToGetAllUser = errors.New("failed to get all user")
-var ErrFailedToUpdateUser = errors.New("failed to update user")
-var ErrFailedToDeleteUser = errors.New("failed to delete user")
-
-var ErrFailedToCreateAccessControl = errors.New("failed to create access control")
-var ErrFailedToGetAccessControl = errors.New("failed to get access control")
-
-//var ErrFailedToGetAllAccessControl = errors.New("failed to get all access control")
-var ErrFailedToUpdateAccessControl = errors.New("failed to update access control")
-var ErrFailedToDeleteAccessControl = errors.New("failed to delete access control")
-var ErrFailedToIterate = errors.New("failed to iterate")
-
 var ErrFailedToApplyIndex = errors.New("failed to apply indexmeta")
 var ErrFailedToCreateIndex = errors.New("failed to create indexmeta")
-var ErrFailedToUpdateIndex = errors.New("failed to update indexmeta")
 
-var ErrInvalidNamespace = errors.New("invalid namespace: namespace should start with a letter and minimum 3 characters and can not contain `::`")
-
-var ErrDataMarshalError = errors.New("failed to marshal data")
-var ErrDataUnmarshalError = errors.New("failed to unmarshal data")
-
-//var ErrFailedToGenerateAsyncSnapshotFromStorage = errors.New("failed to generate async snapshot from the storage")
-//var ErrFailedToApplyAsyncSnapshotToStorage = errors.New("failed to apply async snapshot to the storage")
-//var ErrFailedToGenerateSyncSnapshotFromStorage = errors.New("failed to generate sync snapshot from the storage")
-//var ErrFailedToApplySyncSnapshotToStorage = errors.New("failed to apply sync snapshot to the storage")
+var ErrInvalidNamespace = errors.New("invalid namespace: namespace should start with a letter" +
+	" and minimum 3 characters and can not contain `::`")
 
 var ErrInvalidLookupInput = errors.New("invalid lookup input")
 
@@ -79,12 +42,12 @@ var ErrFailedToRecoverFromSnapshot = errors.New("failed to recover from snapshot
 //var ErrInvalidSnapshotContext = errors.New("invalid snapshot context")
 var ErrLastIndexIsNotMovingForward = errors.New("last indexmeta is not moving forward")
 
-var ErrStorageIsNotReady = errors.New("storage is not ready")
 var ErrNodeIsNotReady = errors.New("node is not ready")
-var ErrNodeAlreadyConfigured = errors.New("node is already configured")
+var ErrStorageIsNotReady = errors.New("storage is not ready")
 var ErrFailedToStopCluster = errors.New("failed to stop cluster")
-var ErrFailedToCreateNodeHostDir = errors.New("failed to create node host dir")
 var ErrFailedToCreateWALDir = errors.New("failed to create wal dir")
+var ErrNodeAlreadyConfigured = errors.New("node is already configured")
+var ErrFailedToCreateNodeHostDir = errors.New("failed to create node host dir")
 var ErrInvalidStoragedConfiguration = errors.New("invalid storaged configuration")
 
 //func IsInvalidConfiguration(err error) bool {
