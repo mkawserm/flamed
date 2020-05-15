@@ -16,18 +16,6 @@ import (
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 )
 
-//type CounterObject struct {
-//	Counter uint64 `json:"counter"`
-//}
-//
-//func getJson(object *CounterObject) []byte {
-//	if data, err := json.Marshal(object); err == nil {
-//		return data
-//	} else {
-//		return nil
-//	}
-//}
-
 func main() {
 	//members := map[uint64]string{1: "localhost:63001", 2: "localhost:63002", 3: "localhost:63003"}
 	members := map[uint64]string{1: "localhost:63001"}
