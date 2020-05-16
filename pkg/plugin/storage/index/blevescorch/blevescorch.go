@@ -31,6 +31,10 @@ func (b *BleveScorch) Open(path string, secretKey []byte, configuration interfac
 }
 
 func (b *BleveScorch) UpsertIndexMeta(meta *pb.IndexMeta) error {
+	if !meta.Enabled {
+		return nil
+	}
+
 	p := b.path + "/" + string(meta.Namespace)
 	if b.isPathExists(p) {
 		b.removeAll(p)
@@ -66,6 +70,7 @@ func (b *BleveScorch) DefaultIndexMeta(namespace string) error {
 	if b.isPathExists(p) {
 		b.removeAll(p)
 	}
+
 	indexMapping := bleveMapping.NewIndexMapping()
 	index, err := bleveSearch.NewUsing(p,
 		indexMapping,
@@ -85,6 +90,10 @@ func (b *BleveScorch) DefaultIndexMeta(namespace string) error {
 
 func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) error {
 	p := b.path + "/" + namespace
+	if !b.isPathExists(p) {
+		return nil
+	}
+
 	index, err := bleveSearch.OpenUsing(p, nil)
 
 	if err != nil {
@@ -145,7 +154,11 @@ func (b *BleveScorch) removeAll(path string) {
 	_ = os.RemoveAll(path)
 }
 
-func (b *BleveScorch) getMapping(_ *pb.IndexMeta) *bleveMapping.IndexMappingImpl {
+func (b *BleveScorch) getMapping(meta *pb.IndexMeta) *bleveMapping.IndexMappingImpl {
 	indexMapping := bleveMapping.NewIndexMapping()
+	if meta.Default {
+		return indexMapping
+	}
+
 	return indexMapping
 }
