@@ -23,19 +23,7 @@ func (c *Client) UpdateTimeout(timeout time.Duration) {
 }
 
 func (c *Client) GetIntKeyState(name string) (*IntKeyState, error) {
-	request := Request{
-		Name:      name,
-		Namespace: c.mNamespace,
-	}
-
-	lookupRequest := variant.LookupRequest{
-		Query:         request,
-		Context:       nil,
-		FamilyName:    Name,
-		FamilyVersion: Version,
-	}
-
-	r, err := c.mRW.Read(c.mClusterID, lookupRequest, c.mTimeout)
+	r, err := c.mRW.Read(c.mClusterID, c.GetIntKeyLookupRequest(name), c.mTimeout)
 
 	if err != nil {
 		return nil, err
@@ -71,6 +59,42 @@ func (c *Client) sendProposal(payload *IntKeyPayload) (*pb.ProposalResponse, err
 	}
 
 	return pr, nil
+}
+
+func (c *Client) GetIntKeyLookupRequest(name string) variant.LookupRequest {
+	request := Request{
+		Name:      name,
+		Namespace: c.mNamespace,
+	}
+
+	lookupRequest := variant.LookupRequest{
+		Query:         request,
+		Context:       nil,
+		FamilyName:    Name,
+		FamilyVersion: Version,
+	}
+
+	return lookupRequest
+}
+
+func (c *Client) GetInsertTransaction(name string, value uint32) *pb.Transaction {
+	return c.customizeTransaction(Verb_INSERT, name, value)
+}
+
+func (c *Client) GetUpsertTransaction(name string, value uint32) *pb.Transaction {
+	return c.customizeTransaction(Verb_UPSERT, name, value)
+}
+
+func (c *Client) GetDeleteTransaction(name string) *pb.Transaction {
+	return c.customizeTransaction(Verb_DELETE, name, 0)
+}
+
+func (c *Client) GetIncrementTransaction(name string, value uint32) *pb.Transaction {
+	return c.customizeTransaction(Verb_INCREMENT, name, value)
+}
+
+func (c *Client) GetDecrementTransaction(name string, value uint32) *pb.Transaction {
+	return c.customizeTransaction(Verb_DECREMENT, name, value)
 }
 
 func (c *Client) Insert(name string, value uint32) (*pb.ProposalResponse, error) {
@@ -136,4 +160,26 @@ func (c *Client) Setup(clusterID uint64, namespace string, rw iface.IReaderWrite
 	c.mRW = rw
 	c.mTimeout = timeout
 	return nil
+}
+
+func (c *Client) customizeTransaction(verb Verb, name string, value uint32) *pb.Transaction {
+	intKeyPayload := &IntKeyPayload{
+		Verb:  verb,
+		Name:  name,
+		Value: value,
+	}
+
+	payload, err := proto.Marshal(intKeyPayload)
+
+	if err != nil {
+		return nil
+	}
+
+	txn := &pb.Transaction{
+		Payload:       payload,
+		Namespace:     []byte(c.mNamespace),
+		FamilyName:    Name,
+		FamilyVersion: Version,
+	}
+	return txn
 }
