@@ -181,9 +181,7 @@ func (i *IntKey) increment(tpr *pb.TransactionResponse,
 		return tpr
 	}
 
-	var temp = uint64(stateData.Value) + uint64(payload.Value)
-
-	if temp > 4294967295 {
+	if 18446744073709551615-payload.Value < stateData.Value {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "range exceed"
@@ -235,8 +233,7 @@ func (i *IntKey) decrement(tpr *pb.TransactionResponse,
 		return tpr
 	}
 
-	var temp = int64(stateData.Value) - int64(payload.Value)
-	if temp < 0 {
+	if payload.Value > stateData.Value {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "range exceed"

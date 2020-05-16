@@ -77,11 +77,11 @@ func (c *Client) GetIntKeyLookupRequest(name string) variant.LookupRequest {
 	return lookupRequest
 }
 
-func (c *Client) GetInsertTransaction(name string, value uint32) *pb.Transaction {
+func (c *Client) GetInsertTransaction(name string, value uint64) *pb.Transaction {
 	return c.customizeTransaction(Verb_INSERT, name, value)
 }
 
-func (c *Client) GetUpsertTransaction(name string, value uint32) *pb.Transaction {
+func (c *Client) GetUpsertTransaction(name string, value uint64) *pb.Transaction {
 	return c.customizeTransaction(Verb_UPSERT, name, value)
 }
 
@@ -89,15 +89,15 @@ func (c *Client) GetDeleteTransaction(name string) *pb.Transaction {
 	return c.customizeTransaction(Verb_DELETE, name, 0)
 }
 
-func (c *Client) GetIncrementTransaction(name string, value uint32) *pb.Transaction {
+func (c *Client) GetIncrementTransaction(name string, value uint64) *pb.Transaction {
 	return c.customizeTransaction(Verb_INCREMENT, name, value)
 }
 
-func (c *Client) GetDecrementTransaction(name string, value uint32) *pb.Transaction {
+func (c *Client) GetDecrementTransaction(name string, value uint64) *pb.Transaction {
 	return c.customizeTransaction(Verb_DECREMENT, name, value)
 }
 
-func (c *Client) Insert(name string, value uint32) (*pb.ProposalResponse, error) {
+func (c *Client) Insert(name string, value uint64) (*pb.ProposalResponse, error) {
 	intKeyPayload := &IntKeyPayload{
 		Verb:  Verb_INSERT,
 		Name:  name,
@@ -107,7 +107,7 @@ func (c *Client) Insert(name string, value uint32) (*pb.ProposalResponse, error)
 	return c.sendProposal(intKeyPayload)
 }
 
-func (c *Client) Upsert(name string, value uint32) (*pb.ProposalResponse, error) {
+func (c *Client) Upsert(name string, value uint64) (*pb.ProposalResponse, error) {
 	intKeyPayload := &IntKeyPayload{
 		Verb:  Verb_UPSERT,
 		Name:  name,
@@ -126,7 +126,7 @@ func (c *Client) Delete(name string) (*pb.ProposalResponse, error) {
 	return c.sendProposal(intKeyPayload)
 }
 
-func (c *Client) Increment(name string, value uint32) (*pb.ProposalResponse, error) {
+func (c *Client) Increment(name string, value uint64) (*pb.ProposalResponse, error) {
 	intKeyPayload := &IntKeyPayload{
 		Verb:  Verb_INCREMENT,
 		Name:  name,
@@ -136,7 +136,7 @@ func (c *Client) Increment(name string, value uint32) (*pb.ProposalResponse, err
 	return c.sendProposal(intKeyPayload)
 }
 
-func (c *Client) Decrement(name string, value uint32) (*pb.ProposalResponse, error) {
+func (c *Client) Decrement(name string, value uint64) (*pb.ProposalResponse, error) {
 	intKeyPayload := &IntKeyPayload{
 		Verb:  Verb_DECREMENT,
 		Name:  name,
@@ -162,7 +162,7 @@ func (c *Client) Setup(clusterID uint64, namespace string, rw iface.IReaderWrite
 	return nil
 }
 
-func (c *Client) customizeTransaction(verb Verb, name string, value uint32) *pb.Transaction {
+func (c *Client) customizeTransaction(verb Verb, name string, value uint64) *pb.Transaction {
 	intKeyPayload := &IntKeyPayload{
 		Verb:  verb,
 		Name:  name,
