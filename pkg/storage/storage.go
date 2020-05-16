@@ -110,20 +110,24 @@ func (s *StateContext) DeleteIndex(id string) error {
 	return nil
 }
 
-func (s *StateContext) AutoIndexMeta() bool {
-	return s.mStorage.AutoIndexMeta()
-}
+//func (s *StateContext) AutoIndexMeta() bool {
+//	return s.mStorage.AutoIndexMeta()
+//}
 
-func (s *StateContext) CanIndex(namespace string) bool {
-	if !s.mStorage.IndexEnable() {
-		return false
-	}
-
-	return s.mStorage.CanIndex(namespace)
-}
+//func (s *StateContext) CanIndex(namespace string) bool {
+//	if !s.mStorage.IndexEnable() {
+//		return false
+//	}
+//
+//	return s.mStorage.CanIndex(namespace)
+//}
 
 func (s *StateContext) UpsertIndexMeta(meta *pb.IndexMeta) error {
 	if s.mReadOnly {
+		return nil
+	}
+
+	if !s.mStorage.IndexEnable() {
 		return nil
 	}
 
@@ -140,6 +144,10 @@ func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
 		return nil
 	}
 
+	if !s.mStorage.IndexEnable() {
+		return nil
+	}
+
 	m := &variant.IndexMetaAction{
 		Action:    constant.DELETE,
 		IndexMeta: meta,
@@ -150,6 +158,10 @@ func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
 
 func (s *StateContext) DefaultIndexMeta(namespace string) error {
 	if s.mReadOnly {
+		return nil
+	}
+
+	if !s.mStorage.IndexEnable() {
 		return nil
 	}
 

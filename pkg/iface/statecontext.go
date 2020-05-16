@@ -27,8 +27,8 @@ type IStateContext interface {
 	UpsertIndex(id string, data interface{}) error
 	DeleteIndex(id string) error
 
-	AutoIndexMeta() bool
-	CanIndex(namespace string) bool
+	//AutoIndexMeta() bool
+	//CanIndex(namespace string) bool
 	UpsertIndexMeta(meta *pb.IndexMeta) error
 	DeleteIndexMeta(meta *pb.IndexMeta) error
 	DefaultIndexMeta(namespace string) error
