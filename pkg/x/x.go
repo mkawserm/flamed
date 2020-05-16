@@ -9,7 +9,7 @@ var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 var ErrTPNotFound = errors.New("transaction processor not found")
 var ErrUnknownLookupRequest = errors.New("unknown lookup request")
 
-var ErrKeyNotFound = errors.New("key is not available")
+var ErrAddressNotFound = errors.New("key is not available")
 
 var ErrInvalidPassword = errors.New("password length must be greater than 5")
 var ErrUnexpectedNilValue = errors.New("unexpected nil value")

@@ -1,6 +1,7 @@
 package iface
 
 import (
+	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"io"
 	"time"
@@ -33,6 +34,8 @@ type IStorageConfiguration interface {
 	AddTransactionProcessor(tp ITransactionProcessor)
 	IsTransactionProcessorExists(family, version string) bool
 	GetTransactionProcessor(family, version string) ITransactionProcessor
+
+	ProposalReceiver(proposal *pb.Proposal, status int)
 }
 
 type IStorage interface {

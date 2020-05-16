@@ -10,7 +10,7 @@ type IStateStorageIterator interface {
 	Close()
 	Valid() bool
 	Rewind()
-	Seek(key []byte)
+	Seek(address []byte)
 	StateSnapshot() *pb.StateSnapshot
 	ValidForPrefix(prefix []byte) bool
 }
@@ -18,9 +18,9 @@ type IStateStorageIterator interface {
 type IStateStorageTransaction interface {
 	Discard()
 	Commit() error
-	Delete(key []byte) error
-	Get(key []byte) ([]byte, error)
-	Set(key []byte, value []byte) error
+	Delete(address []byte) error
+	Get(address []byte) ([]byte, error)
+	Set(address []byte, data []byte) error
 
 	ForwardIterator() IStateStorageIterator
 	ReverseIterator() IStateStorageIterator

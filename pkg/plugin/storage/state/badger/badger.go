@@ -31,8 +31,8 @@ func (i *Iterator) Valid() bool {
 	return i.mBadgerIterator.Valid()
 }
 
-func (i *Iterator) Seek(key []byte) {
-	i.mBadgerIterator.Seek(key)
+func (i *Iterator) Seek(address []byte) {
+	i.mBadgerIterator.Seek(address)
 }
 
 func (i *Iterator) StateSnapshot() *pb.StateSnapshot {
@@ -71,19 +71,19 @@ func (t *Transaction) Commit() error {
 	return t.mBadgerTxn.Commit()
 }
 
-func (t *Transaction) Delete(key []byte) error {
-	return t.mBadgerTxn.Delete(key)
+func (t *Transaction) Delete(address []byte) error {
+	return t.mBadgerTxn.Delete(address)
 }
 
-func (t *Transaction) Get(key []byte) ([]byte, error) {
-	item, err := t.mBadgerTxn.Get(key)
+func (t *Transaction) Get(address []byte) ([]byte, error) {
+	item, err := t.mBadgerTxn.Get(address)
 
 	if err == badgerDb.ErrKeyNotFound {
-		return nil, x.ErrKeyNotFound
+		return nil, x.ErrAddressNotFound
 	}
 
 	if item == nil {
-		return nil, x.ErrKeyNotFound
+		return nil, x.ErrAddressNotFound
 	}
 
 	if val, err := item.ValueCopy(nil); err == nil {
@@ -93,8 +93,8 @@ func (t *Transaction) Get(key []byte) ([]byte, error) {
 	}
 }
 
-func (t *Transaction) Set(key []byte, value []byte) error {
-	return t.mBadgerTxn.Set(key, value)
+func (t *Transaction) Set(address []byte, data []byte) error {
+	return t.mBadgerTxn.Set(address, data)
 }
 
 func (t *Transaction) ForwardIterator() iface.IStateStorageIterator {

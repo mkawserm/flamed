@@ -352,7 +352,7 @@ func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
 	defer txn.Discard()
 
 	if val, err := txn.Get(uid); err != nil {
-		if err == x.ErrKeyNotFound {
+		if err == x.ErrAddressNotFound {
 			return nil, x.ErrStateNotFound
 		} else {
 			internalLogger.Error("read failure", zap.Error(err))
@@ -500,6 +500,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 	}
 
 	if err := txn.Commit(); err == nil {
+		s.mConfiguration.ProposalReceiver(proposal, constant.ACCEPTED)
 		if s.mConfiguration.IndexEnable() {
 			//NOTE: update indexmeta meta
 			s.updateIndexMetaOfIndexStorage(indexMetaActionContainer)
@@ -510,6 +511,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		pr.Status = 1
 		return pr
 	} else {
+		s.mConfiguration.ProposalReceiver(proposal, constant.REJECTED)
 		indexDataContainer = nil
 		indexMetaActionContainer = nil
 		pr.Status = 0
@@ -920,7 +922,7 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 
 	data, err := txn.Get(crypto.GetStateAddress([]byte(constant.IndexMetaNamespace), namespace))
 
-	if err != x.ErrKeyNotFound && err != nil {
+	if err != x.ErrAddressNotFound && err != nil {
 		return err
 	}
 

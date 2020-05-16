@@ -2,6 +2,7 @@ package conf
 
 import (
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/plugin/storage/index/blevescorch"
 	sBadger "github.com/mkawserm/flamed/pkg/plugin/storage/state/badger"
 	"github.com/mkawserm/flamed/pkg/variant"
@@ -134,4 +135,8 @@ func (s *StoragedConfiguration) AddTransactionProcessor(tp iface.ITransactionPro
 func (s *StoragedConfiguration) IsTransactionProcessorExists(family, version string) bool {
 	_, found := s.TransactionProcessorMap[family+"::"+version]
 	return found
+}
+
+func (s *StoragedConfiguration) ProposalReceiver(_ *pb.Proposal, _ int) {
+
 }
