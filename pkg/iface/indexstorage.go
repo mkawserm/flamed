@@ -6,15 +6,14 @@ import (
 )
 
 type IIndexStorage interface {
-	Open(path string, secretKey []byte, configuration interface{}) error
+	RunGC()
 	Close() error
+	Open(path string, secretKey []byte, configuration interface{}) error
 
+	DefaultIndexMeta(namespace string) error
 	UpsertIndexMeta(meta *pb.IndexMeta) error
 	DeleteIndexMeta(meta *pb.IndexMeta) error
-	DefaultIndexMeta(namespace string) error
 
-	ApplyIndex(namespace string, data []*variant.IndexData) error
 	CanIndex(namespace string) bool
-
-	RunGC()
+	ApplyIndex(namespace string, data []*variant.IndexData) error
 }
