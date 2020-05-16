@@ -62,7 +62,10 @@ func SimpleStoragedConfiguration(path string, secretKey []byte) iface.IStoragedC
 		TransactionProcessorMap: make(map[string]iface.ITransactionProcessor)}
 }
 
-func SimpleOnDiskClusterConfiguration(clusterID uint64, clusterName string, initialMembers map[uint64]string, join bool) iface.IOnDiskClusterConfiguration {
+func SimpleOnDiskClusterConfiguration(clusterID uint64,
+	clusterName string,
+	initialMembers map[uint64]string,
+	join bool) iface.IOnDiskClusterConfiguration {
 	return &OnDiskClusterConfiguration{OnDiskClusterConfigurationInput: OnDiskClusterConfigurationInput{
 		ClusterID:      clusterID,
 		ClusterName:    clusterName,
