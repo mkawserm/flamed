@@ -9,7 +9,7 @@ type IStateIterator interface {
 	Close()
 	Valid() bool
 	Rewind()
-	Seek(key []byte)
+	Seek(address []byte)
 	StateSnapshot() *pb.StateSnapshot
 	ValidForPrefix(prefix []byte) bool
 }
@@ -20,9 +20,9 @@ type IStateContext interface {
 	GetKeyOnlyForwardIterator() IStateIterator
 	GetKeyOnlyReverseIterator() IStateIterator
 
-	GetState(key []byte) (*pb.StateEntry, error)
-	UpsertState(key []byte, entry *pb.StateEntry) error
-	DeleteState(key []byte) error
+	GetState(address []byte) (*pb.StateEntry, error)
+	UpsertState(address []byte, entry *pb.StateEntry) error
+	DeleteState(address []byte) error
 
 	UpsertIndex(id string, data interface{}) error
 	DeleteIndex(id string) error

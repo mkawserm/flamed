@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/tp/accesscontrol"
 	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
+	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/tp/user"
 	"os"
 	"strings"
@@ -34,6 +35,7 @@ func main() {
 
 	storagedConfiguration := conf.SimpleStoragedConfiguration("/tmp/1/storage", nil)
 	storagedConfiguration.AddTransactionProcessor(&user.User{})
+	storagedConfiguration.AddTransactionProcessor(&json.JSON{})
 	storagedConfiguration.AddTransactionProcessor(&intkey.IntKey{})
 	storagedConfiguration.AddTransactionProcessor(&indexmeta.IndexMeta{})
 	storagedConfiguration.AddTransactionProcessor(&accesscontrol.AccessControl{})

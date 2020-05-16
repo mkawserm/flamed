@@ -17,6 +17,7 @@ cover-html:
 protobuf:
 	@protoc -I=./ -I=./pkg/pb --go_out=./pkg/pb flamed.proto
 	@protoc -I=./ -I=./pkg/tp/intkey --go_out=./pkg/tp/intkey intkey.proto
+	@protoc -I=./ -I=./pkg/tp/json --go_out=./pkg/tp/json json.proto
 
 push:
 	git push
