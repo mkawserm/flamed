@@ -4,8 +4,8 @@ import (
 	"crypto/sha512"
 )
 
-// GetStateHashFromStringKey generate 35 bytes length state hash from string
-// based key
+// GetStateHashFromStringKey generate 35 bytes length
+// state hash from string based key
 func GetStateHashFromStringKey(familyName, key string) []byte {
 	familyNameHash := sha512.Sum512([]byte(familyName))
 	keyHash := sha512.Sum512([]byte(key))
