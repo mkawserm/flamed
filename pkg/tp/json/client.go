@@ -73,6 +73,10 @@ func (b *Batch) Reset() {
 	b.mTransactions = make([]*pb.Transaction, 0, b.mMaxBatchLength)
 }
 
+func (b *Batch) Clear() {
+	b.Reset()
+}
+
 func (b *Batch) MergeJSONMap(data map[string]interface{}) error {
 	return b.addTransaction(Action_MERGE, data)
 }
