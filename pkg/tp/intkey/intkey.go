@@ -184,7 +184,7 @@ func (i *IntKey) increment(tpr *pb.TransactionResponse,
 	if 18446744073709551615-payload.Value < stateData.Value {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "range exceed"
+		tpr.ErrorText = "result can not be out of range"
 		return tpr
 	}
 	stateData.Value = stateData.Value + payload.Value
@@ -236,7 +236,7 @@ func (i *IntKey) decrement(tpr *pb.TransactionResponse,
 	if payload.Value > stateData.Value {
 		tpr.Status = 0
 		tpr.ErrorCode = 0
-		tpr.ErrorText = "range exceed"
+		tpr.ErrorText = "result can not be out of range"
 		return tpr
 	}
 

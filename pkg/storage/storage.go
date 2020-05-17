@@ -506,8 +506,12 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 			pr.ErrorText = "proposal rejected"
 			return pr
 		} else {
-			indexDataContainer[string(t.Namespace)] = stateContext.mIndexDataList
-			indexMetaActionContainer[string(t.Namespace)] = stateContext.mIndexMetaActionList
+			if len(stateContext.mIndexDataList) > 0 {
+				indexDataContainer[string(t.Namespace)] = stateContext.mIndexDataList
+			}
+			if len(stateContext.mIndexMetaActionList) > 0 {
+				indexMetaActionContainer[string(t.Namespace)] = stateContext.mIndexMetaActionList
+			}
 		}
 	}
 
@@ -516,6 +520,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		if s.mConfiguration.IndexEnable() {
 			//NOTE: update indexmeta meta
 			s.updateIndexMetaOfIndexStorage(indexMetaActionContainer)
+
 			//NOTE: index data
 			s.updateIndexOfIndexStorage(indexDataContainer)
 		}
@@ -584,7 +589,6 @@ func (s *Storage) updateIndexOfIndexStorage(indexDataContainer IndexDataContaine
 	if len(indexDataContainer) == 0 {
 		return
 	}
-
 	/* NOTE: INDEX DATA TO BE PROCESSED USING GO CHANNEL */
 	s.mIndexTaskQueue <- variant.Task{
 		ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
