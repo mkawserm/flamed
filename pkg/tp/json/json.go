@@ -37,7 +37,7 @@ func (j *JSON) generateAddress(namespace []byte, id string) []byte {
 	return GetJSONFamilyStateAddress(namespace, j.FamilyName(), id)
 }
 
-func (j *JSON) getData(readOnlyStateContext iface.IStateContext, address []byte) (map[string]interface{}, error) {
+func (j *JSON) getDataAsJSONMap(readOnlyStateContext iface.IStateContext, address []byte) (map[string]interface{}, error) {
 	entry, err := readOnlyStateContext.GetState(address)
 	if err != nil {
 		return nil, err
@@ -56,10 +56,10 @@ func (j *JSON) Lookup(_ context.Context,
 
 	switch v := query.(type) {
 	case string:
-		return j.getData(readOnlyStateContext,
+		return j.getDataAsJSONMap(readOnlyStateContext,
 			crypto.GetStateAddressFromHexString(v))
 	case []byte:
-		return j.getData(readOnlyStateContext, v)
+		return j.getDataAsJSONMap(readOnlyStateContext, v)
 	default:
 		return nil, x.ErrInvalidLookupInput
 	}
