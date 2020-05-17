@@ -3,6 +3,7 @@ package json
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/crypto"
@@ -138,9 +139,10 @@ func (j *JSON) Apply(_ context.Context,
 		}
 		return j.upsert(tpr, stateContext, address, entry, jsonMap)
 
+	case Action_MERGE:
+		return j.merge(tpr, stateContext, address, jsonMap)
 	case Action_UPDATE:
 		return j.update(tpr, stateContext, address, jsonMap)
-
 	case Action_UPSERT:
 		entry := &pb.StateEntry{
 			Payload:       transaction.Payload,
@@ -156,35 +158,11 @@ func (j *JSON) Apply(_ context.Context,
 	return tpr
 }
 
-func (j *JSON) update(tpr *pb.TransactionResponse,
+func (j *JSON) processFinalData(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte,
-	jsonMap map[string]interface{}) *pb.TransactionResponse {
-
-	var stateEntry *pb.StateEntry
-
-	if se, _ := stateContext.GetState(address); se == nil {
-		tpr.Status = 0
-		tpr.ErrorCode = 0
-		tpr.ErrorText = "state is not available"
-		return tpr
-	} else {
-		stateEntry = se
-	}
-
-	stateJsonMap := make(map[string]interface{})
-
-	if err := json.Unmarshal(stateEntry.Payload, &stateJsonMap); err != nil {
-		tpr.Status = 0
-		tpr.ErrorCode = 0
-		tpr.ErrorText = err.Error()
-		return tpr
-	}
-
-	// NOTE: updating state json map
-	for k, v := range jsonMap {
-		stateJsonMap[k] = v
-	}
+	stateEntry *pb.StateEntry,
+	stateJsonMap map[string]interface{}) *pb.TransactionResponse {
 
 	if data, err := json.Marshal(stateJsonMap); err != nil {
 		tpr.Status = 0
@@ -213,6 +191,78 @@ func (j *JSON) update(tpr *pb.TransactionResponse,
 	tpr.ErrorCode = 0
 	tpr.ErrorText = ""
 	return tpr
+}
+
+func (j *JSON) merge(tpr *pb.TransactionResponse,
+	stateContext iface.IStateContext,
+	address []byte,
+	jsonMap map[string]interface{}) *pb.TransactionResponse {
+
+	var stateEntry *pb.StateEntry
+
+	if se, _ := stateContext.GetState(address); se == nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "state is not available"
+		return tpr
+	} else {
+		stateEntry = se
+	}
+
+	stateJsonMap := make(map[string]interface{})
+
+	if err := json.Unmarshal(stateEntry.Payload, &stateJsonMap); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
+	// NOTE: updating state json map. merge logic
+	for k, v := range jsonMap {
+		stateJsonMap[k] = v
+	}
+	return j.processFinalData(tpr, stateContext, address, stateEntry, stateJsonMap)
+}
+
+func (j *JSON) update(tpr *pb.TransactionResponse,
+	stateContext iface.IStateContext,
+	address []byte,
+	jsonMap map[string]interface{}) *pb.TransactionResponse {
+
+	var stateEntry *pb.StateEntry
+
+	if se, _ := stateContext.GetState(address); se == nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "state is not available"
+		return tpr
+	} else {
+		stateEntry = se
+	}
+
+	stateJsonMap := make(map[string]interface{})
+
+	if err := json.Unmarshal(stateEntry.Payload, &stateJsonMap); err != nil {
+		tpr.Status = 0
+		tpr.ErrorCode = 0
+		tpr.ErrorText = err.Error()
+		return tpr
+	}
+
+	// NOTE: updating state json map. update logic
+	for k, v := range jsonMap {
+		if _, found := stateJsonMap[k]; found {
+			stateJsonMap[k] = v
+		} else {
+			tpr.Status = 0
+			tpr.ErrorCode = 0
+			tpr.ErrorText = fmt.Sprintf("json key [%s] not found", k)
+			return tpr
+		}
+	}
+
+	return j.processFinalData(tpr, stateContext, address, stateEntry, stateJsonMap)
 }
 
 func (j *JSON) upsert(tpr *pb.TransactionResponse,

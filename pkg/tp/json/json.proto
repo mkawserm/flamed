@@ -2,10 +2,11 @@ syntax = "proto3";
 package json;
 
 enum Action {
-  INSERT = 0;
-  UPDATE = 1;
-  UPSERT = 2;
-  DELETE = 3;
+  MERGE = 0;
+  INSERT = 1;
+  UPDATE = 2;
+  UPSERT = 3;
+  DELETE = 4;
 }
 
 message JSONPayload {
