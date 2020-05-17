@@ -15,7 +15,7 @@ import "github.com/mkawserm/flamed/pkg/storage"
 import sm "github.com/lni/dragonboat/v3/statemachine"
 
 type Storaged struct {
-	mStorage *storage.Storage
+	mStorage iface.IStorage
 
 	mNodeId      uint64
 	mClusterId   uint64

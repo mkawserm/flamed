@@ -1,6 +1,8 @@
 package iface
 
 import (
+	"context"
+
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"io"
@@ -56,4 +58,8 @@ type IStorage interface {
 
 	SaveAppliedIndex(u uint64) error
 	QueryAppliedIndex() (uint64, error)
+
+	Search(_ variant.SearchRequest) (interface{}, error)
+	Lookup(request variant.LookupRequest) (interface{}, error)
+	ApplyProposal(ctx context.Context, proposal *pb.Proposal, entryIndex uint64) *pb.ProposalResponse
 }
