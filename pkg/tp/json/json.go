@@ -59,8 +59,7 @@ func (j *JSON) Lookup(_ context.Context,
 		return j.getData(readOnlyStateContext,
 			crypto.GetStateAddressFromHexString(v))
 	case []byte:
-		return j.getData(readOnlyStateContext,
-			v)
+		return j.getData(readOnlyStateContext, v)
 	default:
 		return nil, x.ErrInvalidLookupInput
 	}
