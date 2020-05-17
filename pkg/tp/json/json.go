@@ -138,7 +138,6 @@ func (j *JSON) Apply(_ context.Context,
 			FamilyVersion: transaction.FamilyVersion,
 		}
 		return j.upsert(tpr, stateContext, address, entry, jsonMap)
-
 	case Action_MERGE:
 		return j.merge(tpr, stateContext, address, jsonMap)
 	case Action_UPDATE:
