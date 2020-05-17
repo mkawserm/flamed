@@ -501,6 +501,8 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		pr.Append(tpr)
 
 		if tpr.Status == 0 {
+			stateContext.mIndexDataList = nil
+			stateContext.mIndexMetaActionList = nil
 			pr.Status = 0
 			pr.ErrorCode = 0
 			pr.ErrorText = "proposal rejected"
