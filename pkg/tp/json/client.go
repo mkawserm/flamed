@@ -7,6 +7,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 	"time"
 )
@@ -162,4 +163,88 @@ func (c *Client) ApplyBatch(b *Batch) (*pb.ProposalResponse, error) {
 	}
 
 	return pr, nil
+}
+
+func (c *Client) GetJSONMap(id string) (map[string]interface{}, error) {
+	data, err := c.mRW.Read(c.mClusterID, variant.LookupRequest{
+		Query:         id,
+		Context:       nil,
+		FamilyName:    Name,
+		FamilyVersion: Version,
+	}, c.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if v, ok := data.(map[string]interface{}); ok {
+		return v, nil
+	}
+
+	return nil, x.ErrUnknownValue
+}
+
+func (c *Client) MergeJSONMap(data map[string]interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.MergeJSONMap(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
+}
+
+func (c *Client) InsertJSONMap(data map[string]interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.InsertJSONMap(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
+}
+
+func (c *Client) UpsertJSONMap(data map[string]interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.UpsertJSONMap(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
+}
+
+func (c *Client) UpdateJSONMap(data map[string]interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.UpdateJSONMap(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
+}
+
+func (c *Client) DeleteJSONMap(data map[string]interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.DeleteJSONMap(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
 }
