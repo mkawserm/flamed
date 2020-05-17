@@ -472,21 +472,31 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 	}()
 
 	internalLogger.Info("raft entry index", zap.Uint64("entryIndex", entryIndex))
+
+	pr := pb.NewProposalResponse(0)
+	pr.Uuid = proposal.Uuid
+
+	if len(proposal.Uuid) == 0 {
+		pr.Status = 0
+		pr.ErrorCode = 0
+		pr.ErrorText = "uuid can not be empty"
+		return pr
+	}
+
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
 
 	var indexDataContainer = make(IndexDataContainer)
 	var indexMetaActionContainer = make(IndexMetaActionContainer)
 
-	pr := pb.NewProposalResponse(0)
-	pr.Uuid = proposal.Uuid
-
 	for _, t := range proposal.Transactions {
 		tp := s.mConfiguration.GetTransactionProcessor(t.FamilyName, t.FamilyVersion)
 		if tp == nil {
 			pr.Status = 0
 			pr.ErrorCode = 0
-			pr.ErrorText = "Transaction family name:" + t.FamilyName + " family version:" + t.FamilyVersion + " not found"
+			pr.ErrorText = "Transaction family name:" +
+				t.FamilyName + " family version:" +
+				t.FamilyVersion + " not found"
 			return pr
 		}
 
