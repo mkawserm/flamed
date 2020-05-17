@@ -14,6 +14,7 @@ import (
 
 var ErrInvalidID = errors.New("invalid id")
 var ErrEmptyBatch = errors.New("empty batch")
+var ErrUnexpectedNilValue = errors.New("unexpected nil value")
 var ErrIdIsNotAvailable = errors.New("id is not available")
 
 type Batch struct {
@@ -34,7 +35,7 @@ func (b *Batch) validateIDFromMap(data map[string]interface{}) error {
 	}
 }
 
-func (b *Batch) addTransaction(action Action, data map[string]interface{}) error {
+func (b *Batch) appendInternalTransaction(action Action, data map[string]interface{}) error {
 	if err := b.validateIDFromMap(data); err != nil {
 		return err
 	}
@@ -79,23 +80,36 @@ func (b *Batch) Clear() {
 }
 
 func (b *Batch) MergeJSONMap(data map[string]interface{}) error {
-	return b.addTransaction(Action_MERGE, data)
+	return b.appendInternalTransaction(Action_MERGE, data)
 }
 
 func (b *Batch) InsertJSONMap(data map[string]interface{}) error {
-	return b.addTransaction(Action_INSERT, data)
+	return b.appendInternalTransaction(Action_INSERT, data)
 }
 
 func (b *Batch) UpdateJSONMap(data map[string]interface{}) error {
-	return b.addTransaction(Action_UPDATE, data)
+	return b.appendInternalTransaction(Action_UPDATE, data)
 }
 
 func (b *Batch) UpsertJSONMap(data map[string]interface{}) error {
-	return b.addTransaction(Action_UPSERT, data)
+	return b.appendInternalTransaction(Action_UPSERT, data)
 }
 
 func (b *Batch) DeleteJSONMap(data map[string]interface{}) error {
-	return b.addTransaction(Action_DELETE, data)
+	return b.appendInternalTransaction(Action_DELETE, data)
+}
+
+func (b *Batch) AppendTransaction(txn *pb.Transaction) error {
+	if txn == nil {
+		return ErrUnexpectedNilValue
+	}
+
+	if b.mTransactions == nil {
+		b.mTransactions = make([]*pb.Transaction, 0, b.mMaxBatchLength)
+	}
+	b.mTransactions = append(b.mTransactions, txn)
+
+	return nil
 }
 
 type Client struct {
