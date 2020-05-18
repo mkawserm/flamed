@@ -50,16 +50,25 @@ func (j *JSON) getDataAsJSONMap(readOnlyStateContext iface.IStateContext, addres
 	}
 }
 
+func (j *JSON) getDataAsBytes(readOnlyStateContext iface.IStateContext, address []byte) ([]byte, error) {
+	entry, err := readOnlyStateContext.GetState(address)
+	if err != nil {
+		return nil, err
+	}
+
+	return entry.Payload, nil
+}
+
 func (j *JSON) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {
 
 	switch v := query.(type) {
 	case string:
-		return j.getDataAsJSONMap(readOnlyStateContext,
+		return j.getDataAsBytes(readOnlyStateContext,
 			crypto.GetStateAddressFromHexString(v))
 	case []byte:
-		return j.getDataAsJSONMap(readOnlyStateContext, v)
+		return j.getDataAsBytes(readOnlyStateContext, v)
 	default:
 		return nil, x.ErrInvalidLookupInput
 	}

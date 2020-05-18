@@ -35,7 +35,52 @@ func (b *Batch) validateIDFromMap(data map[string]interface{}) error {
 	}
 }
 
-func (b *Batch) appendInternalTransaction(action Action, data map[string]interface{}) error {
+func (b *Batch) validateID(data interface{}) error {
+	id := GetId(data)
+	if id == "" {
+		return ErrInvalidID
+	}
+
+	return nil
+}
+
+func (b *Batch) appendInternalTransaction(action Action, data interface{}) error {
+	if err := b.validateID(data); err != nil {
+		return err
+	}
+
+	payloadBytes, err := json.Marshal(data)
+
+	if err != nil {
+		return err
+	}
+
+	jsonPayload := &JSONPayload{
+		Action:  action,
+		Payload: payloadBytes,
+	}
+
+	payload, err := json.Marshal(jsonPayload)
+	if err != nil {
+		return err
+	}
+
+	txn := &pb.Transaction{
+		Payload:       payload,
+		Namespace:     b.mNamespace,
+		FamilyName:    Name,
+		FamilyVersion: Version,
+	}
+
+	if b.mTransactions == nil {
+		b.mTransactions = make([]*pb.Transaction, 0, b.mMaxBatchLength)
+	}
+	b.mTransactions = append(b.mTransactions, txn)
+
+	return nil
+}
+
+func (b *Batch) appendInternalJSONMapTransaction(action Action, data map[string]interface{}) error {
 	if err := b.validateIDFromMap(data); err != nil {
 		return err
 	}
@@ -79,24 +124,44 @@ func (b *Batch) Clear() {
 	b.Reset()
 }
 
-func (b *Batch) MergeJSONMap(data map[string]interface{}) error {
+func (b *Batch) Merge(data interface{}) error {
 	return b.appendInternalTransaction(Action_MERGE, data)
 }
 
-func (b *Batch) InsertJSONMap(data map[string]interface{}) error {
+func (b *Batch) MergeJSONMap(data map[string]interface{}) error {
+	return b.appendInternalJSONMapTransaction(Action_MERGE, data)
+}
+
+func (b *Batch) Insert(data interface{}) error {
 	return b.appendInternalTransaction(Action_INSERT, data)
 }
 
-func (b *Batch) UpdateJSONMap(data map[string]interface{}) error {
+func (b *Batch) InsertJSONMap(data map[string]interface{}) error {
+	return b.appendInternalJSONMapTransaction(Action_INSERT, data)
+}
+
+func (b *Batch) Update(data interface{}) error {
 	return b.appendInternalTransaction(Action_UPDATE, data)
 }
 
-func (b *Batch) UpsertJSONMap(data map[string]interface{}) error {
+func (b *Batch) UpdateJSONMap(data map[string]interface{}) error {
+	return b.appendInternalJSONMapTransaction(Action_UPDATE, data)
+}
+
+func (b *Batch) Upsert(data interface{}) error {
 	return b.appendInternalTransaction(Action_UPSERT, data)
 }
 
-func (b *Batch) DeleteJSONMap(data map[string]interface{}) error {
+func (b *Batch) UpsertJSONMap(data map[string]interface{}) error {
+	return b.appendInternalJSONMapTransaction(Action_UPSERT, data)
+}
+
+func (b *Batch) Delete(data interface{}) error {
 	return b.appendInternalTransaction(Action_DELETE, data)
+}
+
+func (b *Batch) DeleteJSONMap(data map[string]interface{}) error {
+	return b.appendInternalJSONMapTransaction(Action_DELETE, data)
 }
 
 func (b *Batch) AppendTransaction(txn *pb.Transaction) error {
@@ -179,6 +244,48 @@ func (c *Client) ApplyBatch(b *Batch) (*pb.ProposalResponse, error) {
 	return pr, nil
 }
 
+func (c *Client) Get(id string, object interface{}) (interface{}, error) {
+	data, err := c.mRW.Read(c.mClusterID, variant.LookupRequest{
+		Query:         id,
+		Context:       nil,
+		FamilyName:    Name,
+		FamilyVersion: Version,
+	}, c.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if v, ok := data.([]byte); ok {
+		if err := json.Unmarshal(v, object); err != nil {
+			return nil, err
+		} else {
+			return object, nil
+		}
+	}
+
+	return nil, x.ErrUnknownValue
+}
+
+func (c *Client) GetBytes(id string) ([]byte, error) {
+	data, err := c.mRW.Read(c.mClusterID, variant.LookupRequest{
+		Query:         id,
+		Context:       nil,
+		FamilyName:    Name,
+		FamilyVersion: Version,
+	}, c.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if v, ok := data.([]byte); ok {
+		return v, nil
+	}
+
+	return nil, x.ErrUnknownValue
+}
+
 func (c *Client) GetJSONMap(id string) (map[string]interface{}, error) {
 	data, err := c.mRW.Read(c.mClusterID, variant.LookupRequest{
 		Query:         id,
@@ -191,11 +298,29 @@ func (c *Client) GetJSONMap(id string) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	if v, ok := data.(map[string]interface{}); ok {
-		return v, nil
+	if v, ok := data.([]byte); ok {
+		jsonMap := make(map[string]interface{})
+		if err := json.Unmarshal(v, &jsonMap); err != nil {
+			return nil, err
+		} else {
+			return jsonMap, nil
+		}
 	}
 
 	return nil, x.ErrUnknownValue
+}
+
+func (c *Client) Merge(data interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.Merge(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
 }
 
 func (c *Client) MergeJSONMap(data map[string]interface{}) (*pb.ProposalResponse, error) {
@@ -206,6 +331,19 @@ func (c *Client) MergeJSONMap(data map[string]interface{}) (*pb.ProposalResponse
 	}
 
 	if err := b.MergeJSONMap(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
+}
+
+func (c *Client) Insert(data interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.Insert(data); err != nil {
 		return nil, err
 	}
 	return c.ApplyBatch(b)
@@ -224,6 +362,19 @@ func (c *Client) InsertJSONMap(data map[string]interface{}) (*pb.ProposalRespons
 	return c.ApplyBatch(b)
 }
 
+func (c *Client) Upsert(data interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.Upsert(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
+}
+
 func (c *Client) UpsertJSONMap(data map[string]interface{}) (*pb.ProposalResponse, error) {
 	b := &Batch{
 		mNamespace:      []byte(c.mNamespace),
@@ -237,6 +388,19 @@ func (c *Client) UpsertJSONMap(data map[string]interface{}) (*pb.ProposalRespons
 	return c.ApplyBatch(b)
 }
 
+func (c *Client) Update(data interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.Update(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
+}
+
 func (c *Client) UpdateJSONMap(data map[string]interface{}) (*pb.ProposalResponse, error) {
 	b := &Batch{
 		mNamespace:      []byte(c.mNamespace),
@@ -245,6 +409,19 @@ func (c *Client) UpdateJSONMap(data map[string]interface{}) (*pb.ProposalRespons
 	}
 
 	if err := b.UpdateJSONMap(data); err != nil {
+		return nil, err
+	}
+	return c.ApplyBatch(b)
+}
+
+func (c *Client) Delete(data interface{}) (*pb.ProposalResponse, error) {
+	b := &Batch{
+		mNamespace:      []byte(c.mNamespace),
+		mMaxBatchLength: 1,
+		mTransactions:   nil,
+	}
+
+	if err := b.Delete(data); err != nil {
 		return nil, err
 	}
 	return c.ApplyBatch(b)
