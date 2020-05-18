@@ -112,12 +112,13 @@ enum Action {
   SEARCH = 1;
   ITERATE = 2;
 
-  INSERT = 3;
-  UPDATE = 4;
-  UPSERT = 5;
-  DELETE = 6;
+  MERGE = 3;
+  INSERT = 4;
+  UPDATE = 5;
+  UPSERT = 6;
+  DELETE = 7;
 
-  DEFAULT = 7;
+  DEFAULT = 8;
 }
 
 message IndexMetaPayload {
