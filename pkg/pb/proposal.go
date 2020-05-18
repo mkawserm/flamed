@@ -9,7 +9,6 @@ func NewProposal() *Proposal {
 	uuidValue := uuid.New()
 	proposal := &Proposal{
 		Uuid:      uuidValue[:],
-		Remote:    false,
 		CreatedAt: uint64(time.Now().UnixNano()),
 	}
 
