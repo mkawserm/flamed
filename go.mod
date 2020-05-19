@@ -9,4 +9,5 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/lni/dragonboat/v3 v3.1.1-0.20200515165915-3754bc90d951
 	go.uber.org/zap v1.15.0
+	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
 )
