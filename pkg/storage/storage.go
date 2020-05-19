@@ -132,7 +132,7 @@ func (s *StateContext) UpsertIndexMeta(meta *pb.IndexMeta) error {
 	}
 
 	m := &variant.IndexMetaAction{
-		Action:    constant.UPSERT,
+		Action:    pb.Action_UPSERT,
 		IndexMeta: meta,
 	}
 	s.mIndexMetaActionList = append(s.mIndexMetaActionList, m)
@@ -149,7 +149,7 @@ func (s *StateContext) DeleteIndexMeta(meta *pb.IndexMeta) error {
 	}
 
 	m := &variant.IndexMetaAction{
-		Action:    constant.DELETE,
+		Action:    pb.Action_DELETE,
 		IndexMeta: meta,
 	}
 	s.mIndexMetaActionList = append(s.mIndexMetaActionList, m)
@@ -166,7 +166,7 @@ func (s *StateContext) DefaultIndexMeta(namespace string) error {
 	}
 
 	m := &variant.IndexMetaAction{
-		Action:    constant.DEFAULT,
+		Action:    pb.Action_DEFAULT,
 		IndexMeta: &pb.IndexMeta{Namespace: []byte(namespace)},
 	}
 	s.mIndexMetaActionList = append(s.mIndexMetaActionList, m)
@@ -623,7 +623,7 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 
 	for _, v := range indexMetaActionContainer {
 		for _, v2 := range v {
-			if v2.Action == constant.UPSERT {
+			if v2.Action == pb.Action_UPSERT {
 				err := s.mIndexStorage.UpsertIndexMeta(v2.IndexMeta)
 				if err != nil {
 					internalLogger.Error("upsert indexmeta error", zap.Error(err))
@@ -633,14 +633,14 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 					s.BuildIndexByNamespace(v2.IndexMeta.Namespace)
 				}
 			}
-			if v2.Action == constant.DELETE {
+			if v2.Action == pb.Action_DELETE {
 				err := s.mIndexStorage.DeleteIndexMeta(v2.IndexMeta)
 				if err != nil {
 					internalLogger.Error("delete indexmeta error", zap.Error(err))
 				}
 			}
 
-			if v2.Action == constant.DEFAULT {
+			if v2.Action == pb.Action_DEFAULT {
 				err := s.mIndexStorage.DefaultIndexMeta(string(v2.IndexMeta.Namespace))
 				if err != nil {
 					internalLogger.Error("default indexmeta error", zap.Error(err))
