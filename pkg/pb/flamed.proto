@@ -180,3 +180,8 @@ message AccessControlPayload {
   Action action = 1;
   AccessControl accessControl = 2;
 }
+
+enum ProposalStatus {
+  REJECTED = 0;
+  ACCEPTED = 1;
+}

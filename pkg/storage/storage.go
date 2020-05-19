@@ -89,7 +89,7 @@ func (s *StateContext) UpsertIndex(id string, data interface{}) error {
 	s.mIndexDataList = append(s.mIndexDataList, &variant.IndexData{
 		ID:     id,
 		Data:   data,
-		Action: constant.UPSERT,
+		Action: pb.Action_UPSERT,
 	})
 	return nil
 }
@@ -105,7 +105,7 @@ func (s *StateContext) DeleteIndex(id string) error {
 
 	s.mIndexDataList = append(s.mIndexDataList, &variant.IndexData{
 		ID:     id,
-		Action: constant.DELETE,
+		Action: pb.Action_DELETE,
 	})
 	return nil
 }
@@ -528,7 +528,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 	}
 
 	if err := txn.Commit(); err == nil {
-		s.mConfiguration.ProposalReceiver(proposal, constant.ACCEPTED)
+		s.mConfiguration.ProposalReceiver(proposal, pb.ProposalStatus_ACCEPTED)
 		if s.mConfiguration.IndexEnable() {
 			//NOTE: update indexmeta meta
 			s.updateIndexMetaOfIndexStorage(indexMetaActionContainer)
@@ -540,7 +540,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		pr.Status = 1
 		return pr
 	} else {
-		s.mConfiguration.ProposalReceiver(proposal, constant.REJECTED)
+		s.mConfiguration.ProposalReceiver(proposal, pb.ProposalStatus_REJECTED)
 		indexDataContainer = nil
 		indexMetaActionContainer = nil
 		pr.Status = 0
@@ -900,7 +900,7 @@ func (s *Storage) buildIndex() error {
 			indexDataList = append(indexDataList, &variant.IndexData{
 				ID:     crypto.StateAddressByteSliceToHexString(snap.Address),
 				Data:   indexData,
-				Action: constant.UPSERT,
+				Action: pb.Action_UPSERT,
 			})
 
 			currentNamespace := string(entry.Namespace)
@@ -993,7 +993,7 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 			indexDataList = append(indexDataList, &variant.IndexData{
 				ID:     crypto.StateAddressByteSliceToHexString(snap.Address),
 				Data:   indexData,
-				Action: constant.UPSERT,
+				Action: pb.Action_UPSERT,
 			})
 
 			currentNamespace := string(entry.Namespace)

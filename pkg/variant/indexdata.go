@@ -1,7 +1,9 @@
 package variant
 
+import "github.com/mkawserm/flamed/pkg/pb"
+
 type IndexData struct {
 	ID     string      `json:"id"`
 	Data   interface{} `json:"data"`
-	Action int8        `json:"action"` /*1 - UPSERT, 2 - DELETE*/
+	Action pb.Action   `json:"action"`
 }

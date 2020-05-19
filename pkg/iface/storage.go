@@ -37,7 +37,7 @@ type IStorageConfiguration interface {
 	IsTransactionProcessorExists(family, version string) bool
 	GetTransactionProcessor(family, version string) ITransactionProcessor
 
-	ProposalReceiver(proposal *pb.Proposal, status int)
+	ProposalReceiver(proposal *pb.Proposal, status pb.ProposalStatus)
 }
 
 type IStorage interface {

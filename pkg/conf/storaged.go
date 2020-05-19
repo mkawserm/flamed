@@ -137,6 +137,6 @@ func (s *StoragedConfiguration) IsTransactionProcessorExists(family, version str
 	return found
 }
 
-func (s *StoragedConfiguration) ProposalReceiver(_ *pb.Proposal, _ int) {
+func (s *StoragedConfiguration) ProposalReceiver(_ *pb.Proposal, _ pb.ProposalStatus) {
 
 }
