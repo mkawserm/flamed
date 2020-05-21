@@ -30,9 +30,9 @@ func (a *App) setup() {
 		},
 	}
 
-	a.mRootCommand.AddCommand(RegisterRunCMD(a))
-	a.mRootCommand.AddCommand(RegisterAuthorCMD(a))
-	a.mRootCommand.AddCommand(RegisterVersionCMD(a))
+	a.mRootCommand.AddCommand(runCMD)
+	a.mRootCommand.AddCommand(authorCMD)
+	a.mRootCommand.AddCommand(versionCMD)
 }
 
 func (a *App) Execute() error {
