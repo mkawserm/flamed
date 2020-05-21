@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -29,21 +30,11 @@ var runCMD = &cobra.Command{
 			return
 		}
 
-		var im = make(map[uint64]string)
-		stringList := strings.Split(viper.GetString("InitialMembers"), ",")
-
-		var idx uint64 = 1
-		for _, value := range stringList {
-			v := strings.TrimSpace(value)
-			if v != "" {
-				im[idx] = strings.TrimSpace(value)
-				idx = idx + 1
-			}
-		}
+		im := getInitialMembers(strings.Split(viper.GetString("InitialMembers"), ";"))
 
 		if len(im) == 0 {
 			if !viper.GetBool("Join") {
-				im[1] = viper.GetString("RaftAddress")
+				im[viper.GetUint64("NodeID")] = viper.GetString("RaftAddress")
 			}
 		}
 
@@ -139,4 +130,30 @@ var runCMD = &cobra.Command{
 		}
 
 	},
+}
+
+func getInitialMembers(stringList []string) map[uint64]string {
+	var im = make(map[uint64]string)
+	for _, value := range stringList {
+		v := strings.TrimSpace(value)
+		if v != "" {
+			idAndAddress := strings.Split(v, ",")
+			if len(idAndAddress) != 2 {
+				continue
+			}
+
+			idString := strings.TrimSpace(idAndAddress[0])
+			address := strings.TrimSpace(idAndAddress[1])
+			id, err := strconv.Atoi(idString)
+			if err != nil {
+				panic(err)
+			}
+
+			if address != "" {
+				im[uint64(id)] = address
+			}
+		}
+	}
+
+	return im
 }

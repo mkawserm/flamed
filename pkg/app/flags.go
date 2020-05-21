@@ -23,7 +23,8 @@ func InitAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag("Join", cmd.PersistentFlags().Lookup("join"))
 
 	cmd.PersistentFlags().
-		String("initial-members", "", "Initial raft members")
+		String("initial-members", "", "Initial raft members "+
+			"format: [node_id,raft_address;] (ex: 1,localhost:6001; 2,localhost:6002;)")
 	_ = viper.BindPFlag("InitialMembers", cmd.PersistentFlags().Lookup("initial-members"))
 
 	cmd.PersistentFlags().
