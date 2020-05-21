@@ -35,12 +35,16 @@ var runCMD = &cobra.Command{
 			return
 		}
 
-		im := make(map[uint64]string)
+		var im = make(map[uint64]string)
 		stringList := strings.Split(viper.GetString("InitialMembers"), ",")
 
-		for idx, value := range stringList {
-			var index = uint64(1 + idx)
-			im[index] = strings.TrimSpace(value)
+		var idx uint64 = 1
+		for _, value := range stringList {
+			v := strings.TrimSpace(value)
+			if v != "" {
+				im[idx] = strings.TrimSpace(value)
+				idx = idx + 1
+			}
 		}
 
 		if len(im) == 0 {
@@ -49,7 +53,7 @@ var runCMD = &cobra.Command{
 			}
 		}
 
-		raftStoragePath := storagePath + "/raft"
+		raftStoragePath := viper.GetString("StoragePath") + "/raft"
 
 		nodeConfiguration := &conf.NodeConfiguration{
 			NodeConfigurationInput: conf.NodeConfigurationInput{
@@ -75,7 +79,7 @@ var runCMD = &cobra.Command{
 			},
 		}
 
-		if logDBConfig == "tiny" {
+		if viper.GetString("LogDBConfig") == "tiny" {
 			nodeConfiguration.NodeConfigurationInput.LogDBConfig = config.GetTinyMemLogDBConfig()
 		} else {
 			nodeConfiguration.NodeConfigurationInput.LogDBConfig = config.GetTinyMemLogDBConfig()
@@ -87,7 +91,7 @@ var runCMD = &cobra.Command{
 			panic(err)
 		}
 
-		clusterStoragePath := storagePath + "/cluster-1"
+		clusterStoragePath := viper.GetString("StoragePath") + "/cluster-1"
 
 		storagedConfiguration := conf.SimpleStoragedConfiguration(clusterStoragePath, nil)
 		for _, tp := range GetApp().mTransactionProcessor {
@@ -98,7 +102,7 @@ var runCMD = &cobra.Command{
 			1,
 			"cluster-1",
 			im,
-			join)
+			viper.GetBool("Join"))
 
 		raftConfiguration := &conf.RaftConfiguration{
 			RaftConfigurationInput: conf.RaftConfigurationInput{
@@ -136,7 +140,4 @@ var runCMD = &cobra.Command{
 		}
 
 	},
-}
-
-func init() {
 }
