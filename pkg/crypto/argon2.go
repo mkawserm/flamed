@@ -25,8 +25,6 @@ var (
 
 // Argon2PasswordHashAlgorithm implements Argon2i password hashing algorithm.
 type Argon2PasswordHashAlgorithm struct {
-	// Algorithm identifier.
-	Algorithm string
 	// Defines the amount of computation time, given in number of iterations.
 	Time uint32
 	// Defines the memory usage (KiB).
@@ -35,6 +33,10 @@ type Argon2PasswordHashAlgorithm struct {
 	Threads uint8
 	// Defines the length of the hash in bytes.
 	Length uint32
+}
+
+func (h *Argon2PasswordHashAlgorithm) Algorithm() string {
+	return "argon2"
 }
 
 // Encode turns a plain-text password into a hash.
@@ -69,7 +71,7 @@ func (h *Argon2PasswordHashAlgorithm) Verify(password string, encoded string) (b
 
 	algorithm, method, version, params, salt, hash := s[0], s[1], s[2], s[3], s[4], s[5]
 
-	if algorithm != h.Algorithm || method != "argon2i" {
+	if algorithm != h.Algorithm() || method != "argon2i" {
 		return false, ErrAlgorithmMismatch
 	}
 
@@ -115,10 +117,9 @@ func (h *Argon2PasswordHashAlgorithm) Verify(password string, encoded string) (b
 // NewArgon2PasswordHashAlgorithm secures password hashing using the argon2 algorithm.
 func NewArgon2PasswordHashAlgorithm() *Argon2PasswordHashAlgorithm {
 	return &Argon2PasswordHashAlgorithm{
-		Algorithm: "argon2",
-		Time:      3,
-		Memory:    32 * 1024,
-		Threads:   4,
-		Length:    32,
+		Time:    3,
+		Memory:  32 * 1024,
+		Threads: 4,
+		Length:  32,
 	}
 }

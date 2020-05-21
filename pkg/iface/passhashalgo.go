@@ -1,12 +1,14 @@
 package iface
 
-type PasswordHashAlgorithm interface {
+type IPasswordHashAlgorithm interface {
+	Algorithm() string
+
 	Encode(password string, salt string) (string, error)
 	Verify(password string, encoded string) (bool, error)
 }
 
-type PasswordHashAlgorithmFactory interface {
-	AppendPasswordHashAlgorithm(ph PasswordHashAlgorithm)
+type IPasswordHashAlgorithmFactory interface {
+	AppendPasswordHashAlgorithm(pha IPasswordHashAlgorithm)
 
 	CheckPassword(password, encoded string) (bool, error)
 	MakePassword(password, salt, algorithm string) (string, error)
