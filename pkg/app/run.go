@@ -63,13 +63,18 @@ var runCMD = &cobra.Command{
 				KeyFile:                       viper.GetString("KeyFile"),
 				MaxSendQueueSize:              viper.GetUint64("MaxSendQueueSize"),
 				MaxReceiveQueueSize:           viper.GetUint64("MaxReceiveQueueSize"),
-				LogDBFactory:                  nil,
-				RaftRPCFactory:                nil,
 				EnableMetrics:                 viper.GetBool("EnableMetrics"),
 				MaxSnapshotSendBytesPerSecond: viper.GetUint64("MaxSnapshotSendBytesPerSecond"),
 				MaxSnapshotRecvBytesPerSecond: viper.GetUint64("MaxSnapshotRecvBytesPerSecond"),
-				LogDBConfig:                   config.GetTinyMemLogDBConfig(),
 				NotifyCommit:                  viper.GetBool("NotifyCommit"),
+
+				SystemTickerPrecision: viper.GetDuration("SystemTickerPrecision"),
+
+				LogDBConfig:         config.GetTinyMemLogDBConfig(),
+				LogDBFactory:        nil,
+				RaftRPCFactory:      nil,
+				RaftEventListener:   nil,
+				SystemEventListener: nil,
 			},
 		}
 

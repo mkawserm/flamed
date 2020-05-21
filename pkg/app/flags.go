@@ -103,6 +103,12 @@ func InitAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag("LogDBConfig", cmd.PersistentFlags().Lookup("log-db-config"))
 
 	cmd.PersistentFlags().
+		Duration("system-ticker-precision",
+			0,
+			"System ticker precision")
+	_ = viper.BindPFlag("SystemTickerPrecision", cmd.PersistentFlags().Lookup("system-ticker-precision"))
+
+	cmd.PersistentFlags().
 		Uint64("node-id",
 			1,
 			"Node id")

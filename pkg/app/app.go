@@ -75,7 +75,9 @@ func (a *App) setup() {
 			"config file (default is $HOME/flamed/.flamed.yaml)")
 
 	InitAllPersistentFlags(a.mRootCommand)
+
 	a.mRootCommand.AddCommand(runCMD)
+	a.mRootCommand.AddCommand(configCMD)
 	a.mRootCommand.AddCommand(authorCMD)
 	a.mRootCommand.AddCommand(versionCMD)
 }
@@ -133,6 +135,7 @@ func initConfig() {
 	viper.SetDefault("MaxSnapshotRecvBytesPerSecond", 0)
 	viper.SetDefault("NotifyCommit", false)
 	viper.SetDefault("LogDBConfig", "tiny")
+	viper.SetDefault("SystemTickerPrecision", time.Duration(0))
 
 	viper.SetDefault("NodeID", 1)
 	viper.SetDefault("CheckQuorum", true)
