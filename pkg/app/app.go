@@ -25,7 +25,7 @@ var (
 )
 
 type App struct {
-	mDataStoragePath      string
+	mStoragePath          string
 	mGlobalRequestTimeout time.Duration
 
 	mFlamed      *flamed.Flamed
