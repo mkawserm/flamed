@@ -4,6 +4,7 @@ import (
 	bleveSearch "github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/index/scorch"
 	bleveMapping "github.com/blevesearch/bleve/mapping"
+	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
@@ -46,7 +47,7 @@ func (b *BleveScorch) UpsertIndexMeta(meta *pb.IndexMeta) error {
 		nil)
 
 	if err != nil {
-		internalLogger.Debug("error while adding indexmeta meta", zap.Error(err))
+		logger.L(Name).Debug("error while adding indexmeta meta", zap.Error(err))
 		return x.ErrFailedToCreateIndexMeta
 	}
 
@@ -78,7 +79,7 @@ func (b *BleveScorch) DefaultIndexMeta(namespace string) error {
 		nil)
 
 	if err != nil {
-		internalLogger.Debug("error while adding default indexmeta meta", zap.Error(err))
+		logger.L(Name).Debug("error while adding default indexmeta meta", zap.Error(err))
 		return x.ErrFailedToCreateIndexMeta
 	}
 
@@ -96,7 +97,7 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 	index, err := bleveSearch.OpenUsing(p, nil)
 
 	if err != nil {
-		internalLogger.Debug("indexmeta db opening error", zap.Error(err))
+		logger.L(Name).Debug("indexmeta db opening error", zap.Error(err))
 		return x.ErrFailedToApplyIndex
 	}
 
@@ -109,7 +110,7 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 		if data[idx].Action == pb.Action_UPSERT {
 			err = batch.Index(data[idx].ID, data[idx].Data)
 			if err != nil {
-				internalLogger.Debug("indexing error", zap.Error(err))
+				logger.L(Name).Debug("indexing error", zap.Error(err))
 				return x.ErrFailedToCreateIndex
 			}
 		}
@@ -121,7 +122,7 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 
 	err = index.Batch(batch)
 	if err != nil {
-		internalLogger.Debug("batch processing error", zap.Error(err))
+		logger.L(Name).Debug("batch processing error", zap.Error(err))
 		return x.ErrFailedToApplyIndex
 	}
 

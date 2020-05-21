@@ -48,7 +48,7 @@ func (i *Iterator) StateSnapshot() *pb.StateSnapshot {
 	if value, err := item.ValueCopy(nil); err == nil {
 		ss.Data = value
 	} else {
-		internalLogger.Error(Name+" value copy error", zap.Error(err))
+		logger.L(Name).Error(Name+" value copy error", zap.Error(err))
 	}
 
 	return ss
@@ -138,8 +138,8 @@ type Badger struct {
 
 func (b *Badger) Setup(path string, secretKey []byte, configuration interface{}) {
 	if b.mDb != nil {
-		internalLogger.Debug("state::badger db already open")
-		_ = internalLogger.Sync()
+		logger.L(Name).Debug("state::badger db already open")
+		_ = logger.L(Name).Sync()
 		return
 	}
 
@@ -187,9 +187,9 @@ func (b *Badger) Setup(path string, secretKey []byte, configuration interface{})
 }
 
 func (b *Badger) Open() error {
-	internalLogger.Debug("state::badger opening db")
+	logger.L(Name).Debug("state::badger opening db")
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L(Name).Sync()
 	}()
 
 	if b.mDb != nil {
@@ -199,18 +199,18 @@ func (b *Badger) Open() error {
 	db, err := badgerDb.Open(b.mDbConfiguration.BadgerOptions)
 
 	if err != nil {
-		internalLogger.Error("state::badger failed to open db", zap.Error(err))
+		logger.L(Name).Error("state::badger failed to open db", zap.Error(err))
 		return x.ErrFailedToOpenStorage
 	}
 
 	b.mDb = db
-	internalLogger.Debug("state::badger db opened")
+	logger.L(Name).Debug("state::badger db opened")
 	return nil
 }
 
 func (b *Badger) Close() error {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L(Name).Sync()
 	}()
 
 	if b.mDb == nil {
@@ -224,7 +224,7 @@ func (b *Badger) Close() error {
 	err := b.mDb.Close()
 	b.mDb = nil
 	if err != nil {
-		internalLogger.Error("state::badger failed to close db", zap.Error(err))
+		logger.L(Name).Error("state::badger failed to close db", zap.Error(err))
 		return x.ErrFailedToCloseStorage
 	}
 
@@ -245,7 +245,7 @@ func (b *Badger) RunGC() {
 
 func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey []byte, encryptionKeyRotationDuration time.Duration) error {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L(Name).Sync()
 	}()
 
 	opt := badgerDb.KeyRegistryOptions{
@@ -261,7 +261,7 @@ func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey 
 
 	kr, err := badgerDb.OpenKeyRegistry(opt)
 	if err != nil {
-		internalLogger.Error("state::badger open key registry failure", zap.Error(err))
+		logger.L(Name).Error("state::badger open key registry failure", zap.Error(err))
 		return x.ErrFailedToChangeSecretKey
 	}
 
@@ -269,7 +269,7 @@ func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey 
 
 	err = badgerDb.WriteKeyRegistry(kr, opt)
 	if err != nil {
-		internalLogger.Error("state::badger write to the key registry failure", zap.Error(err))
+		logger.L(Name).Error("state::badger write to the key registry failure", zap.Error(err))
 		return x.ErrFailedToChangeSecretKey
 	}
 

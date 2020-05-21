@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
@@ -82,9 +83,9 @@ func (s *Storaged) Sync() error {
 }
 
 func (s *Storaged) Close() error {
-	internalLogger.Debug("storaged Close")
+	logger.L("storaged").Debug("storaged Close")
 	defer func() {
-		internalLogger.Debug("storaged Close done")
+		logger.L("storaged").Debug("storaged Close done")
 	}()
 	if s.mStorage == nil {
 		return nil
@@ -95,18 +96,18 @@ func (s *Storaged) Close() error {
 }
 
 func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
-	internalLogger.Debug("storaged Update")
+	logger.L("storaged").Debug("storaged Update")
 	if s.mStorage == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	internalLogger.Debug("", zap.Int("entriesLength", len(entries)))
+	logger.L("storaged").Debug("", zap.Int("entriesLength", len(entries)))
 	for idx, e := range entries {
 		entries[idx].Result = sm.Result{Value: uint64(len(entries[idx].Cmd))}
 
 		pp := &pb.Proposal{}
 		if err := proto.Unmarshal(e.Cmd, pp); err != nil {
-			internalLogger.Error("proto unmarshal error", zap.Error(err))
+			logger.L("storaged").Error("proto unmarshal error", zap.Error(err))
 			continue
 		}
 		pr := s.mStorage.ApplyProposal(context.TODO(), pp, e.Index)
@@ -114,7 +115,7 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 			if data, err := proto.Marshal(pr); err == nil {
 				entries[idx].Result.Data = data
 			} else {
-				internalLogger.Error("proto marshal error", zap.Error(err))
+				logger.L("storaged").Error("proto marshal error", zap.Error(err))
 			}
 		}
 	}
@@ -133,27 +134,27 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 
 	s.mLastApplied = entries[len(entries)-1].Index
 
-	internalLogger.Debug("storaged Update done")
+	logger.L("storaged").Debug("storaged Update done")
 	return entries, nil
 }
 
 func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
-	internalLogger.Debug("storaged Lookup")
+	logger.L("storaged").Debug("storaged Lookup")
 	if s.mStorage == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
 
 	if lookupRequest, ok := input.(variant.LookupRequest); ok {
 		r, err := s.mStorage.Lookup(lookupRequest)
-		internalLogger.Debug("storaged Lookup done with LookupRequest")
+		logger.L("storaged").Debug("storaged Lookup done with LookupRequest")
 		return r, err
 	} else if searchRequest, ok := input.(variant.SearchRequest); ok {
 		r, err := s.mStorage.Search(searchRequest)
-		internalLogger.Debug("storaged Lookup done with SearchRequest")
+		logger.L("storaged").Debug("storaged Lookup done with SearchRequest")
 		return r, err
 	}
 
-	internalLogger.Debug("storaged Lookup done")
+	logger.L("storaged").Debug("storaged Lookup done")
 	return nil, x.ErrInvalidLookupInput
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/lni/dragonboat/v3"
+	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/variant"
@@ -114,11 +115,11 @@ func (c *ClusterAdmin) GetAppliedIndex() (uint64, error) {
 
 func (c *ClusterAdmin) RunStorageGC() {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("flamed").Sync()
 	}()
 
 	if c.mStorageTaskQueue == nil {
-		internalLogger.Debug("storage task queue is nil")
+		logger.L("flamed").Debug("storage task queue is nil")
 		return
 	}
 
@@ -131,11 +132,11 @@ func (c *ClusterAdmin) RunStorageGC() {
 
 func (c *ClusterAdmin) BuildIndex() {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("flamed").Sync()
 	}()
 
 	if c.mStorageTaskQueue == nil {
-		internalLogger.Debug("storage task queue is nil")
+		logger.L("flamed").Debug("storage task queue is nil")
 		return
 	}
 
@@ -152,11 +153,11 @@ func (c *ClusterAdmin) BuildIndexByNamespace(namespace []byte) {
 	}
 
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("flamed").Sync()
 	}()
 
 	if c.mStorageTaskQueue == nil {
-		internalLogger.Debug("storage task queue is nil")
+		logger.L("flamed").Debug("storage task queue is nil")
 		return
 	}
 

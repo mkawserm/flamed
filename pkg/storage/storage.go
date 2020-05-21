@@ -8,6 +8,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/variant"
@@ -300,17 +301,17 @@ func (s *Storage) Close() error {
 
 func (s *Storage) RunGC() {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
 
-	internalLogger.Info("running storage gc")
+	logger.L("storage").Info("running storage gc")
 	s.mStateStorage.RunGC()
 	if s.mConfiguration.IndexEnable() {
 		if s.mIndexStorage != nil {
 			s.mIndexStorage.RunGC()
 		}
 	}
-	internalLogger.Info("storage gc finished")
+	logger.L("storage").Info("storage gc finished")
 }
 
 func (s *Storage) ChangeSecretKey(path string,
@@ -326,7 +327,7 @@ func (s *Storage) ChangeSecretKey(path string,
 
 func (s *Storage) Create(namespace []byte, key []byte, value []byte) error {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
 
 	if s.mStateStorage == nil {
@@ -338,12 +339,12 @@ func (s *Storage) Create(namespace []byte, key []byte, value []byte) error {
 	txn := s.mStateStorage.NewTransaction()
 	defer txn.Discard()
 	if err := txn.Set(uid, value); err != nil {
-		internalLogger.Error("set failure", zap.Error(err))
+		logger.L("storage").Error("set failure", zap.Error(err))
 		return x.ErrFailedToCreateDataToStorage
 	}
 
 	if err := txn.Commit(); err != nil {
-		internalLogger.Error("txn commit failure", zap.Error(err))
+		logger.L("storage").Error("txn commit failure", zap.Error(err))
 		return x.ErrFailedToCreateDataToStorage
 	}
 
@@ -352,7 +353,7 @@ func (s *Storage) Create(namespace []byte, key []byte, value []byte) error {
 
 func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
 
 	if s.mStateStorage == nil {
@@ -367,7 +368,7 @@ func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
 		if err == x.ErrAddressNotFound {
 			return nil, x.ErrStateNotFound
 		} else {
-			internalLogger.Error("read failure", zap.Error(err))
+			logger.L("storage").Error("read failure", zap.Error(err))
 			return nil, x.ErrFailedToReadDataFromStorage
 		}
 	} else {
@@ -377,7 +378,7 @@ func (s *Storage) Read(namespace []byte, key []byte) ([]byte, error) {
 
 func (s *Storage) Delete(namespace []byte, key []byte) error {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
 
 	if s.mStateStorage == nil {
@@ -390,12 +391,12 @@ func (s *Storage) Delete(namespace []byte, key []byte) error {
 	defer txn.Discard()
 
 	if err := txn.Delete(uid); err != nil {
-		internalLogger.Error("deletion failure", zap.Error(err))
+		logger.L("storage").Error("deletion failure", zap.Error(err))
 		return x.ErrFailedToDeleteDataFromStorage
 	}
 
 	if err := txn.Commit(); err != nil {
-		internalLogger.Error("txn commit failure", zap.Error(err))
+		logger.L("storage").Error("txn commit failure", zap.Error(err))
 		return x.ErrFailedToCreateDataToStorage
 	}
 
@@ -468,10 +469,10 @@ func (s *Storage) Search(_ variant.SearchRequest) (interface{}, error) {
 
 func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entryIndex uint64) *pb.ProposalResponse {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
 
-	internalLogger.Info("raft entry index", zap.Uint64("entryIndex", entryIndex))
+	logger.L("storage").Info("raft entry index", zap.Uint64("entryIndex", entryIndex))
 
 	pr := pb.NewProposalResponse(0)
 	pr.Uuid = proposal.Uuid
@@ -612,7 +613,7 @@ func (s *Storage) updateIndexOfIndexStorage(indexDataContainer IndexDataContaine
 	//err := s.directIndex(indexDataContainer)
 	//
 	//if err != nil {
-	//	internalLogger.Error("directIndex error", zap.Error(err))
+	//	logger.L("storage").Error("directIndex error", zap.Error(err))
 	//}
 }
 
@@ -626,7 +627,7 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 			if v2.Action == pb.Action_UPSERT {
 				err := s.mIndexStorage.UpsertIndexMeta(v2.IndexMeta)
 				if err != nil {
-					internalLogger.Error("upsert indexmeta error", zap.Error(err))
+					logger.L("storage").Error("upsert indexmeta error", zap.Error(err))
 				}
 
 				if s.mConfiguration.AutoBuildIndex() {
@@ -636,14 +637,14 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 			if v2.Action == pb.Action_DELETE {
 				err := s.mIndexStorage.DeleteIndexMeta(v2.IndexMeta)
 				if err != nil {
-					internalLogger.Error("delete indexmeta error", zap.Error(err))
+					logger.L("storage").Error("delete indexmeta error", zap.Error(err))
 				}
 			}
 
 			if v2.Action == pb.Action_DEFAULT {
 				err := s.mIndexStorage.DefaultIndexMeta(string(v2.IndexMeta.Namespace))
 				if err != nil {
-					internalLogger.Error("default indexmeta error", zap.Error(err))
+					logger.L("storage").Error("default indexmeta error", zap.Error(err))
 				}
 
 				if s.mConfiguration.AutoBuildIndex() {
@@ -656,23 +657,23 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 
 func (s *Storage) PrepareSnapshot() (interface{}, error) {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
 
 	if s.mStateStorage == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	internalLogger.Debug("snapshot prepared")
+	logger.L("storage").Debug("snapshot prepared")
 	return s.mStateStorage.NewTransaction(), nil
 }
 
 func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
 
-	internalLogger.Debug("recovering from snapshot")
+	logger.L("storage").Debug("recovering from snapshot")
 
 	if s.mStateStorage == nil {
 		return x.ErrStorageIsNotReady
@@ -681,7 +682,7 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 	sz := make([]byte, 8)
 
 	//if _, err := io.ReadFull(r, sz); err != nil {
-	//	internalLogger.Error("read error", zap.Error(err))
+	//	logger.L("storage").Error("read error", zap.Error(err))
 	//	return x.ErrFailedToRecoverFromSnapshot
 	//}
 	//
@@ -696,20 +697,20 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 		if _, err := io.ReadFull(r, sz); err == io.ErrUnexpectedEOF || err == io.EOF {
 			break
 		} else if err != nil {
-			internalLogger.Error("sm read error", zap.Error(err))
+			logger.L("storage").Error("sm read error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
 		toRead := crypto.ByteSliceToUint64(sz)
 		data := make([]byte, toRead)
 		if _, err := io.ReadFull(r, data); err != nil {
-			internalLogger.Error("sm read error", zap.Error(err))
+			logger.L("storage").Error("sm read error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
 		snap := &pb.StateSnapshot{}
 		if err := proto.Unmarshal(data, snap); err != nil {
-			internalLogger.Error("sm unmarshal error", zap.Error(err))
+			logger.L("storage").Error("sm unmarshal error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 
@@ -736,29 +737,29 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 
 		if err := txn.Set(snap.Address, snap.Data); err == badgerDb.ErrTxnTooBig {
 			if err := txn.Commit(); err != nil {
-				internalLogger.Error("txn commit error", zap.Error(err))
+				logger.L("storage").Error("txn commit error", zap.Error(err))
 				return x.ErrFailedToRecoverFromSnapshot
 			}
 
 			txn = s.mStateStorage.NewTransaction()
 
 			if err := txn.Set(snap.Address, snap.Data); err != nil {
-				internalLogger.Error("txn set error", zap.Error(err))
+				logger.L("storage").Error("txn set error", zap.Error(err))
 				return x.ErrFailedToRecoverFromSnapshot
 			}
 
 		} else if err != nil {
-			internalLogger.Error("txn set error", zap.Error(err))
+			logger.L("storage").Error("txn set error", zap.Error(err))
 			return x.ErrFailedToRecoverFromSnapshot
 		}
 	}
 
 	if err := txn.Commit(); err != nil {
-		internalLogger.Error("txn commit error", zap.Error(err))
+		logger.L("storage").Error("txn commit error", zap.Error(err))
 		return x.ErrFailedToRecoverFromSnapshot
 	}
 
-	internalLogger.Debug("storage recovered from snapshot")
+	logger.L("storage").Debug("storage recovered from snapshot")
 	if s.mConfiguration.AutoBuildIndex() {
 		s.BuildIndex()
 	}
@@ -767,10 +768,10 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 
 func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
 
-	internalLogger.Debug("saving snapshot")
+	logger.L("storage").Debug("saving snapshot")
 	if s.mStateStorage == nil {
 		return x.ErrStorageIsNotReady
 	}
@@ -796,7 +797,7 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 	//it.Close()
 	//
 	//if _, err := w.Write(crypto.Uint64ToByteSlice(total)); err != nil {
-	//	internalLogger.Error("storage write error", zap.Error(err))
+	//	logger.L("storage").Error("storage write error", zap.Error(err))
 	//	return x.ErrFailedToSaveSnapshot
 	//}
 
@@ -808,19 +809,19 @@ func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
 		if data, err := proto.Marshal(item); err == nil {
 			dataLength := uint64(len(data))
 			if _, err := w.Write(crypto.Uint64ToByteSlice(dataLength)); err != nil {
-				internalLogger.Error("storage write error", zap.Error(err))
+				logger.L("storage").Error("storage write error", zap.Error(err))
 				return x.ErrFailedToSaveSnapshot
 			}
 			if _, err := w.Write(data); err != nil {
 				return x.ErrFailedToSaveSnapshot
 			}
 		} else {
-			internalLogger.Error("state snapshot marshal error", zap.Error(err))
+			logger.L("storage").Error("state snapshot marshal error", zap.Error(err))
 			return x.ErrFailedToSaveSnapshot
 		}
 	}
 
-	internalLogger.Debug("storage snapshot saved")
+	logger.L("storage").Debug("storage snapshot saved")
 	return nil
 }
 
@@ -872,7 +873,7 @@ func (s *Storage) buildIndex() error {
 			}
 
 			if err := s.mIndexStorage.UpsertIndexMeta(indexMeta); err != nil {
-				internalLogger.Error("UpsertIndexMeta failure", zap.Error(err))
+				logger.L("storage").Error("UpsertIndexMeta failure", zap.Error(err))
 				return err
 			}
 		}
@@ -909,7 +910,7 @@ func (s *Storage) buildIndex() error {
 					indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
 					err := s.directIndex(indexDataContainer)
 					if err != nil {
-						internalLogger.Error("indexing error", zap.Error(err))
+						logger.L("storage").Error("indexing error", zap.Error(err))
 					}
 					indexDataList = make([]*variant.IndexData, 0, 100)
 				}
@@ -921,7 +922,7 @@ func (s *Storage) buildIndex() error {
 				indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
 				err := s.directIndex(indexDataContainer)
 				if err != nil {
-					internalLogger.Error("indexing error", zap.Error(err))
+					logger.L("storage").Error("indexing error", zap.Error(err))
 				}
 				indexDataList = make([]*variant.IndexData, 0, 100)
 			}
@@ -932,7 +933,7 @@ func (s *Storage) buildIndex() error {
 		indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
 		err := s.directIndex(indexDataContainer)
 		if err != nil {
-			internalLogger.Error("indexing error", zap.Error(err))
+			logger.L("storage").Error("indexing error", zap.Error(err))
 		}
 	}
 
@@ -966,7 +967,7 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 		}
 
 		if err := s.mIndexStorage.UpsertIndexMeta(indexMeta); err != nil {
-			internalLogger.Error("UpsertIndexMeta failure", zap.Error(err))
+			logger.L("storage").Error("UpsertIndexMeta failure", zap.Error(err))
 			return err
 		}
 	}
@@ -1002,7 +1003,7 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 					indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
 					err := s.directIndex(indexDataContainer)
 					if err != nil {
-						internalLogger.Error("indexing error", zap.Error(err))
+						logger.L("storage").Error("indexing error", zap.Error(err))
 					}
 					indexDataList = make([]*variant.IndexData, 0, 100)
 				}
@@ -1014,7 +1015,7 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 				indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
 				err := s.directIndex(indexDataContainer)
 				if err != nil {
-					internalLogger.Error("indexing error", zap.Error(err))
+					logger.L("storage").Error("indexing error", zap.Error(err))
 				}
 				indexDataList = make([]*variant.IndexData, 0, 100)
 			}
@@ -1025,7 +1026,7 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 		indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
 		err := s.directIndex(indexDataContainer)
 		if err != nil {
-			internalLogger.Error("indexing error", zap.Error(err))
+			logger.L("storage").Error("indexing error", zap.Error(err))
 		}
 	}
 
@@ -1034,7 +1035,7 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 
 func (s *Storage) directIndex(indexDataContainer IndexDataContainer) error {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
 
 	if indexDataContainer == nil {
@@ -1043,7 +1044,7 @@ func (s *Storage) directIndex(indexDataContainer IndexDataContainer) error {
 
 	for k, v := range indexDataContainer {
 		if !s.mIndexStorage.CanIndex(k) && s.mConfiguration.AutoIndexMeta() {
-			//internalLogger.Info("no indexmeta found, creating new one", zap.String("namespace",k))
+			//logger.L("storage").Info("no indexmeta found, creating new one", zap.String("namespace",k))
 			indexMeta := &pb.IndexMeta{
 				Namespace: []byte(k),
 				Version:   1,
@@ -1054,7 +1055,7 @@ func (s *Storage) directIndex(indexDataContainer IndexDataContainer) error {
 			}
 			err := s.mIndexStorage.UpsertIndexMeta(indexMeta)
 			if err != nil {
-				internalLogger.Error("UpsertIndexMeta failure",
+				logger.L("storage").Error("UpsertIndexMeta failure",
 					zap.Error(err),
 					zap.String("namespace", k))
 			}
@@ -1063,7 +1064,7 @@ func (s *Storage) directIndex(indexDataContainer IndexDataContainer) error {
 		if s.mIndexStorage.CanIndex(k) {
 			err := s.mIndexStorage.ApplyIndex(k, v)
 			if err != nil {
-				internalLogger.Error("ApplyIndex failure",
+				logger.L("storage").Error("ApplyIndex failure",
 					zap.Error(err),
 					zap.String("namespace", k))
 			}
@@ -1075,24 +1076,24 @@ func (s *Storage) directIndex(indexDataContainer IndexDataContainer) error {
 
 func (s *Storage) storageTaskQueueHandler() {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
-	internalLogger.Info("storage task queue handler started")
+	logger.L("storage").Info("storage task queue handler started")
 
 	q := s.mConfiguration.StorageTaskQueue()
 	if q == nil {
 		return
 	}
 
-	internalLogger.Info("entering into forever loop")
+	logger.L("storage").Info("entering into forever loop")
 	for {
 		task := <-q
-		internalLogger.Info("executing task",
+		logger.L("storage").Info("executing task",
 			zap.String("id", task.ID),
 			zap.String("name", task.Name),
 			zap.String("command", task.Command),
 		)
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 
 		switch task.Command {
 		case "gc":
@@ -1107,7 +1108,7 @@ func (s *Storage) storageTaskQueueHandler() {
 			}
 
 		case "done":
-			internalLogger.Info("storage task queue handler finished")
+			logger.L("storage").Info("storage task queue handler finished")
 			break
 		}
 	}
@@ -1115,24 +1116,24 @@ func (s *Storage) storageTaskQueueHandler() {
 
 func (s *Storage) indexTaskQueueHandler() {
 	defer func() {
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 	}()
-	internalLogger.Info("index task queue handler started")
+	logger.L("storage").Info("index task queue handler started")
 
 	if s.mIndexTaskQueue == nil {
 		return
 	}
 
-	internalLogger.Info("entering into forever loop")
+	logger.L("storage").Info("entering into forever loop")
 
 	for {
 		task := <-s.mIndexTaskQueue
-		internalLogger.Info("executing task",
+		logger.L("storage").Info("executing task",
 			zap.String("id", task.ID),
 			zap.String("name", task.Name),
 			zap.String("command", task.Command),
 		)
-		_ = internalLogger.Sync()
+		_ = logger.L("storage").Sync()
 
 		switch task.Command {
 
@@ -1140,26 +1141,26 @@ func (s *Storage) indexTaskQueueHandler() {
 			if indexDataContainer, ok := task.Payload.(IndexDataContainer); ok {
 				err := s.directIndex(indexDataContainer)
 				if err != nil {
-					internalLogger.Error("index error", zap.Error(err))
+					logger.L("storage").Error("index error", zap.Error(err))
 				}
 			}
 
 		case "build-index":
 			err := s.buildIndex()
 			if err != nil {
-				internalLogger.Error("index error", zap.Error(err))
+				logger.L("storage").Error("index error", zap.Error(err))
 			}
 
 		case "build-index-by-namespace":
 			if v, ok := task.Payload.([]byte); ok {
 				err := s.buildIndexByNamespace(v)
 				if err != nil {
-					internalLogger.Error("index error", zap.Error(err))
+					logger.L("storage").Error("index error", zap.Error(err))
 				}
 			}
 
 		case "done":
-			internalLogger.Info("index task queue handler finished")
+			logger.L("storage").Info("index task queue handler finished")
 			break
 		}
 	}
