@@ -10,12 +10,6 @@ import (
 	"strings"
 )
 
-//var join bool
-//var dataStoragePath string
-//var raftAddress string
-//var httpAddress string
-//var initialMembers string
-
 var runCMD = &cobra.Command{
 	Use:   "run",
 	Short: "Run Flamed server",
