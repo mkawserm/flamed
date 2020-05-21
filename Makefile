@@ -3,7 +3,7 @@ build:
 
 run:
 	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/flamed.go
-	@./bin/flamed author
+	@./bin/flamed run --data-storage-path /tmp/data --http-address 0.0.0.0:8080 --raft-address 0.0.0.0:63001
 
 test:
 	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -v
