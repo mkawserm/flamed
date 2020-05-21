@@ -19,9 +19,50 @@ import (
 )
 
 var (
-	appOnce    sync.Once
-	appIns     *App
-	configFile string
+	appOnce        sync.Once
+	appIns         *App
+	configFile     string
+	flamedHomePath string
+)
+
+var (
+	storagePath    string
+	raftAddress    string
+	httpAddress    string
+	join           bool
+	initialMembers string
+
+	httpServerTLS      bool
+	httpServerCertFile string
+	httpServerKeyFile  string
+
+	deploymentID   uint64
+	rttMillisecond uint64
+	mutualTLS      bool
+	caFile         string
+	certFile       string
+	keyFile        string
+
+	maxSendQueueSize              uint64
+	maxReceiveQueueSize           uint64
+	enableMetrics                 bool
+	maxSnapshotSendBytesPerSecond uint64
+	maxSnapshotRecvBytesPerSecond uint64
+	notifyCommit                  bool
+	logDBConfig                   string
+
+	nodeID                 uint64
+	checkQuorum            bool
+	electionRTT            uint64
+	heartbeatRTT           uint64
+	snapshotEntries        uint64
+	compactionOverhead     uint64
+	orderedConfigChange    bool
+	maxInMemLogSize        uint64
+	disableAutoCompactions bool
+	isObserver             bool
+	isWitness              bool
+	quiesce                bool
 )
 
 type App struct {
@@ -73,6 +114,189 @@ func (a *App) setup() {
 			"",
 			"config file (default is $HOME/flamed/.flamed.yaml)")
 
+	a.mRootCommand.PersistentFlags().
+		StringVar(&storagePath, "storage-path", flamedHomePath, "data storage path")
+	_ = viper.BindPFlag("StoragePath", a.mRootCommand.PersistentFlags().Lookup("storage-path"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&raftAddress, "raft-address", "", "Raft rpc address")
+	_ = viper.BindPFlag("RaftAddress", a.mRootCommand.PersistentFlags().Lookup("raft-address"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&httpAddress, "http-address", "", "HTTP server address")
+	_ = viper.BindPFlag("HTTPAddress", a.mRootCommand.PersistentFlags().Lookup("http-address"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&join, "join", false, "Node join flag")
+	_ = viper.BindPFlag("Join", a.mRootCommand.PersistentFlags().Lookup("join"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&initialMembers, "initial-members", "", "Initial raft members")
+	_ = viper.BindPFlag("InitialMembers", a.mRootCommand.PersistentFlags().Lookup("initial-members"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&initialMembers, "http-server-tls", "", "HTTP server TLS flag")
+	_ = viper.BindPFlag("HTTPServerTLS", a.mRootCommand.PersistentFlags().Lookup("http-server-tls"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&httpServerCertFile, "http-server-cert-file", "", "HTTP server cert file")
+	_ = viper.BindPFlag("HTTPServerCertFile", a.mRootCommand.PersistentFlags().Lookup("http-server-cert-file"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&httpServerKeyFile, "http-server-key-file", "", "HTTP server cert file")
+	_ = viper.BindPFlag("HTTPServerKeyFile", a.mRootCommand.PersistentFlags().Lookup("http-server-key-file"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&deploymentID, "deployment-id", 1, "HTTP server cert file")
+	_ = viper.BindPFlag("DeploymentID", a.mRootCommand.PersistentFlags().Lookup("deployment-id"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&rttMillisecond, "rtt-millisecond", 200, "Round trip time in milli second")
+	_ = viper.BindPFlag("RTTMillisecond", a.mRootCommand.PersistentFlags().Lookup("rtt-millisecond"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&mutualTLS, "mutual-tls", false, "Raft mutual TLS flag")
+	_ = viper.BindPFlag("MutualTLS", a.mRootCommand.PersistentFlags().Lookup("mutual-tls"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&caFile, "ca-file", "", "Raft TLS ca file")
+	_ = viper.BindPFlag("CAFile", a.mRootCommand.PersistentFlags().Lookup("ca-file"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&certFile, "cert-file", "", "Raft TLS cert file")
+	_ = viper.BindPFlag("CertFile", a.mRootCommand.PersistentFlags().Lookup("cert-file"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&keyFile, "key-file", "", "Raft TLS key file")
+	_ = viper.BindPFlag("KeyFile", a.mRootCommand.PersistentFlags().Lookup("key-file"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&maxSendQueueSize, "max-send-queue-size", 0, "Raft max send queue size")
+	_ = viper.BindPFlag("MaxSendQueueSize", a.mRootCommand.PersistentFlags().Lookup("max-send-queue-size"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&maxReceiveQueueSize, "max-receive-queue-size", 0, "Raft max receive queue size")
+	_ = viper.BindPFlag("MaxReceiveQueueSize", a.mRootCommand.PersistentFlags().Lookup("max-receive-queue-size"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&enableMetrics, "enable-metrics", false, "Enable metrics")
+	_ = viper.BindPFlag("EnableMetrics", a.mRootCommand.PersistentFlags().Lookup("enable-metrics"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&maxSnapshotSendBytesPerSecond,
+			"max-snapshot-send-bytes-per-second",
+			0,
+			"Max snapshot send bytes per second")
+	_ = viper.BindPFlag("MaxSnapshotSendBytesPerSecond",
+		a.mRootCommand.PersistentFlags().Lookup("max-snapshot-send-bytes-per-second"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&maxSnapshotRecvBytesPerSecond,
+			"max-snapshot-recv-bytes-per-second",
+			0,
+			"Max snapshot recv bytes per second")
+	_ = viper.BindPFlag("MaxSnapshotRecvBytesPerSecond",
+		a.mRootCommand.PersistentFlags().Lookup("max-snapshot-recv-bytes-per-second"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&notifyCommit,
+			"notify-commit",
+			false,
+			"Notify commit")
+	_ = viper.BindPFlag("NotifyCommit", a.mRootCommand.PersistentFlags().Lookup("notify-commit"))
+
+	a.mRootCommand.PersistentFlags().
+		StringVar(&logDBConfig,
+			"log-db-config",
+			"tiny",
+			"Log db config")
+	_ = viper.BindPFlag("LogDBConfig", a.mRootCommand.PersistentFlags().Lookup("log-db-config"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&nodeID,
+			"node-id",
+			1,
+			"Node id")
+	_ = viper.BindPFlag("NodeID", a.mRootCommand.PersistentFlags().Lookup("node-id"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&checkQuorum,
+			"check-quorum",
+			true,
+			"Check quorum")
+	_ = viper.BindPFlag("CheckQuorum", a.mRootCommand.PersistentFlags().Lookup("check-quorum"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&electionRTT,
+			"election-rtt",
+			5,
+			"Election RTT")
+	_ = viper.BindPFlag("ElectionRTT", a.mRootCommand.PersistentFlags().Lookup("election-rtt"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&electionRTT,
+			"heartbeat-rtt",
+			1,
+			"Heartbeat RTT")
+	_ = viper.BindPFlag("HeartbeatRTT", a.mRootCommand.PersistentFlags().Lookup("heartbeat-rtt"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&snapshotEntries,
+			"snapshot-entries",
+			100,
+			"Snapshot entries")
+	_ = viper.BindPFlag("SnapshotEntries", a.mRootCommand.PersistentFlags().Lookup("snapshot-entries"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&snapshotEntries,
+			"compaction-overhead",
+			5,
+			"Compaction overhead")
+	_ = viper.BindPFlag("CompactionOverhead", a.mRootCommand.PersistentFlags().Lookup("compaction-overhead"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&orderedConfigChange,
+			"ordered-config-change",
+			false,
+			"Ordered config change")
+	_ = viper.BindPFlag("OrderedConfigChange", a.mRootCommand.PersistentFlags().Lookup("ordered-config-change"))
+
+	a.mRootCommand.PersistentFlags().
+		Uint64Var(&maxInMemLogSize,
+			"max-in-mem-log-size",
+			0,
+			"Max in mem log size")
+	_ = viper.BindPFlag("MaxInMemLogSize", a.mRootCommand.PersistentFlags().Lookup("max-in-mem-log-size"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&orderedConfigChange,
+			"disable-auto-compactions",
+			false,
+			"Disable auto compactions")
+	_ = viper.BindPFlag("DisableAutoCompactions",
+		a.mRootCommand.PersistentFlags().Lookup("disable-auto-compactions"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&orderedConfigChange,
+			"is-observer",
+			false,
+			"Is observer")
+	_ = viper.BindPFlag("IsObserver", a.mRootCommand.PersistentFlags().Lookup("is-observer"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&orderedConfigChange,
+			"is-witness",
+			false,
+			"Is witness")
+	_ = viper.BindPFlag("IsWitness", a.mRootCommand.PersistentFlags().Lookup("is-witness"))
+
+	a.mRootCommand.PersistentFlags().
+		BoolVar(&orderedConfigChange,
+			"quiesce",
+			false,
+			"Quiesce")
+	_ = viper.BindPFlag("Quiesce", a.mRootCommand.PersistentFlags().Lookup("quiesce"))
+
 	a.mRootCommand.AddCommand(runCMD)
 	a.mRootCommand.AddCommand(authorCMD)
 	a.mRootCommand.AddCommand(versionCMD)
@@ -93,7 +317,7 @@ func initConfig() {
 		fmt.Println("Error: ", err)
 		os.Exit(1)
 	}
-	flamedHomePath := home + "/flamed"
+	flamedHomePath = home + "/flamed"
 
 	if configFile != "" {
 		// Use config file from the flag.
