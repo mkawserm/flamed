@@ -103,7 +103,7 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(configFile)
 	} else {
-		// Search config in home directory with name ".cobra" (without extension).
+		// Search config in home directory with name ".flamed" (without extension).
 		viper.AddConfigPath(flamedHomePath)
 		viper.SetConfigName(".flamed")
 	}
