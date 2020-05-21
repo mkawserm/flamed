@@ -9,7 +9,6 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/lni/dragonboat/v3 v3.1.1-0.20200518120809-5ce914b80953
 	github.com/spf13/cobra v1.0.0
-	github.com/spf13/viper v1.7.0 // indirect
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
 )

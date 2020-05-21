@@ -17,13 +17,22 @@ type App struct {
 	mRootCommand *cobra.Command
 }
 
+func (a *App) GetFlamed() *flamed.Flamed {
+	return a.mFlamed
+}
+
 func (a *App) setup() {
 	a.mRootCommand = &cobra.Command{
 		Use:   "flamed",
 		Short: "Flamed is an open-source distributed embeddable NoSQL database",
 		Long:  "Flamed is an open-source distributed embeddable NoSQL database",
-		Run:   nil,
+		Run: func(_ *cobra.Command, _ []string) {
+		},
 	}
+
+	a.mRootCommand.AddCommand(RegisterRunCMD(a))
+	a.mRootCommand.AddCommand(RegisterAuthorCMD(a))
+	a.mRootCommand.AddCommand(RegisterVersionCMD(a))
 }
 
 func (a *App) Execute() error {

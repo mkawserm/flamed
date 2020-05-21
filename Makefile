@@ -3,7 +3,7 @@ build:
 
 run:
 	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/flamed.go
-	@./bin/flamed
+	@./bin/flamed author
 
 test:
 	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -v
