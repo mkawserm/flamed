@@ -162,7 +162,7 @@ func (b *Badger) Setup(path string, secretKey []byte, configuration interface{})
 		}
 	}
 
-	b.mDbConfiguration.BadgerOptions.Logger = logger.S(Name)
+	b.mDbConfiguration.BadgerOptions.Logger = logger.CS(Name)
 	b.mDbConfiguration.BadgerOptions.EncryptionKey = secretKey
 
 	if b.mDbConfiguration.GoroutineNumber <= 0 {
