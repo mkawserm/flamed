@@ -139,30 +139,20 @@ var RunCMD = &cobra.Command{
 		GetApp().initViews()
 
 		// run server and wait for shutdown
-		runServerAndWaitForShutDown()
+		runServerAndWaitForShutdown()
 	},
 } // Command
 
-func runServerAndWaitForShutDown() {
-	// idleChan channel is dedicated for shutting down all active connections.
-	// Once actual shutdown occurred by closing this channel, the main goroutine
-	// is shutdown.
+func runServerAndWaitForShutdown() {
 	idleChan := make(chan struct{})
 	go func() {
-		// signChan channel is used to transmit signal notifications.
 		signChan := make(chan os.Signal, 1)
-		// Catch and relay certain signal(s) to signChan channel.
 		signal.Notify(signChan, os.Interrupt, syscall.SIGTERM)
-		// Blocking until a signal is sent over signChan channel.
 		sig := <-signChan
 
 		logger.L("app").Info("shutdown signal received",
 			zap.String("signal", sig.String()))
 
-		// Create a new context with a timeout duration. It helps allowing
-		// timeout duration to all active connections in order for them to
-		// finish their job. Any connections that wont complete within the
-		// allowed timeout duration gets halted.
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
@@ -170,17 +160,20 @@ func runServerAndWaitForShutDown() {
 			logger.L("app").Info("shutdown: halted active connections")
 		}
 
+		// Stop node
+		GetApp().GetFlamed().StopNode()
+
 		// Actual shutdown trigger.
 		close(idleChan)
 	}()
 
 	if err := runHTTPServer(); err == http.ErrServerClosed {
-		logger.L("app").Info("flamed shutdown started")
+		logger.L("app").Info("shutdown started")
 	}
 
-	// Blocking until the shutdown to complete then inform the main goroutine.
+	// Blocking until the shutdown is complete
 	<-idleChan
-	logger.L("app").Info("flamed shutdown complete")
+	logger.L("app").Info("shutdown complete")
 }
 
 func runHTTPServer() error {
