@@ -287,6 +287,9 @@ func getRaftConfiguration() *conf.RaftConfiguration {
 }
 
 func startCluster() {
+	clusterID := uint64(1)
+	clusterName := "cluster-1"
+
 	im := getInitialMembers(strings.Split(viper.GetString(constant.InitialMembers), ";"))
 
 	if len(im) == 0 {
@@ -295,7 +298,7 @@ func startCluster() {
 		}
 	}
 
-	clusterStoragePath := viper.GetString(constant.StoragePath) + "/cluster-1"
+	clusterStoragePath := viper.GetString(constant.StoragePath) + "/" + clusterName
 
 	storagedConfiguration := &conf.StoragedConfiguration{
 		StoragedConfigurationInput: conf.StoragedConfigurationInput{
@@ -317,11 +320,21 @@ func startCluster() {
 		storagedConfiguration.AddTransactionProcessor(tp)
 	}
 
-	clusterConfiguration := conf.SimpleOnDiskClusterConfiguration(
-		1,
-		"cluster-1",
-		im,
-		viper.GetBool(constant.Join))
+	var clusterConfiguration iface.IOnDiskClusterConfiguration
+
+	if viper.GetBool(constant.Join) {
+		clusterConfiguration = conf.SimpleOnDiskClusterConfiguration(
+			clusterID,
+			clusterName,
+			nil,
+			true)
+	} else {
+		clusterConfiguration = conf.SimpleOnDiskClusterConfiguration(
+			clusterID,
+			clusterName,
+			im,
+			false)
+	}
 
 	raftConfiguration := getRaftConfiguration()
 
