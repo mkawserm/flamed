@@ -10,6 +10,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/tp/user"
 	"github.com/spf13/viper"
+	"net/http"
 	"sync"
 	"time"
 
@@ -27,11 +28,25 @@ var ShortDescription = "Flamed is an open-source distributed embeddable NoSQL da
 var LongDescription = "Flamed is an open-source distributed embeddable NoSQL database"
 
 type App struct {
-	mCommandsInitialized  bool
-	mDefaultCommandFlag   bool
+	mServerMux *http.ServeMux
+
+	mViewsInitialized bool
+	mDefaultViewFlag  bool
+
+	mCommandsInitialized bool
+	mDefaultCommandFlag  bool
+
 	mFlamed               *flamed.Flamed
 	mRootCommand          *cobra.Command
 	mTransactionProcessor []iface.ITransactionProcessor
+}
+
+func (a *App) EnableDefaultViews() {
+	a.mDefaultViewFlag = true
+}
+
+func (a *App) DisableDefaultViews() {
+	a.mDefaultViewFlag = false
 }
 
 func (a *App) EnableDefaultCommands() {
@@ -44,6 +59,10 @@ func (a *App) DisableDefaultCommands() {
 
 func (a *App) UpdateGlobalRequestTimeout(timeout time.Duration) {
 	viper.Set("GlobalRequestTimeout", timeout)
+}
+
+func (a *App) AddView(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+	a.mServerMux.HandleFunc(pattern, handler)
 }
 
 func (a *App) AddTransactionProcessor(tp iface.ITransactionProcessor) {
@@ -96,11 +115,25 @@ func (a *App) initCommands() {
 	}
 
 	if !a.mCommandsInitialized {
+		/* initialize all commands here */
+
 		a.mRootCommand.AddCommand(RunCMD)
 		a.mRootCommand.AddCommand(ConfigCMD)
 		a.mRootCommand.AddCommand(AuthorCMD)
 		a.mRootCommand.AddCommand(VersionCMD)
 		a.mCommandsInitialized = true
+	}
+}
+
+func (a *App) initViews() {
+	if !a.mDefaultViewFlag {
+		return
+	}
+
+	if !a.mViewsInitialized {
+		/* initialize all views here */
+
+		a.mViewsInitialized = true
 	}
 }
 
@@ -110,7 +143,9 @@ func (a *App) initBeforeExecution() {
 }
 
 func (a *App) Execute() error {
+	a.initViews()
 	a.initCommands()
+
 	return a.mRootCommand.Execute()
 }
 
@@ -122,9 +157,14 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	appOnce.Do(func() {
 		appIns = &App{
+			mServerMux:           &http.ServeMux{},
 			mCommandsInitialized: false,
 			mDefaultCommandFlag:  true,
+
+			mViewsInitialized: false,
+			mDefaultViewFlag:  true,
 		}
+
 		appIns.setup()
 	})
 }
