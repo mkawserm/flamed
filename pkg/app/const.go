@@ -1,5 +1,7 @@
 package app
 
+const DefaultPasswordHashAlgorithm = "argon2"
+
 const LogLevel = "LogLevel"
 const GlobalRequestTimeout = "GlobalRequestTimeout"
 const StoragePath = "StoragePath"

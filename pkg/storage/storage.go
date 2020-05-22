@@ -481,11 +481,11 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 
 	logger.L("storage").Info("raft entry index", zap.Uint64("entryIndex", entryIndex))
 
-	pr := pb.NewProposalResponse(0)
+	pr := pb.NewProposalResponse(pb.Status_REJECTED)
 	pr.Uuid = proposal.Uuid
 
 	if len(proposal.Uuid) == 0 {
-		pr.Status = 0
+		pr.Status = pb.Status_REJECTED
 		pr.ErrorCode = 0
 		pr.ErrorText = "uuid can not be empty"
 		return pr
@@ -500,7 +500,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 	for _, t := range proposal.Transactions {
 		tp := s.mConfiguration.GetTransactionProcessor(t.FamilyName, t.FamilyVersion)
 		if tp == nil {
-			pr.Status = 0
+			pr.Status = pb.Status_REJECTED
 			pr.ErrorCode = 0
 			pr.ErrorText = "Transaction family name:" +
 				t.FamilyName + " family version:" +
@@ -518,10 +518,10 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 		tpr := tp.Apply(ctx, stateContext, t)
 		pr.Append(tpr)
 
-		if tpr.Status == 0 {
+		if tpr.Status == pb.Status_REJECTED {
 			stateContext.mIndexDataList = nil
 			stateContext.mIndexMetaActionList = nil
-			pr.Status = 0
+			pr.Status = pb.Status_REJECTED
 			pr.ErrorCode = 0
 			pr.ErrorText = "proposal rejected"
 			return pr
@@ -536,7 +536,7 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 	}
 
 	if err := txn.Commit(); err == nil {
-		s.mConfiguration.ProposalReceiver(proposal, pb.ProposalStatus_ACCEPTED)
+		s.mConfiguration.ProposalReceiver(proposal, pb.Status_ACCEPTED)
 		if s.mConfiguration.IndexEnable() {
 			//NOTE: update indexmeta meta
 			s.updateIndexMetaOfIndexStorage(indexMetaActionContainer)
@@ -545,13 +545,13 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 			s.updateIndexOfIndexStorage(indexDataContainer)
 		}
 
-		pr.Status = 1
+		pr.Status = pb.Status_ACCEPTED
 		return pr
 	} else {
-		s.mConfiguration.ProposalReceiver(proposal, pb.ProposalStatus_REJECTED)
+		s.mConfiguration.ProposalReceiver(proposal, pb.Status_REJECTED)
 		indexDataContainer = nil
 		indexMetaActionContainer = nil
-		pr.Status = 0
+		pr.Status = pb.Status_REJECTED
 		pr.ErrorCode = 0
 		pr.ErrorText = "proposal rejected because of commit failure"
 		return pr

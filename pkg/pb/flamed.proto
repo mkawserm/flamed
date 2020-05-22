@@ -3,6 +3,11 @@ package pb;
 
 //option go_package = "github.com/mkawserm/flamed/pkg/pb";
 
+enum Status {
+  REJECTED = 0;
+  ACCEPTED = 1;
+}
+
 message StateSnapshot {
   bytes address = 1;
   bytes data = 2;
@@ -23,7 +28,7 @@ message Transaction {
 }
 
 message TransactionResponse {
-  uint32 status = 1; /* 0 - rejected, 1 - accepted */
+  Status status = 1;
   uint32 errorCode = 2; /* error code */
   string errorText = 3; /* failure reason short message */
   string familyName = 4;
@@ -39,7 +44,7 @@ message Proposal {
 
 message ProposalResponse {
   bytes uuid = 1;
-  uint32 status = 2; /* 0 - rejected, 1 - accepted */
+  Status status = 2;
   uint32 errorCode = 3; /* error code */
   string errorText = 4; /* failure reason short message */
   repeated TransactionResponse transactionResponses = 5;
@@ -179,9 +184,4 @@ message AccessControlList {
 message AccessControlPayload {
   Action action = 1;
   AccessControl accessControl = 2;
-}
-
-enum ProposalStatus {
-  REJECTED = 0;
-  ACCEPTED = 1;
 }

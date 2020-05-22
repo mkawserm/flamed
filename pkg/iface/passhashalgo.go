@@ -8,6 +8,7 @@ type IPasswordHashAlgorithm interface {
 }
 
 type IPasswordHashAlgorithmFactory interface {
+	IsAlgorithmAvailable(algorithm string) bool
 	AppendPasswordHashAlgorithm(pha IPasswordHashAlgorithm)
 
 	CheckPassword(password, encoded string) (bool, error)

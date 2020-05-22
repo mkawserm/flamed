@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/mkawserm/flamed/pkg/conf"
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/logger"
+	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var RunCMD = &cobra.Command{
@@ -122,6 +126,7 @@ var RunCMD = &cobra.Command{
 			panic(err)
 		}
 
+		initializeClusterDefaults()
 		runHTTPServer()
 	},
 }
@@ -175,4 +180,88 @@ func getInitialMembers(stringList []string) map[uint64]string {
 	}
 
 	return im
+}
+
+func initializeClusterDefaults() {
+	/*Initialize cluster defaults*/
+	if viper.GetBool("Join") {
+		return
+	}
+
+	clusterAdmin := GetApp().
+		GetFlamed().
+		NewClusterAdmin(1, viper.GetDuration(GlobalRequestTimeout))
+
+	if clusterAdmin == nil {
+		panic("Failed to create new cluster admin")
+	}
+
+	for {
+		leaderID, leaderAvailable, _ := clusterAdmin.GetLeaderID()
+		if leaderAvailable {
+			logger.L("app").Info("Leader found", zap.Uint64("leaderID", leaderID))
+			break
+		}
+
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	// Creating default super user
+	lastAppliedIndex, err := clusterAdmin.GetAppliedIndex()
+	if err != nil {
+		return
+	}
+
+	logger.L("app").Info("Last applied index", zap.Uint64("lastAppliedIndex", lastAppliedIndex))
+
+	if lastAppliedIndex > 0 {
+		return
+	}
+
+	admin := GetApp().
+		GetFlamed().
+		NewAdmin(1, viper.GetDuration(GlobalRequestTimeout))
+
+	if admin == nil {
+		logger.L("app").Error("Failed to create new Admin")
+		return
+	}
+
+	pha := GetApp().GetPasswordHashAlgorithmFactory()
+	if !pha.IsAlgorithmAvailable(DefaultPasswordHashAlgorithm) {
+		logger.L("app").Error(DefaultPasswordHashAlgorithm +
+			" password hash algorithm is to available")
+		return
+	}
+
+	encoded, err := pha.MakePassword("admin",
+		crypto.GetRandomString(12),
+		DefaultPasswordHashAlgorithm)
+
+	if err != nil {
+		logger.L("app").Error("Make password returned error", zap.Error(err))
+		return
+	}
+
+	superUser := &pb.User{
+		UserType:  pb.UserType_SUPER_USER,
+		Roles:     "*",
+		Username:  "admin",
+		Password:  encoded,
+		CreatedAt: uint64(time.Now().UnixNano()),
+		UpdatedAt: uint64(time.Now().UnixNano()),
+	}
+
+	pr, err := admin.UpsertUser(superUser)
+
+	if err != nil {
+		logger.L("app").Error("upsert user error", zap.Error(err))
+		return
+	}
+
+	if pr.Status == pb.Status_ACCEPTED {
+		logger.L("app").Info("admin user created")
+	} else {
+		logger.L("app").Error("failed to create admin user")
+	}
 }

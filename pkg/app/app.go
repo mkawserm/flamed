@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/tp/accesscontrol"
@@ -39,13 +40,22 @@ type App struct {
 	mTPInitialized bool
 	mDefaultTPFlag bool
 
-	mFlamed               *flamed.Flamed
-	mRootCommand          *cobra.Command
-	mTransactionProcessor []iface.ITransactionProcessor
+	mFlamed                       *flamed.Flamed
+	mRootCommand                  *cobra.Command
+	mTransactionProcessor         []iface.ITransactionProcessor
+	mPasswordHashAlgorithmFactory iface.IPasswordHashAlgorithmFactory
+}
+
+func (a *App) GetPasswordHashAlgorithmFactory() iface.IPasswordHashAlgorithmFactory {
+	return a.mPasswordHashAlgorithmFactory
 }
 
 func (a *App) getServerMux() *http.ServeMux {
 	return a.mServerMux
+}
+
+func (a *App) SetupCustomPasswordHashAlgorithmFactory(f iface.IPasswordHashAlgorithmFactory) {
+	a.mPasswordHashAlgorithmFactory = f
 }
 
 func (a *App) EnableDefaultTransactionProcessors() {
@@ -103,7 +113,7 @@ func (a *App) setup() {
 			fmt.Println(cmd.UsageString())
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			a.initBeforeExecution()
+			a.initBeforeCommandExecution()
 		},
 	}
 
@@ -163,7 +173,7 @@ func (a *App) initTransactionProcessors() {
 	}
 }
 
-func (a *App) initBeforeExecution() {
+func (a *App) initBeforeCommandExecution() {
 	/* setup defaults */
 	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString("LogLevel"))
 }
@@ -171,6 +181,10 @@ func (a *App) initBeforeExecution() {
 func (a *App) Execute() error {
 	a.initTransactionProcessors()
 	a.initCommands()
+
+	if a.mPasswordHashAlgorithmFactory == nil {
+		a.mPasswordHashAlgorithmFactory = crypto.DefaultPasswordHashAlgorithmFactory()
+	}
 
 	return a.mRootCommand.Execute()
 }

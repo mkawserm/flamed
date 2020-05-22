@@ -72,7 +72,7 @@ func (c *AccessControl) upsert(tpr *pb.TransactionResponse,
 
 	payload, err := proto.Marshal(accessControl)
 	if err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
@@ -86,12 +86,12 @@ func (c *AccessControl) upsert(tpr *pb.TransactionResponse,
 	}
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
-		tpr.Status = 1
+		tpr.Status = pb.Status_ACCEPTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
@@ -102,19 +102,19 @@ func (c *AccessControl) delete(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte) *pb.TransactionResponse {
 	if _, err := stateContext.GetState(address); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if err := stateContext.DeleteState(address); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
-		tpr.Status = 1
+		tpr.Status = pb.Status_ACCEPTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
@@ -126,7 +126,7 @@ func (c *AccessControl) Apply(_ context.Context,
 	transaction *pb.Transaction) *pb.TransactionResponse {
 
 	tpr := &pb.TransactionResponse{
-		Status:        0,
+		Status:        pb.Status_REJECTED,
 		ErrorCode:     0,
 		ErrorText:     "",
 		FamilyName:    Name,
@@ -136,28 +136,28 @@ func (c *AccessControl) Apply(_ context.Context,
 	payload := &pb.AccessControlPayload{}
 
 	if err := proto.Unmarshal(transaction.Payload, payload); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if payload.AccessControl == nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "access control can not be nil"
 		return tpr
 	}
 
 	if !utility.IsNamespaceValid(payload.AccessControl.Namespace) {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "invalid namespace"
 		return tpr
 	}
 
 	if !utility.IsUsernameValid(payload.AccessControl.Username) {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "invalid username"
 		return tpr
@@ -171,7 +171,7 @@ func (c *AccessControl) Apply(_ context.Context,
 	} else if payload.Action == pb.Action_DELETE {
 		return c.delete(tpr, stateContext, address)
 	} else {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "unknown action"
 		return tpr

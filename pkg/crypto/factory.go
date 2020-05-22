@@ -14,6 +14,11 @@ type PasswordHashAlgorithmFactory struct {
 	mAlgorithmMap map[string]iface.IPasswordHashAlgorithm
 }
 
+func (p *PasswordHashAlgorithmFactory) IsAlgorithmAvailable(algorithm string) bool {
+	_, found := p.mAlgorithmMap[algorithm]
+	return found
+}
+
 func (p *PasswordHashAlgorithmFactory) AppendPasswordHashAlgorithm(pha iface.IPasswordHashAlgorithm) {
 	p.mAlgorithmMap[pha.Algorithm()] = pha
 }
