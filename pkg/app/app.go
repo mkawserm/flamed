@@ -8,21 +8,17 @@ import (
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/tp/user"
-	"os"
+	"github.com/spf13/viper"
 	"sync"
 	"time"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/mkawserm/flamed/pkg/flamed"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
-	appOnce        sync.Once
-	appIns         *App
-	configFile     string
-	flamedHomePath string
+	appOnce sync.Once
+	appIns  *App
 )
 
 type App struct {
@@ -48,7 +44,7 @@ func (a *App) GetFlamed() *flamed.Flamed {
 }
 
 func (a *App) setup() {
-	a.mGlobalRequestTimeout = 30 * time.Second
+	a.mGlobalRequestTimeout = viper.GetDuration("GlobalRequestTimeout")
 	a.mFlamed = flamed.NewFlamed()
 
 	a.mTransactionProcessor = append(a.mTransactionProcessor, &user.User{})
@@ -88,71 +84,6 @@ func (a *App) Execute() error {
 
 func GetApp() *App {
 	return appIns
-}
-
-func initConfig() {
-	// Find home directory.
-	home, err := homedir.Dir()
-	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
-	}
-	flamedHomePath = home + "/flamed"
-
-	if configFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(configFile)
-	} else {
-		// Search config in home directory with name ".flamed" (without extension).
-		viper.AddConfigPath(flamedHomePath)
-		viper.SetConfigName(".flamed")
-	}
-
-	viper.SetEnvPrefix("flamed")
-	viper.AutomaticEnv()
-
-	// SET DEFAULTS
-	viper.SetDefault("StoragePath", flamedHomePath)
-	viper.SetDefault("RaftAddress", "")
-	viper.SetDefault("HTTPAddress", "")
-	viper.SetDefault("Join", false)
-	viper.SetDefault("InitialMembers", "")
-
-	viper.SetDefault("HTTPServerTLS", false)
-	viper.SetDefault("HTTPServerCertFile", "")
-	viper.SetDefault("HTTPServerKeyFile", "")
-
-	viper.SetDefault("DeploymentID", 1)
-	viper.SetDefault("RTTMillisecond", 200)
-	viper.SetDefault("MutualTLS", false)
-	viper.SetDefault("CAFile", "")
-	viper.SetDefault("CertFile", "")
-	viper.SetDefault("KeyFile", "")
-	viper.SetDefault("MaxSendQueueSize", 0)
-	viper.SetDefault("MaxReceiveQueueSize", 0)
-	viper.SetDefault("EnableMetrics", false)
-	viper.SetDefault("MaxSnapshotSendBytesPerSecond", 0)
-	viper.SetDefault("MaxSnapshotRecvBytesPerSecond", 0)
-	viper.SetDefault("NotifyCommit", false)
-	viper.SetDefault("LogDBConfig", "tiny")
-	viper.SetDefault("SystemTickerPrecision", time.Duration(0))
-
-	viper.SetDefault("NodeID", 1)
-	viper.SetDefault("CheckQuorum", true)
-	viper.SetDefault("ElectionRTT", 5)
-	viper.SetDefault("HeartbeatRTT", 1)
-	viper.SetDefault("SnapshotEntries", 100)
-	viper.SetDefault("CompactionOverhead", 5)
-	viper.SetDefault("OrderedConfigChange", false)
-	viper.SetDefault("MaxInMemLogSize", 0)
-	viper.SetDefault("DisableAutoCompactions", false)
-	viper.SetDefault("IsObserver", false)
-	viper.SetDefault("IsWitness", false)
-	viper.SetDefault("Quiesce", false)
-
-	if err := viper.ReadInConfig(); err == nil {
-		//fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
 }
 
 func init() {
