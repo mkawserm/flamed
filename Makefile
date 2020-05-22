@@ -1,6 +1,26 @@
 build:
 	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/flamed.go
 
+build-darwin-amd64:
+	@GOOS=darwin GOARCH=amd64 go build -v -o bin/flamed-darwin-amd64 cmd/flamed/flamed.go
+
+#build-darwin-arm64:
+#	@GOOS=darwin GOARCH=arm64 go build -v -o bin/flamed-darwin-arm64 cmd/flamed/flamed.go
+
+build-windows-amd64:
+	@GOOS=windows GOARCH=amd64 go build -v -o bin/flamed-windows-amd64.exe cmd/flamed/flamed.go
+
+#build-windows-arm64:
+#	@GOOS=windows GOARCH=arm64 go build -v -o bin/flamed-windows-arm64.exe cmd/flamed/flamed.go
+
+build-linux-amd64:
+	@GOOS=linux GOARCH=amd64 go build -v -o bin/flamed-linux-amd64 cmd/flamed/flamed.go
+
+build-linux-arm64:
+	@GOOS=linux GOARCH=arm64 go build -v -o bin/flamed-linux-arm64 cmd/flamed/flamed.go
+
+build-all: build-darwin-amd64 build-windows-amd64 build-linux-amd64 build-linux-arm64
+
 run:
 	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/flamed.go
 	@./bin/flamed run --storage-path /tmp/data --http-address 0.0.0.0:8080 --raft-address 0.0.0.0:63001
