@@ -4,6 +4,7 @@ import (
 	"github.com/lni/dragonboat/v3/logger"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"strings"
 	"sync"
 )
 
@@ -20,8 +21,7 @@ func (l *SugaredLogger) Warningf(format string, args ...interface{}) {
 	l.Warnf(format, args...)
 }
 
-func (l *SugaredLogger) SetLevel(logger.LogLevel) {
-
+func (l *SugaredLogger) SetLevel(_ logger.LogLevel) {
 }
 
 type Factory struct {
@@ -36,6 +36,8 @@ type Factory struct {
 }
 
 func (l *Factory) ChangeLogLevel(level string) {
+	level = strings.TrimSpace(level)
+	//fmt.Printf("'%s'",level)
 	if level == "debug" {
 		l.mZapConfig.Level.SetLevel(zap.DebugLevel)
 	} else if level == "info" {
@@ -51,7 +53,7 @@ func (l *Factory) ChangeLogLevel(level string) {
 	} else if level == "dpanic" {
 		l.mZapConfig.Level.SetLevel(zap.DPanicLevel)
 	} else {
-		l.mZapConfig.Level.SetLevel(zap.DebugLevel)
+		l.mZapConfig.Level.SetLevel(zap.ErrorLevel)
 	}
 }
 
@@ -112,6 +114,12 @@ func (l *Factory) L(pkgName string) *zap.Logger {
 	}
 }
 
+func (l *Factory) setup() {
+	l.mLoggers = make(map[string]*zap.Logger)
+	l.mSugaredLoggers = make(map[string]*zap.SugaredLogger)
+	l.mZapConfig = newZapConfig()
+}
+
 func (l *Factory) buildZapLogger(options ...zap.Option) error {
 	zl, err := l.mZapConfig.Build(options...)
 
@@ -120,6 +128,9 @@ func (l *Factory) buildZapLogger(options ...zap.Option) error {
 	}
 
 	l.mZapLogger = zl
+	defer func() {
+		_ = l.mZapLogger.Sync()
+	}()
 
 	return nil
 }
@@ -129,7 +140,7 @@ func GetLoggerFactory() *Factory {
 }
 
 func CS(pkgName string) *SugaredLogger {
-	return &SugaredLogger{loggerIns.S(pkgName)}
+	return &SugaredLogger{S(pkgName)}
 }
 
 // L returns zap logger
@@ -143,7 +154,7 @@ func S(pkgName string) *zap.SugaredLogger {
 }
 
 func DragonboatLoggerFactory(pkgName string) logger.ILogger {
-	return &SugaredLogger{loggerIns.GetZapLogger().Named(pkgName).Sugar()}
+	return &SugaredLogger{S(pkgName)}
 }
 
 func newZapEncoderConfig() zapcore.EncoderConfig {
@@ -164,7 +175,7 @@ func newZapEncoderConfig() zapcore.EncoderConfig {
 
 func newZapConfig() zap.Config {
 	return zap.Config{
-		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
+		Level:       zap.NewAtomicLevelAt(zap.ErrorLevel),
 		Development: false,
 		Sampling: &zap.SamplingConfig{
 			Initial:    100,
@@ -179,12 +190,8 @@ func newZapConfig() zap.Config {
 
 func init() {
 	loggerOnce.Do(func() {
-		loggerIns = &Factory{
-			mZapConfig:      newZapConfig(),
-			mLoggers:        make(map[string]*zap.Logger),
-			mSugaredLoggers: make(map[string]*zap.SugaredLogger),
-		}
-
+		loggerIns = &Factory{}
+		loggerIns.setup()
 		err := loggerIns.buildZapLogger()
 		if err != nil {
 			panic(err)

@@ -240,6 +240,11 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 }
 
 func (s *Storage) Open() error {
+	defer func() {
+		_ = logger.L("storage").Sync()
+	}()
+	logger.L("storage").Debug("Opening storage")
+
 	if s.mConfiguration == nil {
 		return x.ErrInvalidConfiguration
 	}
@@ -265,6 +270,8 @@ func (s *Storage) Open() error {
 	}
 
 	go s.storageTaskQueueHandler()
+
+	logger.L("storage").Debug("Storage opened")
 	return nil
 }
 

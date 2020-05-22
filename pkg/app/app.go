@@ -23,7 +23,7 @@ var (
 )
 
 type App struct {
-	mStoragePath          string
+	//mStoragePath          string
 	mGlobalRequestTimeout time.Duration
 
 	mFlamed      *flamed.Flamed
@@ -45,7 +45,6 @@ func (a *App) GetFlamed() *flamed.Flamed {
 }
 
 func (a *App) setup() {
-	a.mGlobalRequestTimeout = viper.GetDuration("GlobalRequestTimeout")
 	a.mFlamed = flamed.NewFlamed()
 
 	a.mTransactionProcessor = append(a.mTransactionProcessor, &user.User{})
@@ -60,6 +59,9 @@ func (a *App) setup() {
 		Long:  "Flamed is an open-source distributed embeddable NoSQL database",
 		Run: func(cmd *cobra.Command, _ []string) {
 			fmt.Println(cmd.UsageString())
+		},
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			a.initBeforeExecution()
 		},
 	}
 
@@ -79,6 +81,12 @@ func (a *App) setup() {
 	a.mRootCommand.AddCommand(versionCMD)
 }
 
+func (a *App) initBeforeExecution() {
+	/* setup defaults */
+	a.mGlobalRequestTimeout = viper.GetDuration("GlobalRequestTimeout")
+	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString("LogLevel"))
+}
+
 func (a *App) Execute() error {
 	return a.mRootCommand.Execute()
 }
@@ -89,9 +97,7 @@ func GetApp() *App {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
 	appOnce.Do(func() {
-		logger.GetLoggerFactory().ChangeLogLevel(viper.GetString("LogLevel"))
 		appIns = &App{}
 		appIns.setup()
 	})

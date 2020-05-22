@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/mkawserm/flamed/pkg/conf"
+	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"net/http"
@@ -15,6 +16,7 @@ var runCMD = &cobra.Command{
 	Use:   "run",
 	Short: "Run Flamed server",
 	Run: func(cmd *cobra.Command, args []string) {
+		logger.GetLoggerFactory().ChangeLogLevel(viper.GetString("LogLevel"))
 		if len(viper.GetString("StoragePath")) == 0 {
 			fmt.Println("StoragePath can not be empty")
 			return
