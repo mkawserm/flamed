@@ -3,6 +3,8 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/mkawserm/flamed/pkg/constant"
+	"github.com/mkawserm/flamed/pkg/variable"
 	"net/http"
 	"os"
 	"os/signal"
@@ -25,22 +27,22 @@ var RunCMD = &cobra.Command{
 	Use:   "run",
 	Short: "Run Flamed server",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(viper.GetString(StoragePath)) == 0 {
+		if len(viper.GetString(constant.StoragePath)) == 0 {
 			fmt.Println("StoragePath can not be empty")
 			return
 		}
 
-		if len(viper.GetString(RaftAddress)) == 0 {
+		if len(viper.GetString(constant.RaftAddress)) == 0 {
 			fmt.Println("RaftAddress can not be empty")
 			return
 		}
 
-		if len(viper.GetString(HTTPAddress)) == 0 {
+		if len(viper.GetString(constant.HTTPAddress)) == 0 {
 			fmt.Println("HTTPAddress can not be empty")
 			return
 		}
 
-		raftStoragePath := viper.GetString(StoragePath) + "/raft"
+		raftStoragePath := viper.GetString(constant.StoragePath) + "/raft"
 		// node configuration
 		nodeConfiguration := getNodeConfiguration(raftStoragePath)
 		if viper.GetString("LogDBConfig") == "tiny" {
@@ -100,18 +102,18 @@ func runServerAndWaitForShutdown() {
 
 func runHTTPServer() error {
 	logger.L("app").Info("Preparing HTTP Server")
-	if viper.GetBool(HTTPServerTLS) {
+	if viper.GetBool(constant.HTTPServerTLS) {
 		logger.L("app").Info("HTTP Server with TLS started")
-		server := &http.Server{Addr: viper.GetString(HTTPAddress), Handler: appIns.getServerMux()}
+		server := &http.Server{Addr: viper.GetString(constant.HTTPAddress), Handler: appIns.getServerMux()}
 		appIns.mHTTPServer = server
 
-		err := server.ListenAndServeTLS(viper.GetString(HTTPServerCertFile),
-			viper.GetString(HTTPServerKeyFile))
+		err := server.ListenAndServeTLS(viper.GetString(constant.HTTPServerCertFile),
+			viper.GetString(constant.HTTPServerKeyFile))
 
 		return err
 	} else {
 		logger.L("app").Info("HTTP Server started")
-		server := &http.Server{Addr: viper.GetString(HTTPAddress), Handler: appIns.getServerMux()}
+		server := &http.Server{Addr: viper.GetString(constant.HTTPAddress), Handler: appIns.getServerMux()}
 		appIns.mHTTPServer = server
 
 		err := server.ListenAndServe()
@@ -153,7 +155,7 @@ func initializeClusterDefaults() {
 
 	clusterAdmin := GetApp().
 		GetFlamed().
-		NewClusterAdmin(1, viper.GetDuration(GlobalRequestTimeout))
+		NewClusterAdmin(1, viper.GetDuration(constant.GlobalRequestTimeout))
 
 	if clusterAdmin == nil {
 		panic("Failed to create new cluster admin")
@@ -183,7 +185,7 @@ func initializeClusterDefaults() {
 
 	admin := GetApp().
 		GetFlamed().
-		NewAdmin(1, viper.GetDuration(GlobalRequestTimeout))
+		NewAdmin(1, viper.GetDuration(constant.GlobalRequestTimeout))
 
 	if admin == nil {
 		logger.L("app").Error("failed to create new Admin")
@@ -191,15 +193,15 @@ func initializeClusterDefaults() {
 	}
 
 	pha := GetApp().GetPasswordHashAlgorithmFactory()
-	if !pha.IsAlgorithmAvailable(DefaultPasswordHashAlgorithm) {
-		logger.L("app").Error(DefaultPasswordHashAlgorithm +
+	if !pha.IsAlgorithmAvailable(variable.DefaultPasswordHashAlgorithm) {
+		logger.L("app").Error(variable.DefaultPasswordHashAlgorithm +
 			" password hash algorithm is to available")
 		return
 	}
 
 	encoded, err := pha.MakePassword("admin",
 		crypto.GetRandomString(12),
-		DefaultPasswordHashAlgorithm)
+		variable.DefaultPasswordHashAlgorithm)
 
 	if err != nil {
 		logger.L("app").Error("make password returned error", zap.Error(err))
@@ -234,22 +236,22 @@ func getNodeConfiguration(raftStoragePath string) *conf.NodeConfiguration {
 		NodeConfigurationInput: conf.NodeConfigurationInput{
 			NodeHostDir:                   raftStoragePath,
 			WALDir:                        raftStoragePath,
-			DeploymentID:                  viper.GetUint64(DeploymentID),
-			RTTMillisecond:                viper.GetUint64(RTTMillisecond),
-			RaftAddress:                   viper.GetString(RaftAddress),
+			DeploymentID:                  viper.GetUint64(constant.DeploymentID),
+			RTTMillisecond:                viper.GetUint64(constant.RTTMillisecond),
+			RaftAddress:                   viper.GetString(constant.RaftAddress),
 			ListenAddress:                 "",
-			MutualTLS:                     viper.GetBool(MutualTLS),
-			CAFile:                        viper.GetString(CAFile),
-			CertFile:                      viper.GetString(CertFile),
-			KeyFile:                       viper.GetString(KeyFile),
-			MaxSendQueueSize:              viper.GetUint64(MaxSendQueueSize),
-			MaxReceiveQueueSize:           viper.GetUint64(MaxReceiveQueueSize),
-			EnableMetrics:                 viper.GetBool(EnableMetrics),
-			MaxSnapshotSendBytesPerSecond: viper.GetUint64(MaxSnapshotSendBytesPerSecond),
-			MaxSnapshotRecvBytesPerSecond: viper.GetUint64(MaxSnapshotRecvBytesPerSecond),
-			NotifyCommit:                  viper.GetBool(NotifyCommit),
+			MutualTLS:                     viper.GetBool(constant.MutualTLS),
+			CAFile:                        viper.GetString(constant.CAFile),
+			CertFile:                      viper.GetString(constant.CertFile),
+			KeyFile:                       viper.GetString(constant.KeyFile),
+			MaxSendQueueSize:              viper.GetUint64(constant.MaxSendQueueSize),
+			MaxReceiveQueueSize:           viper.GetUint64(constant.MaxReceiveQueueSize),
+			EnableMetrics:                 viper.GetBool(constant.EnableMetrics),
+			MaxSnapshotSendBytesPerSecond: viper.GetUint64(constant.MaxSnapshotSendBytesPerSecond),
+			MaxSnapshotRecvBytesPerSecond: viper.GetUint64(constant.MaxSnapshotRecvBytesPerSecond),
+			NotifyCommit:                  viper.GetBool(constant.NotifyCommit),
 
-			SystemTickerPrecision: viper.GetDuration(SystemTickerPrecision),
+			SystemTickerPrecision: viper.GetDuration(constant.SystemTickerPrecision),
 
 			LogDBConfig:         config.GetTinyMemLogDBConfig(),
 			LogDBFactory:        nil,
@@ -263,32 +265,32 @@ func getNodeConfiguration(raftStoragePath string) *conf.NodeConfiguration {
 func getRaftConfiguration() *conf.RaftConfiguration {
 	return &conf.RaftConfiguration{
 		RaftConfigurationInput: conf.RaftConfigurationInput{
-			NodeID:                 viper.GetUint64(NodeID),
-			CheckQuorum:            viper.GetBool(CheckQuorum),
-			ElectionRTT:            viper.GetUint64(ElectionRTT),
-			HeartbeatRTT:           viper.GetUint64(HeartbeatRTT),
-			SnapshotEntries:        viper.GetUint64(SnapshotEntries),
-			CompactionOverhead:     viper.GetUint64(CompactionOverhead),
-			OrderedConfigChange:    viper.GetBool(OrderedConfigChange),
-			MaxInMemLogSize:        viper.GetUint64(MaxInMemLogSize),
-			DisableAutoCompactions: viper.GetBool(DisableAutoCompactions),
-			IsObserver:             viper.GetBool(IsObserver),
-			IsWitness:              viper.GetBool(IsWitness),
-			Quiesce:                viper.GetBool(Quiesce),
+			NodeID:                 viper.GetUint64(constant.NodeID),
+			CheckQuorum:            viper.GetBool(constant.CheckQuorum),
+			ElectionRTT:            viper.GetUint64(constant.ElectionRTT),
+			HeartbeatRTT:           viper.GetUint64(constant.HeartbeatRTT),
+			SnapshotEntries:        viper.GetUint64(constant.SnapshotEntries),
+			CompactionOverhead:     viper.GetUint64(constant.CompactionOverhead),
+			OrderedConfigChange:    viper.GetBool(constant.OrderedConfigChange),
+			MaxInMemLogSize:        viper.GetUint64(constant.MaxInMemLogSize),
+			DisableAutoCompactions: viper.GetBool(constant.DisableAutoCompactions),
+			IsObserver:             viper.GetBool(constant.IsObserver),
+			IsWitness:              viper.GetBool(constant.IsWitness),
+			Quiesce:                viper.GetBool(constant.Quiesce),
 		},
 	}
 }
 
 func startCluster() {
-	im := getInitialMembers(strings.Split(viper.GetString(InitialMembers), ";"))
+	im := getInitialMembers(strings.Split(viper.GetString(constant.InitialMembers), ";"))
 
 	if len(im) == 0 {
 		if !viper.GetBool("Join") {
-			im[viper.GetUint64(NodeID)] = viper.GetString(RaftAddress)
+			im[viper.GetUint64(constant.NodeID)] = viper.GetString(constant.RaftAddress)
 		}
 	}
 
-	clusterStoragePath := viper.GetString(StoragePath) + "/cluster-1"
+	clusterStoragePath := viper.GetString(constant.StoragePath) + "/cluster-1"
 
 	storagedConfiguration := conf.SimpleStoragedConfiguration(clusterStoragePath, nil)
 	for _, tp := range GetApp().mTransactionProcessorList {
@@ -299,7 +301,7 @@ func startCluster() {
 		1,
 		"cluster-1",
 		im,
-		viper.GetBool(Join))
+		viper.GetBool(constant.Join))
 
 	raftConfiguration := getRaftConfiguration()
 

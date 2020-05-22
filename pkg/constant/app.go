@@ -1,4 +1,4 @@
-package app
+package constant
 
 const LogLevel = "LogLevel"
 const GlobalRequestTimeout = "GlobalRequestTimeout"

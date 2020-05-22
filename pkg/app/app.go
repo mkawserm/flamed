@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/mkawserm/flamed/pkg/app/view/graphql"
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/logger"
@@ -10,6 +11,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/tp/user"
+	"github.com/mkawserm/flamed/pkg/variable"
 	"github.com/spf13/viper"
 	"net/http"
 	"sync"
@@ -107,9 +109,9 @@ func (a *App) setup() {
 	a.mFlamed = flamed.NewFlamed()
 
 	a.mRootCommand = &cobra.Command{
-		Use:   Name,
-		Short: ShortDescription,
-		Long:  LongDescription,
+		Use:   variable.Name,
+		Short: variable.ShortDescription,
+		Long:  variable.LongDescription,
 		Run: func(cmd *cobra.Command, _ []string) {
 			fmt.Println(cmd.UsageString())
 		},
@@ -152,6 +154,12 @@ func (a *App) initViews() {
 
 	if !a.mViewsInitialized {
 		/* initialize all views here */
+
+		// graphql view
+		a.AddView("/graphql",
+			graphql.NewView(a.mFlamed,
+				a.mTransactionProcessorList,
+				a.mPasswordHashAlgorithmFactory).GetHTTPHandler())
 
 		a.mViewsInitialized = true
 	}
