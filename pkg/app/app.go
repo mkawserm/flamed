@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/tp/accesscontrol"
 	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
@@ -90,6 +91,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	appOnce.Do(func() {
+		logger.GetLoggerFactory().ChangeLogLevel(viper.GetString("LogLevel"))
 		appIns = &App{}
 		appIns.setup()
 	})

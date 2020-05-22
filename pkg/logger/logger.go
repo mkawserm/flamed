@@ -3,6 +3,7 @@ package logger
 import (
 	"github.com/lni/dragonboat/v3/logger"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"sync"
 )
 
@@ -26,10 +27,32 @@ func (l *SugaredLogger) SetLevel(logger.LogLevel) {
 type Factory struct {
 	mMutex       sync.Mutex
 	mPackageName string
-	mZapLogger   *zap.Logger
+
+	mZapConfig zap.Config
+	mZapLogger *zap.Logger
 
 	mLoggers        map[string]*zap.Logger
 	mSugaredLoggers map[string]*zap.SugaredLogger
+}
+
+func (l *Factory) ChangeLogLevel(level string) {
+	if level == "debug" {
+		l.mZapConfig.Level.SetLevel(zap.DebugLevel)
+	} else if level == "info" {
+		l.mZapConfig.Level.SetLevel(zap.InfoLevel)
+	} else if level == "warn" {
+		l.mZapConfig.Level.SetLevel(zap.WarnLevel)
+	} else if level == "error" {
+		l.mZapConfig.Level.SetLevel(zap.ErrorLevel)
+	} else if level == "panic" {
+		l.mZapConfig.Level.SetLevel(zap.PanicLevel)
+	} else if level == "fatal" {
+		l.mZapConfig.Level.SetLevel(zap.FatalLevel)
+	} else if level == "dpanic" {
+		l.mZapConfig.Level.SetLevel(zap.DPanicLevel)
+	} else {
+		l.mZapConfig.Level.SetLevel(zap.DebugLevel)
+	}
 }
 
 func (l *Factory) SetupZapLogger(newLogger *zap.Logger) {
@@ -44,11 +67,10 @@ func (l *Factory) GetZapLogger() *zap.Logger {
 	defer l.mMutex.Unlock()
 
 	if l.mZapLogger == nil {
-		log, err := zap.NewProduction()
+		err := l.buildZapLogger()
 		if err != nil {
 			panic(err)
 		}
-		l.mZapLogger = log
 	}
 
 	if l.mLoggers == nil {
@@ -90,6 +112,18 @@ func (l *Factory) L(pkgName string) *zap.Logger {
 	}
 }
 
+func (l *Factory) buildZapLogger(options ...zap.Option) error {
+	zl, err := l.mZapConfig.Build(options...)
+
+	if err != nil {
+		return err
+	}
+
+	l.mZapLogger = zl
+
+	return nil
+}
+
 func GetLoggerFactory() *Factory {
 	return loggerIns
 }
@@ -112,16 +146,48 @@ func DragonboatLoggerFactory(pkgName string) logger.ILogger {
 	return &SugaredLogger{loggerIns.GetZapLogger().Named(pkgName).Sugar()}
 }
 
+func newZapEncoderConfig() zapcore.EncoderConfig {
+	return zapcore.EncoderConfig{
+		TimeKey:        "ts",
+		LevelKey:       "level",
+		NameKey:        "logger",
+		CallerKey:      "caller",
+		MessageKey:     "msg",
+		StacktraceKey:  "stacktrace",
+		LineEnding:     zapcore.DefaultLineEnding,
+		EncodeLevel:    zapcore.LowercaseLevelEncoder,
+		EncodeTime:     zapcore.EpochTimeEncoder,
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
+	}
+}
+
+func newZapConfig() zap.Config {
+	return zap.Config{
+		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
+		Development: false,
+		Sampling: &zap.SamplingConfig{
+			Initial:    100,
+			Thereafter: 100,
+		},
+		Encoding:         "json",
+		EncoderConfig:    newZapEncoderConfig(),
+		OutputPaths:      []string{"stderr"},
+		ErrorOutputPaths: []string{"stderr"},
+	}
+}
+
 func init() {
 	loggerOnce.Do(func() {
-		l, e := zap.NewProduction()
-		if e != nil {
-			panic(e)
-		}
 		loggerIns = &Factory{
-			mZapLogger:      l,
+			mZapConfig:      newZapConfig(),
 			mLoggers:        make(map[string]*zap.Logger),
 			mSugaredLoggers: make(map[string]*zap.SugaredLogger),
+		}
+
+		err := loggerIns.buildZapLogger()
+		if err != nil {
+			panic(err)
 		}
 
 		logger.SetLoggerFactory(DragonboatLoggerFactory)

@@ -42,6 +42,9 @@ func initConfig() {
 }
 
 func InitAllDefaults() {
+	/*Log related settings*/
+	viper.SetDefault("LogLevel", "debug")
+
 	viper.SetDefault("GlobalRequestTimeout", 30*time.Second)
 
 	viper.SetDefault("StoragePath", flamedHomePath)
@@ -84,6 +87,11 @@ func InitAllDefaults() {
 }
 
 func InitAllPersistentFlags(cmd *cobra.Command) {
+	/*Log related settings*/
+	cmd.PersistentFlags().
+		String("log-level", "debug", "Log level")
+	_ = viper.BindPFlag("LogLevel", cmd.PersistentFlags().Lookup("log-level"))
+
 	cmd.PersistentFlags().
 		Duration("global-request-timeout", 30*time.Second, "Data storage path")
 	_ = viper.BindPFlag("GlobalRequestTimeout", cmd.PersistentFlags().Lookup("global-request-timeout"))
