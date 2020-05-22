@@ -79,7 +79,7 @@ func (j *JSON) Apply(_ context.Context,
 	transaction *pb.Transaction) *pb.TransactionResponse {
 
 	tpr := &pb.TransactionResponse{
-		Status:        0,
+		Status:        pb.Status_REJECTED,
 		ErrorCode:     0,
 		ErrorText:     "",
 		FamilyName:    Name,
@@ -88,7 +88,7 @@ func (j *JSON) Apply(_ context.Context,
 
 	jsonPayload := &JSONPayload{}
 	if err := proto.Unmarshal(transaction.Payload, jsonPayload); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
@@ -97,7 +97,7 @@ func (j *JSON) Apply(_ context.Context,
 	jsonMap := jsonPayload.ToJSONMap()
 
 	if jsonMap == nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "json decode error"
 		return tpr
@@ -106,7 +106,7 @@ func (j *JSON) Apply(_ context.Context,
 	id, found := jsonMap["id"]
 
 	if !found {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "id key not found"
 		return tpr
@@ -114,7 +114,7 @@ func (j *JSON) Apply(_ context.Context,
 
 	idString := ""
 	if val, ok := id.(string); !ok {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "id is not string"
 		return tpr
@@ -123,7 +123,7 @@ func (j *JSON) Apply(_ context.Context,
 	}
 
 	if len(idString) == 0 {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "id can not be empty"
 		return tpr
@@ -134,7 +134,7 @@ func (j *JSON) Apply(_ context.Context,
 	switch jsonPayload.Action {
 	case Action_INSERT:
 		if se, _ := stateContext.GetState(address); se != nil {
-			tpr.Status = 0
+			tpr.Status = pb.Status_REJECTED
 			tpr.ErrorCode = 0
 			tpr.ErrorText = "state is already available"
 			return tpr
@@ -160,9 +160,12 @@ func (j *JSON) Apply(_ context.Context,
 		return j.upsert(tpr, stateContext, address, entry, jsonMap)
 	case Action_DELETE:
 		return j.delete(tpr, stateContext, address)
+	default:
+		tpr.Status = pb.Status_REJECTED
+		tpr.ErrorCode = 0
+		tpr.ErrorText = "unknown action"
+		return tpr
 	}
-
-	return tpr
 }
 
 func (j *JSON) processFinalData(tpr *pb.TransactionResponse,
@@ -172,7 +175,7 @@ func (j *JSON) processFinalData(tpr *pb.TransactionResponse,
 	stateJsonMap map[string]interface{}) *pb.TransactionResponse {
 
 	if data, err := json.Marshal(stateJsonMap); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
@@ -181,20 +184,20 @@ func (j *JSON) processFinalData(tpr *pb.TransactionResponse,
 	}
 
 	if err := stateContext.UpsertState(address, stateEntry); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if err := stateContext.UpsertIndex(crypto.StateAddressByteSliceToHexString(address), stateJsonMap); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
-	tpr.Status = 1
+	tpr.Status = pb.Status_ACCEPTED
 	tpr.ErrorCode = 0
 	tpr.ErrorText = ""
 	return tpr
@@ -208,7 +211,7 @@ func (j *JSON) merge(tpr *pb.TransactionResponse,
 	var stateEntry *pb.StateEntry
 
 	if se, _ := stateContext.GetState(address); se == nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "state is not available"
 		return tpr
@@ -219,7 +222,7 @@ func (j *JSON) merge(tpr *pb.TransactionResponse,
 	stateJsonMap := make(map[string]interface{})
 
 	if err := json.Unmarshal(stateEntry.Payload, &stateJsonMap); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
@@ -240,7 +243,7 @@ func (j *JSON) update(tpr *pb.TransactionResponse,
 	var stateEntry *pb.StateEntry
 
 	if se, _ := stateContext.GetState(address); se == nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "state is not available"
 		return tpr
@@ -251,7 +254,7 @@ func (j *JSON) update(tpr *pb.TransactionResponse,
 	stateJsonMap := make(map[string]interface{})
 
 	if err := json.Unmarshal(stateEntry.Payload, &stateJsonMap); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
@@ -262,7 +265,7 @@ func (j *JSON) update(tpr *pb.TransactionResponse,
 		if _, found := stateJsonMap[k]; found {
 			stateJsonMap[k] = v
 		} else {
-			tpr.Status = 0
+			tpr.Status = pb.Status_REJECTED
 			tpr.ErrorCode = 0
 			tpr.ErrorText = fmt.Sprintf("json key [%s] not found", k)
 			return tpr
@@ -279,20 +282,20 @@ func (j *JSON) upsert(tpr *pb.TransactionResponse,
 	jsonMap map[string]interface{}) *pb.TransactionResponse {
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if err := stateContext.UpsertIndex(crypto.StateAddressByteSliceToHexString(address), jsonMap); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
-	tpr.Status = 1
+	tpr.Status = pb.Status_ACCEPTED
 	tpr.ErrorCode = 0
 	tpr.ErrorText = ""
 
@@ -304,20 +307,20 @@ func (j *JSON) delete(tpr *pb.TransactionResponse,
 	address []byte) *pb.TransactionResponse {
 
 	if err := stateContext.DeleteState(address); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if err := stateContext.DeleteIndex(crypto.StateAddressByteSliceToHexString(address)); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
-	tpr.Status = 1
+	tpr.Status = pb.Status_ACCEPTED
 	tpr.ErrorCode = 0
 	tpr.ErrorText = ""
 	return tpr

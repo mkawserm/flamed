@@ -62,7 +62,7 @@ func (i *IndexMeta) upsert(tpr *pb.TransactionResponse,
 
 	payload, err := proto.Marshal(indexMeta)
 	if err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
@@ -76,12 +76,12 @@ func (i *IndexMeta) upsert(tpr *pb.TransactionResponse,
 	}
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
-		tpr.Status = 1
+		tpr.Status = pb.Status_ACCEPTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
@@ -93,19 +93,19 @@ func (i *IndexMeta) delete(tpr *pb.TransactionResponse,
 	address []byte) *pb.TransactionResponse {
 
 	if _, err := stateContext.GetState(address); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if err := stateContext.DeleteState(address); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
-		tpr.Status = 1
+		tpr.Status = pb.Status_ACCEPTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
@@ -117,7 +117,7 @@ func (i *IndexMeta) Apply(_ context.Context,
 	transaction *pb.Transaction) *pb.TransactionResponse {
 
 	tpr := &pb.TransactionResponse{
-		Status:        0,
+		Status:        pb.Status_REJECTED,
 		ErrorCode:     0,
 		ErrorText:     "",
 		FamilyName:    Name,
@@ -127,21 +127,21 @@ func (i *IndexMeta) Apply(_ context.Context,
 	payload := &pb.IndexMetaPayload{}
 
 	if err := proto.Unmarshal(transaction.Payload, payload); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if payload.IndexMeta == nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "indexmeta meta can not be nil"
 		return tpr
 	}
 
 	if !utility.IsNamespaceValid(payload.IndexMeta.Namespace) {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "invalid namespace"
 		return tpr
@@ -151,18 +151,18 @@ func (i *IndexMeta) Apply(_ context.Context,
 
 	if payload.Action == pb.Action_UPSERT {
 		r := i.upsert(tpr, stateContext, transaction, address, payload.IndexMeta)
-		if r.Status == 1 {
+		if r.Status == pb.Status_ACCEPTED {
 			_ = stateContext.UpsertIndexMeta(payload.IndexMeta)
 		}
 		return r
 	} else if payload.Action == pb.Action_DELETE {
 		r := i.delete(tpr, stateContext, address)
-		if r.Status == 1 {
+		if r.Status == pb.Status_ACCEPTED {
 			_ = stateContext.DeleteIndexMeta(payload.IndexMeta)
 		}
 		return r
 	} else {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "unknown action"
 		return tpr

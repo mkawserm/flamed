@@ -199,7 +199,7 @@ func initializeClusterDefaults() {
 	for {
 		leaderID, leaderAvailable, _ := clusterAdmin.GetLeaderID()
 		if leaderAvailable {
-			logger.L("app").Info("Leader found", zap.Uint64("leaderID", leaderID))
+			logger.L("app").Info("leader found", zap.Uint64("leaderID", leaderID))
 			break
 		}
 
@@ -212,7 +212,7 @@ func initializeClusterDefaults() {
 		return
 	}
 
-	logger.L("app").Info("Last applied index", zap.Uint64("lastAppliedIndex", lastAppliedIndex))
+	logger.L("app").Info("last applied index", zap.Uint64("lastAppliedIndex", lastAppliedIndex))
 
 	if lastAppliedIndex > 0 {
 		return
@@ -223,7 +223,7 @@ func initializeClusterDefaults() {
 		NewAdmin(1, viper.GetDuration(GlobalRequestTimeout))
 
 	if admin == nil {
-		logger.L("app").Error("Failed to create new Admin")
+		logger.L("app").Error("failed to create new Admin")
 		return
 	}
 
@@ -239,7 +239,7 @@ func initializeClusterDefaults() {
 		DefaultPasswordHashAlgorithm)
 
 	if err != nil {
-		logger.L("app").Error("Make password returned error", zap.Error(err))
+		logger.L("app").Error("make password returned error", zap.Error(err))
 		return
 	}
 

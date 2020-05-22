@@ -67,7 +67,7 @@ func (u *User) upsert(tpr *pb.TransactionResponse,
 
 	payload, err := proto.Marshal(user)
 	if err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
@@ -81,12 +81,12 @@ func (u *User) upsert(tpr *pb.TransactionResponse,
 	}
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
-		tpr.Status = 1
+		tpr.Status = pb.Status_ACCEPTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
@@ -97,19 +97,19 @@ func (u *User) delete(tpr *pb.TransactionResponse,
 	stateContext iface.IStateContext,
 	address []byte) *pb.TransactionResponse {
 	if _, err := stateContext.GetState(address); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if err := stateContext.DeleteState(address); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
-		tpr.Status = 1
+		tpr.Status = pb.Status_ACCEPTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
@@ -121,7 +121,7 @@ func (u *User) Apply(_ context.Context,
 	transaction *pb.Transaction) *pb.TransactionResponse {
 
 	tpr := &pb.TransactionResponse{
-		Status:        0,
+		Status:        pb.Status_REJECTED,
 		ErrorCode:     0,
 		ErrorText:     "",
 		FamilyName:    Name,
@@ -131,28 +131,28 @@ func (u *User) Apply(_ context.Context,
 	payload := &pb.UserPayload{}
 
 	if err := proto.Unmarshal(transaction.Payload, payload); err != nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if payload.User == nil {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "user can not be nil"
 		return tpr
 	}
 
 	if !utility.IsUsernameValid(payload.User.Username) {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "invalid username: username length must be greater than 2"
 		return tpr
 	}
 
 	if !utility.IsPasswordValid(payload.User.Password) {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "invalid password: password length must be greater than 5"
 		return tpr
@@ -165,7 +165,7 @@ func (u *User) Apply(_ context.Context,
 	} else if payload.Action == pb.Action_DELETE {
 		return u.delete(tpr, stateContext, address)
 	} else {
-		tpr.Status = 0
+		tpr.Status = pb.Status_REJECTED
 		tpr.ErrorCode = 0
 		tpr.ErrorText = "unknown action"
 		return tpr
