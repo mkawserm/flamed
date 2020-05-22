@@ -70,7 +70,7 @@ func (a *App) setup() {
 			"",
 			"config file (default is $HOME/flamed/.flamed.yaml)")
 
-	InitAllPersistentFlags(a.mRootCommand)
+	initAllPersistentFlags(a.mRootCommand)
 
 	a.mRootCommand.AddCommand(runCMD)
 	a.mRootCommand.AddCommand(configCMD)

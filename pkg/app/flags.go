@@ -34,14 +34,14 @@ func initConfig() {
 	viper.AutomaticEnv()
 
 	// SET DEFAULTS
-	InitAllDefaults()
+	initAllDefaults()
 
 	if err := viper.ReadInConfig(); err == nil {
 		//fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }
 
-func InitAllDefaults() {
+func initAllDefaults() {
 	/*Log related settings*/
 	viper.SetDefault("LogLevel", "info")
 
@@ -86,7 +86,7 @@ func InitAllDefaults() {
 	viper.SetDefault("Quiesce", false)
 }
 
-func InitAllPersistentFlags(cmd *cobra.Command) {
+func initAllPersistentFlags(cmd *cobra.Command) {
 	/*Log related settings*/
 	cmd.PersistentFlags().
 		String("log-level", "info", "Log level")
