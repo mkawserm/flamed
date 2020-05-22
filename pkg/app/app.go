@@ -23,12 +23,9 @@ var (
 )
 
 type App struct {
-	//mStoragePath          string
 	mGlobalRequestTimeout time.Duration
-
-	mFlamed      *flamed.Flamed
-	mRootCommand *cobra.Command
-
+	mFlamed               *flamed.Flamed
+	mRootCommand          *cobra.Command
 	mTransactionProcessor []iface.ITransactionProcessor
 }
 
