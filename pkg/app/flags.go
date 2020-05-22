@@ -30,7 +30,7 @@ func initConfig() {
 		viper.SetConfigName(".flamed")
 	}
 
-	viper.SetEnvPrefix("flamed")
+	viper.SetEnvPrefix(EnvPrefix)
 	viper.AutomaticEnv()
 
 	// SET DEFAULTS

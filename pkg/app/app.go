@@ -22,6 +22,8 @@ var (
 	appIns  *App
 )
 
+var EnvPrefix = "flamed"
+
 type App struct {
 	mFlamed               *flamed.Flamed
 	mRootCommand          *cobra.Command
