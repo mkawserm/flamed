@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-var runCMD = &cobra.Command{
+var RunCMD = &cobra.Command{
 	Use:   "run",
 	Short: "Run Flamed server",
 	Run: func(cmd *cobra.Command, args []string) {

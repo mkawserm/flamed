@@ -8,7 +8,7 @@ import (
 
 var filePath string
 
-var configCMD = &cobra.Command{
+var ConfigCMD = &cobra.Command{
 	Use:   "config",
 	Short: "Manage config file",
 	Run: func(cmd *cobra.Command, _ []string) {
@@ -40,5 +40,5 @@ func init() {
 			"file-path",
 			"",
 			"Configuration file path")
-	configCMD.AddCommand(configCreateCMD)
+	ConfigCMD.AddCommand(configCreateCMD)
 }

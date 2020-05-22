@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var flamedHomePath string
+var homePath string
 var configFile string
 
 func initConfig() {
@@ -19,18 +19,18 @@ func initConfig() {
 		fmt.Println("Error: ", err)
 		os.Exit(1)
 	}
-	flamedHomePath = home + "/flamed"
+	homePath = home + "/" + Name
 
 	if configFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(configFile)
 	} else {
-		// Search config in home directory with name ".flamed" (without extension).
-		viper.AddConfigPath(flamedHomePath)
-		viper.SetConfigName(".flamed")
+		// Search config in home directory with name ".Name" (default .flamed) (without extension).
+		viper.AddConfigPath(homePath)
+		viper.SetConfigName("." + Name)
 	}
 
-	viper.SetEnvPrefix(EnvPrefix)
+	viper.SetEnvPrefix(Name)
 	viper.AutomaticEnv()
 
 	// SET DEFAULTS
@@ -47,7 +47,7 @@ func initAllDefaults() {
 
 	viper.SetDefault("GlobalRequestTimeout", 30*time.Second)
 
-	viper.SetDefault("StoragePath", flamedHomePath)
+	viper.SetDefault("StoragePath", homePath)
 	viper.SetDefault("RaftAddress", "localhost:2281")
 	viper.SetDefault("HTTPAddress", "localhost:8081")
 	viper.SetDefault("Join", false)
@@ -97,7 +97,7 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag("GlobalRequestTimeout", cmd.PersistentFlags().Lookup("global-request-timeout"))
 
 	cmd.PersistentFlags().
-		String("storage-path", flamedHomePath, "Data storage path")
+		String("storage-path", homePath, "Data storage path")
 	_ = viper.BindPFlag("StoragePath", cmd.PersistentFlags().Lookup("storage-path"))
 
 	cmd.PersistentFlags().

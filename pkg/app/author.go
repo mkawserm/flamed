@@ -8,7 +8,7 @@ import (
 const author = `Md Kawser Munshi <mkawserm@gmail.com>
 `
 
-var authorCMD = &cobra.Command{
+var AuthorCMD = &cobra.Command{
 	Use:   "author",
 	Short: "Print Flamed authors",
 	Run: func(_ *cobra.Command, _ []string) {

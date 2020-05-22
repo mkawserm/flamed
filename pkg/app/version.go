@@ -7,7 +7,7 @@ import (
 
 const version = "v0.1.0"
 
-var versionCMD = &cobra.Command{
+var VersionCMD = &cobra.Command{
 	Use:   "version",
 	Short: "Print Flamed version",
 	Run: func(_ *cobra.Command, _ []string) {

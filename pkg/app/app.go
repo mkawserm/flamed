@@ -22,12 +22,24 @@ var (
 	appIns  *App
 )
 
-var EnvPrefix = "flamed"
+var Name = "flamed"
+var ShortDescription = "Flamed is an open-source distributed embeddable NoSQL database"
+var LongDescription = "Flamed is an open-source distributed embeddable NoSQL database"
 
 type App struct {
+	mCommandsInitialized  bool
+	mDefaultCommandFlag   bool
 	mFlamed               *flamed.Flamed
 	mRootCommand          *cobra.Command
 	mTransactionProcessor []iface.ITransactionProcessor
+}
+
+func (a *App) EnableDefaultCommands() {
+	a.mDefaultCommandFlag = true
+}
+
+func (a *App) DisableDefaultCommands() {
+	a.mDefaultCommandFlag = false
 }
 
 func (a *App) UpdateGlobalRequestTimeout(timeout time.Duration) {
@@ -42,6 +54,10 @@ func (a *App) GetFlamed() *flamed.Flamed {
 	return a.mFlamed
 }
 
+func (a *App) AddCommand(commands ...*cobra.Command) {
+	a.mRootCommand.AddCommand(commands...)
+}
+
 func (a *App) setup() {
 	a.mFlamed = flamed.NewFlamed()
 
@@ -52,9 +68,9 @@ func (a *App) setup() {
 	a.mTransactionProcessor = append(a.mTransactionProcessor, &accesscontrol.AccessControl{})
 
 	a.mRootCommand = &cobra.Command{
-		Use:   "flamed",
-		Short: "Flamed is an open-source distributed embeddable NoSQL database",
-		Long:  "Flamed is an open-source distributed embeddable NoSQL database",
+		Use:   Name,
+		Short: ShortDescription,
+		Long:  LongDescription,
 		Run: func(cmd *cobra.Command, _ []string) {
 			fmt.Println(cmd.UsageString())
 		},
@@ -69,14 +85,23 @@ func (a *App) setup() {
 			&configFile,
 			"config",
 			"",
-			"config file (default is $HOME/flamed/.flamed.yaml)")
+			"Config file")
 
 	initAllPersistentFlags(a.mRootCommand)
+}
 
-	a.mRootCommand.AddCommand(runCMD)
-	a.mRootCommand.AddCommand(configCMD)
-	a.mRootCommand.AddCommand(authorCMD)
-	a.mRootCommand.AddCommand(versionCMD)
+func (a *App) initCommands() {
+	if !a.mDefaultCommandFlag {
+		return
+	}
+
+	if !a.mCommandsInitialized {
+		a.mRootCommand.AddCommand(RunCMD)
+		a.mRootCommand.AddCommand(ConfigCMD)
+		a.mRootCommand.AddCommand(AuthorCMD)
+		a.mRootCommand.AddCommand(VersionCMD)
+		a.mCommandsInitialized = true
+	}
 }
 
 func (a *App) initBeforeExecution() {
@@ -85,6 +110,7 @@ func (a *App) initBeforeExecution() {
 }
 
 func (a *App) Execute() error {
+	a.initCommands()
 	return a.mRootCommand.Execute()
 }
 
@@ -95,7 +121,10 @@ func GetApp() *App {
 func init() {
 	cobra.OnInitialize(initConfig)
 	appOnce.Do(func() {
-		appIns = &App{}
+		appIns = &App{
+			mCommandsInitialized: false,
+			mDefaultCommandFlag:  true,
+		}
 		appIns.setup()
 	})
 }
