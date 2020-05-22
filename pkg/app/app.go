@@ -36,6 +36,9 @@ type App struct {
 	mCommandsInitialized bool
 	mDefaultCommandFlag  bool
 
+	mTPInitialized bool
+	mDefaultTPFlag bool
+
 	mFlamed               *flamed.Flamed
 	mRootCommand          *cobra.Command
 	mTransactionProcessor []iface.ITransactionProcessor
@@ -43,6 +46,14 @@ type App struct {
 
 func (a *App) getServerMux() *http.ServeMux {
 	return a.mServerMux
+}
+
+func (a *App) EnableDefaultTransactionProcessors() {
+	a.mDefaultTPFlag = true
+}
+
+func (a *App) DisableDefaultTransactionProcessors() {
+	a.mDefaultTPFlag = false
 }
 
 func (a *App) EnableDefaultViews() {
@@ -83,12 +94,6 @@ func (a *App) AddCommand(commands ...*cobra.Command) {
 
 func (a *App) setup() {
 	a.mFlamed = flamed.NewFlamed()
-
-	a.mTransactionProcessor = append(a.mTransactionProcessor, &user.User{})
-	a.mTransactionProcessor = append(a.mTransactionProcessor, &json.JSON{})
-	a.mTransactionProcessor = append(a.mTransactionProcessor, &intkey.IntKey{})
-	a.mTransactionProcessor = append(a.mTransactionProcessor, &indexmeta.IndexMeta{})
-	a.mTransactionProcessor = append(a.mTransactionProcessor, &accesscontrol.AccessControl{})
 
 	a.mRootCommand = &cobra.Command{
 		Use:   Name,
@@ -141,12 +146,30 @@ func (a *App) initViews() {
 	}
 }
 
+func (a *App) initTransactionProcessors() {
+	if !a.mDefaultTPFlag {
+		return
+	}
+
+	if !a.mTPInitialized {
+		/* initialize all transaction processors here */
+		a.mTransactionProcessor = append(a.mTransactionProcessor, &user.User{})
+		a.mTransactionProcessor = append(a.mTransactionProcessor, &json.JSON{})
+		a.mTransactionProcessor = append(a.mTransactionProcessor, &intkey.IntKey{})
+		a.mTransactionProcessor = append(a.mTransactionProcessor, &indexmeta.IndexMeta{})
+		a.mTransactionProcessor = append(a.mTransactionProcessor, &accesscontrol.AccessControl{})
+
+		a.mTPInitialized = true
+	}
+}
+
 func (a *App) initBeforeExecution() {
 	/* setup defaults */
 	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString("LogLevel"))
 }
 
 func (a *App) Execute() error {
+	a.initTransactionProcessors()
 	a.initCommands()
 
 	return a.mRootCommand.Execute()
@@ -166,6 +189,9 @@ func init() {
 
 			mViewsInitialized: false,
 			mDefaultViewFlag:  true,
+
+			mTPInitialized: false,
+			mDefaultTPFlag: true,
 		}
 
 		appIns.setup()
