@@ -122,16 +122,20 @@ var RunCMD = &cobra.Command{
 			panic(err)
 		}
 
-		http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-			_, _ = fmt.Fprintf(writer, "Hello, %s!", request.URL.Path[1:])
-		})
-
-		err = http.ListenAndServe(viper.GetString("HTTPAddress"), nil)
-		if err != nil {
-			panic(err)
-		}
-
+		runHTTPServer()
 	},
+}
+
+func runHTTPServer() {
+	GetApp().initViews()
+	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		_, _ = fmt.Fprintf(writer, "Hello, %s!", request.URL.Path[1:])
+	})
+
+	err := http.ListenAndServe(viper.GetString("HTTPAddress"), appIns.getServerMux())
+	if err != nil {
+		panic(err)
+	}
 }
 
 func getInitialMembers(stringList []string) map[uint64]string {

@@ -41,6 +41,10 @@ type App struct {
 	mTransactionProcessor []iface.ITransactionProcessor
 }
 
+func (a *App) getServerMux() *http.ServeMux {
+	return a.mServerMux
+}
+
 func (a *App) EnableDefaultViews() {
 	a.mDefaultViewFlag = true
 }
@@ -143,7 +147,6 @@ func (a *App) initBeforeExecution() {
 }
 
 func (a *App) Execute() error {
-	a.initViews()
 	a.initCommands()
 
 	return a.mRootCommand.Execute()
