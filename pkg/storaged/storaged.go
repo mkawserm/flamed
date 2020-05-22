@@ -83,9 +83,9 @@ func (s *Storaged) Sync() error {
 }
 
 func (s *Storaged) Close() error {
-	logger.L("storaged").Debug("storaged Close")
+	logger.L("storaged").Debug("storaged closing")
 	defer func() {
-		logger.L("storaged").Debug("storaged Close done")
+		logger.L("storaged").Debug("storaged closed")
 	}()
 	if s.mStorage == nil {
 		return nil
@@ -96,7 +96,7 @@ func (s *Storaged) Close() error {
 }
 
 func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
-	logger.L("storaged").Debug("storaged Update")
+	logger.L("storaged").Debug("storaged update")
 	if s.mStorage == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
@@ -134,27 +134,27 @@ func (s *Storaged) Update(entries []sm.Entry) ([]sm.Entry, error) {
 
 	s.mLastApplied = entries[len(entries)-1].Index
 
-	logger.L("storaged").Debug("storaged Update done")
+	logger.L("storaged").Debug("storaged update done")
 	return entries, nil
 }
 
 func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
-	logger.L("storaged").Debug("storaged Lookup")
+	logger.L("storaged").Debug("storaged lookup")
 	if s.mStorage == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
 
 	if lookupRequest, ok := input.(variant.LookupRequest); ok {
 		r, err := s.mStorage.Lookup(lookupRequest)
-		logger.L("storaged").Debug("storaged Lookup done with LookupRequest")
+		logger.L("storaged").Debug("storaged lookup done with [LookupRequest]")
 		return r, err
 	} else if searchRequest, ok := input.(variant.SearchRequest); ok {
 		r, err := s.mStorage.Search(searchRequest)
-		logger.L("storaged").Debug("storaged Lookup done with SearchRequest")
+		logger.L("storaged").Debug("storaged lookup done with [SearchRequest]")
 		return r, err
 	}
 
-	logger.L("storaged").Debug("storaged Lookup done")
+	logger.L("storaged").Debug("storaged lookup done")
 	return nil, x.ErrInvalidLookupInput
 }
 
