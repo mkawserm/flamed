@@ -101,9 +101,11 @@ func runServerAndWaitForShutdown() {
 }
 
 func runHTTPServer() error {
-	logger.L("app").Info("Preparing HTTP Server")
+	logger.L("app").Info("preparing http server")
 	if viper.GetBool(constant.HTTPServerTLS) {
-		logger.L("app").Info("HTTP Server with TLS started")
+		logger.L("app").Info("http server with tls started @" +
+			viper.GetString(constant.HTTPAddress))
+
 		server := &http.Server{Addr: viper.GetString(constant.HTTPAddress), Handler: appIns.getServerMux()}
 		appIns.mHTTPServer = server
 
@@ -112,7 +114,9 @@ func runHTTPServer() error {
 
 		return err
 	} else {
-		logger.L("app").Info("HTTP Server started")
+		logger.L("app").Info("http server started @" +
+			viper.GetString(constant.HTTPAddress))
+
 		server := &http.Server{Addr: viper.GetString(constant.HTTPAddress), Handler: appIns.getServerMux()}
 		appIns.mHTTPServer = server
 
