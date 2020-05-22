@@ -1,7 +1,16 @@
 package app
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"strconv"
+	"strings"
+	"syscall"
+	"time"
+
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/mkawserm/flamed/pkg/conf"
 	"github.com/mkawserm/flamed/pkg/crypto"
@@ -10,10 +19,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	"net/http"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var RunCMD = &cobra.Command{
@@ -126,34 +131,77 @@ var RunCMD = &cobra.Command{
 			panic(err)
 		}
 
+		// initialize cluster defaults
+		// like admin user and other things
 		initializeClusterDefaults()
-		runHTTPServer()
+
+		// initialize views
+		GetApp().initViews()
+
+		// run server and wait for shutdown
+		runServerAndWaitForShutDown()
 	},
-}
+} // Command
 
-func runHTTPServer() {
-	logger.L("app").Info("Running HTTP Server")
-	GetApp().initViews()
+func runServerAndWaitForShutDown() {
+	// idleChan channel is dedicated for shutting down all active connections.
+	// Once actual shutdown occurred by closing this channel, the main goroutine
+	// is shutdown.
+	idleChan := make(chan struct{})
+	go func() {
+		// signChan channel is used to transmit signal notifications.
+		signChan := make(chan os.Signal, 1)
+		// Catch and relay certain signal(s) to signChan channel.
+		signal.Notify(signChan, os.Interrupt, syscall.SIGTERM)
+		// Blocking until a signal is sent over signChan channel.
+		sig := <-signChan
 
-	if viper.GetBool(HTTPServerTLS) {
-		logger.L("app").Info("HTTP Server with TLS started")
-		err := http.ListenAndServeTLS(
-			viper.GetString(HTTPAddress),
-			viper.GetString(HTTPServerCertFile),
-			viper.GetString(HTTPServerKeyFile),
-			appIns.getServerMux())
-		if err != nil {
-			panic(err)
+		logger.L("app").Info("shutdown signal received",
+			zap.String("signal", sig.String()))
+
+		// Create a new context with a timeout duration. It helps allowing
+		// timeout duration to all active connections in order for them to
+		// finish their job. Any connections that wont complete within the
+		// allowed timeout duration gets halted.
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		if err := GetApp().getServer().Shutdown(ctx); err == context.DeadlineExceeded {
+			logger.L("app").Info("shutdown: halted active connections")
 		}
-	} else {
-		logger.L("app").Info("HTTP Server started")
-		err := http.ListenAndServe(viper.GetString(HTTPAddress), appIns.getServerMux())
-		if err != nil {
-			panic(err)
-		}
+
+		// Actual shutdown trigger.
+		close(idleChan)
+	}()
+
+	if err := runHTTPServer(); err == http.ErrServerClosed {
+		logger.L("app").Info("flamed shutdown started")
 	}
 
-	logger.L("app").Info("HTTP Server finished")
+	// Blocking until the shutdown to complete then inform the main goroutine.
+	<-idleChan
+	logger.L("app").Info("flamed shutdown complete")
+}
+
+func runHTTPServer() error {
+	logger.L("app").Info("Running HTTP Server")
+	if viper.GetBool(HTTPServerTLS) {
+		logger.L("app").Info("HTTP Server with TLS started")
+		server := &http.Server{Addr: viper.GetString(HTTPAddress), Handler: appIns.getServerMux()}
+		appIns.mHTTPServer = server
+
+		err := server.ListenAndServeTLS(viper.GetString(HTTPServerCertFile),
+			viper.GetString(HTTPServerKeyFile))
+
+		return err
+	} else {
+		logger.L("app").Info("HTTP Server started")
+		server := &http.Server{Addr: viper.GetString(HTTPAddress), Handler: appIns.getServerMux()}
+		appIns.mHTTPServer = server
+
+		err := server.ListenAndServe()
+		return err
+	}
 }
 
 func getInitialMembers(stringList []string) map[uint64]string {

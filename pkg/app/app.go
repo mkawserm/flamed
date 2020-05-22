@@ -25,7 +25,8 @@ var (
 )
 
 type App struct {
-	mServerMux *http.ServeMux
+	mServerMux  *http.ServeMux
+	mHTTPServer *http.Server
 
 	mViewsInitialized bool
 	mDefaultViewFlag  bool
@@ -44,6 +45,10 @@ type App struct {
 
 func (a *App) GetPasswordHashAlgorithmFactory() iface.IPasswordHashAlgorithmFactory {
 	return a.mPasswordHashAlgorithmFactory
+}
+
+func (a *App) getServer() *http.Server {
+	return a.mHTTPServer
 }
 
 func (a *App) getServerMux() *http.ServeMux {
