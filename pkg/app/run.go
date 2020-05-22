@@ -95,7 +95,7 @@ var RunCMD = &cobra.Command{
 		clusterStoragePath := viper.GetString(StoragePath) + "/cluster-1"
 
 		storagedConfiguration := conf.SimpleStoragedConfiguration(clusterStoragePath, nil)
-		for _, tp := range GetApp().mTransactionProcessor {
+		for _, tp := range GetApp().mTransactionProcessorList {
 			storagedConfiguration.AddTransactionProcessor(tp)
 		}
 

@@ -39,7 +39,7 @@ type App struct {
 
 	mFlamed                       *flamed.Flamed
 	mRootCommand                  *cobra.Command
-	mTransactionProcessor         []iface.ITransactionProcessor
+	mTransactionProcessorList     []iface.ITransactionProcessor
 	mPasswordHashAlgorithmFactory iface.IPasswordHashAlgorithmFactory
 }
 
@@ -92,7 +92,7 @@ func (a *App) AddView(pattern string, handler func(http.ResponseWriter, *http.Re
 }
 
 func (a *App) AddTransactionProcessor(tp iface.ITransactionProcessor) {
-	a.mTransactionProcessor = append(a.mTransactionProcessor, tp)
+	a.mTransactionProcessorList = append(a.mTransactionProcessorList, tp)
 }
 
 func (a *App) GetFlamed() *flamed.Flamed {
@@ -164,11 +164,11 @@ func (a *App) initTransactionProcessors() {
 
 	if !a.mTPInitialized {
 		/* initialize all transaction processors here */
-		a.mTransactionProcessor = append(a.mTransactionProcessor, &user.User{})
-		a.mTransactionProcessor = append(a.mTransactionProcessor, &json.JSON{})
-		a.mTransactionProcessor = append(a.mTransactionProcessor, &intkey.IntKey{})
-		a.mTransactionProcessor = append(a.mTransactionProcessor, &indexmeta.IndexMeta{})
-		a.mTransactionProcessor = append(a.mTransactionProcessor, &accesscontrol.AccessControl{})
+		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &user.User{})
+		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &json.JSON{})
+		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &intkey.IntKey{})
+		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &indexmeta.IndexMeta{})
+		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &accesscontrol.AccessControl{})
 
 		a.mTPInitialized = true
 	}
