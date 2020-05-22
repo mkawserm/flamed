@@ -127,9 +127,11 @@ var RunCMD = &cobra.Command{
 }
 
 func runHTTPServer() {
+	logger.L("app").Info("Running HTTP Server")
 	GetApp().initViews()
 
 	if viper.GetBool(HTTPServerTLS) {
+		logger.L("app").Info("HTTP Server with TLS started")
 		err := http.ListenAndServeTLS(
 			viper.GetString(HTTPAddress),
 			viper.GetString(HTTPServerCertFile),
@@ -139,11 +141,14 @@ func runHTTPServer() {
 			panic(err)
 		}
 	} else {
+		logger.L("app").Info("HTTP Server started")
 		err := http.ListenAndServe(viper.GetString(HTTPAddress), appIns.getServerMux())
 		if err != nil {
 			panic(err)
 		}
 	}
+
+	logger.L("app").Info("HTTP Server finished")
 }
 
 func getInitialMembers(stringList []string) map[uint64]string {
