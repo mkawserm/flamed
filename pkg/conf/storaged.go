@@ -30,6 +30,8 @@ type StoragedConfigurationInput struct {
 
 	StateStorageCustomConfiguration interface{} `json:"-"`
 	IndexStorageCustomConfiguration interface{} `json:"-"`
+
+	ProposalReceiver func(*pb.Proposal, pb.Status) `json:"_"`
 }
 
 type StoragedConfiguration struct {
@@ -137,6 +139,8 @@ func (s *StoragedConfiguration) IsTransactionProcessorExists(family, version str
 	return found
 }
 
-func (s *StoragedConfiguration) ProposalReceiver(_ *pb.Proposal, _ pb.Status) {
-
+func (s *StoragedConfiguration) ProposalReceiver(proposal *pb.Proposal, status pb.Status) {
+	if s.StoragedConfigurationInput.ProposalReceiver != nil {
+		s.StoragedConfigurationInput.ProposalReceiver(proposal, status)
+	}
 }

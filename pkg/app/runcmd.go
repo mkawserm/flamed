@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/constant"
+	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/variable"
 	"net/http"
 	"os"
@@ -296,7 +297,22 @@ func startCluster() {
 
 	clusterStoragePath := viper.GetString(constant.StoragePath) + "/cluster-1"
 
-	storagedConfiguration := conf.SimpleStoragedConfiguration(clusterStoragePath, nil)
+	storagedConfiguration := &conf.StoragedConfiguration{
+		StoragedConfigurationInput: conf.StoragedConfigurationInput{
+			AutoIndexMeta:         true,
+			IndexEnable:           true,
+			StateStoragePath:      clusterStoragePath + "/state",
+			StateStorageSecretKey: nil,
+			IndexStoragePath:      clusterStoragePath + "/index",
+			IndexStorageSecretKey: nil,
+
+			AutoBuildIndex: true,
+
+			ProposalReceiver: GetApp().GetProposalReceiver(),
+		},
+		TransactionProcessorMap: make(map[string]iface.ITransactionProcessor),
+	}
+
 	for _, tp := range GetApp().mTransactionProcessorList {
 		storagedConfiguration.AddTransactionProcessor(tp)
 	}

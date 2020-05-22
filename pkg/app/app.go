@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/logger"
+	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/tp/accesscontrol"
 	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
@@ -43,10 +44,16 @@ type App struct {
 	mRootCommand                  *cobra.Command
 	mTransactionProcessorList     []iface.ITransactionProcessor
 	mPasswordHashAlgorithmFactory iface.IPasswordHashAlgorithmFactory
+
+	mProposalReceiver func(*pb.Proposal, pb.Status)
 }
 
-func (a *App) GetPasswordHashAlgorithmFactory() iface.IPasswordHashAlgorithmFactory {
-	return a.mPasswordHashAlgorithmFactory
+func (a *App) SetProposalReceiver(pr func(*pb.Proposal, pb.Status)) {
+	a.mProposalReceiver = pr
+}
+
+func (a *App) GetProposalReceiver() func(*pb.Proposal, pb.Status) {
+	return a.mProposalReceiver
 }
 
 func (a *App) getServer() *http.Server {
@@ -57,8 +64,12 @@ func (a *App) getServerMux() *http.ServeMux {
 	return a.mServerMux
 }
 
-func (a *App) SetupCustomPasswordHashAlgorithmFactory(f iface.IPasswordHashAlgorithmFactory) {
+func (a *App) SetPasswordHashAlgorithmFactory(f iface.IPasswordHashAlgorithmFactory) {
 	a.mPasswordHashAlgorithmFactory = f
+}
+
+func (a *App) GetPasswordHashAlgorithmFactory() iface.IPasswordHashAlgorithmFactory {
+	return a.mPasswordHashAlgorithmFactory
 }
 
 func (a *App) EnableDefaultTransactionProcessors() {
