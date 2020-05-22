@@ -43,7 +43,7 @@ func initConfig() {
 
 func initAllDefaults() {
 	/*Log related settings*/
-	viper.SetDefault("LogLevel", "info")
+	viper.SetDefault("LogLevel", "error")
 
 	viper.SetDefault("GlobalRequestTimeout", 30*time.Second)
 
@@ -89,7 +89,7 @@ func initAllDefaults() {
 func initAllPersistentFlags(cmd *cobra.Command) {
 	/*Log related settings*/
 	cmd.PersistentFlags().
-		String("log-level", "info", "Log level")
+		String("log-level", "error", "Log level")
 	_ = viper.BindPFlag("LogLevel", cmd.PersistentFlags().Lookup("log-level"))
 
 	cmd.PersistentFlags().
