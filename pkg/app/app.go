@@ -23,14 +23,13 @@ var (
 )
 
 type App struct {
-	mGlobalRequestTimeout time.Duration
 	mFlamed               *flamed.Flamed
 	mRootCommand          *cobra.Command
 	mTransactionProcessor []iface.ITransactionProcessor
 }
 
 func (a *App) UpdateGlobalRequestTimeout(timeout time.Duration) {
-	a.mGlobalRequestTimeout = timeout
+	viper.Set("GlobalRequestTimeout", timeout)
 }
 
 func (a *App) AddTransactionProcessor(tp iface.ITransactionProcessor) {
@@ -80,7 +79,6 @@ func (a *App) setup() {
 
 func (a *App) initBeforeExecution() {
 	/* setup defaults */
-	a.mGlobalRequestTimeout = viper.GetDuration("GlobalRequestTimeout")
 	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString("LogLevel"))
 }
 
