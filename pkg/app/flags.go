@@ -45,8 +45,8 @@ func InitAllDefaults() {
 	viper.SetDefault("GlobalRequestTimeout", 30*time.Second)
 
 	viper.SetDefault("StoragePath", flamedHomePath)
-	viper.SetDefault("RaftAddress", "localhost:2280")
-	viper.SetDefault("HTTPAddress", "localhost:8080")
+	viper.SetDefault("RaftAddress", "localhost:2281")
+	viper.SetDefault("HTTPAddress", "localhost:8081")
 	viper.SetDefault("Join", false)
 	viper.SetDefault("InitialMembers", "")
 
