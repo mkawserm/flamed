@@ -2,6 +2,9 @@ package graphql
 
 import (
 	goContext "context"
+	"github.com/mkawserm/flamed/pkg/logger"
+	"go.uber.org/zap"
+	"strings"
 
 	"encoding/json"
 	"github.com/graphql-go/graphql"
@@ -55,6 +58,7 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 	}
 
 	return func(writer http.ResponseWriter, request *http.Request) {
+		logger.L("graphql").Debug("processing graphql request")
 		writer.Header().Add("Content-Type", "application/json; charset=utf-8")
 
 		var result *graphql.Result
@@ -72,10 +76,18 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 			return
 		}
 
+		logger.L("graphql").Debug("graphql request body",
+			zap.ByteString("requestBody", bodyBytes))
+
+		var fields []zap.Field
 		header := make(http.Header)
 		for k, v := range request.Header {
 			header[k] = v
+			fields = append(fields, zap.String(k, strings.Join(v, ",")))
 		}
+
+		logger.L("graphql").Debug("graphql request header", fields...)
+
 		ro := ParseGraphQLQuery(bodyBytes)
 
 		var params graphql.Params
@@ -99,6 +111,9 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 
 		rJSON, _ := json.Marshal(result)
 		_, _ = writer.Write(rJSON)
+
+		logger.L("graphql").Debug("graphql request processed",
+			zap.ByteString("responseBody", rJSON))
 	}
 }
 
