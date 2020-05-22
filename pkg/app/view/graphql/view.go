@@ -1,30 +1,36 @@
 package graphql
 
 import (
-	"github.com/mkawserm/flamed/pkg/flamed"
-	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/graphql-go/graphql"
+	"github.com/mkawserm/flamed/pkg/context"
 	"net/http"
 )
 
+type GQLHandler func(flamedContext *context.FlamedContext) *graphql.Field
+
 type View struct {
-	mFlamed                       *flamed.Flamed
-	mTransactionProcessorList     []iface.ITransactionProcessor
-	mPasswordHashAlgorithmFactory iface.IPasswordHashAlgorithmFactory
+	mQueryFields    graphql.Fields
+	mMutationFields graphql.Fields
+
+	mFlamedContext *context.FlamedContext
+}
+
+func (v *View) AddQueryField(name string, handler GQLHandler) {
+	v.mQueryFields[name] = handler(v.mFlamedContext)
+}
+
+func (v *View) AddMutationField(name string, handler GQLHandler) {
+	v.mMutationFields[name] = handler(v.mFlamedContext)
 }
 
 func (v *View) GetHTTPHandler() http.HandlerFunc {
+	v.register()
+
 	return func(writer http.ResponseWriter, request *http.Request) {
 		_, _ = writer.Write([]byte("Hello world"))
 	}
 }
 
-func NewView(flamed *flamed.Flamed,
-	tpList []iface.ITransactionProcessor,
-	passwordHashAlgorithmFactory iface.IPasswordHashAlgorithmFactory) *View {
-
-	return &View{
-		mFlamed:                       flamed,
-		mTransactionProcessorList:     tpList,
-		mPasswordHashAlgorithmFactory: passwordHashAlgorithmFactory,
-	}
+func NewView(flamedContext *context.FlamedContext) *View {
+	return &View{mFlamedContext: flamedContext}
 }

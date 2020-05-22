@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql"
+	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/logger"
@@ -40,12 +41,22 @@ type App struct {
 	mTPInitialized bool
 	mDefaultTPFlag bool
 
-	mFlamed                       *flamed.Flamed
-	mRootCommand                  *cobra.Command
-	mTransactionProcessorList     []iface.ITransactionProcessor
-	mPasswordHashAlgorithmFactory iface.IPasswordHashAlgorithmFactory
+	mRootCommand   *cobra.Command
+	mFlamedContext *context.FlamedContext
 
 	mProposalReceiver func(*pb.Proposal, pb.Status)
+}
+
+func (a *App) GetFlamedContext() *context.FlamedContext {
+	return a.mFlamedContext
+}
+
+func (a *App) GetTPMap() map[string]iface.ITransactionProcessor {
+	return a.mFlamedContext.TransactionProcessorMap
+}
+
+func (a *App) GetTransactionProcessorMap() map[string]iface.ITransactionProcessor {
+	return a.mFlamedContext.TransactionProcessorMap
 }
 
 func (a *App) SetProposalReceiver(pr func(*pb.Proposal, pb.Status)) {
@@ -65,11 +76,11 @@ func (a *App) getServerMux() *http.ServeMux {
 }
 
 func (a *App) SetPasswordHashAlgorithmFactory(f iface.IPasswordHashAlgorithmFactory) {
-	a.mPasswordHashAlgorithmFactory = f
+	a.mFlamedContext.PasswordHashAlgorithmFactory = f
 }
 
 func (a *App) GetPasswordHashAlgorithmFactory() iface.IPasswordHashAlgorithmFactory {
-	return a.mPasswordHashAlgorithmFactory
+	return a.mFlamedContext.PasswordHashAlgorithmFactory
 }
 
 func (a *App) EnableDefaultTransactionProcessors() {
@@ -105,11 +116,11 @@ func (a *App) AddView(pattern string, handler func(http.ResponseWriter, *http.Re
 }
 
 func (a *App) AddTransactionProcessor(tp iface.ITransactionProcessor) {
-	a.mTransactionProcessorList = append(a.mTransactionProcessorList, tp)
+	a.mFlamedContext.TransactionProcessorMap[tp.FamilyName()+"::"+tp.FamilyVersion()] = tp
 }
 
 func (a *App) GetFlamed() *flamed.Flamed {
-	return a.mFlamed
+	return a.mFlamedContext.Flamed
 }
 
 func (a *App) AddCommand(commands ...*cobra.Command) {
@@ -117,7 +128,7 @@ func (a *App) AddCommand(commands ...*cobra.Command) {
 }
 
 func (a *App) setup() {
-	a.mFlamed = flamed.NewFlamed()
+	a.mFlamedContext.Flamed = flamed.NewFlamed()
 
 	a.mRootCommand = &cobra.Command{
 		Use:   variable.Name,
@@ -167,11 +178,7 @@ func (a *App) initViews() {
 		/* initialize all views here */
 
 		// graphql view
-		a.AddView("/graphql",
-			graphql.NewView(a.mFlamed,
-				a.mTransactionProcessorList,
-				a.mPasswordHashAlgorithmFactory).GetHTTPHandler())
-
+		a.AddView("/graphql", graphql.NewView(a.mFlamedContext).GetHTTPHandler())
 		a.mViewsInitialized = true
 	}
 }
@@ -183,12 +190,11 @@ func (a *App) initTransactionProcessors() {
 
 	if !a.mTPInitialized {
 		/* initialize all transaction processors here */
-		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &user.User{})
-		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &json.JSON{})
-		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &intkey.IntKey{})
-		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &indexmeta.IndexMeta{})
-		a.mTransactionProcessorList = append(a.mTransactionProcessorList, &accesscontrol.AccessControl{})
-
+		a.AddTransactionProcessor(&user.User{})
+		a.AddTransactionProcessor(&json.JSON{})
+		a.AddTransactionProcessor(&intkey.IntKey{})
+		a.AddTransactionProcessor(&indexmeta.IndexMeta{})
+		a.AddTransactionProcessor(&accesscontrol.AccessControl{})
 		a.mTPInitialized = true
 	}
 }
@@ -202,8 +208,8 @@ func (a *App) Execute() error {
 	a.initTransactionProcessors()
 	a.initCommands()
 
-	if a.mPasswordHashAlgorithmFactory == nil {
-		a.mPasswordHashAlgorithmFactory = crypto.DefaultPasswordHashAlgorithmFactory()
+	if a.mFlamedContext.PasswordHashAlgorithmFactory == nil {
+		a.mFlamedContext.PasswordHashAlgorithmFactory = crypto.DefaultPasswordHashAlgorithmFactory()
 	}
 
 	return a.mRootCommand.Execute()
@@ -217,7 +223,9 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	appOnce.Do(func() {
 		appIns = &App{
-			mServerMux:           &http.ServeMux{},
+			mServerMux:     &http.ServeMux{},
+			mFlamedContext: context.NewFlamedContext(),
+
 			mCommandsInitialized: false,
 			mDefaultCommandFlag:  true,
 

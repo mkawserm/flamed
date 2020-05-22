@@ -313,12 +313,12 @@ func startCluster() {
 
 			ProposalReceiver: GetApp().GetProposalReceiver(),
 		},
-		TransactionProcessorMap: make(map[string]iface.ITransactionProcessor),
+		TransactionProcessorMap: GetApp().GetTPMap(),
 	}
 
-	for _, tp := range GetApp().mTransactionProcessorList {
-		storagedConfiguration.AddTransactionProcessor(tp)
-	}
+	//for _, tp := range GetApp().mTransactionProcessorMap {
+	//	storagedConfiguration.AddTransactionProcessor(tp)
+	//}
 
 	var clusterConfiguration iface.IOnDiskClusterConfiguration
 
