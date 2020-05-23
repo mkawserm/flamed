@@ -70,11 +70,11 @@ var NodeAdminType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-func NodeAdmin(flamedContext *flamedContext.FlamedContext) *graphql.Field {
+func NodeAdminInfo(flamedContext *flamedContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name:        "NodeAdmin",
-		Type:        graphql.NewNonNull(NodeAdminType),
-		Description: "Get NodeAdmin by clusterID",
+		Name:        "NodeAdminInfo",
+		Type:        NodeAdminType,
+		Description: "Query administrative information from NodeAdmin by clusterID",
 		Args: graphql.FieldConfigArgument{
 			"clusterID": &graphql.ArgumentConfig{
 				Description: "Cluster id of the NodeAdmin",
