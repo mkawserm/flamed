@@ -75,8 +75,9 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 				},
 				Extensions: nil,
 			}
-			rJSON, _ := json.Marshal(result)
-			_, _ = writer.Write(rJSON)
+			_ = json.NewEncoder(writer).Encode(result)
+			//rJSON, _ := json.Marshal(result)
+			//_, _ = writer.Write(rJSON)
 			return
 		}
 
@@ -88,13 +89,13 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 				Errors:     []gqlerrors.FormattedError{gqlerrors.NewFormattedError(err.Error())},
 				Extensions: nil,
 			}
-			rJSON, _ := json.Marshal(result)
-			_, _ = writer.Write(rJSON)
+			_ = json.NewEncoder(writer).Encode(result)
+			//rJSON, _ := json.Marshal(result)
+			//_, _ = writer.Write(rJSON)
 			return
 		}
 
-		logger.L("graphql").Debug("graphql request body",
-			zap.ByteString("request", bodyBytes))
+		logger.L("graphql").Debug("graphql request body received")
 
 		var fields []zap.Field
 		header := make(http.Header)
@@ -132,12 +133,11 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 		} else {
 			writer.WriteHeader(http.StatusOK)
 		}
+		_ = json.NewEncoder(writer).Encode(result)
+		//rJSON, _ := json.Marshal(result)
+		//_, _ = writer.Write(rJSON)
 
-		rJSON, _ := json.Marshal(result)
-		_, _ = writer.Write(rJSON)
-
-		logger.L("graphql").Debug("graphql request response",
-			zap.ByteString("response", rJSON))
+		logger.L("graphql").Debug("graphql request response served")
 	}
 }
 
