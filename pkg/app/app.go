@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql"
+	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
@@ -201,7 +202,8 @@ func (a *App) initTransactionProcessors() {
 
 func (a *App) initBeforeCommandExecution() {
 	/* setup defaults */
-	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString("LogLevel"))
+	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString(constant.LogLevel))
+	a.mFlamedContext.GlobalRequestTimeout = viper.GetDuration(constant.GlobalRequestTimeout)
 }
 
 func (a *App) Execute() error {

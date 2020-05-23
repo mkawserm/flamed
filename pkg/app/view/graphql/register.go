@@ -7,6 +7,7 @@ import (
 
 func (v *View) register() {
 	v.AddQueryField("isLive", query.IsLive)
+	v.AddQueryField("getNodeAdmin", query.GetNodeAdmin)
 
 	v.AddMutationField("increment", mutation.Increment)
 	v.AddMutationField("decrement", mutation.Decrement)
