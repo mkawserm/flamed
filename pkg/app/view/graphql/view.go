@@ -2,6 +2,7 @@ package graphql
 
 import (
 	goContext "context"
+
 	"github.com/mkawserm/flamed/pkg/logger"
 	"go.uber.org/zap"
 	"strings"
@@ -9,18 +10,20 @@ import (
 	"encoding/json"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/context"
+
 	"io/ioutil"
 	"net/http"
+
+	flamedContext "github.com/mkawserm/flamed/pkg/context"
 )
 
-type GQLHandler func(flamedContext *context.FlamedContext) *graphql.Field
+type GQLHandler func(flamedContext *flamedContext.FlamedContext) *graphql.Field
 
 type View struct {
 	mQueryFields    graphql.Fields
 	mMutationFields graphql.Fields
 
-	mFlamedContext *context.FlamedContext
+	mFlamedContext *flamedContext.FlamedContext
 }
 
 func (v *View) AddQueryField(name string, handler GQLHandler) {
@@ -63,6 +66,20 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 
 		var result *graphql.Result
 
+		if request.Method != http.MethodPost {
+			writer.WriteHeader(http.StatusBadRequest)
+			result = &graphql.Result{
+				Data: nil,
+				Errors: []gqlerrors.FormattedError{
+					gqlerrors.NewFormattedError("request method must be `POST`"),
+				},
+				Extensions: nil,
+			}
+			rJSON, _ := json.Marshal(result)
+			_, _ = writer.Write(rJSON)
+			return
+		}
+
 		bodyBytes, err := ioutil.ReadAll(request.Body)
 		if err != nil {
 			writer.WriteHeader(http.StatusBadRequest)
@@ -77,7 +94,7 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 		}
 
 		logger.L("graphql").Debug("graphql request body",
-			zap.ByteString("requestBody", bodyBytes))
+			zap.ByteString("request", bodyBytes))
 
 		var fields []zap.Field
 		header := make(http.Header)
@@ -91,15 +108,20 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 		ro := ParseGraphQLQuery(bodyBytes)
 
 		var params graphql.Params
+
+		var context Context
+		context.Header = header
+		context.Host = request.Host
+		context.URL = request.URL.String()
+		context.RemoteAddr = request.RemoteAddr
+		context.RequestURI = request.RequestURI
+
 		params = graphql.Params{
 			Schema:         schema,
 			RequestString:  ro.Query,
 			VariableValues: ro.Variables,
 			OperationName:  ro.OperationName,
-			Context: goContext.
-				WithValue(goContext.Background(),
-					"HTTPHeader",
-					header),
+			Context:        goContext.WithValue(goContext.Background(), "context", context),
 		}
 
 		result = graphql.Do(params)
@@ -113,11 +135,11 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 		_, _ = writer.Write(rJSON)
 
 		logger.L("graphql").Debug("graphql request processed",
-			zap.ByteString("responseBody", rJSON))
+			zap.ByteString("response", rJSON))
 	}
 }
 
-func NewView(flamedContext *context.FlamedContext) *View {
+func NewView(flamedContext *flamedContext.FlamedContext) *View {
 	return &View{
 		mFlamedContext:  flamedContext,
 		mQueryFields:    map[string]*graphql.Field{},
