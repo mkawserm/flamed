@@ -68,6 +68,22 @@ var NodeAdminType = graphql.NewObject(graphql.ObjectConfig{
 				return nil, nil
 			},
 		},
+
+		"clusterMembership": &graphql.Field{
+			Type:        types.ClusterMembershipType,
+			Description: "Cluster membership information",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if nodeAdmin, ok := p.Source.(*flamed.NodeAdmin); ok {
+					m, err := nodeAdmin.GetClusterMembership()
+					if err != nil {
+						return nil, nil
+					}
+					return m, nil
+				}
+
+				return nil, nil
+			},
+		},
 	},
 })
 
