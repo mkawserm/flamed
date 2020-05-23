@@ -8,4 +8,6 @@ type Context struct {
 	RequestURI string
 	Header     http.Header
 	RemoteAddr string
+
+	Data interface{}
 }
