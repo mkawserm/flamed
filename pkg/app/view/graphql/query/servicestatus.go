@@ -5,7 +5,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/context"
 )
 
-type ServiceStatus struct {
+type serviceStatus struct {
 	HTTPServer bool
 	GRPCServer bool
 	RAFTServer bool
@@ -19,7 +19,7 @@ var ServiceStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Is HTTP server available?",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if val, ok := p.Source.(ServiceStatus); ok {
+				if val, ok := p.Source.(serviceStatus); ok {
 					return val.HTTPServer, nil
 				}
 				return nil, nil
@@ -30,7 +30,7 @@ var ServiceStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Is GRPC server available?",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if val, ok := p.Source.(ServiceStatus); ok {
+				if val, ok := p.Source.(serviceStatus); ok {
 					return val.GRPCServer, nil
 				}
 				return nil, nil
@@ -41,7 +41,7 @@ var ServiceStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Is RAFT server available?",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if val, ok := p.Source.(ServiceStatus); ok {
+				if val, ok := p.Source.(serviceStatus); ok {
 					return val.RAFTServer, nil
 				}
 				return nil, nil
@@ -50,17 +50,17 @@ var ServiceStatusType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-func IsLive(_ *context.FlamedContext) *graphql.Field {
+func ServiceStatus(_ *context.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name: "IsLive",
+		Name: "ServiceStatus",
 		Type: ServiceStatusType,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			return ServiceStatus{
+			return serviceStatus{
 				HTTPServer: true,
 				GRPCServer: false,
 				RAFTServer: true,
 			}, nil
 		},
-		Description: "Query about service availability information",
+		Description: "Query service availability information",
 	}
 }
