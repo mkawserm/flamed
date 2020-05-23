@@ -7,7 +7,7 @@ import (
 	flamedContext "github.com/mkawserm/flamed/pkg/context"
 )
 
-func GetNodeAdmin(flamedContext *flamedContext.FlamedContext) *graphql.Field {
+func NodeAdmin(flamedContext *flamedContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
 		Type:        graphql.NewNonNull(types.NodeAdminType),
 		Description: "Get NodeAdmin by clusterID",
