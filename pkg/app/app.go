@@ -16,6 +16,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/tp/user"
 	"github.com/mkawserm/flamed/pkg/variable"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"net/http"
 	"sync"
 	"time"
@@ -204,6 +205,17 @@ func (a *App) initBeforeCommandExecution() {
 	/* setup defaults */
 	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString(constant.LogLevel))
 	a.mFlamedContext.GlobalRequestTimeout = viper.GetDuration(constant.GlobalRequestTimeout)
+
+	if a.mProposalReceiver == nil {
+		a.mProposalReceiver = func(proposal *pb.Proposal, status pb.Status) {
+			logger.L("app").Debug("received proposal",
+				zap.Int32("status", int32(status)),
+				zap.ByteString("uuid", proposal.Uuid),
+				zap.Uint64("createdAt", proposal.CreatedAt),
+				zap.Int("transactionLength", len(proposal.Transactions)),
+			)
+		}
+	}
 }
 
 func (a *App) Execute() error {
