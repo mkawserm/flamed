@@ -109,19 +109,21 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 
 		var params graphql.Params
 
-		var context Context
-		context.Header = header
-		context.Host = request.Host
-		context.URL = request.URL.String()
-		context.RemoteAddr = request.RemoteAddr
-		context.RequestURI = request.RequestURI
+		var graphQLContext flamedContext.GraphQLContext
+		graphQLContext.Header = header
+		graphQLContext.Host = request.Host
+		graphQLContext.URL = request.URL.String()
+		graphQLContext.RemoteAddr = request.RemoteAddr
+		graphQLContext.RequestURI = request.RequestURI
 
 		params = graphql.Params{
 			Schema:         schema,
 			RequestString:  ro.Query,
 			VariableValues: ro.Variables,
 			OperationName:  ro.OperationName,
-			Context:        goContext.WithValue(goContext.Background(), "context", context),
+			Context: goContext.WithValue(goContext.Background(),
+				"GraphQLContext",
+				graphQLContext),
 		}
 
 		result = graphql.Do(params)

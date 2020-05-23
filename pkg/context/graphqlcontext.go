@@ -1,8 +1,8 @@
-package graphql
+package context
 
 import "net/http"
 
-type Context struct {
+type GraphQLContext struct {
 	URL        string
 	Host       string
 	RequestURI string
