@@ -48,7 +48,7 @@ func (h *Argon2PasswordHashAlgorithm) Encode(password string, salt string) (stri
 	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
 
 	s := fmt.Sprintf("%s$%s$v=%d$m=%d,t=%d,p=%d$%s$%s",
-		h.Algorithm,
+		h.Algorithm(),
 		"argon2i",
 		argon2.Version,
 		h.Memory,

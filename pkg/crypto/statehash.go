@@ -11,7 +11,7 @@ func GetStateHashFromStringKey(familyName, key string) []byte {
 	keyHash := sha512.Sum512([]byte(key))
 	r := make([]byte, 35)
 	r = familyNameHash[0:3]
-	copy(r[3:], keyHash[32:])
+	r = append(r, keyHash[32:64]...)
 	return r
 }
 
@@ -23,6 +23,6 @@ func GetStateHashFromUint64Key(familyName string, key uint64) []byte {
 	keyHash := sha512.Sum512(newKeyBytes)
 	r := make([]byte, 35)
 	r = familyNameHash[0:3]
-	copy(r[3:], keyHash[32:])
+	r = append(r, keyHash[32:64]...)
 	return r
 }
