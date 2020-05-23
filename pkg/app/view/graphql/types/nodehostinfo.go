@@ -8,7 +8,7 @@ import (
 
 var LogInfoType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "LogInfo",
-	Description: "`LogInfo` provides all raft log info stored on the node host",
+	Description: "`LogInfo` is a list of NodeInfo values representing all Raft logs stored on the NodeHost.",
 	Fields: graphql.Fields{
 		"clusterID": &graphql.Field{
 			Type:        UInt64Type,
@@ -51,7 +51,7 @@ var NodeHostInfoType = graphql.NewObject(graphql.ObjectConfig{
 
 		"logInfo": &graphql.Field{
 			Type:        graphql.NewList(LogInfoType),
-			Description: "Raft log information list",
+			Description: "List of NodeInfo",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if nodeHostInfo, ok := p.Source.(*dragonboat.NodeHostInfo); ok {
 					return nodeHostInfo.LogInfo, nil
