@@ -117,6 +117,13 @@ func (c *NodeAdmin) GetAppliedIndex() (uint64, error) {
 	}
 }
 
+func (c *NodeAdmin) GetClusterMembership() (*dragonboat.Membership, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
+	m, e := c.mDragonboatNodeHost.SyncGetClusterMembership(ctx, c.mClusterID)
+	cancel()
+	return m, e
+}
+
 func (c *NodeAdmin) RunStorageGC() {
 	defer func() {
 		_ = logger.L("flamed").Sync()
