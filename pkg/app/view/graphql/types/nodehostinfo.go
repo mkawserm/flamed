@@ -3,7 +3,36 @@ package types
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/lni/dragonboat/v3"
+	"github.com/lni/dragonboat/v3/raftio"
 )
+
+var LogInfoType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "LogInfo",
+	Description: "`LogInfo` provides all raft log info stored on the node host",
+	Fields: graphql.Fields{
+		"clusterID": &graphql.Field{
+			Type:        UInt64Type,
+			Description: "Cluster ID",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if l, ok := p.Source.(raftio.NodeInfo); ok {
+					return NewUInt64FromUInt64(l.ClusterID), nil
+				}
+				return nil, nil
+			},
+		},
+
+		"nodeID": &graphql.Field{
+			Type:        UInt64Type,
+			Description: "Node ID",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if l, ok := p.Source.(raftio.NodeInfo); ok {
+					return NewUInt64FromUInt64(l.NodeID), nil
+				}
+				return nil, nil
+			},
+		},
+	},
+})
 
 var NodeHostInfoType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "NodeHostInfo",
@@ -15,6 +44,17 @@ var NodeHostInfoType = graphql.NewObject(graphql.ObjectConfig{
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if nodeHostInfo, ok := p.Source.(*dragonboat.NodeHostInfo); ok {
 					return nodeHostInfo.RaftAddress, nil
+				}
+				return nil, nil
+			},
+		},
+
+		"logInfo": &graphql.Field{
+			Type:        graphql.NewList(LogInfoType),
+			Description: "Raft log information list",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if nodeHostInfo, ok := p.Source.(*dragonboat.NodeHostInfo); ok {
+					return nodeHostInfo.LogInfo, nil
 				}
 				return nil, nil
 			},

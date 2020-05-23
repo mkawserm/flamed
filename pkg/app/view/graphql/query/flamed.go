@@ -57,18 +57,6 @@ var NodeAdminType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 
-		"nodeHostInfo": &graphql.Field{
-			Type:        types.NodeHostInfoType,
-			Description: "Node host information",
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if nodeAdmin, ok := p.Source.(*flamed.NodeAdmin); ok {
-					return nodeAdmin.GetNodeHostInfo(), nil
-				}
-
-				return nil, nil
-			},
-		},
-
 		"clusterMembership": &graphql.Field{
 			Type:        types.ClusterMembershipType,
 			Description: "Cluster membership information",
@@ -118,6 +106,18 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "Flamed",
 	Description: "`Flamed` provides all information related to the cluster",
 	Fields: graphql.Fields{
+		"nodeHostInfo": &graphql.Field{
+			Type:        types.NodeHostInfoType,
+			Description: "Node host information",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				fc, ok := p.Source.(*flamedContext.FlamedContext)
+				if !ok {
+					return nil, nil
+				}
+				return fc.Flamed.GetNodeHostInfo(), nil
+			},
+		},
+
 		"nodeAdmin": &graphql.Field{
 			Name:        "NodeAdmin",
 			Type:        NodeAdminType,
