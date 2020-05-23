@@ -9,6 +9,7 @@ import (
 
 func NodeAdmin(flamedContext *flamedContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
+		Name:        "NodeAdmin",
 		Type:        graphql.NewNonNull(types.NodeAdminType),
 		Description: "Get NodeAdmin by clusterID",
 		Args: graphql.FieldConfigArgument{
