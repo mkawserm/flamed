@@ -134,7 +134,7 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 		rJSON, _ := json.Marshal(result)
 		_, _ = writer.Write(rJSON)
 
-		logger.L("graphql").Debug("graphql request processed",
+		logger.L("graphql").Debug("graphql request response",
 			zap.ByteString("response", rJSON))
 	}
 }
