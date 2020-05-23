@@ -158,16 +158,16 @@ func initializeClusterDefaults() {
 		return
 	}
 
-	clusterAdmin := GetApp().
+	nodeAdmin := GetApp().
 		GetFlamed().
-		NewClusterAdmin(1, viper.GetDuration(constant.GlobalRequestTimeout))
+		NewNodeAdmin(1, viper.GetDuration(constant.GlobalRequestTimeout))
 
-	if clusterAdmin == nil {
-		panic("Failed to create new cluster admin")
+	if nodeAdmin == nil {
+		panic("Failed to create new node admin")
 	}
 
 	for {
-		leaderID, leaderAvailable, _ := clusterAdmin.GetLeaderID()
+		leaderID, leaderAvailable, _ := nodeAdmin.GetLeaderID()
 		if leaderAvailable {
 			logger.L("app").Info("leader found", zap.Uint64("leaderID", leaderID))
 			break
@@ -177,7 +177,7 @@ func initializeClusterDefaults() {
 	}
 
 	// Creating default super user
-	lastAppliedIndex, err := clusterAdmin.GetAppliedIndex()
+	lastAppliedIndex, err := nodeAdmin.GetAppliedIndex()
 	if err != nil {
 		return
 	}

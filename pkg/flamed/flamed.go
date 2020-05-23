@@ -57,8 +57,8 @@ func (f *Flamed) GetNodeHostInfo() *dragonboat.NodeHostInfo {
 	return f.mNodeHost.GetNodeHostInfo()
 }
 
-func (f *Flamed) NewClusterAdmin(clusterID uint64, timeout time.Duration) *ClusterAdmin {
-	return f.mNodeHost.NewClusterAdmin(clusterID, timeout)
+func (f *Flamed) NewNodeAdmin(clusterID uint64, timeout time.Duration) *NodeAdmin {
+	return f.mNodeHost.NewNodeAdmin(clusterID, timeout)
 }
 
 func (f *Flamed) NewAdmin(clusterID uint64, timeout time.Duration) *Admin {

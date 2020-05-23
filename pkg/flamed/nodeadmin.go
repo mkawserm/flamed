@@ -12,26 +12,30 @@ import (
 	"time"
 )
 
-type ClusterAdmin struct {
+type NodeAdmin struct {
 	mClusterID          uint64
 	mTimeout            time.Duration
 	mStorageTaskQueue   variant.TaskQueue
 	mDragonboatNodeHost *dragonboat.NodeHost
 }
 
-func (c *ClusterAdmin) UpdateTimeout(timeout time.Duration) {
+func (c *NodeAdmin) UpdateTimeout(timeout time.Duration) {
 	c.mTimeout = timeout
 }
 
-func (c *ClusterAdmin) GetLeaderID() (uint64, bool, error) {
+func (c *NodeAdmin) GetLeaderID() (uint64, bool, error) {
 	return c.mDragonboatNodeHost.GetLeaderID(c.mClusterID)
 }
 
-func (c *ClusterAdmin) HasNodeInfo(nodeID uint64) bool {
+func (c *NodeAdmin) HasNodeInfo(nodeID uint64) bool {
 	return c.mDragonboatNodeHost.HasNodeInfo(c.mClusterID, nodeID)
 }
 
-func (c *ClusterAdmin) AddNode(nodeID uint64, address string, configChangeIndex uint64) error {
+func (c NodeAdmin) GetNodeHostInfo() *dragonboat.NodeHostInfo {
+	return c.mDragonboatNodeHost.GetNodeHostInfo(dragonboat.NodeHostInfoOption{SkipLogInfo: true})
+}
+
+func (c *NodeAdmin) AddNode(nodeID uint64, address string, configChangeIndex uint64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	err := c.mDragonboatNodeHost.SyncRequestAddNode(ctx,
 		c.mClusterID,
@@ -42,7 +46,7 @@ func (c *ClusterAdmin) AddNode(nodeID uint64, address string, configChangeIndex 
 	return err
 }
 
-func (c *ClusterAdmin) AddObserver(nodeID uint64, address string, configChangeIndex uint64) error {
+func (c *NodeAdmin) AddObserver(nodeID uint64, address string, configChangeIndex uint64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	err := c.mDragonboatNodeHost.SyncRequestAddObserver(ctx,
 		c.mClusterID,
@@ -53,7 +57,7 @@ func (c *ClusterAdmin) AddObserver(nodeID uint64, address string, configChangeIn
 	return err
 }
 
-func (c *ClusterAdmin) AddWitness(nodeID uint64, address string, configChangeIndex uint64) error {
+func (c *NodeAdmin) AddWitness(nodeID uint64, address string, configChangeIndex uint64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	err := c.mDragonboatNodeHost.SyncRequestAddWitness(ctx,
 		c.mClusterID,
@@ -64,7 +68,7 @@ func (c *ClusterAdmin) AddWitness(nodeID uint64, address string, configChangeInd
 	return err
 }
 
-func (c *ClusterAdmin) DeleteNode(nodeID uint64, configChangeIndex uint64) error {
+func (c *NodeAdmin) DeleteNode(nodeID uint64, configChangeIndex uint64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	err := c.mDragonboatNodeHost.SyncRequestDeleteNode(ctx,
 		c.mClusterID,
@@ -74,7 +78,7 @@ func (c *ClusterAdmin) DeleteNode(nodeID uint64, configChangeIndex uint64) error
 	return err
 }
 
-func (c *ClusterAdmin) RequestSnapshot(clusterID uint64,
+func (c *NodeAdmin) RequestSnapshot(clusterID uint64,
 	compactionOverhead uint64,
 	exportPath string,
 	exported bool,
@@ -93,7 +97,7 @@ func (c *ClusterAdmin) RequestSnapshot(clusterID uint64,
 	return num, err
 }
 
-func (c *ClusterAdmin) GetAppliedIndex() (uint64, error) {
+func (c *NodeAdmin) GetAppliedIndex() (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
 	request := variant.LookupRequest{
 		Query:   pb.AppliedIndexQuery{},
@@ -113,7 +117,7 @@ func (c *ClusterAdmin) GetAppliedIndex() (uint64, error) {
 	}
 }
 
-func (c *ClusterAdmin) RunStorageGC() {
+func (c *NodeAdmin) RunStorageGC() {
 	defer func() {
 		_ = logger.L("flamed").Sync()
 	}()
@@ -130,7 +134,7 @@ func (c *ClusterAdmin) RunStorageGC() {
 	}
 }
 
-func (c *ClusterAdmin) BuildIndex() {
+func (c *NodeAdmin) BuildIndex() {
 	defer func() {
 		_ = logger.L("flamed").Sync()
 	}()
@@ -147,7 +151,7 @@ func (c *ClusterAdmin) BuildIndex() {
 	}
 }
 
-func (c *ClusterAdmin) BuildIndexByNamespace(namespace []byte) {
+func (c *NodeAdmin) BuildIndexByNamespace(namespace []byte) {
 	if !utility.IsNamespaceValid(namespace) {
 		return
 	}
