@@ -23,7 +23,7 @@ build-all: build-darwin-amd64 build-windows-amd64 build-linux-amd64 build-linux-
 
 run:
 	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/flamed.go
-	@./bin/flamed run --storage-path /tmp/data --http-address 0.0.0.0:8080 --raft-address 0.0.0.0:63001
+	@./bin/flamed run --node-id 1 --storage-path /tmp/data1 --http-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level info
 
 test:
 	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -v

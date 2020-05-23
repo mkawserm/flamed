@@ -71,7 +71,32 @@ var NodeAdminType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var AdminType = graphql.NewObject(graphql.ObjectConfig{})
+var AdminType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "Admin",
+	Description: "`Admin` provides user,index meta,access control related information related to the cluster",
+	Fields: graphql.Fields{
+		"isUserAvailable": &graphql.Field{
+			Name:        "IsUserAvailable",
+			Description: "Is user available?",
+			Type:        graphql.Boolean,
+			Args: graphql.FieldConfigArgument{
+				"username": &graphql.ArgumentConfig{
+					Description: "Username",
+					Type:        graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				username := p.Args["username"].(string)
+				admin, ok := p.Source.(*flamed.Admin)
+				if !ok {
+					return nil, nil
+				}
+
+				return admin.IsUserAvailable(username), nil
+			},
+		},
+	},
+})
 
 var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "Flamed",
