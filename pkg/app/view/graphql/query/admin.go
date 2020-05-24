@@ -67,6 +67,42 @@ var AdminType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 
+		"getAccessControl": &graphql.Field{
+			Name:        "GetAccessControl",
+			Description: "Get access control information of a user",
+			Type:        types.AccessControlType,
+			Args: graphql.FieldConfigArgument{
+				"username": &graphql.ArgumentConfig{
+					Description: "Username",
+					Type:        graphql.NewNonNull(graphql.String),
+				},
+
+				"namespace": &graphql.ArgumentConfig{
+					Description: "Namespace",
+					Type:        graphql.NewNonNull(graphql.String),
+				},
+			},
+
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				username := p.Args["username"].(string)
+				namespace := p.Args["namespace"].(string)
+				namespaceBytes := []byte(namespace)
+
+				admin, ok := p.Source.(*flamed.Admin)
+				if !ok {
+					return nil, nil
+				}
+
+				accessControl, err := admin.GetAccessControl(username, namespaceBytes)
+
+				if err != nil {
+					return nil, gqlerrors.NewFormattedError(err.Error())
+				}
+
+				return accessControl, nil
+			},
+		},
+
 		// IsAccessControlAvailable
 		"isAccessControlAvailable": &graphql.Field{
 			Name:        "IsAccessControlAvailable",
