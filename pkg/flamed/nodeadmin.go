@@ -78,8 +78,7 @@ func (c *NodeAdmin) DeleteNode(nodeID uint64, configChangeIndex uint64) error {
 	return err
 }
 
-func (c *NodeAdmin) RequestSnapshot(clusterID uint64,
-	compactionOverhead uint64,
+func (c *NodeAdmin) RequestSnapshot(compactionOverhead uint64,
 	exportPath string,
 	exported bool,
 	overrideCompactionOverhead bool) (uint64, error) {
@@ -92,7 +91,7 @@ func (c *NodeAdmin) RequestSnapshot(clusterID uint64,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
-	num, err := c.mDragonboatNodeHost.SyncRequestSnapshot(ctx, clusterID, opt)
+	num, err := c.mDragonboatNodeHost.SyncRequestSnapshot(ctx, c.mClusterID, opt)
 	cancel()
 	return num, err
 }
