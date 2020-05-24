@@ -33,6 +33,7 @@ message TransactionResponse {
   string errorText = 3; /* failure reason short message */
   string familyName = 4;
   string familyVersion = 5;
+  string responseMessage = 6;
 }
 
 message Proposal {

@@ -73,5 +73,18 @@ var TransactionResponseType = graphql.NewObject(graphql.ObjectConfig{
 				return txr.FamilyVersion, nil
 			},
 		},
+
+		"responseMessage": &graphql.Field{
+			Name:        "ResponseMessage",
+			Description: "Transaction response message",
+			Type:        graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				txr, ok := p.Source.(*pb.TransactionResponse)
+				if !ok {
+					return nil, nil
+				}
+				return txr.ResponseMessage, nil
+			},
+		},
 	},
 })
