@@ -14,6 +14,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/tp/user"
+	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/variable"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -208,9 +209,10 @@ func (a *App) initBeforeCommandExecution() {
 
 	if a.mProposalReceiver == nil {
 		a.mProposalReceiver = func(proposal *pb.Proposal, status pb.Status) {
+
 			logger.L("app").Debug("received proposal",
 				zap.Int32("status", int32(status)),
-				zap.ByteString("uuid", proposal.Uuid),
+				zap.String("uuid", utility.UUIDToString(proposal.Uuid)),
 				zap.Uint64("createdAt", proposal.CreatedAt),
 				zap.Int("transactionLength", len(proposal.Transactions)),
 			)
