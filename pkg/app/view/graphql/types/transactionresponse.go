@@ -18,7 +18,7 @@ var TransactionResponseType = graphql.NewObject(graphql.ObjectConfig{
 				if !ok {
 					return nil, nil
 				}
-				return txr.Status, nil
+				return int(txr.Status), nil
 			},
 		},
 

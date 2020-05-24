@@ -32,7 +32,7 @@ var ProposalResponseType = graphql.NewObject(graphql.ObjectConfig{
 				if !ok {
 					return nil, nil
 				}
-				return pr.Status, nil
+				return int(pr.Status), nil
 			},
 		},
 
