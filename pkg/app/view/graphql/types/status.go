@@ -8,11 +8,11 @@ var StatusEnum = graphql.NewEnum(graphql.EnumConfig{
 	Values: graphql.EnumValueConfigMap{
 		"REJECTED": &graphql.EnumValueConfig{
 			Value:       0,
-			Description: "Rejected",
+			Description: "REJECTED",
 		},
 		"ACCEPTED": &graphql.EnumValueConfig{
 			Value:       1,
-			Description: "Accepted",
+			Description: "ACCEPTED",
 		},
 	},
 })
