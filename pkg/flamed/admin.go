@@ -264,6 +264,19 @@ func (a *Admin) DeleteAccessControl(namespace []byte, username string) (*pb.Prop
 	return pr, nil
 }
 
+func (a *Admin) IsIndexMetaAvailable(namespace []byte) bool {
+	im, err := a.GetIndexMeta(namespace)
+	if err != nil {
+		return false
+	}
+
+	if bytes.Equal(im.Namespace, namespace) {
+		return true
+	}
+
+	return false
+}
+
 func (a *Admin) GetIndexMeta(namespace []byte) (*pb.IndexMeta, error) {
 	if !utility.IsNamespaceValid(namespace) {
 		return nil, x.ErrInvalidNamespace
