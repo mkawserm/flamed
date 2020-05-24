@@ -101,6 +101,12 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 		header := make(http.Header)
 		for k, v := range request.Header {
 			header[k] = v
+
+			// skip authorization header from debug log
+			if strings.EqualFold(k, "Authorization") {
+				fields = append(fields, zap.String(k, "****"))
+				continue
+			}
 			fields = append(fields, zap.String(k, strings.Join(v, ",")))
 		}
 
