@@ -1123,6 +1123,7 @@ func (s *Storage) storageTaskQueueHandler() {
 
 func (s *Storage) indexTaskQueueHandler() {
 	defer func() {
+		logger.L("storage").Info("index task queue handler exiting")
 		_ = logger.L("storage").Sync()
 	}()
 	logger.L("storage").Info("index task queue handler started")
@@ -1145,26 +1146,30 @@ func (s *Storage) indexTaskQueueHandler() {
 		switch task.Command {
 
 		case "index-data-container":
+			logger.L("storage").Debug("running direct index")
 			if indexDataContainer, ok := task.Payload.(IndexDataContainer); ok {
 				err := s.directIndex(indexDataContainer)
 				if err != nil {
 					logger.L("storage").Error("index error", zap.Error(err))
 				}
 			}
-
+			logger.L("storage").Debug("direct index finished")
 		case "build-index":
+			logger.L("storage").Debug("build index started")
 			err := s.buildIndex()
 			if err != nil {
 				logger.L("storage").Error("index error", zap.Error(err))
 			}
-
+			logger.L("storage").Debug("build index finished")
 		case "build-index-by-namespace":
+			logger.L("storage").Debug("build index by namespace started")
 			if v, ok := task.Payload.([]byte); ok {
 				err := s.buildIndexByNamespace(v)
 				if err != nil {
 					logger.L("storage").Error("index error", zap.Error(err))
 				}
 			}
+			logger.L("storage").Debug("build index by namespace finished")
 
 		case "done":
 			logger.L("storage").Info("index task queue handler finished")
