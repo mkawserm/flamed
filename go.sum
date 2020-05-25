@@ -57,6 +57,8 @@ github.com/cockroachdb/logtags v0.0.0-20190617123548-eb05cc24525f/go.mod h1:i/u9
 github.com/cockroachdb/pebble v0.0.0-20200121195918-c23353d37a7f/go.mod h1:97dSg7Ku6fZIyYdu6XUrh31SaKMdnSUN3aDW2Fi8Zp8=
 github.com/cockroachdb/pebble v0.0.0-20200504143515-e6f57fcc8db7 h1:KaulK4RUD6pYd2uhcXTPvdP/QH1fP6MJ+Xjmi+iIAus=
 github.com/cockroachdb/pebble v0.0.0-20200504143515-e6f57fcc8db7/go.mod h1:4htqGJZBuuX7YR/S8KKD6GBBC0Ibl+wvy6VEuiGAb6c=
+github.com/cockroachdb/pebble v0.0.0-20200520133530-1977fd885276 h1:y1NIJVnpWF4uzwetXKgpR2rOBAgpheW1fcmWDmoP5+M=
+github.com/cockroachdb/pebble v0.0.0-20200520133530-1977fd885276/go.mod h1:4htqGJZBuuX7YR/S8KKD6GBBC0Ibl+wvy6VEuiGAb6c=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
@@ -121,6 +123,8 @@ github.com/golang/protobuf v1.4.1/go.mod h1:U8fpvMrcmy5pZrNK1lt4xCsGvpyWQ/VVv6QD
 github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
 github.com/golang/snappy v0.0.1 h1:Qgr9rKW7uDUkrbSmQeiDsGa8SjGyCOGtuasMWwvp2P4=
 github.com/golang/snappy v0.0.1/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
+github.com/golang/snappy v0.0.2-0.20190904063534-ff6b7dc882cf h1:gFVkHXmVAhEbxZVDln5V9GKrLaluNoFHDbrZwAWZgws=
+github.com/golang/snappy v0.0.2-0.20190904063534-ff6b7dc882cf/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
 github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c/go.mod h1:lNA+9X1NB3Zf8V7Ke586lFgjr2dZNuvo3lPJSGZ5JPQ=
 github.com/google/btree v1.0.0/go.mod h1:lNA+9X1NB3Zf8V7Ke586lFgjr2dZNuvo3lPJSGZ5JPQ=
 github.com/google/go-cmp v0.2.0/go.mod h1:oXzfMopK8JAjlY9xF4vHSVASa0yLyX7SntLO5aqRK0M=
@@ -192,6 +196,8 @@ github.com/lni/dragonboat/v3 v3.1.1-0.20200515165915-3754bc90d951 h1:QOUQNHNtPzn
 github.com/lni/dragonboat/v3 v3.1.1-0.20200515165915-3754bc90d951/go.mod h1:9OHwG/R1FBGzvykhmo54E1F7KtDSPHhZX3WCXu7LgBQ=
 github.com/lni/dragonboat/v3 v3.1.1-0.20200518120809-5ce914b80953 h1:T2wgK6o2ZeNCjHztT7xXeAzjI1zj/tiPXT7D35kWvNE=
 github.com/lni/dragonboat/v3 v3.1.1-0.20200518120809-5ce914b80953/go.mod h1:9OHwG/R1FBGzvykhmo54E1F7KtDSPHhZX3WCXu7LgBQ=
+github.com/lni/dragonboat/v3 v3.1.1-0.20200524160912-79134da77b20 h1:dYJpUBbvvzCz4EAmTyUB1NaiuTdn6hIgn7oB0hMVXJc=
+github.com/lni/dragonboat/v3 v3.1.1-0.20200524160912-79134da77b20/go.mod h1:EewNOKE0ghi1eY+bjgz0OTBeLJ8Nau/nVetMOqTtX98=
 github.com/lni/goutils v1.1.0 h1:dnLcvFyaJ3Wt1YkcFUOd2Vxq+E+ioGW1HVJtDLseC4U=
 github.com/lni/goutils v1.1.0/go.mod h1:NDD+zR5cMNH2OsJj+r/X7zBSzBlmxytUUot268gtOOw=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
