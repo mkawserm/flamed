@@ -16,12 +16,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "Namespace name which user has access to",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return string(u.Namespace), nil
+				return string(accessControl.Namespace), nil
 			},
 		},
 
@@ -30,12 +30,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "Username of which the access control belongs to",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return u.Username, nil
+				return accessControl.Username, nil
 			},
 		},
 
@@ -44,16 +44,16 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Int,
 			Description: "User permission",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				if len(u.Permission) == 0 {
+				if len(accessControl.Permission) == 0 {
 					return 0, nil
 				}
 
-				return int(u.Permission[0]), nil
+				return int(accessControl.Permission[0]), nil
 			},
 		},
 
@@ -62,12 +62,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Read permission flag",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return utility.HasReadPermission(u), nil
+				return utility.HasReadPermission(accessControl), nil
 			},
 		},
 
@@ -76,12 +76,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Write permission flag",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return utility.HasWritePermission(u), nil
+				return utility.HasWritePermission(accessControl), nil
 			},
 		},
 
@@ -90,12 +90,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Update permission flag",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return utility.HasUpdatePermission(u), nil
+				return utility.HasUpdatePermission(accessControl), nil
 			},
 		},
 
@@ -104,12 +104,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Delete permission flag",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return utility.HasDeletePermission(u), nil
+				return utility.HasDeletePermission(accessControl), nil
 			},
 		},
 
@@ -118,12 +118,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        UInt64Type,
 			Description: "User creation time in unix nano timestamp",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return NewUInt64FromUInt64(u.CreatedAt), nil
+				return NewUInt64FromUInt64(accessControl.CreatedAt), nil
 			},
 		},
 
@@ -132,12 +132,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        UInt64Type,
 			Description: "User updated time in unix nano timestamp",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return NewUInt64FromUInt64(u.UpdatedAt), nil
+				return NewUInt64FromUInt64(accessControl.UpdatedAt), nil
 			},
 		},
 
@@ -146,12 +146,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "Data in base64 format",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return base64.StdEncoding.EncodeToString(u.Data), nil
+				return base64.StdEncoding.EncodeToString(accessControl.Data), nil
 			},
 		},
 
@@ -160,12 +160,12 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "Meta data in base64 format",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				u, ok := p.Source.(*pb.AccessControl)
+				accessControl, ok := p.Source.(*pb.AccessControl)
 				if !ok {
 					return nil, nil
 				}
 
-				return base64.StdEncoding.EncodeToString(u.Meta), nil
+				return base64.StdEncoding.EncodeToString(accessControl.Meta), nil
 			},
 		},
 	},
