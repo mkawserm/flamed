@@ -1,3 +1,3 @@
 package mutation
 
-var i int32 = 0
+var i uint64 = 0
