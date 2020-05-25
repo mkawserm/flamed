@@ -31,8 +31,6 @@ var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, nil
 				}
 
-				//TODO: Request must be authenticated
-
 				if !fc.Flamed.IsClusterIDAvailable(clusterID.Value()) {
 					return nil,
 						gqlerrors.NewFormattedError(
@@ -53,6 +51,8 @@ func FlamedMutator(flamedContext *flamedContext.FlamedContext) *graphql.Field {
 		Type:        FlamedMutatorType,
 		Description: "Flamed mutator helps to modify cluster",
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			//TODO: Request must be authenticated
+
 			return flamedContext, nil
 		},
 	}
