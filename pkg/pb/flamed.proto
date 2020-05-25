@@ -85,7 +85,7 @@ message IndexDocument {
 
 message IndexMeta {
   bytes namespace = 1;
-  uint32 version = 2;
+  uint64 version = 2;
 
   bool enabled = 3;
   bool default = 4;
@@ -101,7 +101,7 @@ message IndexMeta {
 
   string typeField = 12;
 
-  bytes customAnalysis = 13;
+  string customAnalysis = 13;
 
   uint64 createdAt = 14;
   uint64 updatedAt = 15;
