@@ -12,6 +12,31 @@ var AdminType = graphql.NewObject(graphql.ObjectConfig{
 	Description: "`Admin` provides user,index meta,access control related information related to the cluster",
 	Fields: graphql.Fields{
 
+		// IsUserAvailable
+		"isUserAvailable": &graphql.Field{
+			Name:        "IsUserAvailable",
+			Description: "Is user available?",
+			Type:        graphql.Boolean,
+			Args: graphql.FieldConfigArgument{
+				"username": &graphql.ArgumentConfig{
+					Description: "Username",
+					Type:        graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				username := p.Args["username"].(string)
+				//if !utility.IsUsernameValid(username) {
+				//	return nil, gqlerrors.NewFormattedError("invalid username")
+				//}
+				admin, ok := p.Source.(*flamed.Admin)
+				if !ok {
+					return nil, nil
+				}
+
+				return admin.IsUserAvailable(username), nil
+			},
+		},
+
 		// GetUser
 		"getUser": &graphql.Field{
 			Name:        "GetUser",
@@ -39,67 +64,6 @@ var AdminType = graphql.NewObject(graphql.ObjectConfig{
 				}
 
 				return user, nil
-			},
-		},
-
-		// IsUserAvailable
-		"isUserAvailable": &graphql.Field{
-			Name:        "IsUserAvailable",
-			Description: "Is user available?",
-			Type:        graphql.Boolean,
-			Args: graphql.FieldConfigArgument{
-				"username": &graphql.ArgumentConfig{
-					Description: "Username",
-					Type:        graphql.NewNonNull(graphql.String),
-				},
-			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				username := p.Args["username"].(string)
-				//if !utility.IsUsernameValid(username) {
-				//	return nil, gqlerrors.NewFormattedError("invalid username")
-				//}
-				admin, ok := p.Source.(*flamed.Admin)
-				if !ok {
-					return nil, nil
-				}
-
-				return admin.IsUserAvailable(username), nil
-			},
-		},
-
-		"getAccessControl": &graphql.Field{
-			Name:        "GetAccessControl",
-			Description: "Get access control information of a user",
-			Type:        types.AccessControlType,
-			Args: graphql.FieldConfigArgument{
-				"username": &graphql.ArgumentConfig{
-					Description: "Username",
-					Type:        graphql.NewNonNull(graphql.String),
-				},
-
-				"namespace": &graphql.ArgumentConfig{
-					Description: "Namespace",
-					Type:        graphql.NewNonNull(graphql.String),
-				},
-			},
-
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				username := p.Args["username"].(string)
-				namespace := p.Args["namespace"].(string)
-				namespaceBytes := []byte(namespace)
-
-				admin, ok := p.Source.(*flamed.Admin)
-				if !ok {
-					return nil, nil
-				}
-
-				accessControl, err := admin.GetAccessControl(username, namespaceBytes)
-
-				if err != nil {
-					return nil, gqlerrors.NewFormattedError(err.Error())
-				}
-
-				return accessControl, nil
 			},
 		},
 
@@ -137,6 +101,42 @@ var AdminType = graphql.NewObject(graphql.ObjectConfig{
 				}
 
 				return admin.IsAccessControlAvailable(username, namespaceBytes), nil
+			},
+		},
+
+		"getAccessControl": &graphql.Field{
+			Name:        "GetAccessControl",
+			Description: "Get access control information of a user",
+			Type:        types.AccessControlType,
+			Args: graphql.FieldConfigArgument{
+				"username": &graphql.ArgumentConfig{
+					Description: "Username",
+					Type:        graphql.NewNonNull(graphql.String),
+				},
+
+				"namespace": &graphql.ArgumentConfig{
+					Description: "Namespace",
+					Type:        graphql.NewNonNull(graphql.String),
+				},
+			},
+
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				username := p.Args["username"].(string)
+				namespace := p.Args["namespace"].(string)
+				namespaceBytes := []byte(namespace)
+
+				admin, ok := p.Source.(*flamed.Admin)
+				if !ok {
+					return nil, nil
+				}
+
+				accessControl, err := admin.GetAccessControl(username, namespaceBytes)
+
+				if err != nil {
+					return nil, gqlerrors.NewFormattedError(err.Error())
+				}
+
+				return accessControl, nil
 			},
 		},
 
