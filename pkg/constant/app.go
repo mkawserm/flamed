@@ -7,6 +7,7 @@ const RaftAddress = "RaftAddress"
 const Join = "Join"
 const InitialMembers = "InitialMembers"
 
+const EnableHTTPServer = "EnableHTTPServer"
 const HTTPServerTLS = "HTTPServerTLS"
 const HTTPAddress = "HTTPAddress"
 const HTTPServerCertFile = "HTTPServerCertFile"

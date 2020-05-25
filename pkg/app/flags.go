@@ -52,6 +52,7 @@ func initAllDefaults() {
 	viper.SetDefault(constant.Join, false)
 	viper.SetDefault(constant.InitialMembers, "")
 
+	viper.SetDefault(constant.EnableHTTPServer, true)
 	viper.SetDefault(constant.HTTPAddress, "localhost:8081")
 	viper.SetDefault(constant.HTTPServerTLS, false)
 	viper.SetDefault(constant.HTTPServerCertFile, "")
@@ -89,7 +90,7 @@ func initAllDefaults() {
 func initAllPersistentFlags(cmd *cobra.Command) {
 	/*Log related settings*/
 	cmd.PersistentFlags().
-		String("log-level", "error", "Log level")
+		String("log-level", "info", "Log level")
 	_ = viper.BindPFlag(constant.LogLevel, cmd.PersistentFlags().Lookup("log-level"))
 
 	cmd.PersistentFlags().
@@ -105,10 +106,6 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag(constant.RaftAddress, cmd.PersistentFlags().Lookup("raft-address"))
 
 	cmd.PersistentFlags().
-		String("http-address", "", "HTTP server address")
-	_ = viper.BindPFlag(constant.HTTPAddress, cmd.PersistentFlags().Lookup("http-address"))
-
-	cmd.PersistentFlags().
 		Bool("join", false, "Node join flag")
 	_ = viper.BindPFlag(constant.Join, cmd.PersistentFlags().Lookup("join"))
 
@@ -118,7 +115,15 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag(constant.InitialMembers, cmd.PersistentFlags().Lookup("initial-members"))
 
 	cmd.PersistentFlags().
-		String("http-server-tls", "", "HTTP server TLS flag")
+		Bool("enable-http-server", true, "Enable HTTP server flag")
+	_ = viper.BindPFlag(constant.EnableHTTPServer, cmd.PersistentFlags().Lookup("enable-http-server"))
+
+	cmd.PersistentFlags().
+		String("http-address", "", "HTTP server address")
+	_ = viper.BindPFlag(constant.HTTPAddress, cmd.PersistentFlags().Lookup("http-address"))
+
+	cmd.PersistentFlags().
+		Bool("http-server-tls", false, "HTTP server TLS flag")
 	_ = viper.BindPFlag(constant.HTTPServerTLS, cmd.PersistentFlags().Lookup("http-server-tls"))
 
 	cmd.PersistentFlags().

@@ -175,7 +175,7 @@ func newZapEncoderConfig() zapcore.EncoderConfig {
 
 func newZapConfig() zap.Config {
 	return zap.Config{
-		Level:       zap.NewAtomicLevelAt(zap.ErrorLevel),
+		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
 		Development: false,
 		Sampling: &zap.SamplingConfig{
 			Initial:    100,
