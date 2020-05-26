@@ -1,4 +1,4 @@
-package mutation
+package nodeadminmutator
 
 import (
 	"github.com/graphql-go/graphql"
@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var NodeAdminMutatorType = graphql.NewObject(graphql.ObjectConfig{
+var GQLNodeAdminMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "NodeAdminMutator",
 	Description: "`NodeAdminMutator` gives the ability to perform administrative tasks of the cluster",
 	Fields: graphql.Fields{

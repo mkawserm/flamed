@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
+	"github.com/mkawserm/flamed/pkg/app/view/graphql/mutation/adminmutator"
+	"github.com/mkawserm/flamed/pkg/app/view/graphql/mutation/nodeadminmutator"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
 	flamedContext "github.com/mkawserm/flamed/pkg/context"
 )
@@ -16,7 +18,7 @@ var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 		// NodeAdminMutator
 		"nodeAdminMutator": &graphql.Field{
 			Name:        "NodeAdminMutator",
-			Type:        NodeAdminMutatorType,
+			Type:        nodeadminmutator.GQLNodeAdminMutatorType,
 			Description: "Perform administrative tasks using NodeAdmin by clusterID",
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{
@@ -43,7 +45,7 @@ var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 		// AdminMutator
 		"adminMutator": &graphql.Field{
 			Name:        "AdminMutator",
-			Type:        AdminMutatorType,
+			Type:        adminmutator.GQLAdminMutatorType,
 			Description: "",
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{

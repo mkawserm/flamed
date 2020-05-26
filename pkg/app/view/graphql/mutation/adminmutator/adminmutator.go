@@ -1,4 +1,4 @@
-package mutation
+package adminmutator
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-var AdminMutatorType = graphql.NewObject(graphql.ObjectConfig{
+var GQLAdminMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "AdminMutator",
 	Description: "`AdminMutator`",
 	Fields: graphql.Fields{
