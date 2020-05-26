@@ -151,16 +151,16 @@ func (u *User) Apply(_ context.Context,
 		return tpr
 	}
 
-	if !utility.IsPasswordValid(payload.User.Password) {
-		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
-		tpr.ErrorText = "invalid password: password length must be greater than 5"
-		return tpr
-	}
-
 	address := crypto.GetStateAddress([]byte(constant.UserNamespace), []byte(payload.User.Username))
 
 	if payload.Action == pb.Action_UPSERT {
+		if !utility.IsPasswordValid(payload.User.Password) {
+			tpr.Status = pb.Status_REJECTED
+			tpr.ErrorCode = 0
+			tpr.ErrorText = "invalid password: password length must be greater than 5"
+			return tpr
+		}
+
 		return u.upsert(tpr, stateContext, transaction, address, payload.User)
 	} else if payload.Action == pb.Action_DELETE {
 		return u.delete(tpr, stateContext, address)
