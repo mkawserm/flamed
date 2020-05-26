@@ -116,7 +116,7 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 
 		var params graphql.Params
 
-		var graphQLContext flamedContext.GraphQLContext
+		var graphQLContext = &flamedContext.GraphQLContext{}
 		graphQLContext.Header = header
 		graphQLContext.Host = request.Host
 		graphQLContext.URL = request.URL.String()

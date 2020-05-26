@@ -3,6 +3,7 @@ package context
 import (
 	"bytes"
 	"encoding/base64"
+	"fmt"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variable"
 	"net/http"
@@ -20,6 +21,7 @@ type GraphQLContext struct {
 }
 
 func (g *GraphQLContext) IsSuperUser(ctx *FlamedContext) bool {
+	fmt.Println(g.Header)
 	authorizationValue := ""
 	if a, ok := g.Header["Authorization"]; ok {
 		authorizationValue = a[0]
