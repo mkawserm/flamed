@@ -20,8 +20,41 @@ var AdminMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Description: "`AdminMutator`",
 	Fields: graphql.Fields{
 
+		"deleteUser": &graphql.Field{
+			Name:        "DeleteUser",
+			Description: "",
+			Type:        types.ProposalResponseType,
+			Args: graphql.FieldConfigArgument{
+				"username": &graphql.ArgumentConfig{
+					Description: "Username",
+					Type:        graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				username := p.Args["username"].(string)
+				admin, ok := p.Source.(*flamed.Admin)
+
+				if username == "admin" {
+					return nil, gqlerrors.NewFormattedError("delete operation is not" +
+						" allowed on admin user")
+				}
+
+				if !ok {
+					return nil, gqlerrors.NewFormattedError("Unknown source type." +
+						" FlamedContext required")
+				}
+
+				pr, err := admin.DeleteUser(username)
+				if err != nil {
+					return nil, err
+				}
+
+				return pr, nil
+			},
+		},
+
 		"upsertUser": &graphql.Field{
-			Name:        "upsertUser",
+			Name:        "UpsertUser",
 			Description: "",
 			Type:        types.ProposalResponseType,
 			Args: graphql.FieldConfigArgument{
@@ -60,7 +93,7 @@ var AdminMutatorType = graphql.NewObject(graphql.ObjectConfig{
 
 				if username == "admin" {
 					return nil, gqlerrors.NewFormattedError("upsert operation is not" +
-						" allowed for admin user")
+						" allowed on admin user")
 				}
 
 				//TODO: check password validity
