@@ -5,14 +5,14 @@ import (
 	"github.com/mkawserm/flamed/pkg/pb"
 )
 
-var IndexFieldType = graphql.NewObject(graphql.ObjectConfig{
+var GQLIndexFieldType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "IndexField",
 	Description: "`IndexField`",
 	Fields: graphql.Fields{
 		"indexFieldType": &graphql.Field{
-			Name:        "IndexFieldType",
+			Name:        "GQLIndexFieldType",
 			Description: "",
-			Type:        IndexFieldTypeEnum,
+			Type:        GQLIndexFieldTypeEnum,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				indexField, ok := p.Source.(*pb.IndexField)
 				if !ok {

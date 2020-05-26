@@ -10,7 +10,7 @@ import (
 var GetAccessControl = &graphql.Field{
 	Name:        "GetAccessControl",
 	Description: "Get access control information of a user",
-	Type:        types.AccessControlType,
+	Type:        types.GQLAccessControlType,
 	Args: graphql.FieldConfigArgument{
 		"username": &graphql.ArgumentConfig{
 			Description: "Username",

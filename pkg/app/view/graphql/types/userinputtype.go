@@ -2,10 +2,10 @@ package types
 
 import "github.com/graphql-go/graphql"
 
-var UserInputType = graphql.NewInputObject(graphql.InputObjectConfig{
+var GQLUserInputType = graphql.NewInputObject(graphql.InputObjectConfig{
 	Name: "UserInput",
 	Fields: graphql.InputObjectConfigFieldMap{
-		"userType": &graphql.InputObjectFieldConfig{Type: UserTypeEnum},
+		"userType": &graphql.InputObjectFieldConfig{Type: GQLUserTypeEnum},
 		"roles":    &graphql.InputObjectFieldConfig{Type: graphql.String},
 		"username": &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.String)},
 		"password": &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.String)},

@@ -1,4 +1,4 @@
-package intkeymutator
+package intkey
 
 import (
 	"github.com/graphql-go/graphql"
@@ -8,9 +8,9 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var GQLDecrement = &graphql.Field{
-	Name:        "GQLDecrement",
-	Type:        types.GQLProposalResponseType,
+var GQLGetIntKeyState = &graphql.Field{
+	Name:        "GQLGetIntKeyState",
+	Type:        types.GQLIntKeyStateType,
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
@@ -18,32 +18,26 @@ var GQLDecrement = &graphql.Field{
 			Description: "Name",
 			Type:        graphql.NewNonNull(graphql.String),
 		},
-
-		"value": &graphql.ArgumentConfig{
-			Description: "Value",
-			Type:        graphql.NewNonNull(types.GQLUInt64Type),
-		},
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 		name := p.Args["name"].(string)
-		value := p.Args["value"].(*types.UInt64)
 
 		ikc, ok := p.Source.(*intkey.Context)
 		if !ok {
 			return nil, nil
 		}
 
-		if !utility.HasUpdatePermission(ikc.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("update permission required")
+		if !utility.HasReadPermission(ikc.AccessControl) {
+			return nil, gqlerrors.NewFormattedError("write permission required")
 		}
 
-		pr, err := ikc.Client.Decrement(name, value.Value())
+		intKeyState, err := ikc.Client.GetIntKeyState(name)
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}
 
-		return pr, nil
+		return intKeyState, nil
 	},
 }

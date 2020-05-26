@@ -8,9 +8,9 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var Increment = &graphql.Field{
-	Name:        "Increment",
-	Type:        types.ProposalResponseType,
+var GQLIncrement = &graphql.Field{
+	Name:        "GQLIncrement",
+	Type:        types.GQLProposalResponseType,
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
@@ -21,7 +21,7 @@ var Increment = &graphql.Field{
 
 		"value": &graphql.ArgumentConfig{
 			Description: "Value",
-			Type:        graphql.NewNonNull(types.UInt64Type),
+			Type:        graphql.NewNonNull(types.GQLUInt64Type),
 		},
 	},
 

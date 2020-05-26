@@ -11,7 +11,7 @@ var GQLNodeAdminType = graphql.NewObject(graphql.ObjectConfig{
 	Description: "`NodeAdmin` provides all administrative information related to the cluster",
 	Fields: graphql.Fields{
 		"leaderID": &graphql.Field{
-			Type:        types.UInt64Type,
+			Type:        types.GQLUInt64Type,
 			Description: "Current leader id of the cluster",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if nodeAdmin, ok := p.Source.(*flamed.NodeAdmin); ok {
@@ -24,7 +24,7 @@ var GQLNodeAdminType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"appliedIndex": &graphql.Field{
-			Type:        types.UInt64Type,
+			Type:        types.GQLUInt64Type,
 			Description: "Current applied raft index of the cluster",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if nodeAdmin, ok := p.Source.(*flamed.NodeAdmin); ok {
@@ -41,7 +41,7 @@ var GQLNodeAdminType = graphql.NewObject(graphql.ObjectConfig{
 			Args: graphql.FieldConfigArgument{
 				"nodeID": &graphql.ArgumentConfig{
 					Description: "Node id",
-					Type:        graphql.NewNonNull(types.UInt64Type),
+					Type:        graphql.NewNonNull(types.GQLUInt64Type),
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -55,7 +55,7 @@ var GQLNodeAdminType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"clusterMembership": &graphql.Field{
-			Type:        types.ClusterMembershipType,
+			Type:        types.GQLClusterMembershipType,
 			Description: "Cluster membership information",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if nodeAdmin, ok := p.Source.(*flamed.NodeAdmin); ok {

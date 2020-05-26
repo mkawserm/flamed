@@ -5,14 +5,14 @@ import (
 	"github.com/mkawserm/flamed/pkg/pb"
 )
 
-var TransactionResponseType = graphql.NewObject(graphql.ObjectConfig{
+var GQLTransactionResponseType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "TransactionResponse",
 	Description: "`TransactionResponse` gives detail information about a transaction",
 	Fields: graphql.Fields{
 		"status": &graphql.Field{
 			Name:        "Status",
 			Description: "Transaction status",
-			Type:        StatusEnum,
+			Type:        GQLStatusEnum,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				txr, ok := p.Source.(*pb.TransactionResponse)
 				if !ok {

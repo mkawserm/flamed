@@ -8,9 +8,9 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var Insert = &graphql.Field{
-	Name:        "Insert",
-	Type:        types.ProposalResponseType,
+var GQLInsert = &graphql.Field{
+	Name:        "GQLInsert",
+	Type:        types.GQLProposalResponseType,
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
@@ -21,7 +21,7 @@ var Insert = &graphql.Field{
 
 		"value": &graphql.ArgumentConfig{
 			Description: "Value",
-			Type:        graphql.NewNonNull(types.UInt64Type),
+			Type:        graphql.NewNonNull(types.GQLUInt64Type),
 		},
 	},
 

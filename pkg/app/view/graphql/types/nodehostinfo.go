@@ -6,12 +6,12 @@ import (
 	"github.com/lni/dragonboat/v3/raftio"
 )
 
-var LogInfoType = graphql.NewObject(graphql.ObjectConfig{
+var GQLLogInfoType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "LogInfo",
 	Description: "`LogInfo` is a list of NodeInfo values representing all Raft logs stored on the NodeHost.",
 	Fields: graphql.Fields{
 		"clusterID": &graphql.Field{
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "Cluster ID",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if l, ok := p.Source.(raftio.NodeInfo); ok {
@@ -22,7 +22,7 @@ var LogInfoType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"nodeID": &graphql.Field{
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "Node ID",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if l, ok := p.Source.(raftio.NodeInfo); ok {
@@ -50,7 +50,7 @@ var NodeHostInfoType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"logInfo": &graphql.Field{
-			Type:        graphql.NewList(LogInfoType),
+			Type:        graphql.NewList(GQLLogInfoType),
 			Description: "List of NodeInfo",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if nodeHostInfo, ok := p.Source.(*dragonboat.NodeHostInfo); ok {
@@ -61,7 +61,7 @@ var NodeHostInfoType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"clusterInfoList": &graphql.Field{
-			Type:        graphql.NewList(ClusterInfoType),
+			Type:        graphql.NewList(GQLClusterInfoType),
 			Description: "Cluster information list",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if nodeHostInfo, ok := p.Source.(*dragonboat.NodeHostInfo); ok {

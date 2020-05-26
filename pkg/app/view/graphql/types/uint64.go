@@ -30,7 +30,7 @@ func NewUInt64FromUInt64(v uint64) *UInt64 {
 	return &UInt64{value: v}
 }
 
-var UInt64Type = graphql.NewScalar(graphql.ScalarConfig{
+var GQLUInt64Type = graphql.NewScalar(graphql.ScalarConfig{
 	Name:        "UInt64",
 	Description: "The `UInt64` scalar type represents an unsigned 64 bit integer.",
 	// Serialize serializes `UInt64` to uint64.

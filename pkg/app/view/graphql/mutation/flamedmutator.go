@@ -23,7 +23,7 @@ var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{
 					Description: "Cluster ID",
-					Type:        graphql.NewNonNull(types.UInt64Type),
+					Type:        graphql.NewNonNull(types.GQLUInt64Type),
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -50,7 +50,7 @@ var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{
 					Description: "Cluster ID",
-					Type:        graphql.NewNonNull(types.UInt64Type),
+					Type:        graphql.NewNonNull(types.GQLUInt64Type),
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {

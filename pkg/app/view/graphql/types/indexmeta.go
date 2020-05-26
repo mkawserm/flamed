@@ -5,7 +5,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/pb"
 )
 
-var IndexDocumentType = graphql.NewObject(graphql.ObjectConfig{
+var GQLIndexDocumentType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "IndexDocument",
 	Description: "`IndexDocument`",
 	Fields: graphql.Fields{
@@ -67,7 +67,7 @@ var IndexDocumentType = graphql.NewObject(graphql.ObjectConfig{
 		"indexFieldList": &graphql.Field{
 			Name:        "IndexFieldList",
 			Description: "",
-			Type:        graphql.NewList(IndexFieldType),
+			Type:        graphql.NewList(GQLIndexFieldType),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				indexDocument, ok := p.Source.(*pb.IndexDocument)
 				if !ok {
@@ -101,7 +101,7 @@ var IndexMetaType = graphql.NewObject(graphql.ObjectConfig{
 		"version": &graphql.Field{
 			Name:        "Version",
 			Description: "Index meta version",
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				indexMeta, ok := p.Source.(*pb.IndexMeta)
 				if !ok {
@@ -269,7 +269,7 @@ var IndexMetaType = graphql.NewObject(graphql.ObjectConfig{
 		"createdAt": &graphql.Field{
 			Name:        "CreatedAt",
 			Description: "",
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				indexMeta, ok := p.Source.(*pb.IndexMeta)
 				if !ok {
@@ -283,7 +283,7 @@ var IndexMetaType = graphql.NewObject(graphql.ObjectConfig{
 		"updatedAt": &graphql.Field{
 			Name:        "UpdatedAt",
 			Description: "",
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				indexMeta, ok := p.Source.(*pb.IndexMeta)
 				if !ok {
@@ -297,7 +297,7 @@ var IndexMetaType = graphql.NewObject(graphql.ObjectConfig{
 		"indexDocumentList": &graphql.Field{
 			Name:        "IndexDocumentList",
 			Description: "",
-			Type:        graphql.NewList(IndexDocumentType),
+			Type:        graphql.NewList(GQLIndexDocumentType),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				indexMeta, ok := p.Source.(*pb.IndexMeta)
 				if !ok {

@@ -6,13 +6,13 @@ import (
 	"github.com/mkawserm/flamed/pkg/pb"
 )
 
-var UserType = graphql.NewObject(graphql.ObjectConfig{
+var GQLUserType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "User",
 	Description: "`User` contains all user related information",
 	Fields: graphql.Fields{
 		"userType": &graphql.Field{
-			Name:        "UserType",
-			Type:        UserTypeEnum,
+			Name:        "GQLUserType",
+			Type:        GQLUserTypeEnum,
 			Description: "User type",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				u, ok := p.Source.(*pb.User)
@@ -68,7 +68,7 @@ var UserType = graphql.NewObject(graphql.ObjectConfig{
 
 		"createdAt": &graphql.Field{
 			Name:        "CreatedAt",
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "User creation time in unix nano timestamp",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				u, ok := p.Source.(*pb.User)
@@ -82,7 +82,7 @@ var UserType = graphql.NewObject(graphql.ObjectConfig{
 
 		"updatedAt": &graphql.Field{
 			Name:        "UpdatedAt",
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "User updated time in unix nano timestamp",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				u, ok := p.Source.(*pb.User)

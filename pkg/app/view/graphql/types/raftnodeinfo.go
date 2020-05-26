@@ -7,12 +7,12 @@ type RaftNodeInfo struct {
 	RaftAddress string
 }
 
-var RaftNodeInfoType = graphql.NewObject(graphql.ObjectConfig{
+var GQLRaftNodeInfoType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "RaftNodeInfo",
 	Description: "`RaftNodeInfo` provides node information of a raft cluster",
 	Fields: graphql.Fields{
 		"nodeID": &graphql.Field{
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "Node id",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if nodeInfo, ok := p.Source.(RaftNodeInfo); ok {

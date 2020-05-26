@@ -5,12 +5,12 @@ import (
 	"github.com/lni/dragonboat/v3"
 )
 
-var ClusterInfoType = graphql.NewObject(graphql.ObjectConfig{
+var GQLClusterInfoType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "ClusterInfo",
 	Description: "`ClusterInfo` provides all information related to raft cluster",
 	Fields: graphql.Fields{
 		"clusterID": &graphql.Field{
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "Cluster id",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if clusterInfo, ok := p.Source.(dragonboat.ClusterInfo); ok {
@@ -20,7 +20,7 @@ var ClusterInfoType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"nodeID": &graphql.Field{
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "Node id",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if clusterInfo, ok := p.Source.(dragonboat.ClusterInfo); ok {
@@ -30,7 +30,7 @@ var ClusterInfoType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"nodes": &graphql.Field{
-			Type:        graphql.NewList(RaftNodeInfoType),
+			Type:        graphql.NewList(GQLRaftNodeInfoType),
 			Description: "Raft node information list",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if clusterInfo, ok := p.Source.(dragonboat.ClusterInfo); ok {
@@ -47,7 +47,7 @@ var ClusterInfoType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"configChangeIndex": &graphql.Field{
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "Configuration change index",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if clusterInfo, ok := p.Source.(dragonboat.ClusterInfo); ok {
@@ -57,7 +57,7 @@ var ClusterInfoType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"stateMachineType": &graphql.Field{
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "State machine type",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if clusterInfo, ok := p.Source.(dragonboat.ClusterInfo); ok {

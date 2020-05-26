@@ -2,7 +2,7 @@ package types
 
 import "github.com/graphql-go/graphql"
 
-var UserTypeEnum = graphql.NewEnum(graphql.EnumConfig{
+var GQLUserTypeEnum = graphql.NewEnum(graphql.EnumConfig{
 	Name:        "UserType",
 	Description: "`UserType` can be either SUPER_USER or NORMAL_USER",
 	Values: graphql.EnumValueConfigMap{

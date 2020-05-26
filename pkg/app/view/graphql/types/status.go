@@ -2,7 +2,7 @@ package types
 
 import "github.com/graphql-go/graphql"
 
-var StatusEnum = graphql.NewEnum(graphql.EnumConfig{
+var GQLStatusEnum = graphql.NewEnum(graphql.EnumConfig{
 	Name:        "Status",
 	Description: "`Status` can be either REJECTED or ACCEPTED",
 	Values: graphql.EnumValueConfigMap{

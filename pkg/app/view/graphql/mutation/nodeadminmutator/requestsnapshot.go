@@ -10,12 +10,12 @@ import (
 )
 
 var RequestSnapshot = &graphql.Field{
-	Type:        types.UInt64Type,
+	Type:        types.GQLUInt64Type,
 	Description: "Add new node to the cluster",
 	Args: graphql.FieldConfigArgument{
 		"compactionOverhead": &graphql.ArgumentConfig{
 			Description: "Compaction overhead",
-			Type:        graphql.NewNonNull(types.UInt64Type),
+			Type:        graphql.NewNonNull(types.GQLUInt64Type),
 		},
 		"exported": &graphql.ArgumentConfig{
 			Description: "Will the snapshot be exported?",

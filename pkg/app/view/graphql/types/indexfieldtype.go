@@ -2,7 +2,7 @@ package types
 
 import "github.com/graphql-go/graphql"
 
-var IndexFieldTypeEnum = graphql.NewEnum(graphql.EnumConfig{
+var GQLIndexFieldTypeEnum = graphql.NewEnum(graphql.EnumConfig{
 	Name:        "IndexFieldType",
 	Description: "`IndexFieldType` defines enum for `IndexField`",
 	Values: graphql.EnumValueConfigMap{

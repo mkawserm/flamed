@@ -10,7 +10,7 @@ import (
 var GetUser = &graphql.Field{
 	Name:        "GetUser",
 	Description: "Get user by username",
-	Type:        types.UserType,
+	Type:        types.GQLUserType,
 	Args: graphql.FieldConfigArgument{
 		"username": &graphql.ArgumentConfig{
 			Description: "Username",

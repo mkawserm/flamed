@@ -6,7 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var ProposalResponseType = graphql.NewObject(graphql.ObjectConfig{
+var GQLProposalResponseType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "ProposalResponse",
 	Description: "`ProposalResponse` gives detail information about a proposal",
 	Fields: graphql.Fields{
@@ -26,7 +26,7 @@ var ProposalResponseType = graphql.NewObject(graphql.ObjectConfig{
 		"status": &graphql.Field{
 			Name:        "Status",
 			Description: "Proposal status",
-			Type:        StatusEnum,
+			Type:        GQLStatusEnum,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				pr, ok := p.Source.(*pb.ProposalResponse)
 				if !ok {
@@ -65,7 +65,7 @@ var ProposalResponseType = graphql.NewObject(graphql.ObjectConfig{
 		"transactionResponses": &graphql.Field{
 			Name:        "TransactionResponses",
 			Description: "Transaction responses",
-			Type:        graphql.NewList(TransactionResponseType),
+			Type:        graphql.NewList(GQLTransactionResponseType),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				pr, ok := p.Source.(*pb.ProposalResponse)
 				if !ok {

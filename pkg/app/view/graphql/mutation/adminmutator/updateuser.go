@@ -18,11 +18,11 @@ import (
 var UpdateUser = &graphql.Field{
 	Name:        "UpdateUser",
 	Description: "",
-	Type:        types.ProposalResponseType,
+	Type:        types.GQLProposalResponseType,
 	Args: graphql.FieldConfigArgument{
 		"userType": &graphql.ArgumentConfig{
 			Description: "User type",
-			Type:        types.UserTypeEnum,
+			Type:        types.GQLUserTypeEnum,
 		},
 		"roles": &graphql.ArgumentConfig{
 			Description: "Roles",

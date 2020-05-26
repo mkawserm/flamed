@@ -13,7 +13,7 @@ var AddWitness = &graphql.Field{
 	Args: graphql.FieldConfigArgument{
 		"nodeID": &graphql.ArgumentConfig{
 			Description: "Node ID",
-			Type:        graphql.NewNonNull(types.UInt64Type),
+			Type:        graphql.NewNonNull(types.GQLUInt64Type),
 		},
 
 		"address": &graphql.ArgumentConfig{
@@ -23,7 +23,7 @@ var AddWitness = &graphql.Field{
 
 		"configChangeIndex": &graphql.ArgumentConfig{
 			Description: "Config change index",
-			Type:        graphql.NewNonNull(types.UInt64Type),
+			Type:        graphql.NewNonNull(types.GQLUInt64Type),
 		},
 	},
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {

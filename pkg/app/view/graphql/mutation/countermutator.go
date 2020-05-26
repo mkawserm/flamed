@@ -14,7 +14,7 @@ var GQLCounterMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"increment": &graphql.Field{
 			Name:        "Increment",
-			Type:        types.UInt64Type,
+			Type:        types.GQLUInt64Type,
 			Description: "Increment counter by one",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				i, ok := p.Source.(*uint64)
@@ -31,7 +31,7 @@ var GQLCounterMutatorType = graphql.NewObject(graphql.ObjectConfig{
 
 		"decrement": &graphql.Field{
 			Name:        "Decrement",
-			Type:        types.UInt64Type,
+			Type:        types.GQLUInt64Type,
 			Description: "Decrement counter by one",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				i, ok := p.Source.(*uint64)

@@ -5,12 +5,12 @@ import (
 	"github.com/lni/dragonboat/v3"
 )
 
-var ClusterMembershipType = graphql.NewObject(graphql.ObjectConfig{
+var GQLClusterMembershipType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "ClusterMembership",
 	Description: "`ClusterMembership` provides all information related to the cluster",
 	Fields: graphql.Fields{
 		"configChangeID": &graphql.Field{
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "Config change ID",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if membership, ok := p.Source.(*dragonboat.Membership); ok {
@@ -21,7 +21,7 @@ var ClusterMembershipType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"nodes": &graphql.Field{
-			Type:        graphql.NewList(RaftNodeInfoType),
+			Type:        graphql.NewList(GQLRaftNodeInfoType),
 			Description: "Node information list",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if membership, ok := p.Source.(*dragonboat.Membership); ok {
@@ -39,7 +39,7 @@ var ClusterMembershipType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"observers": &graphql.Field{
-			Type:        graphql.NewList(RaftNodeInfoType),
+			Type:        graphql.NewList(GQLRaftNodeInfoType),
 			Description: "Observers information list",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if membership, ok := p.Source.(*dragonboat.Membership); ok {
@@ -57,7 +57,7 @@ var ClusterMembershipType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"witnesses": &graphql.Field{
-			Type:        graphql.NewList(RaftNodeInfoType),
+			Type:        graphql.NewList(GQLRaftNodeInfoType),
 			Description: "Witnesses information list",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if membership, ok := p.Source.(*dragonboat.Membership); ok {
@@ -75,7 +75,7 @@ var ClusterMembershipType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"removed": &graphql.Field{
-			Type:        graphql.NewList(RaftNodeInfoType),
+			Type:        graphql.NewList(GQLRaftNodeInfoType),
 			Description: "Removed node information list",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if membership, ok := p.Source.(*dragonboat.Membership); ok {

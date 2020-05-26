@@ -7,7 +7,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
+var GQLAccessControlType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "AccessControl",
 	Description: "`AccessControl` contains all access control related information of a user",
 	Fields: graphql.Fields{
@@ -115,7 +115,7 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 
 		"createdAt": &graphql.Field{
 			Name:        "CreatedAt",
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "User creation time in unix nano timestamp",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				accessControl, ok := p.Source.(*pb.AccessControl)
@@ -129,7 +129,7 @@ var AccessControlType = graphql.NewObject(graphql.ObjectConfig{
 
 		"updatedAt": &graphql.Field{
 			Name:        "UpdatedAt",
-			Type:        UInt64Type,
+			Type:        GQLUInt64Type,
 			Description: "User updated time in unix nano timestamp",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				accessControl, ok := p.Source.(*pb.AccessControl)

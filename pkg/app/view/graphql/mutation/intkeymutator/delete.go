@@ -8,9 +8,9 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var Delete = &graphql.Field{
-	Name:        "Delete",
-	Type:        types.ProposalResponseType,
+var GQLDelete = &graphql.Field{
+	Name:        "GQLDelete",
+	Type:        types.GQLProposalResponseType,
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{

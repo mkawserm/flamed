@@ -10,7 +10,7 @@ import (
 var DeleteUser = &graphql.Field{
 	Name:        "DeleteUser",
 	Description: "",
-	Type:        types.ProposalResponseType,
+	Type:        types.GQLProposalResponseType,
 	Args: graphql.FieldConfigArgument{
 		"username": &graphql.ArgumentConfig{
 			Description: "Username",
