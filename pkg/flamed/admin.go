@@ -150,8 +150,10 @@ func (a *Admin) IsAccessControlAvailable(username string, namespace []byte) bool
 }
 
 func (a *Admin) GetAccessControl(username string, namespace []byte) (*pb.AccessControl, error) {
-	if !utility.IsNamespaceValid(namespace) {
-		return nil, x.ErrInvalidNamespace
+	if !bytes.Equal(namespace, []byte("*")) {
+		if !utility.IsNamespaceValid(namespace) {
+			return nil, x.ErrInvalidNamespace
+		}
 	}
 
 	if !utility.IsUsernameValid(username) {
@@ -183,8 +185,10 @@ func (a *Admin) GetAccessControl(username string, namespace []byte) (*pb.AccessC
 }
 
 func (a *Admin) UpsertAccessControl(ac *pb.AccessControl) (*pb.ProposalResponse, error) {
-	if !utility.IsNamespaceValid(ac.Namespace) {
-		return nil, x.ErrInvalidNamespace
+	if !bytes.Equal(ac.Namespace, []byte("*")) {
+		if !utility.IsNamespaceValid(ac.Namespace) {
+			return nil, x.ErrInvalidNamespace
+		}
 	}
 
 	if !utility.IsUsernameValid(ac.Username) {
@@ -224,8 +228,10 @@ func (a *Admin) UpsertAccessControl(ac *pb.AccessControl) (*pb.ProposalResponse,
 }
 
 func (a *Admin) DeleteAccessControl(namespace []byte, username string) (*pb.ProposalResponse, error) {
-	if !utility.IsNamespaceValid(namespace) {
-		return nil, x.ErrInvalidNamespace
+	if !bytes.Equal(namespace, []byte("*")) {
+		if !utility.IsNamespaceValid(namespace) {
+			return nil, x.ErrInvalidNamespace
+		}
 	}
 
 	if !utility.IsUsernameValid(username) {
