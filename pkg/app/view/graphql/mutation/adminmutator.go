@@ -125,7 +125,12 @@ var AdminMutatorType = graphql.NewObject(graphql.ObjectConfig{
 					}
 				}
 
-				return admin.UpsertUser(user), nil
+				pr, err := admin.UpsertUser(user)
+				if err != nil {
+					return nil, err
+				}
+
+				return pr, nil
 			},
 		},
 	},
