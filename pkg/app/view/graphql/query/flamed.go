@@ -7,7 +7,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/query/admin"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/query/nodeadmin"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
-	flamedContext "github.com/mkawserm/flamed/pkg/context"
+	fContext "github.com/mkawserm/flamed/pkg/context"
 )
 
 var FlamedType = graphql.NewObject(graphql.ObjectConfig{
@@ -18,7 +18,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        types.NodeHostInfoType,
 			Description: "Node host information",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				fc, ok := p.Source.(*flamedContext.FlamedContext)
+				fc, ok := p.Source.(*fContext.FlamedContext)
 				if !ok {
 					return nil, nil
 				}
@@ -38,7 +38,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				clusterID := p.Args["clusterID"].(*types.UInt64)
-				fc, ok := p.Source.(*flamedContext.FlamedContext)
+				fc, ok := p.Source.(*fContext.FlamedContext)
 				if !ok {
 					return nil, nil
 				}
@@ -64,7 +64,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				clusterID := p.Args["clusterID"].(*types.UInt64)
-				fc, ok := p.Source.(*flamedContext.FlamedContext)
+				fc, ok := p.Source.(*fContext.FlamedContext)
 				if !ok {
 					return nil, nil
 				}
@@ -81,13 +81,20 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-func Flamed(flamedContext *flamedContext.FlamedContext) *graphql.Field {
+func Flamed(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
 		Name:        "Flamed",
 		Type:        FlamedType,
 		Description: "Query flamed for all kinds administrative information",
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			//TODO: Request must be authenticated
+			if p.Context.Value("GraphQLContext") == nil {
+				return nil, nil
+			}
+
+			gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
+			if !gqlContext.IsSuperUser(flamedContext) {
+				return nil, gqlerrors.NewFormattedError("Access denied. Only super user can access")
+			}
 
 			return flamedContext, nil
 		},

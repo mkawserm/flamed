@@ -7,7 +7,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/mutation/adminmutator"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/mutation/nodeadminmutator"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
-	flamedContext "github.com/mkawserm/flamed/pkg/context"
+	fContext "github.com/mkawserm/flamed/pkg/context"
 )
 
 var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
@@ -28,7 +28,7 @@ var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				clusterID := p.Args["clusterID"].(*types.UInt64)
-				fc, ok := p.Source.(*flamedContext.FlamedContext)
+				fc, ok := p.Source.(*fContext.FlamedContext)
 				if !ok {
 					return nil, nil
 				}
@@ -55,7 +55,7 @@ var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				clusterID := p.Args["clusterID"].(*types.UInt64)
-				fc, ok := p.Source.(*flamedContext.FlamedContext)
+				fc, ok := p.Source.(*fContext.FlamedContext)
 				if !ok {
 					return nil, nil
 				}
@@ -72,13 +72,20 @@ var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-func FlamedMutator(flamedContext *flamedContext.FlamedContext) *graphql.Field {
+func FlamedMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
 		Name:        "FlamedMutator",
 		Type:        FlamedMutatorType,
 		Description: "Flamed mutator helps to modify cluster",
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			//TODO: Request must be authenticated
+			if p.Context.Value("GraphQLContext") == nil {
+				return nil, nil
+			}
+
+			gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
+			if !gqlContext.IsSuperUser(flamedContext) {
+				return nil, gqlerrors.NewFormattedError("Access denied. Only super user can access")
+			}
 
 			return flamedContext, nil
 		},

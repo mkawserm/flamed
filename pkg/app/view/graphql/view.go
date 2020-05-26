@@ -2,8 +2,8 @@ package graphql
 
 import (
 	goContext "context"
-
 	"github.com/mkawserm/flamed/pkg/logger"
+	"github.com/mkawserm/flamed/pkg/utility"
 	"go.uber.org/zap"
 	"strings"
 
@@ -112,7 +112,7 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 
 		logger.L("graphql").Debug("graphql request header", fields...)
 
-		ro := ParseGraphQLQuery(bodyBytes)
+		ro := utility.ParseGraphQLQuery(bodyBytes)
 
 		var params graphql.Params
 
