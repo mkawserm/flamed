@@ -92,7 +92,9 @@ func Flamed(flamedContext *fContext.FlamedContext) *graphql.Field {
 			}
 
 			gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
-			if !gqlContext.IsSuperUser(flamedContext) {
+			if !gqlContext.AuthenticateSuperUser(flamedContext.Flamed.NewAdmin(
+				1,
+				flamedContext.GlobalRequestTimeout)) {
 				return nil, gqlerrors.NewFormattedError("Access denied. Only super user can access")
 			}
 

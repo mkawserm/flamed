@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 )
 
-var CounterMutatorType = graphql.NewObject(graphql.ObjectConfig{
+var GQLCounterMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "CounterMutator",
 	Description: "Counter mutator provides an in-memory" +
 		" unsigned 64 bit counter which can be incremented or decremented by one",
@@ -53,7 +53,7 @@ var CounterMutatorType = graphql.NewObject(graphql.ObjectConfig{
 func CounterMutator(_ *flamedContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
 		Name:        "CounterMutator",
-		Type:        CounterMutatorType,
+		Type:        GQLCounterMutatorType,
 		Description: "Counter mutator provides an in-memory unsigned 64 bit counter",
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			return &i, nil

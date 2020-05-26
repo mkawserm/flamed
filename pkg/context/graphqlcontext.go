@@ -17,7 +17,14 @@ type GraphQLContext struct {
 	Header     http.Header
 	RemoteAddr string
 
-	Data interface{}
+	Data map[string]interface{}
+}
+
+func (g *GraphQLContext) AddData(key string, value interface{}) {
+	if g.Data == nil {
+		g.Data = make(map[string]interface{})
+	}
+	g.Data[key] = value
 }
 
 func (g *GraphQLContext) GetBasicUsernameAndPassword(authData string) (string, string) {
@@ -33,6 +40,26 @@ func (g *GraphQLContext) GetBasicUsernameAndPassword(authData string) (string, s
 	password := string(userAndPass[1])
 	return username, password
 
+}
+
+func (g *GraphQLContext) GetUsernameFromAuth() string {
+	bearer, authData := g.GetAuthorizationData()
+	if strings.EqualFold(bearer, "Basic") {
+		username, _ := g.GetBasicUsernameAndPassword(authData)
+		return username
+	}
+
+	return ""
+}
+
+func (g *GraphQLContext) GetUsernameAndPasswordFromAuth() (string, string) {
+	bearer, authData := g.GetAuthorizationData()
+	if strings.EqualFold(bearer, "Basic") {
+		username, password := g.GetBasicUsernameAndPassword(authData)
+		return username, password
+	}
+
+	return "", ""
 }
 
 func (g *GraphQLContext) GetAuthorizationData() (string, string) {
@@ -59,15 +86,22 @@ func (g *GraphQLContext) GetAuthorizationData() (string, string) {
 	return authData[0], authData[1]
 }
 
-func (g *GraphQLContext) IsSuperUser(ctx *FlamedContext) bool {
-	bearer, authData := g.GetAuthorizationData()
-	if strings.EqualFold(bearer, "Basic") {
-		username, password := g.GetBasicUsernameAndPassword(authData)
-		admin := ctx.Flamed.NewAdmin(1, ctx.GlobalRequestTimeout)
-		return g.IsSuperUserPasswordValid(admin, username, password)
+func (g *GraphQLContext) AuthenticateSuperUser(admin *flamed.Admin) bool {
+	username, password := g.GetUsernameAndPasswordFromAuth()
+	if len(username) == 0 || len(password) == 0 {
+		return false
 	}
 
-	return false
+	return g.IsSuperUserPasswordValid(admin, username, password)
+}
+
+func (g *GraphQLContext) Authenticate(admin *flamed.Admin) bool {
+	username, password := g.GetUsernameAndPasswordFromAuth()
+	if len(username) == 0 || len(password) == 0 {
+		return false
+	}
+
+	return g.IsUserPasswordValid(admin, username, password)
 }
 
 func (g *GraphQLContext) IsSuperUserPasswordValid(admin *flamed.Admin,

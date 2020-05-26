@@ -10,7 +10,7 @@ import (
 	fContext "github.com/mkawserm/flamed/pkg/context"
 )
 
-var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
+var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "FlamedMutator",
 	Description: "`FlamedMutator` gives the ability to perform any tasks related to the cluster",
 	Fields: graphql.Fields{
@@ -75,7 +75,7 @@ var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 func FlamedMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
 		Name:        "FlamedMutator",
-		Type:        FlamedMutatorType,
+		Type:        GQLFlamedMutatorType,
 		Description: "Flamed mutator helps to modify cluster",
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			if p.Context.Value("GraphQLContext") == nil {
@@ -83,7 +83,9 @@ func FlamedMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 			}
 
 			gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
-			if !gqlContext.IsSuperUser(flamedContext) {
+			if !gqlContext.AuthenticateSuperUser(flamedContext.Flamed.NewAdmin(
+				1,
+				flamedContext.GlobalRequestTimeout)) {
 				return nil, gqlerrors.NewFormattedError("Access denied. Only super user can access")
 			}
 
