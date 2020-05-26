@@ -8,8 +8,8 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var Insert = &graphql.Field{
-	Name:        "Insert",
+var Upsert = &graphql.Field{
+	Name:        "Upsert",
 	Type:        types.ProposalResponseType,
 	Description: "",
 
@@ -38,7 +38,11 @@ var Insert = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("write permission required")
 		}
 
-		pr, err := ikc.Client.Insert(name, value.Value())
+		if !utility.HasUpdatePermission(ikc.AccessControl) {
+			return nil, gqlerrors.NewFormattedError("update permission required")
+		}
+
+		pr, err := ikc.Client.Upsert(name, value.Value())
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())

@@ -6,21 +6,19 @@ import (
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
 	fContext "github.com/mkawserm/flamed/pkg/context"
-	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 	"strings"
 )
-
-type intKeyContext struct {
-	Client        *intkey.Client
-	AccessControl *pb.AccessControl
-}
 
 var GQLIntKeyMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "IntKeyMutator",
 	Description: "`IntKeyMutator` provides mutation capability for `IntKey` transaction processor",
 	Fields: graphql.Fields{
-		"insert": Insert,
+		"insert":    Insert,
+		"upsert":    Upsert,
+		"delete":    Delete,
+		"increment": Increment,
+		"decrement": Decrement,
 	},
 })
 
@@ -91,7 +89,7 @@ func IntKeyMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 				return nil, gqlerrors.NewFormattedError(err.Error())
 			}
 
-			return &intKeyContext{
+			return &intkey.Context{
 				AccessControl: accessControl,
 				Client:        intKeyClient,
 			}, nil

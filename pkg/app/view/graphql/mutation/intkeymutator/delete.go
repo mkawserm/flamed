@@ -8,8 +8,8 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var Insert = &graphql.Field{
-	Name:        "Insert",
+var Delete = &graphql.Field{
+	Name:        "Delete",
 	Type:        types.ProposalResponseType,
 	Description: "",
 
@@ -18,17 +18,10 @@ var Insert = &graphql.Field{
 			Description: "Name",
 			Type:        graphql.NewNonNull(graphql.String),
 		},
-
-		"value": &graphql.ArgumentConfig{
-			Description: "Value",
-			Type:        graphql.NewNonNull(types.UInt64Type),
-		},
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 		name := p.Args["name"].(string)
-		value := p.Args["value"].(*types.UInt64)
-
 		ikc, ok := p.Source.(*intkey.Context)
 		if !ok {
 			return nil, nil
@@ -38,7 +31,7 @@ var Insert = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("write permission required")
 		}
 
-		pr, err := ikc.Client.Insert(name, value.Value())
+		pr, err := ikc.Client.Delete(name)
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())

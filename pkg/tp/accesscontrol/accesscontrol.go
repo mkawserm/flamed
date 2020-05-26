@@ -1,6 +1,7 @@
 package accesscontrol
 
 import (
+	"bytes"
 	"context"
 	"github.com/mkawserm/flamed/pkg/crypto"
 
@@ -39,8 +40,10 @@ func (c *AccessControl) Lookup(_ context.Context,
 		return nil, x.ErrInvalidLookupInput
 	}
 
-	if !utility.IsNamespaceValid(request.Namespace) {
-		return nil, x.ErrInvalidNamespace
+	if !bytes.Equal(request.Namespace, []byte("*")) {
+		if !utility.IsNamespaceValid(request.Namespace) {
+			return nil, x.ErrInvalidNamespace
+		}
 	}
 
 	if !utility.IsUsernameValid(request.Username) {
@@ -149,11 +152,13 @@ func (c *AccessControl) Apply(_ context.Context,
 		return tpr
 	}
 
-	if !utility.IsNamespaceValid(payload.AccessControl.Namespace) {
-		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
-		tpr.ErrorText = "invalid namespace"
-		return tpr
+	if !bytes.Equal(payload.AccessControl.Namespace, []byte("*")) {
+		if !utility.IsNamespaceValid(payload.AccessControl.Namespace) {
+			tpr.Status = pb.Status_REJECTED
+			tpr.ErrorCode = 0
+			tpr.ErrorText = "invalid namespace"
+			return tpr
+		}
 	}
 
 	if !utility.IsUsernameValid(payload.AccessControl.Username) {
