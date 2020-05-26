@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
+	"github.com/mkawserm/flamed/pkg/app/view/graphql/query/admin"
+	"github.com/mkawserm/flamed/pkg/app/view/graphql/query/nodeadmin"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
 	flamedContext "github.com/mkawserm/flamed/pkg/context"
 )
@@ -26,7 +28,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 
 		"nodeAdmin": &graphql.Field{
 			Name:        "NodeAdmin",
-			Type:        NodeAdminType,
+			Type:        nodeadmin.GQLNodeAdminType,
 			Description: "Query administrative information from NodeAdmin by clusterID",
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{
@@ -52,7 +54,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 
 		"admin": &graphql.Field{
 			Name:        "Admin",
-			Type:        AdminType,
+			Type:        admin.GQLAdminType,
 			Description: "Query user,index meta,access control related information from Admin by clusterID",
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{

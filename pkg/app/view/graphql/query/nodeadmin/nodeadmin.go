@@ -1,4 +1,4 @@
-package query
+package nodeadmin
 
 import (
 	"github.com/graphql-go/graphql"
@@ -6,7 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/flamed"
 )
 
-var NodeAdminType = graphql.NewObject(graphql.ObjectConfig{
+var GQLNodeAdminType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "NodeAdmin",
 	Description: "`NodeAdmin` provides all administrative information related to the cluster",
 	Fields: graphql.Fields{
