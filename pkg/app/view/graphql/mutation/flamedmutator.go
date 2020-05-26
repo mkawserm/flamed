@@ -41,7 +41,32 @@ var FlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		// AdminMutator
+		"adminMutator": &graphql.Field{
+			Name:        "AdminMutator",
+			Type:        AdminMutatorType,
+			Description: "",
+			Args: graphql.FieldConfigArgument{
+				"clusterID": &graphql.ArgumentConfig{
+					Description: "Cluster ID",
+					Type:        graphql.NewNonNull(types.UInt64Type),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				clusterID := p.Args["clusterID"].(*types.UInt64)
+				fc, ok := p.Source.(*flamedContext.FlamedContext)
+				if !ok {
+					return nil, nil
+				}
 
+				if !fc.Flamed.IsClusterIDAvailable(clusterID.Value()) {
+					return nil,
+						gqlerrors.NewFormattedError(
+							fmt.Sprintf("clusterID [%d] is not available", clusterID.Value()))
+				}
+
+				return fc.Flamed.NewAdmin(clusterID.Value(), fc.GlobalRequestTimeout), nil
+			},
+		},
 	},
 })
 

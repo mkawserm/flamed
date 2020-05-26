@@ -7,11 +7,9 @@ import (
 )
 
 type FlamedContext struct {
-	Flamed                       *flamed.Flamed
-	TransactionProcessorMap      map[string]iface.ITransactionProcessor
-	PasswordHashAlgorithmFactory iface.IPasswordHashAlgorithmFactory
-
-	GlobalRequestTimeout time.Duration
+	Flamed                  *flamed.Flamed
+	TransactionProcessorMap map[string]iface.ITransactionProcessor
+	GlobalRequestTimeout    time.Duration
 }
 
 func NewFlamedContext() *FlamedContext {

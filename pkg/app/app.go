@@ -79,11 +79,11 @@ func (a *App) getServerMux() *http.ServeMux {
 }
 
 func (a *App) SetPasswordHashAlgorithmFactory(f iface.IPasswordHashAlgorithmFactory) {
-	a.mFlamedContext.PasswordHashAlgorithmFactory = f
+	variable.DefaultPasswordHashAlgorithmFactory = f
 }
 
 func (a *App) GetPasswordHashAlgorithmFactory() iface.IPasswordHashAlgorithmFactory {
-	return a.mFlamedContext.PasswordHashAlgorithmFactory
+	return variable.DefaultPasswordHashAlgorithmFactory
 }
 
 func (a *App) EnableDefaultTransactionProcessors() {
@@ -224,8 +224,8 @@ func (a *App) Execute() error {
 	a.initTransactionProcessors()
 	a.initCommands()
 
-	if a.mFlamedContext.PasswordHashAlgorithmFactory == nil {
-		a.mFlamedContext.PasswordHashAlgorithmFactory = crypto.DefaultPasswordHashAlgorithmFactory()
+	if variable.DefaultPasswordHashAlgorithmFactory == nil {
+		variable.DefaultPasswordHashAlgorithmFactory = crypto.DefaultPasswordHashAlgorithmFactory()
 	}
 
 	return a.mRootCommand.Execute()
