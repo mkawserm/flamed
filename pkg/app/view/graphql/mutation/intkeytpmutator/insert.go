@@ -34,6 +34,10 @@ var GQLInsert = &graphql.Field{
 			return nil, nil
 		}
 
+		if !utility.HasReadPermission(ikc.AccessControl) {
+			return nil, gqlerrors.NewFormattedError("read permission required")
+		}
+
 		if !utility.HasWritePermission(ikc.AccessControl) {
 			return nil, gqlerrors.NewFormattedError("write permission required")
 		}

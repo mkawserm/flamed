@@ -42,6 +42,10 @@ var GQLUpsert = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("update permission required")
 		}
 
+		if !utility.HasReadPermission(ikc.AccessControl) {
+			return nil, gqlerrors.NewFormattedError("read permission required")
+		}
+
 		pr, err := ikc.Client.Upsert(name, value.Value())
 
 		if err != nil {
