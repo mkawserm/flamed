@@ -1,28 +1,29 @@
-package intkeytpmutator
+package jsontp
 
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
-	"github.com/mkawserm/flamed/pkg/tp/intkey"
+	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var GQLDelete = &graphql.Field{
-	Name:        "Delete",
-	Type:        types.GQLProposalResponseType,
+var GQLGet = &graphql.Field{
+	Name:        "Get",
+	Type:        types.GQLJSONType,
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
-		"name": &graphql.ArgumentConfig{
-			Description: "Name",
-			Type:        graphql.NewNonNull(graphql.String),
+		"id": &graphql.ArgumentConfig{
+			Description: "ID",
+			Type:        graphql.NewNonNull(graphql.ID),
 		},
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		name := p.Args["name"].(string)
-		ikc, ok := p.Source.(*intkey.Context)
+		id := p.Args["id"].(string)
+
+		ikc, ok := p.Source.(*json.Context)
 		if !ok {
 			return nil, nil
 		}
@@ -31,16 +32,13 @@ var GQLDelete = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("read permission required")
 		}
 
-		if !utility.HasWritePermission(ikc.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("write permission required")
-		}
+		obj := make(map[string]interface{})
 
-		pr, err := ikc.Client.Delete(name)
+		_, err := ikc.Client.Get(id, &obj)
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}
-
-		return pr, nil
+		return types.NewJSONFromMap(obj), nil
 	},
 }

@@ -9,7 +9,7 @@ import (
 )
 
 var GQLDecrement = &graphql.Field{
-	Name:        "GQLDecrement",
+	Name:        "Decrement",
 	Type:        types.GQLProposalResponseType,
 	Description: "",
 

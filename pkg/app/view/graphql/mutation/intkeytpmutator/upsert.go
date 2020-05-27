@@ -9,7 +9,7 @@ import (
 )
 
 var GQLUpsert = &graphql.Field{
-	Name:        "GQLUpsert",
+	Name:        "Upsert",
 	Type:        types.GQLProposalResponseType,
 	Description: "",
 
