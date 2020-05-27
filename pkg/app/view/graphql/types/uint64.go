@@ -45,7 +45,7 @@ var GQLUInt64Type = graphql.NewScalar(graphql.ScalarConfig{
 			return nil
 		}
 	},
-	// ParseValue parses GraphQL variables from `string` to `CustomID`.
+	// ParseValue parses GraphQL variables from `string` to `UInt64`.
 	ParseValue: func(value interface{}) interface{} {
 		switch value := value.(type) {
 		case string:
