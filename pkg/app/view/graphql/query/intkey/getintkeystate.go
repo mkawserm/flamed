@@ -9,7 +9,7 @@ import (
 )
 
 var GQLGetIntKeyState = &graphql.Field{
-	Name:        "GQLGetIntKeyState",
+	Name:        "GetIntKeyState",
 	Type:        types.GQLIntKeyStateType,
 	Description: "",
 
@@ -29,7 +29,7 @@ var GQLGetIntKeyState = &graphql.Field{
 		}
 
 		if !utility.HasReadPermission(ikc.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("write permission required")
+			return nil, gqlerrors.NewFormattedError("read permission required")
 		}
 
 		intKeyState, err := ikc.Client.GetIntKeyState(name)

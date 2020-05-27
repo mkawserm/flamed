@@ -11,7 +11,7 @@ import (
 )
 
 var GQLIntKeyType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "IntKey",
+	Name:        "GQLIntKey",
 	Description: "",
 	Fields: graphql.Fields{
 		"getIntKey": GQLGetIntKeyState,
@@ -34,7 +34,6 @@ func IntKey(flamedContext *fContext.FlamedContext) *graphql.Field {
 				Type:        graphql.NewNonNull(graphql.String),
 			},
 		},
-
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			clusterID := p.Args["clusterID"].(*types.UInt64)
 			namespace := p.Args["namespace"].(string)
