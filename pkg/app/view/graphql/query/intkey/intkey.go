@@ -11,7 +11,7 @@ import (
 )
 
 var GQLIntKeyType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "GQLIntKey",
+	Name:        "IntKey",
 	Description: "",
 	Fields: graphql.Fields{
 		"getIntKey": GQLGetIntKeyState,

@@ -11,8 +11,8 @@ import (
 )
 
 var GQLIntKeyMutatorType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "IntKey",
-	Description: "`IntKey` provides mutation capability for `IntKey` transaction processor",
+	Name:        "IntKeyMutator",
+	Description: "`IntKeyMutator` provides mutation capability for `IntKey` transaction processor",
 	Fields: graphql.Fields{
 		"insert":    GQLInsert,
 		"upsert":    GQLUpsert,
@@ -24,7 +24,7 @@ var GQLIntKeyMutatorType = graphql.NewObject(graphql.ObjectConfig{
 
 func IntKeyMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name:        "IntKey",
+		Name:        "IntKeyMutator",
 		Type:        GQLIntKeyMutatorType,
 		Description: "",
 
