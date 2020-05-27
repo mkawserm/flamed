@@ -8,12 +8,13 @@ import (
 )
 
 func (v *View) register() {
-	v.AddQueryField("flamed", query.Flamed)
 	v.AddQueryField("serviceStatus", query.ServiceStatus)
 
-	v.AddQueryField("intKey", intkey.IntKey)
-
-	v.AddMutationField("flamedMutator", mutation.FlamedMutator)
 	v.AddMutationField("counterMutator", mutation.CounterMutator)
+
+	v.AddQueryField("flamed", query.Flamed)
+	v.AddMutationField("flamedMutator", mutation.FlamedMutator)
+
+	v.AddQueryField("intKey", intkey.IntKey)
 	v.AddMutationField("intKeyMutator", intkeymutator.IntKeyMutator)
 }
