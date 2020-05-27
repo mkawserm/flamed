@@ -21,7 +21,7 @@ var GQLMerge = &graphql.Field{
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		input := p.Args["input"].(*types.JSON)
+		input := p.Args["input"].(map[string]interface{})
 		jsonContext, ok := p.Source.(*json.Context)
 		if !ok {
 			return nil, nil
@@ -39,7 +39,7 @@ var GQLMerge = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("write permission required")
 		}
 
-		pr, err := jsonContext.Client.MergeJSONMap(input.Value())
+		pr, err := jsonContext.Client.MergeJSONMap(input)
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())

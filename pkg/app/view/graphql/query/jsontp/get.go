@@ -39,6 +39,6 @@ var GQLGet = &graphql.Field{
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}
-		return types.NewJSONFromMap(obj), nil
+		return obj, nil
 	},
 }
