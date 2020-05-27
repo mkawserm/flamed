@@ -12,7 +12,7 @@ import (
 
 var GQLIntKeyTPMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "IntKeyTPMutator",
-	Description: "`IntKeyTPMutator` provides mutation capability for `IntKeyTP` transaction processor",
+	Description: "`IntKeyTPMutator` provides mutation capability for `IntKey` transaction processor",
 	Fields: graphql.Fields{
 		"insert":    GQLInsert,
 		"upsert":    GQLUpsert,

@@ -1,4 +1,4 @@
-package intkey
+package intkeytp
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var GQLIntKeyType = graphql.NewObject(graphql.ObjectConfig{
+var GQLIntKeyTPType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "IntKeyTP",
 	Description: "",
 	Fields: graphql.Fields{
@@ -21,7 +21,7 @@ var GQLIntKeyType = graphql.NewObject(graphql.ObjectConfig{
 func IntKeyTP(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
 		Name:        "IntKeyTP",
-		Type:        GQLIntKeyType,
+		Type:        GQLIntKeyTPType,
 		Description: "",
 
 		Args: graphql.FieldConfigArgument{

@@ -1,4 +1,4 @@
-package intkey
+package intkeytp
 
 import (
 	"github.com/graphql-go/graphql"
