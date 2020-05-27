@@ -1,4 +1,4 @@
-package intkeymutator
+package intkeytpmutator
 
 import (
 	"github.com/graphql-go/graphql"
@@ -8,8 +8,8 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var GQLDelete = &graphql.Field{
-	Name:        "GQLDelete",
+var GQLIncrement = &graphql.Field{
+	Name:        "GQLIncrement",
 	Type:        types.GQLProposalResponseType,
 	Description: "",
 
@@ -18,20 +18,27 @@ var GQLDelete = &graphql.Field{
 			Description: "Name",
 			Type:        graphql.NewNonNull(graphql.String),
 		},
+
+		"value": &graphql.ArgumentConfig{
+			Description: "Value",
+			Type:        graphql.NewNonNull(types.GQLUInt64Type),
+		},
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 		name := p.Args["name"].(string)
+		value := p.Args["value"].(*types.UInt64)
+
 		ikc, ok := p.Source.(*intkey.Context)
 		if !ok {
 			return nil, nil
 		}
 
-		if !utility.HasWritePermission(ikc.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("write permission required")
+		if !utility.HasUpdatePermission(ikc.AccessControl) {
+			return nil, gqlerrors.NewFormattedError("update permission required")
 		}
 
-		pr, err := ikc.Client.Delete(name)
+		pr, err := ikc.Client.Increment(name, value.Value())
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())

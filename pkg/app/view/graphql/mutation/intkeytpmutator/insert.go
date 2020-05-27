@@ -1,4 +1,4 @@
-package intkeymutator
+package intkeytpmutator
 
 import (
 	"github.com/graphql-go/graphql"
@@ -8,8 +8,8 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var GQLUpsert = &graphql.Field{
-	Name:        "GQLUpsert",
+var GQLInsert = &graphql.Field{
+	Name:        "GQLInsert",
 	Type:        types.GQLProposalResponseType,
 	Description: "",
 
@@ -38,11 +38,7 @@ var GQLUpsert = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("write permission required")
 		}
 
-		if !utility.HasUpdatePermission(ikc.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("update permission required")
-		}
-
-		pr, err := ikc.Client.Upsert(name, value.Value())
+		pr, err := ikc.Client.Insert(name, value.Value())
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())

@@ -1,4 +1,4 @@
-package intkeymutator
+package intkeytpmutator
 
 import (
 	"fmt"
@@ -10,9 +10,9 @@ import (
 	"strings"
 )
 
-var GQLIntKeyMutatorType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "IntKeyMutator",
-	Description: "`IntKeyMutator` provides mutation capability for `IntKey` transaction processor",
+var GQLIntKeyTPMutatorType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "IntKeyTPMutator",
+	Description: "`IntKeyTPMutator` provides mutation capability for `IntKeyTP` transaction processor",
 	Fields: graphql.Fields{
 		"insert":    GQLInsert,
 		"upsert":    GQLUpsert,
@@ -22,10 +22,10 @@ var GQLIntKeyMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-func IntKeyMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
+func IntKeyTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name:        "IntKeyMutator",
-		Type:        GQLIntKeyMutatorType,
+		Name:        "IntKeyTPMutator",
+		Type:        GQLIntKeyTPMutatorType,
 		Description: "",
 
 		Args: graphql.FieldConfigArgument{

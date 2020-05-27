@@ -2,7 +2,7 @@ package graphql
 
 import (
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/mutation"
-	"github.com/mkawserm/flamed/pkg/app/view/graphql/mutation/intkeymutator"
+	"github.com/mkawserm/flamed/pkg/app/view/graphql/mutation/intkeytpmutator"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/query"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/query/intkey"
 )
@@ -15,6 +15,6 @@ func (v *View) register() {
 	v.AddQueryField("flamed", query.Flamed)
 	v.AddMutationField("flamedMutator", mutation.FlamedMutator)
 
-	v.AddQueryField("intKey", intkey.IntKey)
-	v.AddMutationField("intKeyMutator", intkeymutator.IntKeyMutator)
+	v.AddQueryField("intKeyTP", intkey.IntKeyTP)
+	v.AddMutationField("intKeyTPMutator", intkeytpmutator.IntKeyTPMutator)
 }

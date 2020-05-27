@@ -1,4 +1,4 @@
-package intkeymutator
+package intkeytpmutator
 
 import (
 	"github.com/graphql-go/graphql"

@@ -11,16 +11,16 @@ import (
 )
 
 var GQLIntKeyType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "IntKey",
+	Name:        "IntKeyTP",
 	Description: "",
 	Fields: graphql.Fields{
 		"getIntKey": GQLGetIntKeyState,
 	},
 })
 
-func IntKey(flamedContext *fContext.FlamedContext) *graphql.Field {
+func IntKeyTP(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name:        "IntKey",
+		Name:        "IntKeyTP",
 		Type:        GQLIntKeyType,
 		Description: "",
 
