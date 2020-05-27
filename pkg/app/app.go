@@ -55,11 +55,11 @@ func (a *App) GetFlamedContext() *context.FlamedContext {
 }
 
 func (a *App) GetTPMap() map[string]iface.ITransactionProcessor {
-	return a.mFlamedContext.TransactionProcessorMap
+	return a.mFlamedContext.TransactionProcessorMap()
 }
 
 func (a *App) GetTransactionProcessorMap() map[string]iface.ITransactionProcessor {
-	return a.mFlamedContext.TransactionProcessorMap
+	return a.mFlamedContext.TransactionProcessorMap()
 }
 
 func (a *App) SetProposalReceiver(pr func(*pb.Proposal, pb.Status)) {
@@ -111,7 +111,7 @@ func (a *App) DisableDefaultCommands() {
 }
 
 func (a *App) UpdateGlobalRequestTimeout(timeout time.Duration) {
-	viper.Set("GlobalRequestTimeout", timeout)
+	viper.Set("mGlobalRequestTimeout", timeout)
 }
 
 func (a *App) AddView(pattern string, handler func(http.ResponseWriter, *http.Request)) {
@@ -119,11 +119,11 @@ func (a *App) AddView(pattern string, handler func(http.ResponseWriter, *http.Re
 }
 
 func (a *App) AddTransactionProcessor(tp iface.ITransactionProcessor) {
-	a.mFlamedContext.TransactionProcessorMap[tp.FamilyName()+"::"+tp.FamilyVersion()] = tp
+	a.mFlamedContext.AddTP(tp)
 }
 
 func (a *App) GetFlamed() *flamed.Flamed {
-	return a.mFlamedContext.Flamed
+	return a.mFlamedContext.Flamed()
 }
 
 func (a *App) AddCommand(commands ...*cobra.Command) {
@@ -131,7 +131,7 @@ func (a *App) AddCommand(commands ...*cobra.Command) {
 }
 
 func (a *App) setup() {
-	a.mFlamedContext.Flamed = flamed.NewFlamed()
+	a.mFlamedContext.SetFlamed(flamed.NewFlamed())
 
 	a.mRootCommand = &cobra.Command{
 		Use:   variable.Name,
@@ -205,7 +205,7 @@ func (a *App) initTransactionProcessors() {
 func (a *App) initBeforeCommandExecution() {
 	/* setup defaults */
 	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString(constant.LogLevel))
-	a.mFlamedContext.GlobalRequestTimeout = viper.GetDuration(constant.GlobalRequestTimeout)
+	a.mFlamedContext.SetGlobalTimeout(viper.GetDuration(constant.GlobalRequestTimeout))
 
 	if a.mProposalReceiver == nil {
 		a.mProposalReceiver = func(proposal *pb.Proposal, status pb.Status) {

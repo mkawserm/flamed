@@ -26,7 +26,7 @@ import (
 
 var RunCMD = &cobra.Command{
 	Use:   "run",
-	Short: "Run Flamed server",
+	Short: "Run mFlamed server",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(viper.GetString(constant.StoragePath)) == 0 {
 			fmt.Println("StoragePath can not be empty")

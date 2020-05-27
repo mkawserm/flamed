@@ -33,12 +33,12 @@ var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, nil
 				}
 
-				if !fc.Flamed.IsClusterIDAvailable(clusterID.Value()) {
+				if !fc.Flamed().IsClusterIDAvailable(clusterID.Value()) {
 					return nil,
 						gqlerrors.NewFormattedError(
 							fmt.Sprintf("clusterID [%d] is not available", clusterID.Value()))
 				}
-				return fc.Flamed.NewNodeAdmin(clusterID.Value(), fc.GlobalRequestTimeout), nil
+				return fc.Flamed().NewNodeAdmin(clusterID.Value(), fc.GlobalRequestTimeout()), nil
 			},
 		},
 
@@ -60,13 +60,13 @@ var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, nil
 				}
 
-				if !fc.Flamed.IsClusterIDAvailable(clusterID.Value()) {
+				if !fc.Flamed().IsClusterIDAvailable(clusterID.Value()) {
 					return nil,
 						gqlerrors.NewFormattedError(
 							fmt.Sprintf("clusterID [%d] is not available", clusterID.Value()))
 				}
 
-				return fc.Flamed.NewAdmin(clusterID.Value(), fc.GlobalRequestTimeout), nil
+				return fc.Flamed().NewAdmin(clusterID.Value(), fc.GlobalRequestTimeout()), nil
 			},
 		},
 	},
@@ -76,16 +76,16 @@ func FlamedMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
 		Name:        "FlamedMutator",
 		Type:        GQLFlamedMutatorType,
-		Description: "Flamed mutator helps to modify cluster",
+		Description: "mFlamed mutator helps to modify cluster",
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			if p.Context.Value("GraphQLContext") == nil {
 				return nil, nil
 			}
 
 			gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
-			if !gqlContext.AuthenticateSuperUser(flamedContext.Flamed.NewAdmin(
+			if !gqlContext.AuthenticateSuperUser(flamedContext.Flamed().NewAdmin(
 				1,
-				flamedContext.GlobalRequestTimeout)) {
+				flamedContext.GlobalRequestTimeout())) {
 				return nil, gqlerrors.NewFormattedError("Access denied. Only super user can access")
 			}
 

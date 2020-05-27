@@ -11,8 +11,8 @@ import (
 )
 
 var FlamedType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "Flamed",
-	Description: "`Flamed` provides all information related to the cluster",
+	Name:        "mFlamed",
+	Description: "`mFlamed` provides all information related to the cluster",
 	Fields: graphql.Fields{
 		"nodeHostInfo": &graphql.Field{
 			Type:        types.NodeHostInfoType,
@@ -22,7 +22,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 				if !ok {
 					return nil, nil
 				}
-				return fc.Flamed.GetNodeHostInfo(), nil
+				return fc.Flamed().GetNodeHostInfo(), nil
 			},
 		},
 
@@ -43,12 +43,12 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, nil
 				}
 
-				if !fc.Flamed.IsClusterIDAvailable(clusterID.Value()) {
+				if !fc.Flamed().IsClusterIDAvailable(clusterID.Value()) {
 					return nil,
 						gqlerrors.NewFormattedError(
 							fmt.Sprintf("clusterID [%d] is not available", clusterID.Value()))
 				}
-				return fc.Flamed.NewNodeAdmin(clusterID.Value(), fc.GlobalRequestTimeout), nil
+				return fc.Flamed().NewNodeAdmin(clusterID.Value(), fc.GlobalRequestTimeout()), nil
 			},
 		},
 
@@ -69,13 +69,13 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, nil
 				}
 
-				if !fc.Flamed.IsClusterIDAvailable(clusterID.Value()) {
+				if !fc.Flamed().IsClusterIDAvailable(clusterID.Value()) {
 					return nil,
 						gqlerrors.NewFormattedError(
 							fmt.Sprintf("clusterID [%d] is not available", clusterID.Value()))
 				}
 
-				return fc.Flamed.NewAdmin(clusterID.Value(), fc.GlobalRequestTimeout), nil
+				return fc.Flamed().NewAdmin(clusterID.Value(), fc.GlobalRequestTimeout()), nil
 			},
 		},
 	},
@@ -83,7 +83,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 
 func Flamed(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name:        "Flamed",
+		Name:        "mFlamed",
 		Type:        FlamedType,
 		Description: "Query flamed for all kinds administrative information",
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -92,9 +92,9 @@ func Flamed(flamedContext *fContext.FlamedContext) *graphql.Field {
 			}
 
 			gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
-			if !gqlContext.AuthenticateSuperUser(flamedContext.Flamed.NewAdmin(
+			if !gqlContext.AuthenticateSuperUser(flamedContext.Flamed().NewAdmin(
 				1,
-				flamedContext.GlobalRequestTimeout)) {
+				flamedContext.GlobalRequestTimeout())) {
 				return nil, gqlerrors.NewFormattedError("Access denied. Only super user can access")
 			}
 

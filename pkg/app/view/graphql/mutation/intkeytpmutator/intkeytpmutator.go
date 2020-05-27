@@ -43,7 +43,7 @@ func IntKeyTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 			clusterID := p.Args["clusterID"].(*types.UInt64)
 			namespace := p.Args["namespace"].(string)
 
-			if !flamedContext.Flamed.IsClusterIDAvailable(clusterID.Value()) {
+			if !flamedContext.Flamed().IsClusterIDAvailable(clusterID.Value()) {
 				return nil,
 					gqlerrors.NewFormattedError(
 						fmt.Sprintf("clusterID [%d] is not available", clusterID.Value()))
@@ -58,7 +58,7 @@ func IntKeyTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 			//}
 
 			gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
-			admin := flamedContext.Flamed.NewAdmin(clusterID.Value(), flamedContext.GlobalRequestTimeout)
+			admin := flamedContext.Flamed().NewAdmin(clusterID.Value(), flamedContext.GlobalRequestTimeout())
 
 			// Authenticate user
 			username, password := gqlContext.GetUsernameAndPasswordFromAuth()
@@ -82,8 +82,8 @@ func IntKeyTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 			intKeyClient := &intkey.Client{}
 			err = intKeyClient.Setup(clusterID.Value(),
 				namespace,
-				flamedContext.Flamed,
-				flamedContext.GlobalRequestTimeout)
+				flamedContext.Flamed(),
+				flamedContext.GlobalRequestTimeout())
 
 			if err != nil {
 				return nil, gqlerrors.NewFormattedError(err.Error())
