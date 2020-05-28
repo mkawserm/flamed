@@ -39,6 +39,20 @@ func (c *Client) GetIntKeyState(name string) (*IntKeyState, error) {
 	return nil, x.ErrUnknownValue
 }
 
+func (c *Client) GetIntKeyStateList(name []string) ([]*IntKeyState, error) {
+	r, err := c.mRW.Read(c.mClusterID, c.GetIntKeyListLookupRequest(name), c.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if v, ok := r.([]*IntKeyState); ok {
+		return v, nil
+	}
+
+	return nil, x.ErrUnknownValue
+}
+
 func (c *Client) sendProposal(payload *IntKeyPayload) (*pb.ProposalResponse, error) {
 	payloadBytes, err := proto.Marshal(payload)
 
@@ -68,6 +82,21 @@ func (c *Client) getStateAddress(name string) []byte {
 	hash := crypto.GetStateHashFromStringKey(Name, name)
 	address := crypto.GetStateAddress([]byte(c.mNamespace), hash)
 	return address
+}
+
+func (c *Client) GetIntKeyListLookupRequest(name []string) *pb.RetrieveInput {
+	request := &pb.RetrieveInput{
+		Namespace:     []byte(c.mNamespace),
+		FamilyName:    Name,
+		FamilyVersion: Version,
+		Addresses:     make([][]byte, 0, len(name)),
+	}
+
+	for _, t := range name {
+		request.Addresses = append(request.Addresses, c.getStateAddress(t))
+	}
+
+	return request
 }
 
 func (c *Client) GetIntKeyLookupRequest(name string) *pb.RetrieveInput {
