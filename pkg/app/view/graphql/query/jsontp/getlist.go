@@ -23,11 +23,6 @@ var GQLGetList = &graphql.Field{
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 		idList := p.Args["idList"].([]interface{})
 
-		idStringList := make([]string, 0, len(idList))
-		for _, n := range idList {
-			idStringList = append(idStringList, n.(string))
-		}
-
 		ikc, ok := p.Source.(*json.Context)
 		if !ok {
 			return nil, nil
@@ -37,7 +32,7 @@ var GQLGetList = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("read permission required")
 		}
 
-		obj, err := ikc.Client.GetList(idStringList)
+		obj, err := ikc.Client.GetList(idList)
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}

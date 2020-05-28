@@ -39,7 +39,7 @@ func (c *Client) GetIntKeyState(name string) (*IntKeyState, error) {
 	return nil, x.ErrUnknownValue
 }
 
-func (c *Client) GetIntKeyStateList(name []string) ([]*IntKeyState, error) {
+func (c *Client) GetIntKeyStateList(name []interface{}) ([]*IntKeyState, error) {
 	r, err := c.mRW.Read(c.mClusterID, c.GetIntKeyListLookupRequest(name), c.mTimeout)
 
 	if err != nil {
@@ -84,7 +84,7 @@ func (c *Client) getStateAddress(name string) []byte {
 	return address
 }
 
-func (c *Client) GetIntKeyListLookupRequest(name []string) *pb.RetrieveInput {
+func (c *Client) GetIntKeyListLookupRequest(name []interface{}) *pb.RetrieveInput {
 	request := &pb.RetrieveInput{
 		Namespace:     []byte(c.mNamespace),
 		FamilyName:    Name,
@@ -93,7 +93,9 @@ func (c *Client) GetIntKeyListLookupRequest(name []string) *pb.RetrieveInput {
 	}
 
 	for _, t := range name {
-		request.Addresses = append(request.Addresses, c.getStateAddress(t))
+		if t2, ok := t.(string); ok {
+			request.Addresses = append(request.Addresses, c.getStateAddress(t2))
+		}
 	}
 
 	return request

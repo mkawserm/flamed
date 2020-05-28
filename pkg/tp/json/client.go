@@ -273,7 +273,7 @@ func (c *Client) Get(id string, object interface{}) (interface{}, error) {
 	return nil, x.ErrUnknownValue
 }
 
-func (c *Client) GetList(id []string) (interface{}, error) {
+func (c *Client) GetList(id []interface{}) (interface{}, error) {
 	request := &pb.RetrieveInput{
 		Namespace:     []byte(c.mNamespace),
 		FamilyName:    Name,
@@ -282,7 +282,9 @@ func (c *Client) GetList(id []string) (interface{}, error) {
 	}
 
 	for _, t := range id {
-		request.Addresses = append(request.Addresses, c.GetStateAddress(t))
+		if t2, ok := t.(string); ok {
+			request.Addresses = append(request.Addresses, c.GetStateAddress(t2))
+		}
 	}
 
 	data, err := c.mRW.Read(c.mClusterID, request, c.mTimeout)
