@@ -14,14 +14,14 @@ var GQLGetIntKeyList = &graphql.Field{
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
-		"nameList": &graphql.ArgumentConfig{
+		"name": &graphql.ArgumentConfig{
 			Description: "Name list",
 			Type:        graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(graphql.String))),
 		},
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		nameList := p.Args["nameList"].([]interface{})
+		nameList := p.Args["name"].([]interface{})
 		ikc, ok := p.Source.(*intkey.Context)
 		if !ok {
 			return nil, nil

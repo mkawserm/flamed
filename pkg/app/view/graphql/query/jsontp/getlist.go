@@ -14,14 +14,14 @@ var GQLGetList = &graphql.Field{
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
-		"idList": &graphql.ArgumentConfig{
+		"id": &graphql.ArgumentConfig{
 			Description: "ID",
 			Type:        graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(graphql.ID))),
 		},
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		idList := p.Args["idList"].([]interface{})
+		idList := p.Args["id"].([]interface{})
 
 		ikc, ok := p.Source.(*json.Context)
 		if !ok {
