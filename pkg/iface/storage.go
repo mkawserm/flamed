@@ -59,7 +59,13 @@ type IStorage interface {
 	SaveAppliedIndex(u uint64) error
 	QueryAppliedIndex() (uint64, error)
 
-	Search(_ variant.SearchRequest) (interface{}, error)
-	Lookup(request variant.LookupRequest) (interface{}, error)
+	GetAppliedIndex(ctx context.Context) (interface{}, error)
+
+	Search(ctx context.Context, search *pb.SearchInput) (interface{}, error)
+	Iterate(ctx context.Context, iterate *pb.IterateInput) (interface{}, error)
+	Retrieve(ctx context.Context, retrieve *pb.RetrieveInput) (interface{}, error)
+	GlobalSearch(ctx context.Context, globalSearch *pb.GlobalSearchInput) (interface{}, error)
+	GlobalIterate(ctx context.Context, globalIterate *pb.GlobalIterateInput) (interface{}, error)
+
 	ApplyProposal(ctx context.Context, proposal *pb.Proposal, entryIndex uint64) *pb.ProposalResponse
 }

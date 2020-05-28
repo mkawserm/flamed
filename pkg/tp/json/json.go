@@ -59,6 +59,24 @@ func (j *JSON) getDataAsBytes(readOnlyStateContext iface.IStateContext, address 
 	return entry.Payload, nil
 }
 
+func (j *JSON) Search(_ context.Context,
+	_ iface.IStateContext,
+	_ *pb.SearchInput) (interface{}, error) {
+	return nil, x.ErrNotImplemented
+}
+
+func (j *JSON) Iterate(_ context.Context,
+	_ iface.IStateContext,
+	_ *pb.IterateInput) (interface{}, error) {
+	return nil, x.ErrNotImplemented
+}
+
+func (j *JSON) Retrieve(ctx context.Context,
+	readOnlyStateContext iface.IStateContext,
+	retrieveInput *pb.RetrieveInput) (interface{}, error) {
+	return nil, nil
+}
+
 func (j *JSON) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {

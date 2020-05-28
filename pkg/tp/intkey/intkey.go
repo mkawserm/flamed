@@ -24,6 +24,24 @@ func (i *IntKey) IndexObject(_ []byte) interface{} {
 	return nil
 }
 
+func (i *IntKey) Search(_ context.Context,
+	_ iface.IStateContext,
+	_ *pb.SearchInput) (interface{}, error) {
+	return nil, x.ErrNotImplemented
+}
+
+func (i *IntKey) Iterate(_ context.Context,
+	_ iface.IStateContext,
+	_ *pb.IterateInput) (interface{}, error) {
+	return nil, x.ErrNotImplemented
+}
+
+func (i *IntKey) Retrieve(ctx context.Context,
+	readOnlyStateContext iface.IStateContext,
+	retrieveInput *pb.RetrieveInput) (interface{}, error) {
+	return nil, nil
+}
+
 func (i *IntKey) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {

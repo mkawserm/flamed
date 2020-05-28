@@ -187,15 +187,16 @@ message AccessControlPayload {
   AccessControl accessControl = 2;
 }
 
-message Retrieve {
+message SearchInput {
   bytes namespace = 1;
   string familyName = 2;
   string familyVersion = 3;
 
-  repeated bytes addresses = 4;
+  bytes query = 4;
+  uint64 limit = 5;
 }
 
-message Iterate {
+message IterateInput {
   bytes namespace = 1;
   string familyName = 2;
   string familyVersion = 3;
@@ -205,20 +206,29 @@ message Iterate {
   uint64 limit = 6;
 }
 
-message Search {
+message RetrieveInput {
   bytes namespace = 1;
   string familyName = 2;
   string familyVersion = 3;
 
-  bytes query = 4;
-  uint64 limit = 5;
+  repeated bytes addresses = 4;
 }
 
-message GlobalSearch {
+message GlobalSearchInput {
   bytes namespace = 1;
   string familyName = 2;
   string familyVersion = 3;
 
   string query = 4;
   uint64 limit = 5;
+}
+
+message GlobalIterateInput {
+  bytes namespace = 1;
+  string familyName = 2;
+  string familyVersion = 3;
+
+  bytes skip = 4;
+  bytes prefix = 5;
+  uint64 limit = 6;
 }

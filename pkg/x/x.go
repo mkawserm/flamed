@@ -8,6 +8,7 @@ var ErrStateNotFound = errors.New("state is not available")
 var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 var ErrTPNotFound = errors.New("transaction processor not found")
 var ErrUnknownLookupRequest = errors.New("unknown lookup request")
+var ErrNotImplemented = errors.New("not implemented")
 
 var ErrAddressNotFound = errors.New("key is not available")
 

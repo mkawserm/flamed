@@ -27,6 +27,24 @@ func (u *User) IndexObject(_ []byte) interface{} {
 	return nil
 }
 
+func (u *User) Search(_ context.Context,
+	_ iface.IStateContext,
+	_ *pb.SearchInput) (interface{}, error) {
+	return nil, x.ErrNotImplemented
+}
+
+func (u *User) Iterate(_ context.Context,
+	_ iface.IStateContext,
+	_ *pb.IterateInput) (interface{}, error) {
+	return nil, x.ErrNotImplemented
+}
+
+func (u *User) Retrieve(ctx context.Context,
+	readOnlyStateContext iface.IStateContext,
+	retrieveInput *pb.RetrieveInput) (interface{}, error) {
+	return nil, nil
+}
+
 func (u *User) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {

@@ -98,10 +98,7 @@ func (c *NodeAdmin) RequestSnapshot(compactionOverhead uint64,
 
 func (c *NodeAdmin) GetAppliedIndex() (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), c.mTimeout)
-	request := variant.LookupRequest{
-		Query:   pb.AppliedIndexQuery{},
-		Context: ctx,
-	}
+	request := &pb.AppliedIndexQuery{}
 	d, e := c.mDragonboatNodeHost.SyncRead(ctx, c.mClusterID, request)
 	cancel()
 

@@ -447,20 +447,97 @@ func (s *Storage) QueryAppliedIndex() (uint64, error) {
 	return crypto.ByteSliceToUint64(entry.Payload), nil
 }
 
+func (s *Storage) GetAppliedIndex(_ context.Context) (interface{}, error) {
+	return s.QueryAppliedIndex()
+}
+
+func (s *Storage) Search(ctx context.Context, searchInput *pb.SearchInput) (interface{}, error) {
+	if len(searchInput.FamilyName) != 0 && len(searchInput.FamilyVersion) != 0 {
+		tp := s.mConfiguration.GetTransactionProcessor(searchInput.FamilyName, searchInput.FamilyVersion)
+		if tp == nil {
+			return nil, x.ErrTPNotFound
+		}
+		readOnlyTxn := s.mStateStorage.NewReadOnlyTransaction()
+		defer readOnlyTxn.Discard()
+		readOnlyStateContext := &StateContext{
+			mReadOnly: true,
+			mStorage:  s,
+			mTxn:      readOnlyTxn,
+		}
+
+		return tp.Search(ctx, readOnlyStateContext, searchInput)
+	}
+
+	return nil, x.ErrTPNotFound
+}
+
+func (s *Storage) Iterate(ctx context.Context, iterateInput *pb.IterateInput) (interface{}, error) {
+	if len(iterateInput.FamilyName) != 0 && len(iterateInput.FamilyVersion) != 0 {
+		tp := s.mConfiguration.GetTransactionProcessor(
+			iterateInput.FamilyName,
+			iterateInput.FamilyVersion)
+		if tp == nil {
+			return nil, x.ErrTPNotFound
+		}
+		readOnlyTxn := s.mStateStorage.NewReadOnlyTransaction()
+		defer readOnlyTxn.Discard()
+		readOnlyStateContext := &StateContext{
+			mReadOnly: true,
+			mStorage:  s,
+			mTxn:      readOnlyTxn,
+		}
+
+		return tp.Iterate(ctx, readOnlyStateContext, iterateInput)
+	}
+
+	return nil, x.ErrTPNotFound
+}
+
+func (s *Storage) Retrieve(ctx context.Context, retrieveInput *pb.RetrieveInput) (interface{}, error) {
+	if len(retrieveInput.FamilyName) != 0 && len(retrieveInput.FamilyVersion) != 0 {
+		tp := s.mConfiguration.GetTransactionProcessor(
+			retrieveInput.FamilyName,
+			retrieveInput.FamilyVersion)
+		if tp == nil {
+			return nil, x.ErrTPNotFound
+		}
+		readOnlyTxn := s.mStateStorage.NewReadOnlyTransaction()
+		defer readOnlyTxn.Discard()
+		readOnlyStateContext := &StateContext{
+			mReadOnly: true,
+			mStorage:  s,
+			mTxn:      readOnlyTxn,
+		}
+
+		return tp.Retrieve(ctx, readOnlyStateContext, retrieveInput)
+	}
+
+	return nil, x.ErrTPNotFound
+}
+
+func (s *Storage) GlobalSearch(_ context.Context, _ *pb.GlobalSearchInput) (interface{}, error) {
+	return nil, nil
+}
+
+func (s *Storage) GlobalIterate(_ context.Context, _ *pb.GlobalIterateInput) (interface{}, error) {
+	return nil, nil
+}
+
 func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
 	if len(request.FamilyName) != 0 && len(request.FamilyVersion) != 0 {
 		tp := s.mConfiguration.GetTransactionProcessor(request.FamilyName, request.FamilyVersion)
 		if tp == nil {
 			return nil, x.ErrTPNotFound
 		} else {
-			readOnlyTxn := s.mStateStorage.NewReadOnlyTransaction()
-			defer readOnlyTxn.Discard()
-			readOnlyStateContext := &StateContext{
-				mReadOnly: true,
-				mStorage:  s,
-				mTxn:      readOnlyTxn,
-			}
-			return tp.Lookup(request.Context, readOnlyStateContext, request.Query)
+			//readOnlyTxn := s.mStateStorage.NewReadOnlyTransaction()
+			//defer readOnlyTxn.Discard()
+			//readOnlyStateContext := &StateContext{
+			//	mReadOnly: true,
+			//	mStorage:  s,
+			//	mTxn:      readOnlyTxn,
+			//}
+			//return tp.Lookup(request.Context, readOnlyStateContext, request.Query)
+			return nil, nil
 		}
 	} else {
 		if _, ok := request.Query.(pb.AppliedIndexQuery); ok {
@@ -468,10 +545,6 @@ func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
 		}
 		return nil, x.ErrTPNotFound
 	}
-}
-
-func (s *Storage) Search(_ variant.SearchRequest) (interface{}, error) {
-	return nil, nil
 }
 
 func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entryIndex uint64) *pb.ProposalResponse {

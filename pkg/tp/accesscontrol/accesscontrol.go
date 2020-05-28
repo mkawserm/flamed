@@ -28,6 +28,24 @@ func (c *AccessControl) IndexObject(_ []byte) interface{} {
 	return nil
 }
 
+func (c *AccessControl) Search(_ context.Context,
+	_ iface.IStateContext,
+	_ *pb.SearchInput) (interface{}, error) {
+	return nil, x.ErrNotImplemented
+}
+
+func (c *AccessControl) Iterate(_ context.Context,
+	_ iface.IStateContext,
+	_ *pb.IterateInput) (interface{}, error) {
+	return nil, x.ErrNotImplemented
+}
+
+func (c *AccessControl) Retrieve(ctx context.Context,
+	readOnlyStateContext iface.IStateContext,
+	retrieveInput *pb.RetrieveInput) (interface{}, error) {
+	return nil, nil
+}
+
 func (c *AccessControl) Lookup(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	query interface{}) (interface{}, error) {

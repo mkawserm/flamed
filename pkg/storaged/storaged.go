@@ -6,7 +6,6 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
-	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
 	"io"
@@ -144,18 +143,35 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 		return nil, x.ErrStorageIsNotReady
 	}
 
-	if lookupRequest, ok := input.(variant.LookupRequest); ok {
-		r, err := s.mStorage.Lookup(lookupRequest)
-		logger.L("storaged").Debug("storaged lookup done with [LookupRequest]")
+	switch v := input.(type) {
+	case *pb.SearchInput:
+		r, err := s.mStorage.Search(context.TODO(), v)
+		logger.L("storaged").Debug("storaged lookup done with [pb.SearchInput]")
 		return r, err
-	} else if searchRequest, ok := input.(variant.SearchRequest); ok {
-		r, err := s.mStorage.Search(searchRequest)
-		logger.L("storaged").Debug("storaged lookup done with [SearchRequest]")
+	case *pb.IterateInput:
+		r, err := s.mStorage.Iterate(context.TODO(), v)
+		logger.L("storaged").Debug("storaged lookup done with [pb.IterateInput]")
 		return r, err
+	case *pb.RetrieveInput:
+		r, err := s.mStorage.Retrieve(context.TODO(), v)
+		logger.L("storaged").Debug("storaged lookup done with [pb.RetrieveInput]")
+		return r, err
+	case *pb.GlobalSearchInput:
+		r, err := s.mStorage.GlobalSearch(context.TODO(), v)
+		logger.L("storaged").Debug("storaged lookup done with [pb.GlobalSearchInput]")
+		return r, err
+	case *pb.GlobalIterateInput:
+		r, err := s.mStorage.GlobalIterate(context.TODO(), v)
+		logger.L("storaged").Debug("storaged lookup done with [pb.GlobalIterateInput]")
+		return r, err
+	case *pb.AppliedIndexQuery:
+		r, err := s.mStorage.GetAppliedIndex(context.TODO())
+		logger.L("storaged").Debug("storaged lookup done with [pb.AppliedIndexQuery]")
+		return r, err
+	default:
+		logger.L("storaged").Debug("storaged lookup done")
+		return nil, x.ErrInvalidLookupInput
 	}
-
-	logger.L("storaged").Debug("storaged lookup done")
-	return nil, x.ErrInvalidLookupInput
 }
 
 func (s *Storaged) PrepareSnapshot() (interface{}, error) {
