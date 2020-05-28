@@ -21,7 +21,11 @@ var GQLGetIntKeyList = &graphql.Field{
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		name := p.Args["nameList"].([]string)
+		nameList := p.Args["nameList"].([]interface{})
+		nameStringList := make([]string, 0, len(nameList))
+		for _, n := range nameList {
+			nameStringList = append(nameStringList, n.(string))
+		}
 
 		ikc, ok := p.Source.(*intkey.Context)
 		if !ok {
@@ -32,7 +36,7 @@ var GQLGetIntKeyList = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("read permission required")
 		}
 
-		intKeyStateList, err := ikc.Client.GetIntKeyStateList(name)
+		intKeyStateList, err := ikc.Client.GetIntKeyStateList(nameStringList)
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
