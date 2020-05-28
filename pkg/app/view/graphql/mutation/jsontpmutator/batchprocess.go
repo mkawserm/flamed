@@ -31,8 +31,16 @@ var GQLBatchProcess = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("read permission required")
 		}
 
+		if !utility.HasUpdatePermission(jsonContext.AccessControl) {
+			return nil, gqlerrors.NewFormattedError("update permission required")
+		}
+
 		if !utility.HasWritePermission(jsonContext.AccessControl) {
 			return nil, gqlerrors.NewFormattedError("write permission required")
+		}
+
+		if !utility.HasDeletePermission(jsonContext.AccessControl) {
+			return nil, gqlerrors.NewFormattedError("delete permission required")
 		}
 
 		batch := jsonContext.Client.NewBatch()
