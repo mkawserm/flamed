@@ -15,8 +15,11 @@ var GQLBatchProcess = &graphql.Field{
 
 	Args: graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
-			Description: "Input object",
-			Type:        graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(types.GQLJSONType))),
+			Description: "Input JSON as list. " +
+				"supported action: INSERT, UPSERT, UPDATE, MERGE, DELETE " +
+				"example `[{action:\"INSERT\",data:{id:1,value:100}}," +
+				"{action:\"UPSERT\",data:{id:2,value:5}}]`",
+			Type: graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(types.GQLJSONType))),
 		},
 	},
 
@@ -31,12 +34,12 @@ var GQLBatchProcess = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("read permission required")
 		}
 
-		if !utility.HasUpdatePermission(jsonContext.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("update permission required")
-		}
-
 		if !utility.HasWritePermission(jsonContext.AccessControl) {
 			return nil, gqlerrors.NewFormattedError("write permission required")
+		}
+
+		if !utility.HasUpdatePermission(jsonContext.AccessControl) {
+			return nil, gqlerrors.NewFormattedError("update permission required")
 		}
 
 		if !utility.HasDeletePermission(jsonContext.AccessControl) {
