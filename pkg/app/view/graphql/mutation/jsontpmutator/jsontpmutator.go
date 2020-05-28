@@ -14,11 +14,12 @@ var GQLJSONTPMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "JSONTPMutator",
 	Description: "",
 	Fields: graphql.Fields{
-		"merge":  GQLMerge,
-		"insert": GQLInsert,
-		"upsert": GQLUpsert,
-		"update": GQLUpdate,
-		"delete": GQLDelete,
+		"merge":        GQLMerge,
+		"insert":       GQLInsert,
+		"upsert":       GQLUpsert,
+		"update":       GQLUpdate,
+		"delete":       GQLDelete,
+		"batchProcess": GQLBatchProcess,
 	},
 })
 
