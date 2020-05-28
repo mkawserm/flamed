@@ -14,7 +14,8 @@ var GQLJSONTPType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "JSONTP",
 	Description: "",
 	Fields: graphql.Fields{
-		"get": GQLGet,
+		"get":     GQLGet,
+		"getList": GQLGetList,
 	},
 })
 
