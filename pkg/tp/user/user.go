@@ -39,42 +39,31 @@ func (u *User) Iterate(_ context.Context,
 	return nil, x.ErrNotImplemented
 }
 
-func (u *User) Retrieve(ctx context.Context,
+func (u *User) Retrieve(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	retrieveInput *pb.RetrieveInput) (interface{}, error) {
-	return nil, nil
-}
-
-func (u *User) Lookup(_ context.Context,
-	readOnlyStateContext iface.IStateContext,
-	query interface{}) (interface{}, error) {
-
-	var username string
-
-	if v, ok := query.(string); ok {
-		username = v
-	} else {
-		return nil, x.ErrInvalidLookupInput
+	if len(retrieveInput.Addresses) == 0 {
+		return nil, nil
 	}
 
-	if !utility.IsUsernameValid(username) {
-		return nil, x.ErrInvalidUsername
+	users := make([]*pb.User, 0, 1)
+
+	for _, sa := range retrieveInput.Addresses {
+		entry, err := readOnlyStateContext.GetState(sa)
+
+		if err != nil {
+			return nil, err
+		}
+
+		a := &pb.User{}
+		if err := proto.Unmarshal(entry.Payload, a); err != nil {
+			return nil, err
+		}
+
+		users = append(users, a)
 	}
 
-	address := crypto.GetStateAddress([]byte(constant.UserNamespace), []byte(username))
-
-	entry, err := readOnlyStateContext.GetState(address)
-
-	if err != nil {
-		return nil, err
-	}
-
-	user := &pb.User{}
-	if err := proto.Unmarshal(entry.Payload, user); err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return users, nil
 }
 
 func (u *User) upsert(tpr *pb.TransactionResponse,

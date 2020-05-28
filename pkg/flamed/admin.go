@@ -2,16 +2,15 @@ package flamed
 
 import (
 	"bytes"
-	"context"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/tp/accesscontrol"
 	"github.com/mkawserm/flamed/pkg/tp/indexmeta"
 	"github.com/mkawserm/flamed/pkg/tp/user"
 	"github.com/mkawserm/flamed/pkg/utility"
-	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 	"time"
 )
@@ -39,26 +38,35 @@ func (a *Admin) IsUserAvailable(username string) bool {
 	return false
 }
 
+func (a *Admin) getUserStateAddress(username string) []byte {
+	address := crypto.GetStateAddress([]byte(constant.UserNamespace), []byte(username))
+	return address
+}
+
 func (a *Admin) GetUser(username string) (*pb.User, error) {
 	if !utility.IsUsernameValid(username) {
 		return nil, x.ErrInvalidUsername
 	}
 
-	lookupRequest := variant.LookupRequest{
-		Query:         username,
-		Context:       context.TODO(),
+	request := &pb.RetrieveInput{
+		Namespace:     []byte(constant.UserNamespace),
 		FamilyName:    user.Name,
 		FamilyVersion: user.Version,
+		Addresses:     [][]byte{a.getUserStateAddress(username)},
 	}
 
-	output, err := a.mRW.Read(a.mClusterID, lookupRequest, a.mTimeout)
+	output, err := a.mRW.Read(a.mClusterID, request, a.mTimeout)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if v, ok := output.(*pb.User); ok {
-		return v, nil
+	if v, ok := output.([]*pb.User); ok {
+		if len(v) == 1 {
+			return v[0], nil
+		} else {
+			return nil, nil
+		}
 	} else {
 		return nil, x.ErrUnknownValue
 	}
@@ -149,6 +157,13 @@ func (a *Admin) IsAccessControlAvailable(username string, namespace []byte) bool
 	return false
 }
 
+func (a *Admin) getAccessControlStateAddress(username string, namespace []byte) []byte {
+	address := crypto.GetStateAddress([]byte(constant.AccessControlNamespace),
+		crypto.GetStateAddress([]byte(username), namespace))
+
+	return address
+}
+
 func (a *Admin) GetAccessControl(username string, namespace []byte) (*pb.AccessControl, error) {
 	if !bytes.Equal(namespace, []byte("*")) {
 		if !utility.IsNamespaceValid(namespace) {
@@ -160,25 +175,25 @@ func (a *Admin) GetAccessControl(username string, namespace []byte) (*pb.AccessC
 		return nil, x.ErrInvalidUsername
 	}
 
-	lookupRequest := variant.LookupRequest{
-		Query: accesscontrol.Request{
-			Username:  username,
-			Namespace: namespace,
-		},
-
-		Context:       context.TODO(),
+	request := &pb.RetrieveInput{
+		Namespace:     []byte(constant.AccessControlNamespace),
 		FamilyName:    accesscontrol.Name,
 		FamilyVersion: accesscontrol.Version,
+		Addresses:     [][]byte{a.getAccessControlStateAddress(username, namespace)},
 	}
 
-	output, err := a.mRW.Read(a.mClusterID, lookupRequest, a.mTimeout)
+	output, err := a.mRW.Read(a.mClusterID, request, a.mTimeout)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if v, ok := output.(*pb.AccessControl); ok {
-		return v, nil
+	if v, ok := output.([]*pb.AccessControl); ok {
+		if len(v) == 1 {
+			return v[0], nil
+		} else {
+			return nil, nil
+		}
 	} else {
 		return nil, x.ErrUnknownValue
 	}
@@ -283,26 +298,35 @@ func (a *Admin) IsIndexMetaAvailable(namespace []byte) bool {
 	return false
 }
 
+func (a *Admin) getIndexMetaStateAddress(namespace []byte) []byte {
+	address := crypto.GetStateAddress([]byte(constant.IndexMetaNamespace), namespace)
+	return address
+}
+
 func (a *Admin) GetIndexMeta(namespace []byte) (*pb.IndexMeta, error) {
 	if !utility.IsNamespaceValid(namespace) {
 		return nil, x.ErrInvalidNamespace
 	}
 
-	lookupRequest := variant.LookupRequest{
-		Query:         namespace,
-		Context:       context.TODO(),
+	request := &pb.RetrieveInput{
+		Namespace:     []byte(constant.IndexMetaNamespace),
 		FamilyName:    indexmeta.Name,
 		FamilyVersion: indexmeta.Version,
+		Addresses:     [][]byte{a.getIndexMetaStateAddress(namespace)},
 	}
 
-	output, err := a.mRW.Read(a.mClusterID, lookupRequest, a.mTimeout)
+	output, err := a.mRW.Read(a.mClusterID, request, a.mTimeout)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if v, ok := output.(*pb.IndexMeta); ok {
-		return v, nil
+	if v, ok := output.([]*pb.IndexMeta); ok {
+		if len(v) == 1 {
+			return v[0], nil
+		} else {
+			return nil, nil
+		}
 	} else {
 		return nil, x.ErrUnknownValue
 	}

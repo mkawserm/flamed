@@ -39,37 +39,30 @@ func (i *IndexMeta) Iterate(_ context.Context,
 	return nil, x.ErrNotImplemented
 }
 
-func (i *IndexMeta) Retrieve(ctx context.Context,
+func (i *IndexMeta) Retrieve(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	retrieveInput *pb.RetrieveInput) (interface{}, error) {
-	return nil, nil
-}
-
-func (i *IndexMeta) Lookup(_ context.Context,
-	readOnlyStateContext iface.IStateContext,
-	query interface{}) (interface{}, error) {
-
-	var namespace []byte
-
-	if v, ok := query.([]byte); ok {
-		namespace = v
-	} else {
-		return nil, x.ErrInvalidLookupInput
-	}
-	address := crypto.GetStateAddress([]byte(constant.IndexMetaNamespace), namespace)
-
-	entry, err := readOnlyStateContext.GetState(address)
-
-	if err != nil {
-		return nil, err
+	if len(retrieveInput.Addresses) == 0 {
+		return nil, nil
 	}
 
-	indexMeta := &pb.IndexMeta{}
-	if err := proto.Unmarshal(entry.Payload, indexMeta); err != nil {
-		return nil, err
+	indexMetas := make([]*pb.IndexMeta, 0, 1)
+	for _, sa := range retrieveInput.Addresses {
+		entry, err := readOnlyStateContext.GetState(sa)
+
+		if err != nil {
+			return nil, err
+		}
+
+		a := &pb.IndexMeta{}
+		if err := proto.Unmarshal(entry.Payload, a); err != nil {
+			return nil, err
+		}
+
+		indexMetas = append(indexMetas, a)
 	}
 
-	return indexMeta, nil
+	return indexMetas, nil
 }
 
 func (i *IndexMeta) upsert(tpr *pb.TransactionResponse,

@@ -40,49 +40,31 @@ func (c *AccessControl) Iterate(_ context.Context,
 	return nil, x.ErrNotImplemented
 }
 
-func (c *AccessControl) Retrieve(ctx context.Context,
+func (c *AccessControl) Retrieve(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	retrieveInput *pb.RetrieveInput) (interface{}, error) {
-	return nil, nil
-}
-
-func (c *AccessControl) Lookup(_ context.Context,
-	readOnlyStateContext iface.IStateContext,
-	query interface{}) (interface{}, error) {
-
-	var request Request
-
-	if v, ok := query.(Request); ok {
-		request = v
-	} else {
-		return nil, x.ErrInvalidLookupInput
+	if len(retrieveInput.Addresses) == 0 {
+		return nil, nil
 	}
 
-	if !bytes.Equal(request.Namespace, []byte("*")) {
-		if !utility.IsNamespaceValid(request.Namespace) {
-			return nil, x.ErrInvalidNamespace
+	accessControlList := make([]*pb.AccessControl, 0, 1)
+
+	for _, sa := range retrieveInput.Addresses {
+		entry, err := readOnlyStateContext.GetState(sa)
+
+		if err != nil {
+			return nil, err
 		}
+
+		ac := &pb.AccessControl{}
+		if err := proto.Unmarshal(entry.Payload, ac); err != nil {
+			return nil, err
+		}
+
+		accessControlList = append(accessControlList, ac)
 	}
 
-	if !utility.IsUsernameValid(request.Username) {
-		return nil, x.ErrInvalidUsername
-	}
-
-	address := crypto.GetStateAddress([]byte(constant.AccessControlNamespace),
-		crypto.GetStateAddress([]byte(request.Username), request.Namespace))
-
-	entry, err := readOnlyStateContext.GetState(address)
-
-	if err != nil {
-		return nil, err
-	}
-
-	ac := &pb.AccessControl{}
-	if err := proto.Unmarshal(entry.Payload, ac); err != nil {
-		return nil, err
-	}
-
-	return ac, nil
+	return accessControlList, nil
 }
 
 func (c *AccessControl) upsert(tpr *pb.TransactionResponse,
