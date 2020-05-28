@@ -8,8 +8,8 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var GQLGetIntKeyState = &graphql.Field{
-	Name:        "GetIntKeyState",
+var GQLGetIntKey = &graphql.Field{
+	Name:        "GetIntKey",
 	Type:        types.GQLIntKeyStateType,
 	Description: "",
 

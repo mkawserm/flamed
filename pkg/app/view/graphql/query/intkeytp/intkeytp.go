@@ -14,7 +14,7 @@ var GQLIntKeyTPType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "IntKeyTP",
 	Description: "",
 	Fields: graphql.Fields{
-		"getIntKey": GQLGetIntKeyState,
+		"getIntKey": GQLGetIntKey,
 	},
 })
 
