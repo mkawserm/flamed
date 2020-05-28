@@ -11,8 +11,8 @@ import (
 )
 
 var FlamedType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "mFlamed",
-	Description: "`mFlamed` provides all information related to the cluster",
+	Name:        "Flamed",
+	Description: "`Flamed` provides all information related to the cluster",
 	Fields: graphql.Fields{
 		"nodeHostInfo": &graphql.Field{
 			Type:        types.NodeHostInfoType,
@@ -83,7 +83,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 
 func Flamed(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name:        "mFlamed",
+		Name:        "Flamed",
 		Type:        FlamedType,
 		Description: "Query flamed for all kinds administrative information",
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
