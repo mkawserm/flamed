@@ -192,8 +192,10 @@ message SearchInput {
   string familyName = 2;
   string familyVersion = 3;
 
-  bytes query = 4;
-  uint64 limit = 5;
+  string outputType = 4;
+
+  bytes query = 5;
+  uint64 limit = 6;
 }
 
 message IterateInput {
@@ -201,9 +203,11 @@ message IterateInput {
   string familyName = 2;
   string familyVersion = 3;
 
-  bytes skip = 4;
-  bytes prefix = 5;
-  uint64 limit = 6;
+  string outputType = 4;
+
+  bytes skip = 5;
+  bytes prefix = 6;
+  uint64 limit = 7;
 }
 
 message RetrieveInput {
@@ -211,7 +215,9 @@ message RetrieveInput {
   string familyName = 2;
   string familyVersion = 3;
 
-  repeated bytes addresses = 4;
+  string outputType = 4;
+
+  repeated bytes addresses = 5;
 }
 
 message GlobalSearchInput {
@@ -219,8 +225,10 @@ message GlobalSearchInput {
   string familyName = 2;
   string familyVersion = 3;
 
-  string query = 4;
-  uint64 limit = 5;
+  string outputType = 4;
+
+  string query = 5;
+  uint64 limit = 6;
 }
 
 message GlobalIterateInput {
@@ -228,7 +236,9 @@ message GlobalIterateInput {
   string familyName = 2;
   string familyVersion = 3;
 
-  bytes skip = 4;
-  bytes prefix = 5;
-  uint64 limit = 6;
+  string outputType = 4;
+
+  bytes skip = 5;
+  bytes prefix = 6;
+  uint64 limit = 7;
 }

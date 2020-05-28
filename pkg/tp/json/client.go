@@ -8,7 +8,6 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
-	"github.com/mkawserm/flamed/pkg/variant"
 	"github.com/mkawserm/flamed/pkg/x"
 	"time"
 )
@@ -246,65 +245,28 @@ func (c *Client) ApplyBatch(b *Batch) (*pb.ProposalResponse, error) {
 }
 
 func (c *Client) Get(id string, object interface{}) (interface{}, error) {
-	data, err := c.mRW.Read(c.mClusterID, variant.LookupRequest{
-		Query:         id,
-		Context:       nil,
+	request := &pb.RetrieveInput{
+		Namespace:     []byte(c.mNamespace),
 		FamilyName:    Name,
 		FamilyVersion: Version,
-	}, c.mTimeout)
+		Addresses:     [][]byte{c.GetStateAddress(id)},
+	}
+
+	data, err := c.mRW.Read(c.mClusterID, request, c.mTimeout)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if v, ok := data.([]byte); ok {
-		if err := json.Unmarshal(v, object); err != nil {
+	if v, ok := data.([][]byte); ok {
+		if len(v) != 1 {
+			return nil, nil
+		}
+
+		if err := json.Unmarshal(v[0], object); err != nil {
 			return nil, err
 		} else {
 			return object, nil
-		}
-	}
-
-	return nil, x.ErrUnknownValue
-}
-
-func (c *Client) GetBytes(id string) ([]byte, error) {
-	data, err := c.mRW.Read(c.mClusterID, variant.LookupRequest{
-		Query:         id,
-		Context:       nil,
-		FamilyName:    Name,
-		FamilyVersion: Version,
-	}, c.mTimeout)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if v, ok := data.([]byte); ok {
-		return v, nil
-	}
-
-	return nil, x.ErrUnknownValue
-}
-
-func (c *Client) GetJSONMap(id string) (map[string]interface{}, error) {
-	data, err := c.mRW.Read(c.mClusterID, variant.LookupRequest{
-		Query:         id,
-		Context:       nil,
-		FamilyName:    Name,
-		FamilyVersion: Version,
-	}, c.mTimeout)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if v, ok := data.([]byte); ok {
-		jsonMap := make(map[string]interface{})
-		if err := json.Unmarshal(v, &jsonMap); err != nil {
-			return nil, err
-		} else {
-			return jsonMap, nil
 		}
 	}
 

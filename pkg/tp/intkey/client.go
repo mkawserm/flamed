@@ -79,36 +79,6 @@ func (c *Client) GetIntKeyLookupRequest(name string) *pb.RetrieveInput {
 	}
 
 	return request
-
-	//output, err := a.mRW.Read(a.mClusterID, request, a.mTimeout)
-	//
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//if v, ok := output.([]*pb.IndexMeta); ok {
-	//	if len(v) == 1 {
-	//		return v[0], nil
-	//	} else {
-	//		return nil, nil
-	//	}
-	//} else {
-	//	return nil, x.ErrUnknownValue
-	//}
-
-	//request := Request{
-	//	Name:      name,
-	//	Namespace: c.mNamespace,
-	//}
-	//
-	//lookupRequest := variant.LookupRequest{
-	//	Query:         request,
-	//	Context:       nil,
-	//	FamilyName:    Name,
-	//	FamilyVersion: Version,
-	//}
-	//
-	//return lookupRequest
 }
 
 func (c *Client) GetInsertTransaction(name string, value uint64) *pb.Transaction {

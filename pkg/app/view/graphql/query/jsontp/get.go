@@ -34,7 +34,7 @@ var GQLGet = &graphql.Field{
 
 		obj := make(map[string]interface{})
 
-		_, err := ikc.Client.Get(ikc.Client.GetStateAddressHexString(id), &obj)
+		_, err := ikc.Client.Get(id, &obj)
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}

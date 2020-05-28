@@ -71,25 +71,23 @@ func (j *JSON) Iterate(_ context.Context,
 	return nil, x.ErrNotImplemented
 }
 
-func (j *JSON) Retrieve(ctx context.Context,
+func (j *JSON) Retrieve(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	retrieveInput *pb.RetrieveInput) (interface{}, error) {
-	return nil, nil
-}
-
-func (j *JSON) Lookup(_ context.Context,
-	readOnlyStateContext iface.IStateContext,
-	query interface{}) (interface{}, error) {
-
-	switch v := query.(type) {
-	case string:
-		return j.getDataAsBytes(readOnlyStateContext,
-			crypto.GetStateAddressFromHexString(v))
-	case []byte:
-		return j.getDataAsBytes(readOnlyStateContext, v)
-	default:
-		return nil, x.ErrInvalidLookupInput
+	if len(retrieveInput.Addresses) == 0 {
+		return nil, nil
 	}
+
+	dataList := make([][]byte, 0, 1)
+	for _, sa := range retrieveInput.Addresses {
+		dataAsBytes, err := j.getDataAsBytes(readOnlyStateContext, sa)
+		if err != nil {
+			return nil, err
+		}
+		dataList = append(dataList, dataAsBytes)
+	}
+
+	return dataList, nil
 }
 
 func (j *JSON) Apply(_ context.Context,
