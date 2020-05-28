@@ -20,6 +20,6 @@ func (v *View) register() {
 	v.AddQueryField("intKeyTP", intkeytp.IntKeyTP)
 	v.AddMutationField("intKeyTPMutator", intkeytpmutator.IntKeyTPMutator)
 
-	v.AddQueryField("json", jsontp.JSONTP)
+	v.AddQueryField("jsonTP", jsontp.JSONTP)
 	v.AddMutationField("jsonTPMutator", jsontpmutator.JSONTPMutator)
 }
