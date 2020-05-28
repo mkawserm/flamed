@@ -36,33 +36,30 @@ func (i *IntKey) Iterate(_ context.Context,
 	return nil, x.ErrNotImplemented
 }
 
-func (i *IntKey) Retrieve(ctx context.Context,
+func (i *IntKey) Retrieve(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	retrieveInput *pb.RetrieveInput) (interface{}, error) {
-	return nil, nil
-}
+	if len(retrieveInput.Addresses) == 0 {
+		return nil, nil
+	}
 
-func (i *IntKey) Lookup(_ context.Context,
-	readOnlyStateContext iface.IStateContext,
-	query interface{}) (interface{}, error) {
-	if request, ok := query.(Request); ok {
-		hash := crypto.GetStateHashFromStringKey(i.FamilyName(), request.Name)
-		address := crypto.GetStateAddress([]byte(request.Namespace), hash)
-		entry, err := readOnlyStateContext.GetState(address)
+	intKeyStates := make([]*IntKeyState, 0, 1)
+
+	for _, sa := range retrieveInput.Addresses {
+		entry, err := readOnlyStateContext.GetState(sa)
+
 		if err != nil {
 			return nil, err
 		}
 
-		stateData := &IntKeyState{}
-
-		if err := proto.Unmarshal(entry.Payload, stateData); err != nil {
+		a := &IntKeyState{}
+		if err := proto.Unmarshal(entry.Payload, a); err != nil {
 			return nil, err
 		}
-
-		return stateData, nil
-	} else {
-		return nil, x.ErrUnknownLookupRequest
+		intKeyStates = append(intKeyStates, a)
 	}
+
+	return intKeyStates, nil
 }
 
 func (i *IntKey) insert(tpr *pb.TransactionResponse,

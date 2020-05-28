@@ -1,7 +1,7 @@
 package intkey
 
 import (
-	"github.com/mkawserm/flamed/pkg/variant"
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -29,8 +29,11 @@ func (c *Client) GetIntKeyState(name string) (*IntKeyState, error) {
 		return nil, err
 	}
 
-	if v, ok := r.(*IntKeyState); ok {
-		return v, nil
+	if v, ok := r.([]*IntKeyState); ok {
+		if len(v) == 1 {
+			return v[0], nil
+		}
+		return nil, nil
 	}
 
 	return nil, x.ErrUnknownValue
@@ -61,20 +64,51 @@ func (c *Client) sendProposal(payload *IntKeyPayload) (*pb.ProposalResponse, err
 	return pr, nil
 }
 
-func (c *Client) GetIntKeyLookupRequest(name string) variant.LookupRequest {
-	request := Request{
-		Name:      name,
-		Namespace: c.mNamespace,
-	}
+func (c *Client) getStateAddress(name string) []byte {
+	hash := crypto.GetStateHashFromStringKey(Name, name)
+	address := crypto.GetStateAddress([]byte(c.mNamespace), hash)
+	return address
+}
 
-	lookupRequest := variant.LookupRequest{
-		Query:         request,
-		Context:       nil,
+func (c *Client) GetIntKeyLookupRequest(name string) *pb.RetrieveInput {
+	request := &pb.RetrieveInput{
+		Namespace:     []byte(c.mNamespace),
 		FamilyName:    Name,
 		FamilyVersion: Version,
+		Addresses:     [][]byte{c.getStateAddress(name)},
 	}
 
-	return lookupRequest
+	return request
+
+	//output, err := a.mRW.Read(a.mClusterID, request, a.mTimeout)
+	//
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//if v, ok := output.([]*pb.IndexMeta); ok {
+	//	if len(v) == 1 {
+	//		return v[0], nil
+	//	} else {
+	//		return nil, nil
+	//	}
+	//} else {
+	//	return nil, x.ErrUnknownValue
+	//}
+
+	//request := Request{
+	//	Name:      name,
+	//	Namespace: c.mNamespace,
+	//}
+	//
+	//lookupRequest := variant.LookupRequest{
+	//	Query:         request,
+	//	Context:       nil,
+	//	FamilyName:    Name,
+	//	FamilyVersion: Version,
+	//}
+	//
+	//return lookupRequest
 }
 
 func (c *Client) GetInsertTransaction(name string, value uint64) *pb.Transaction {
