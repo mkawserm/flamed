@@ -13,5 +13,6 @@ var GQLAdminMutatorType = graphql.NewObject(graphql.ObjectConfig{
 		"deleteUser":          DeleteUser,
 		"upsertUser":          UpsertUser,
 		"updateUser":          UpdateUser,
+		"changeUserPassword":  ChangeUserPassword,
 	},
 })
