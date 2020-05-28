@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/golang/protobuf/proto"
+
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
@@ -77,7 +77,6 @@ func (j *JSON) Lookup(_ context.Context,
 func (j *JSON) Apply(_ context.Context,
 	stateContext iface.IStateContext,
 	transaction *pb.Transaction) *pb.TransactionResponse {
-
 	tpr := &pb.TransactionResponse{
 		Status:        pb.Status_REJECTED,
 		ErrorCode:     0,

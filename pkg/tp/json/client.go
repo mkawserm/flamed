@@ -60,7 +60,7 @@ func (b *Batch) appendInternalTransaction(action Action, data interface{}) error
 		Payload: payloadBytes,
 	}
 
-	payload, err := json.Marshal(jsonPayload)
+	payload, err := proto.Marshal(jsonPayload)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (b *Batch) appendInternalJSONMapTransaction(action Action, data map[string]
 		Payload: payloadBytes,
 	}
 
-	payload, err := json.Marshal(jsonPayload)
+	payload, err := proto.Marshal(jsonPayload)
 	if err != nil {
 		return err
 	}
