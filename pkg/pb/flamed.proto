@@ -114,7 +114,7 @@ message IndexMetaList {
 }
 
 enum Action {
-  GET = 0;
+  RETRIEVE = 0;
   SEARCH = 1;
   ITERATE = 2;
 
@@ -185,4 +185,40 @@ message AccessControlList {
 message AccessControlPayload {
   Action action = 1;
   AccessControl accessControl = 2;
+}
+
+message Retrieve {
+  bytes namespace = 1;
+  string familyName = 2;
+  string familyVersion = 3;
+
+  repeated bytes addresses = 4;
+}
+
+message Iterate {
+  bytes namespace = 1;
+  string familyName = 2;
+  string familyVersion = 3;
+
+  bytes skip = 4;
+  bytes prefix = 5;
+  uint64 limit = 6;
+}
+
+message Search {
+  bytes namespace = 1;
+  string familyName = 2;
+  string familyVersion = 3;
+
+  bytes query = 4;
+  uint64 limit = 5;
+}
+
+message GlobalSearch {
+  bytes namespace = 1;
+  string familyName = 2;
+  string familyVersion = 3;
+
+  string query = 4;
+  uint64 limit = 5;
 }

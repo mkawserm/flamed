@@ -7,9 +7,9 @@ var GQLActionEnum = graphql.NewEnum(graphql.EnumConfig{
 	Description: "`Action` defines different types of action",
 	Values: graphql.EnumValueConfigMap{
 
-		"GET": &graphql.EnumValueConfig{
+		"RETRIEVE": &graphql.EnumValueConfig{
 			Value:       0,
-			Description: "GET",
+			Description: "RETRIEVE",
 		},
 
 		"SEARCH": &graphql.EnumValueConfig{
