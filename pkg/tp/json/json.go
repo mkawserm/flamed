@@ -139,11 +139,20 @@ func (j *JSON) Apply(_ context.Context,
 			return tpr
 		}
 		entry := &pb.StateEntry{
-			Payload:       transaction.Payload,
 			Namespace:     transaction.Namespace,
 			FamilyName:    transaction.FamilyName,
 			FamilyVersion: transaction.FamilyVersion,
 		}
+
+		if payload, err := json.Marshal(jsonMap); err == nil {
+			entry.Payload = payload
+		} else {
+			tpr.Status = pb.Status_REJECTED
+			tpr.ErrorCode = 0
+			tpr.ErrorText = err.Error()
+			return tpr
+		}
+
 		return j.upsert(tpr, stateContext, address, entry, jsonMap)
 	case Action_MERGE:
 		return j.merge(tpr, stateContext, address, jsonMap)
@@ -151,11 +160,19 @@ func (j *JSON) Apply(_ context.Context,
 		return j.update(tpr, stateContext, address, jsonMap)
 	case Action_UPSERT:
 		entry := &pb.StateEntry{
-			Payload:       transaction.Payload,
 			Namespace:     transaction.Namespace,
 			FamilyName:    transaction.FamilyName,
 			FamilyVersion: transaction.FamilyVersion,
 		}
+		if payload, err := json.Marshal(jsonMap); err == nil {
+			entry.Payload = payload
+		} else {
+			tpr.Status = pb.Status_REJECTED
+			tpr.ErrorCode = 0
+			tpr.ErrorText = err.Error()
+			return tpr
+		}
+
 		return j.upsert(tpr, stateContext, address, entry, jsonMap)
 	case Action_DELETE:
 		return j.delete(tpr, stateContext, address)

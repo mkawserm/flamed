@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/golang/protobuf/proto"
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
@@ -438,4 +439,20 @@ func (c *Client) DeleteJSONMap(data map[string]interface{}) (*pb.ProposalRespons
 		return nil, err
 	}
 	return c.ApplyBatch(b)
+}
+
+func (c *Client) GetNamespaceString() string {
+	return c.mNamespace
+}
+
+func (c *Client) GetNamespaceBytes() []byte {
+	return []byte(c.mNamespace)
+}
+
+func (c *Client) GetStateAddress(id string) []byte {
+	return GetJSONFamilyStateAddress([]byte(c.mNamespace), Name, id)
+}
+
+func (c *Client) GetStateAddressHexString(id string) string {
+	return crypto.StateAddressByteSliceToHexString(GetJSONFamilyStateAddress([]byte(c.mNamespace), Name, id))
 }
