@@ -242,3 +242,8 @@ message GlobalIterateInput {
   bytes prefix = 6;
   uint64 limit = 7;
 }
+
+message GlobalRetrieveInput {
+  bytes namespace = 1;
+  repeated bytes addresses = 2;
+}
