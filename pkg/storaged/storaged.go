@@ -6,12 +6,12 @@ import (
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/storage"
 	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
 	"io"
 )
 
-import "github.com/mkawserm/flamed/pkg/storage"
 import sm "github.com/lni/dragonboat/v3/statemachine"
 
 type Storaged struct {
@@ -24,11 +24,20 @@ type Storaged struct {
 	mStoragedConfiguration iface.IStoragedConfiguration
 }
 
+func (s *Storaged) Setup(clusterID uint64, nodeID uint64) {
+	s.mClusterId = clusterID
+	s.mNodeId = nodeID
+}
+
+func (s *Storaged) SetStorage(storage iface.IStorage) {
+	if s.mStorage == nil {
+		s.mStorage = storage
+	}
+}
+
 func (s *Storaged) SetConfiguration(configuration iface.IStoragedConfiguration) bool {
-	if s.mStorage != nil {
+	if s.mStorage == nil {
 		return false
-	} else {
-		s.mStorage = &storage.Storage{}
 	}
 
 	s.mStoragedConfiguration = configuration
@@ -218,13 +227,13 @@ func (s *Storaged) RecoverFromSnapshot(r io.Reader, _ <-chan struct{}) error {
 }
 
 func NewStoraged(configuration iface.IStoragedConfiguration) func(
-	clusterId uint64,
-	nodeId uint64) sm.IOnDiskStateMachine {
+	clusterID uint64,
+	nodeID uint64) sm.IOnDiskStateMachine {
 	return func(clusterId uint64, nodeId uint64) sm.IOnDiskStateMachine {
 		sd := &Storaged{}
+		sd.Setup(clusterId, nodeId)
+		sd.SetStorage(&storage.Storage{})
 		sd.SetConfiguration(configuration)
-		sd.mClusterId = clusterId
-		sd.mNodeId = nodeId
 		return sd
 	}
 }
