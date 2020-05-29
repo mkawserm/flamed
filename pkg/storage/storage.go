@@ -523,28 +523,8 @@ func (s *Storage) GlobalIterate(_ context.Context, _ *pb.GlobalIterateInput) (in
 	return nil, nil
 }
 
-func (s *Storage) Lookup(request variant.LookupRequest) (interface{}, error) {
-	if len(request.FamilyName) != 0 && len(request.FamilyVersion) != 0 {
-		tp := s.mConfiguration.GetTransactionProcessor(request.FamilyName, request.FamilyVersion)
-		if tp == nil {
-			return nil, x.ErrTPNotFound
-		} else {
-			//readOnlyTxn := s.mStateStorage.NewReadOnlyTransaction()
-			//defer readOnlyTxn.Discard()
-			//readOnlyStateContext := &StateContext{
-			//	mReadOnly: true,
-			//	mStorage:  s,
-			//	mTxn:      readOnlyTxn,
-			//}
-			//return tp.Lookup(request.Context, readOnlyStateContext, request.Query)
-			return nil, nil
-		}
-	} else {
-		if _, ok := request.Query.(pb.AppliedIndexQuery); ok {
-			return s.QueryAppliedIndex()
-		}
-		return nil, x.ErrTPNotFound
-	}
+func (s *Storage) GlobalRetrieve(_ context.Context, _ *pb.GlobalRetrieveInput) (interface{}, error) {
+	return nil, nil
 }
 
 func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entryIndex uint64) *pb.ProposalResponse {
