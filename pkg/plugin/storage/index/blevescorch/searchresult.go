@@ -15,6 +15,10 @@ func (b *BleveSearchResult) RawResult() interface{} {
 }
 
 func (b *BleveSearchResult) ToMap() map[string]interface{} {
+	if b.Result == nil {
+		return nil
+	}
+
 	output := map[string]interface{}{}
 	data, _ := utility.LowerCamelCaseMarshaller{Value: b.Result}.MarshalJSON()
 	_ = json.Unmarshal(data, &output)
@@ -22,6 +26,10 @@ func (b *BleveSearchResult) ToMap() map[string]interface{} {
 }
 
 func (b *BleveSearchResult) ToBytes() []byte {
+	if b.Result == nil {
+		return nil
+	}
+
 	output, err := utility.LowerCamelCaseMarshaller{Value: b.Result}.MarshalJSON()
 	if err != nil {
 		return nil

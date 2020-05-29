@@ -237,8 +237,8 @@ message DateTimeRangeFacet {
 
 message NumericRangeFacet {
   string name = 1;
-  float min = 2;
-  float max = 3;
+  double min = 2;
+  double max = 3;
 }
 
 message Facet {
@@ -310,7 +310,7 @@ message GlobalSearchInput {
 
   bool includeLocations = 8;
   repeated string fields = 9;
-  repeated string sort = 10;
+  repeated string order = 10;
 
   repeated string searchAfter = 11;
   repeated string searchBefore = 12;
