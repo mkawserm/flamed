@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
+	"github.com/mkawserm/flamed/pkg/constant"
 )
-
-const separator string = "::"
 
 // GetStateAddress generates state address
 // from namespace and key
@@ -18,7 +17,7 @@ func GetStateAddress(namespace []byte, key []byte) []byte {
 	} else {
 		r := make([]byte, 0, len(namespace)+1+len(key))
 		r = append(r, namespace...)
-		r = append(r, separator...)
+		r = append(r, constant.Separator...)
 		r = append(r, key...)
 		return r
 	}
@@ -56,7 +55,7 @@ func GetStateAddressFromHexString(stateAddressHexString string) []byte {
 
 // GetNamespace from state address byte slice
 func GetNamespace(stateAddressByteSlice []byte) []byte {
-	r := bytes.Split(stateAddressByteSlice, []byte(separator))
+	r := bytes.Split(stateAddressByteSlice, []byte(constant.Separator))
 	if len(r) == 0 {
 		return nil
 	} else {
@@ -73,7 +72,7 @@ func GetNamespaceFromStateAddressHexString(stateAddressHexString string) []byte 
 // SplitStateAddress splits state address to
 // namespace and key
 func SplitStateAddress(address []byte) ([]byte, []byte) {
-	r := bytes.Split(address, []byte(separator))
+	r := bytes.Split(address, []byte(constant.Separator))
 	if len(r) == 0 {
 		return nil, nil
 	} else if len(r) == 1 {
@@ -82,7 +81,7 @@ func SplitStateAddress(address []byte) ([]byte, []byte) {
 		return r[0], r[1]
 	} else {
 		key := bytes.TrimPrefix(address, r[0])
-		key = bytes.TrimPrefix(key, []byte(separator))
+		key = bytes.TrimPrefix(key, []byte(constant.Separator))
 		return r[0], key
 	}
 }
