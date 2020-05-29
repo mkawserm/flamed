@@ -257,29 +257,86 @@ message Facet {
   repeated NumericRangeFacet numericRangeFacets = 5;
 }
 
+message QueryString {
+  string q = 1;
+}
+
+message Fuzzy {
+  string term = 1;
+  int32 fuzziness = 2;
+  string field = 3;
+  string prefixLength = 4;
+}
+
+message Regexp {
+  string regexp = 1;
+  string field = 2;
+}
+
+message Term {
+  string term = 1;
+  string field = 2;
+}
+
+message MatchPhrase {
+  string matchPhrase = 1;
+  string field = 2;
+}
+
+message Match {
+  string match = 1;
+  string field = 2;
+}
+
+message Prefix {
+  string prefix = 1;
+  string field = 2;
+}
+
+message Wildcard {
+  string wildcard = 1;
+  string field = 2;
+}
+
+message GeoDistance {
+  float lon = 1;
+  float lat = 2;
+  string distance = 3;
+  string field = 4;
+}
+
 message GlobalSearchInput {
   bytes namespace = 1;
   string familyName = 2;
   string familyVersion = 3;
 
-  string query = 4;
-  string queryType = 5;
+  int32 size = 4;
+  int32 from = 5;
+  string score = 6;
+  bool explain = 7;
 
-  int32 size = 6;
-  int32 from = 7;
-  string score = 8;
-  bool explain = 9;
+  bool includeLocations = 8;
+  repeated string fields = 9;
+  repeated string sort = 10;
 
-  bool includeLocations = 10;
-  repeated string fields = 11;
-  repeated string sort = 12;
+  repeated string searchAfter = 11;
+  repeated string searchBefore = 12;
 
-  repeated string searchAfter = 13;
-  repeated string searchBefore = 14;
+  bool highlight = 13;
+  string highlightStyle = 14;
+  repeated string highlightFields = 15;
 
-  bool highlight = 15;
-  string highlightStyle = 16;
-  repeated string highlightFields = 17;
+  repeated Facet facets = 16;
 
-  repeated Facet facets = 18;
+  oneof query {
+    QueryString queryString = 21;
+    Fuzzy fuzzy = 22;
+    Regexp regexp = 23;
+    Term term = 24;
+    MatchPhrase matchPhrase = 25;
+    Match match = 26;
+    Prefix prefix = 27;
+    Wildcard wildcard = 28;
+    GeoDistance geoDistance = 29;
+  }
 }
