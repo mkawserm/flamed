@@ -97,10 +97,10 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 		return nil
 	}
 
-	index, err := bleveSearch.OpenUsing(p, nil)
+	index, err := bleveSearch.Open(p)
 
 	if err != nil {
-		logger.L(Name).Debug("indexmeta db opening error", zap.Error(err))
+		logger.L(Name).Debug("index db opening error", zap.Error(err))
 		return x.ErrFailedToApplyIndex
 	}
 
