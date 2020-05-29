@@ -6,6 +6,12 @@ import (
 	"github.com/mkawserm/flamed/pkg/variant"
 )
 
+type ISearchResult interface {
+	RawResult() interface{}
+	ToMap() map[string]interface{}
+	ToBytes() []byte
+}
+
 type IIndexStorage interface {
 	RunGC()
 	Close() error
@@ -18,5 +24,5 @@ type IIndexStorage interface {
 	CanIndex(namespace string) bool
 	ApplyIndex(namespace string, data []*variant.IndexData) error
 
-	GlobalSearch(ctx context.Context, input *pb.GlobalSearchInput) (map[string]interface{}, error)
+	GlobalSearch(ctx context.Context, input *pb.GlobalSearchInput) (ISearchResult, error)
 }

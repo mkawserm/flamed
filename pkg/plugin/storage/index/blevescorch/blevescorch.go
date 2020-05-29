@@ -5,6 +5,7 @@ import (
 	bleveSearch "github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/index/scorch"
 	bleveMapping "github.com/blevesearch/bleve/mapping"
+	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
@@ -142,7 +143,7 @@ func (b *BleveScorch) CanIndex(namespace string) bool {
 	return b.isPathExists(b.path + "/" + namespace)
 }
 
-func (b *BleveScorch) GlobalSearch(_ context.Context, _ *pb.GlobalSearchInput) (map[string]interface{}, error) {
+func (b *BleveScorch) GlobalSearch(_ context.Context, _ *pb.GlobalSearchInput) (iface.ISearchResult, error) {
 	return nil, nil
 }
 
