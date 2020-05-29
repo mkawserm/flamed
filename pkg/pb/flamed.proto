@@ -195,7 +195,8 @@ message SearchInput {
   string outputType = 4;
 
   bytes query = 5;
-  uint64 limit = 6;
+  uint64 from = 6;
+  uint64 limit = 7;
 }
 
 message IterateInput {
@@ -220,15 +221,6 @@ message RetrieveInput {
   repeated bytes addresses = 5;
 }
 
-message GlobalSearchInput {
-  bytes namespace = 1;
-  string familyName = 2;
-  string familyVersion = 3;
-
-  string query = 4;
-  uint64 limit = 5;
-}
-
 message GlobalIterateInput {
   bytes namespace = 1;
   string familyName = 2;
@@ -242,4 +234,52 @@ message GlobalIterateInput {
 message GlobalRetrieveInput {
   bytes namespace = 1;
   repeated bytes addresses = 2;
+}
+
+message DateTimeRangeFacet {
+  string name = 1;
+  string start = 2;
+  string end = 3;
+}
+
+message NumericRangeFacet {
+  string name = 1;
+  float min = 2;
+  float max = 3;
+}
+
+message Facet {
+  string name = 1;
+  string field = 2;
+  int32 size = 3;
+
+  repeated DateTimeRangeFacet dateTimeRangeFacets = 4;
+  repeated NumericRangeFacet numericRangeFacets = 5;
+}
+
+message GlobalSearchInput {
+  bytes namespace = 1;
+  string familyName = 2;
+  string familyVersion = 3;
+
+  string query = 4;
+  string queryType = 5;
+
+  int32 size = 6;
+  int32 from = 7;
+  string score = 8;
+  bool explain = 9;
+
+  bool includeLocations = 10;
+  repeated string fields = 11;
+  repeated string sort = 12;
+
+  repeated string searchAfter = 13;
+  repeated string searchBefore = 14;
+
+  bool highlight = 15;
+  string highlightStyle = 16;
+  repeated string highlightFields = 17;
+
+  repeated Facet facets = 18;
 }
