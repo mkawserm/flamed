@@ -164,6 +164,10 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 		r, err := s.mStorage.GlobalIterate(context.TODO(), v)
 		logger.L("storaged").Debug("storaged lookup done with [pb.GlobalIterateInput]")
 		return r, err
+	case *pb.GlobalRetrieveInput:
+		r, err := s.mStorage.GlobalRetrieve(context.TODO(), v)
+		logger.L("storaged").Debug("storaged lookup done with [pb.GlobalRetrieveInput]")
+		return r, err
 	case *pb.AppliedIndexQuery:
 		r, err := s.mStorage.GetAppliedIndex(context.TODO())
 		logger.L("storaged").Debug("storaged lookup done with [pb.AppliedIndexQuery]")
