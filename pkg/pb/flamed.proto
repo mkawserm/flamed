@@ -192,11 +192,9 @@ message SearchInput {
   string familyName = 2;
   string familyVersion = 3;
 
-  string outputType = 4;
-
-  bytes query = 5;
-  uint64 from = 6;
-  uint64 limit = 7;
+  bytes query = 4;
+  uint64 from = 5;
+  uint64 limit = 6;
 }
 
 message IterateInput {
@@ -204,21 +202,16 @@ message IterateInput {
   string familyName = 2;
   string familyVersion = 3;
 
-  string outputType = 4;
-
-  bytes skip = 5;
-  bytes prefix = 6;
-  uint64 limit = 7;
+  bytes skip = 4;
+  bytes prefix = 5;
+  uint64 limit = 6;
 }
 
 message RetrieveInput {
   bytes namespace = 1;
   string familyName = 2;
   string familyVersion = 3;
-
-  string outputType = 4;
-
-  repeated bytes addresses = 5;
+  repeated bytes addresses = 4;
 }
 
 message GlobalIterateInput {
