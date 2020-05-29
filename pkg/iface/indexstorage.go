@@ -1,6 +1,7 @@
 package iface
 
 import (
+	"context"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variant"
 )
@@ -16,4 +17,6 @@ type IIndexStorage interface {
 
 	CanIndex(namespace string) bool
 	ApplyIndex(namespace string, data []*variant.IndexData) error
+
+	GlobalSearch(ctx context.Context, input *pb.GlobalSearchInput) (map[string]interface{}, error)
 }

@@ -515,8 +515,12 @@ func (s *Storage) Retrieve(ctx context.Context, retrieveInput *pb.RetrieveInput)
 	return nil, x.ErrTPNotFound
 }
 
-func (s *Storage) GlobalSearch(_ context.Context, _ *pb.GlobalSearchInput) (interface{}, error) {
-	return nil, nil
+func (s *Storage) GlobalSearch(ctx context.Context, input *pb.GlobalSearchInput) (interface{}, error) {
+	if s.mIndexStorage == nil {
+		return nil, x.ErrIndexStorageIsNotReady
+	}
+
+	return s.mIndexStorage.GlobalSearch(ctx, input)
 }
 
 func (s *Storage) GlobalIterate(_ context.Context, _ *pb.GlobalIterateInput) (interface{}, error) {

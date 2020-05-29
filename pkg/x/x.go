@@ -7,7 +7,6 @@ var ErrClusterNotFound = errors.New("cluster not found")
 var ErrStateNotFound = errors.New("state is not available")
 var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 var ErrTPNotFound = errors.New("transaction processor not found")
-var ErrUnknownLookupRequest = errors.New("unknown lookup request")
 var ErrNotImplemented = errors.New("not implemented")
 
 var ErrAddressNotFound = errors.New("key is not available")
@@ -51,6 +50,8 @@ var ErrFailedToCreateWALDir = errors.New("failed to create wal dir")
 var ErrNodeAlreadyConfigured = errors.New("node is already configured")
 var ErrFailedToCreateNodeHostDir = errors.New("failed to create node host dir")
 var ErrInvalidStoragedConfiguration = errors.New("invalid storaged configuration")
+
+var ErrIndexStorageIsNotReady = errors.New("index storage is not ready")
 
 //func IsInvalidConfiguration(err error) bool {
 //	return err == ErrInvalidConfiguration

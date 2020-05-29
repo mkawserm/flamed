@@ -1,6 +1,7 @@
 package blevescorch
 
 import (
+	"context"
 	bleveSearch "github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/index/scorch"
 	bleveMapping "github.com/blevesearch/bleve/mapping"
@@ -139,6 +140,10 @@ func (b *BleveScorch) RunGC() {
 
 func (b *BleveScorch) CanIndex(namespace string) bool {
 	return b.isPathExists(b.path + "/" + namespace)
+}
+
+func (b *BleveScorch) GlobalSearch(_ context.Context, _ *pb.GlobalSearchInput) (map[string]interface{}, error) {
+	return nil, nil
 }
 
 func (b *BleveScorch) isPathExists(path string) bool {
