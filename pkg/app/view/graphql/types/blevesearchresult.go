@@ -50,5 +50,19 @@ var GQLBleveSearchResult = graphql.NewObject(graphql.ObjectConfig{
 				return NewUInt64FromUInt64(uint64(sr.Took)), nil
 			},
 		},
+
+		"searchTime": &graphql.Field{
+			Name:        "searchTime",
+			Description: "Search time in string",
+			Type:        graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				sr, ok := p.Source.(*bleveSearch.SearchResult)
+				if !ok {
+					return nil, nil
+				}
+
+				return sr.Took.String(), nil
+			},
+		},
 	},
 })
