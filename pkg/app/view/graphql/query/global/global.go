@@ -10,7 +10,16 @@ import (
 var GQLGlobalType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "Global",
 	Description: "Flamed global features",
-	Fields:      nil,
+	Fields: graphql.Fields{
+		"test": &graphql.Field{
+			Name:        "test",
+			Description: "Test",
+			Type:        graphql.Boolean,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return false, nil
+			},
+		},
+	},
 })
 
 func Global(flamedContext *fContext.FlamedContext) *graphql.Field {
