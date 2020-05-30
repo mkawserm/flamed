@@ -151,6 +151,10 @@ func (b *BleveScorch) GlobalSearch(_ context.Context, input *pb.GlobalSearchInpu
 		return nil, err
 	}
 
+	defer func() {
+		_ = index.Close()
+	}()
+
 	var bleveQuery bleveSearchQuery.Query = bleveSearchQuery.NewMatchAllQuery()
 	// TODO: implement all type of query
 	if input.GetQueryString() != nil {
