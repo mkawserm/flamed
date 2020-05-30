@@ -2,13 +2,64 @@ package types
 
 import (
 	bleveSearch "github.com/blevesearch/bleve"
+	"github.com/blevesearch/bleve/search"
 	"github.com/graphql-go/graphql"
 )
+
+var GQLDocumentMatch = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "DocumentMatch",
+	Description: "Show matched document",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Name:        "id",
+			Description: "ID",
+			Type:        graphql.NewNonNull(graphql.String),
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				dm, _ := p.Source.(*search.DocumentMatch)
+				return dm.ID, nil
+			},
+		},
+
+		"score": &graphql.Field{
+			Name:        "score",
+			Description: "ID",
+			Type:        graphql.NewNonNull(graphql.Float),
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				dm, _ := p.Source.(*search.DocumentMatch)
+				return dm.Score, nil
+			},
+		},
+
+		"index": &graphql.Field{
+			Name:        "index",
+			Description: "Index",
+			Type:        graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				dm, _ := p.Source.(*search.DocumentMatch)
+				return dm.Index, nil
+			},
+		},
+	},
+})
 
 var GQLBleveSearchResult = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "BleveSearchResult",
 	Description: "Bleve search result",
 	Fields: graphql.Fields{
+		"hits": &graphql.Field{
+			Name:        "hits",
+			Description: "Hits",
+			Type:        graphql.NewList(GQLDocumentMatch),
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				sr, ok := p.Source.(*bleveSearch.SearchResult)
+				if !ok {
+					return nil, nil
+				}
+
+				return sr.Hits, nil
+			},
+		},
+
 		"total": &graphql.Field{
 			Name:        "total",
 			Description: "Total result",
