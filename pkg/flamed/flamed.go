@@ -69,6 +69,15 @@ func (f *Flamed) NewAdmin(clusterID uint64, timeout time.Duration) *Admin {
 	}
 }
 
+func (f *Flamed) NewQuery(clusterID uint64, namespace string, timeout time.Duration) *Query {
+	q := &Query{}
+	if err := q.Setup(clusterID, namespace, f, timeout); err != nil {
+		return nil
+	}
+
+	return q
+}
+
 func (f *Flamed) Read(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
 	return f.mNodeHost.managedSyncRead(clusterID, query, timeout)
 }

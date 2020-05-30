@@ -42,6 +42,18 @@ var UpsertAccessControl = &graphql.Field{
 			Description: "Delete access",
 			Type:        graphql.NewNonNull(graphql.Boolean),
 		},
+		"globalSearchAccess": &graphql.ArgumentConfig{
+			Description: "Global global access",
+			Type:        graphql.NewNonNull(graphql.Boolean),
+		},
+		"globalIterateAccess": &graphql.ArgumentConfig{
+			Description: "Global iterate access",
+			Type:        graphql.NewNonNull(graphql.Boolean),
+		},
+		"globalRetrieveAccess": &graphql.ArgumentConfig{
+			Description: "Global retrieve access",
+			Type:        graphql.NewNonNull(graphql.Boolean),
+		},
 
 		"data": &graphql.ArgumentConfig{
 			Description: "Data in base64 encoded string",
@@ -61,6 +73,10 @@ var UpsertAccessControl = &graphql.Field{
 		writeAccess := p.Args["writeAccess"].(bool)
 		updateAccess := p.Args["updateAccess"].(bool)
 		deleteAccess := p.Args["deleteAccess"].(bool)
+
+		globalSearchAccess := p.Args["globalSearchAccess"].(bool)
+		globalIterateAccess := p.Args["globalIterateAccess"].(bool)
+		globalRetrieveAccess := p.Args["globalRetrieveAccess"].(bool)
 
 		if !bytes.Equal(namespace, []byte("*")) {
 			if !utility.IsNamespaceValid(namespace) {
@@ -83,13 +99,19 @@ var UpsertAccessControl = &graphql.Field{
 		//}
 
 		accessControl := &pb.AccessControl{
-			Username:   username,
-			Namespace:  namespace,
-			Permission: utility.NewPermission(readAccess, writeAccess, updateAccess, deleteAccess),
-			CreatedAt:  uint64(time.Now().UnixNano()),
-			UpdatedAt:  uint64(time.Now().UnixNano()),
-			Data:       nil,
-			Meta:       nil,
+			Username:  username,
+			Namespace: namespace,
+			Permission: utility.NewPermission(readAccess,
+				writeAccess,
+				updateAccess,
+				deleteAccess,
+				globalSearchAccess,
+				globalIterateAccess,
+				globalRetrieveAccess),
+			CreatedAt: uint64(time.Now().UnixNano()),
+			UpdatedAt: uint64(time.Now().UnixNano()),
+			Data:      nil,
+			Meta:      nil,
 		}
 
 		if p.Args["data"] != nil {

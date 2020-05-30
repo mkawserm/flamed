@@ -58,7 +58,52 @@ func HasDeletePermission(ac *pb.AccessControl) bool {
 	return hasBit(p, 3)
 }
 
-func NewPermission(read bool, write bool, update bool, delete bool) []byte {
+func HasGlobalSearchPermission(ac *pb.AccessControl) bool {
+	if ac == nil {
+		return false
+	}
+
+	if len(ac.Permission) == 0 {
+		return false
+	}
+
+	var p = ac.Permission[0]
+
+	return hasBit(p, 4)
+}
+
+func HasGlobalIteratePermission(ac *pb.AccessControl) bool {
+	if ac == nil {
+		return false
+	}
+
+	if len(ac.Permission) == 0 {
+		return false
+	}
+
+	var p = ac.Permission[0]
+
+	return hasBit(p, 5)
+}
+
+func HasGlobalRetrievePermission(ac *pb.AccessControl) bool {
+	if ac == nil {
+		return false
+	}
+
+	if len(ac.Permission) == 0 {
+		return false
+	}
+
+	var p = ac.Permission[0]
+
+	return hasBit(p, 6)
+}
+
+func NewPermission(read bool, write bool, update bool, delete bool,
+	globalSearch bool,
+	globalIterate bool,
+	globalRetrieve bool) []byte {
 	var p uint8 = 0
 
 	if read {
@@ -72,6 +117,18 @@ func NewPermission(read bool, write bool, update bool, delete bool) []byte {
 	}
 	if delete {
 		p = setBit(p, 3)
+	}
+
+	if globalSearch {
+		p = setBit(p, 4)
+	}
+
+	if globalIterate {
+		p = setBit(p, 5)
+	}
+
+	if globalRetrieve {
+		p = setBit(p, 6)
 	}
 
 	return []byte{p}
