@@ -64,9 +64,9 @@ var SearchJ = &graphql.Field{
 			}
 		}
 
-		if v, ok := input["order"].([]interface{}); ok {
+		if v, ok := input["sort"].([]interface{}); ok {
 			for _, field := range v {
-				globalSearchInput.Order = append(globalSearchInput.Order, field.(string))
+				globalSearchInput.Sort = append(globalSearchInput.Sort, field.(string))
 			}
 		}
 

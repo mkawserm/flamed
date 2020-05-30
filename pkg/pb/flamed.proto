@@ -306,7 +306,7 @@ message GlobalSearchInput {
 
   bool includeLocations = 6;
   repeated string fields = 7;
-  repeated string order = 8;
+  repeated string sort = 8;
 
   repeated string searchAfter = 9;
   repeated string searchBefore = 10;

@@ -80,7 +80,7 @@ var GQLSearchInputType = graphql.NewInputObject(
 			"fields": &graphql.InputObjectFieldConfig{
 				Type: graphql.NewList(graphql.String),
 			},
-			"order": &graphql.InputObjectFieldConfig{
+			"sort": &graphql.InputObjectFieldConfig{
 				Type: graphql.NewList(graphql.String),
 			},
 			"highlight": &graphql.InputObjectFieldConfig{

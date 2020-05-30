@@ -166,7 +166,7 @@ func (b *BleveScorch) GlobalSearch(_ context.Context, input *pb.GlobalSearchInpu
 	searchRequest.From = int(input.GetFrom())
 	searchRequest.Fields = input.GetFields()
 	searchRequest.Explain = input.GetExplain()
-	searchRequest.SortBy(input.GetOrder())
+	searchRequest.SortBy(input.GetSort())
 	searchRequest.IncludeLocations = input.GetIncludeLocations()
 	searchRequest.Score = input.GetScore()
 	searchRequest.SearchAfter = input.GetSearchAfter()
