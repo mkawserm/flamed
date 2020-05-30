@@ -58,20 +58,26 @@ var SearchJ = &graphql.Field{
 			globalSearchInput.Explain = v
 		}
 
-		if v, ok := input["fields"].([]string); ok {
-			globalSearchInput.Fields = v
+		if v, ok := input["fields"].([]interface{}); ok {
+			for _, field := range v {
+				globalSearchInput.Fields = append(globalSearchInput.Fields, field.(string))
+			}
 		}
 
-		if v, ok := input["order"].([]string); ok {
-			globalSearchInput.Order = v
+		if v, ok := input["order"].([]interface{}); ok {
+			for _, field := range v {
+				globalSearchInput.Order = append(globalSearchInput.Order, field.(string))
+			}
 		}
 
 		if v, ok := input["highlight"].(bool); ok {
 			globalSearchInput.Highlight = v
 		}
 
-		if v, ok := input["highlightFields"].([]string); ok {
-			globalSearchInput.HighlightFields = v
+		if v, ok := input["highlightFields"].([]interface{}); ok {
+			for _, field := range v {
+				globalSearchInput.HighlightFields = append(globalSearchInput.HighlightFields, field.(string))
+			}
 		}
 
 		if v, ok := input["highlightStyle"].(string); ok {

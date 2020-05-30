@@ -21,6 +21,7 @@ func (b *BleveSearchResult) ToMap() map[string]interface{} {
 
 	output := map[string]interface{}{}
 	data, _ := utility.LowerCamelCaseMarshaller{Value: b.Result}.MarshalJSON()
+	//fmt.Println(string(data))
 	_ = json.Unmarshal(data, &output)
 	return output
 }

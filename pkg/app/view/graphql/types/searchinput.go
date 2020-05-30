@@ -49,10 +49,10 @@ var GQLFacetInputType = graphql.NewInputObject(graphql.InputObjectConfig{
 		},
 
 		"dateTimeRangeFacets": &graphql.InputObjectFieldConfig{
-			Type: GQLDateTimeRangeFacetInputType,
+			Type: graphql.NewList(GQLDateTimeRangeFacetInputType),
 		},
 		"numericRangeFacets": &graphql.InputObjectFieldConfig{
-			Type: GQLNumericRangeFacetInputType,
+			Type: graphql.NewList(GQLNumericRangeFacetInputType),
 		},
 	},
 })

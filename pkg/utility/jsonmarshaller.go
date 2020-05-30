@@ -19,7 +19,21 @@ func (s LowerCamelCaseMarshaller) MarshalJSON() ([]byte, error) {
 		marshalled,
 		func(match []byte) []byte {
 			match[1] = bytes.ToLower(match[1:2])[0]
-			return match
+
+			data := bytes.Split(match, []byte("_"))
+			if len(data) != 0 {
+				var newMatch []byte
+				for i, datum := range data {
+					if i == 0 {
+						newMatch = append(newMatch, datum...)
+					} else {
+						newMatch = append(newMatch, bytes.Title(datum)...)
+					}
+				}
+				return newMatch
+			} else {
+				return match
+			}
 		},
 	)
 
