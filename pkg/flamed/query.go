@@ -2,6 +2,7 @@ package flamed
 
 import (
 	"github.com/mkawserm/flamed/pkg/iface"
+	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/x"
 	"time"
@@ -14,11 +15,23 @@ type Query struct {
 	mRW        iface.IReaderWriter
 }
 
-func (a *Query) UpdateTimeout(timeout time.Duration) {
-	a.mTimeout = timeout
+func (q *Query) Namespace() string {
+	return q.mNamespace
 }
 
-func (c *Query) Setup(clusterID uint64, namespace string, rw iface.IReaderWriter, timeout time.Duration) error {
+func (q *Query) ClusterID() uint64 {
+	return q.mClusterID
+}
+
+func (q *Query) Timeout() time.Duration {
+	return q.mTimeout
+}
+
+func (q *Query) UpdateTimeout(timeout time.Duration) {
+	q.mTimeout = timeout
+}
+
+func (q *Query) Setup(clusterID uint64, namespace string, rw iface.IReaderWriter, timeout time.Duration) error {
 	if !utility.IsNamespaceValid([]byte(namespace)) {
 		return x.ErrInvalidNamespace
 	}
@@ -27,9 +40,22 @@ func (c *Query) Setup(clusterID uint64, namespace string, rw iface.IReaderWriter
 		return x.ErrUnexpectedNilValue
 	}
 
-	c.mClusterID = clusterID
-	c.mNamespace = namespace
-	c.mRW = rw
-	c.mTimeout = timeout
+	q.mClusterID = clusterID
+	q.mNamespace = namespace
+	q.mRW = rw
+	q.mTimeout = timeout
 	return nil
+}
+
+func (q *Query) Search(globalSearchInput *pb.GlobalSearchInput) (iface.ISearchResult, error) {
+	output, err := q.mRW.Read(q.mClusterID, globalSearchInput, q.mTimeout)
+	if err != nil {
+		return nil, err
+	}
+
+	if v, ok := output.(iface.ISearchResult); ok {
+		return v, nil
+	} else {
+		return nil, x.ErrUnknownValue
+	}
 }

@@ -11,14 +11,7 @@ var GQLGlobalType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "Global",
 	Description: "Flamed global features",
 	Fields: graphql.Fields{
-		"test": &graphql.Field{
-			Name:        "test",
-			Description: "Test",
-			Type:        graphql.Boolean,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return false, nil
-			},
-		},
+		"searchJ": SearchJ,
 	},
 })
 
