@@ -62,9 +62,7 @@ func (q *Query) Search(globalSearchInput *pb.GlobalSearchInput) (iface.ISearchRe
 }
 
 func (q *Query) Retrieve(addresses []interface{}) (interface{}, error) {
-	globalRetrieveInput := &pb.GlobalRetrieveInput{
-		Namespace: []byte(q.mNamespace),
-	}
+	globalRetrieveInput := &pb.GlobalRetrieveInput{Namespace: []byte(q.mNamespace)}
 
 	for _, addr := range addresses {
 		addrString := addr.(string)

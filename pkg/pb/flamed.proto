@@ -227,6 +227,11 @@ message GlobalRetrieveInput {
   repeated bytes addresses = 2;
 }
 
+message GlobalDeleteInput {
+  bytes namespace = 1;
+  repeated bytes addresses = 2;
+}
+
 message StateEntryResponse {
   bool found = 1;
   string address = 2;

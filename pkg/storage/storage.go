@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	badgerDb "github.com/dgraph-io/badger/v2"
@@ -546,15 +547,22 @@ func (s *Storage) GlobalRetrieve(_ context.Context, globalRetrieveInput *pb.Glob
 
 	stateEntryResponses := make([]*pb.StateEntryResponse, 0, len(globalRetrieveInput.Addresses))
 	for _, sa := range globalRetrieveInput.Addresses {
-		stateEntryResponse := &pb.StateEntryResponse{}
-		stateEntryResponse.Found = true
-		stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sa)
-		state, err := readOnlyStateContext.GetState(sa)
-		if err != nil {
+		if bytes.HasPrefix(sa, globalRetrieveInput.Namespace) {
+			stateEntryResponse := &pb.StateEntryResponse{}
+			stateEntryResponse.Found = true
+			stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sa)
+			state, err := readOnlyStateContext.GetState(sa)
+			if err != nil {
+				stateEntryResponse.Found = false
+			}
+			stateEntryResponse.StateEntry = state
+			stateEntryResponses = append(stateEntryResponses, stateEntryResponse)
+		} else {
+			stateEntryResponse := &pb.StateEntryResponse{}
 			stateEntryResponse.Found = false
+			stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sa)
+			stateEntryResponses = append(stateEntryResponses, stateEntryResponse)
 		}
-		stateEntryResponse.StateEntry = state
-		stateEntryResponses = append(stateEntryResponses, stateEntryResponse)
 	}
 	return stateEntryResponses, nil
 }
