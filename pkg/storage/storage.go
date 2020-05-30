@@ -524,8 +524,52 @@ func (s *Storage) GlobalSearch(ctx context.Context, input *pb.GlobalSearchInput)
 	return s.mIndexStorage.GlobalSearch(ctx, input)
 }
 
-func (s *Storage) GlobalIterate(_ context.Context, _ *pb.GlobalIterateInput) (interface{}, error) {
-	return nil, nil
+func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalIterateInput) (interface{}, error) {
+	if len(globalIterate.Namespace) == 0 {
+		return nil, x.ErrInvalidNamespace
+	}
+
+	if globalIterate.Limit == 0 {
+		return nil, nil
+	}
+
+	if s.mStateStorage == nil {
+		return nil, x.ErrStorageIsNotReady
+	}
+
+	readOnlyTxn := s.mStateStorage.NewReadOnlyTransaction()
+	defer readOnlyTxn.Discard()
+	readOnlyStateContext := &StateContext{
+		mReadOnly: true,
+		mStorage:  s,
+		mTxn:      readOnlyTxn,
+	}
+
+	if len(globalIterate.From) == 0 {
+		globalIterate.From = globalIterate.Namespace
+	}
+
+	if !bytes.HasPrefix(globalIterate.From, globalIterate.Namespace) {
+		return nil, x.ErrAccessViolation
+	}
+	if !bytes.HasPrefix(globalIterate.Prefix, globalIterate.Namespace) {
+		return nil, x.ErrAccessViolation
+	}
+	itr := readOnlyStateContext.GetForwardIterator()
+	defer itr.Close()
+
+	stateEntryResponses := make([]*pb.StateEntryResponse, 0, globalIterate.Limit)
+	for itr.Seek(globalIterate.From); itr.ValidForPrefix(globalIterate.Prefix); itr.Next() {
+		sts := itr.StateSnapshot()
+		if sts != nil {
+			stateEntryResponse := &pb.StateEntryResponse{}
+			stateEntryResponse.Found = true
+			stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sts.Address)
+			stateEntryResponse.StateEntry = sts.ToStateEntry()
+		}
+	}
+
+	return stateEntryResponses, nil
 }
 
 func (s *Storage) GlobalRetrieve(_ context.Context, globalRetrieveInput *pb.GlobalRetrieveInput) (interface{}, error) {

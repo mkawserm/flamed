@@ -202,7 +202,7 @@ message IterateInput {
   string familyName = 2;
   string familyVersion = 3;
 
-  bytes skip = 4;
+  bytes from = 4;
   bytes prefix = 5;
   uint64 limit = 6;
 }
@@ -217,7 +217,7 @@ message RetrieveInput {
 message GlobalIterateInput {
   bytes namespace = 1;
 
-  bytes skip = 2;
+  bytes from = 2;
   bytes prefix = 3;
   uint64 limit = 4;
 }
