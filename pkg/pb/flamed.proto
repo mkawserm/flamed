@@ -227,6 +227,12 @@ message GlobalRetrieveInput {
   repeated bytes addresses = 2;
 }
 
+message StateEntryResponse {
+  bool found = 1;
+  string address = 2;
+  StateEntry stateEntry = 3;
+}
+
 message DateTimeRangeFacet {
   string name = 1;
   string start = 2;

@@ -1,6 +1,7 @@
 package flamed
 
 import (
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
@@ -58,4 +59,17 @@ func (q *Query) Search(globalSearchInput *pb.GlobalSearchInput) (iface.ISearchRe
 	} else {
 		return nil, x.ErrUnknownValue
 	}
+}
+
+func (q *Query) Retrieve(addresses []interface{}) (interface{}, error) {
+	globalRetrieveInput := &pb.GlobalRetrieveInput{
+		Namespace: []byte(q.mNamespace),
+	}
+
+	for _, addr := range addresses {
+		addrString := addr.(string)
+		addrBytes := crypto.GetStateAddressFromHexString(addrString)
+		globalRetrieveInput.Addresses = append(globalRetrieveInput.Addresses, addrBytes)
+	}
+	return q.mRW.Read(q.mClusterID, globalRetrieveInput, q.mTimeout)
 }

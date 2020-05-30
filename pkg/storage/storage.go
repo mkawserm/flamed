@@ -527,8 +527,36 @@ func (s *Storage) GlobalIterate(_ context.Context, _ *pb.GlobalIterateInput) (in
 	return nil, nil
 }
 
-func (s *Storage) GlobalRetrieve(_ context.Context, _ *pb.GlobalRetrieveInput) (interface{}, error) {
-	return nil, nil
+func (s *Storage) GlobalRetrieve(_ context.Context, globalRetrieveInput *pb.GlobalRetrieveInput) (interface{}, error) {
+	if len(globalRetrieveInput.Addresses) == 0 {
+		return nil, nil
+	}
+
+	if s.mStateStorage == nil {
+		return nil, x.ErrStorageIsNotReady
+	}
+
+	readOnlyTxn := s.mStateStorage.NewReadOnlyTransaction()
+	defer readOnlyTxn.Discard()
+	readOnlyStateContext := &StateContext{
+		mReadOnly: true,
+		mStorage:  s,
+		mTxn:      readOnlyTxn,
+	}
+
+	stateEntryResponses := make([]*pb.StateEntryResponse, 0, len(globalRetrieveInput.Addresses))
+	for _, sa := range globalRetrieveInput.Addresses {
+		stateEntryResponse := &pb.StateEntryResponse{}
+		stateEntryResponse.Found = true
+		stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sa)
+		state, err := readOnlyStateContext.GetState(sa)
+		if err != nil {
+			stateEntryResponse.Found = false
+		}
+		stateEntryResponse.StateEntry = state
+		stateEntryResponses = append(stateEntryResponses, stateEntryResponse)
+	}
+	return stateEntryResponses, nil
 }
 
 func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entryIndex uint64) *pb.ProposalResponse {
