@@ -72,7 +72,7 @@ func (q *Query) Retrieve(addresses []interface{}) (interface{}, error) {
 	return q.mRW.Read(q.mClusterID, globalRetrieveInput, q.mTimeout)
 }
 
-func (q *Query) Iterate(from string, limit uint64) (interface{}, error) {
+func (q *Query) Iterate(from string, prefix string, limit uint64) (interface{}, error) {
 	input := &pb.GlobalIterateInput{
 		Namespace: []byte(q.mNamespace),
 		Prefix:    []byte(q.mNamespace),
@@ -83,6 +83,10 @@ func (q *Query) Iterate(from string, limit uint64) (interface{}, error) {
 		input.From = nil
 	} else {
 		input.From = crypto.GetStateAddressFromHexString(from)
+	}
+
+	if prefix != "" {
+		input.Prefix = crypto.GetStateAddressFromHexString(prefix)
 	}
 
 	return q.mRW.Read(q.mClusterID, input, q.mTimeout)

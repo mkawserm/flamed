@@ -549,6 +549,10 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 		globalIterate.From = globalIterate.Namespace
 	}
 
+	if len(globalIterate.Prefix) == 0 {
+		globalIterate.Prefix = globalIterate.Namespace
+	}
+
 	if !bytes.HasPrefix(globalIterate.From, globalIterate.Namespace) {
 		return nil, x.ErrAccessViolation
 	}

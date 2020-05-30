@@ -16,6 +16,10 @@ var Iterate = &graphql.Field{
 			Description: "State address in hex string format",
 			Type:        graphql.String,
 		},
+		"prefix": &graphql.ArgumentConfig{
+			Description: "State address prefix in hex string format",
+			Type:        graphql.String,
+		},
 		"limit": &graphql.ArgumentConfig{
 			Description: "Limit",
 			Type:        graphql.NewNonNull(types.GQLUInt64Type),
@@ -28,6 +32,11 @@ var Iterate = &graphql.Field{
 			from = p.Args["from"].(string)
 		}
 
+		prefix := ""
+		if p.Args["prefix"] != nil {
+			prefix = p.Args["prefix"].(string)
+		}
+
 		limit := p.Args["limit"].(*types.UInt64)
 		ctx, ok := p.Source.(*Context)
 		if !ok {
@@ -38,7 +47,7 @@ var Iterate = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("global iterate permission required")
 		}
 
-		o, err := ctx.Query.Iterate(from, limit.Value())
+		o, err := ctx.Query.Iterate(from, prefix, limit.Value())
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}
