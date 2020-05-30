@@ -12,6 +12,7 @@ var GQLGlobalType = graphql.NewObject(graphql.ObjectConfig{
 	Description: "Flamed global features",
 	Fields: graphql.Fields{
 		"searchJ": SearchJ,
+		"search":  Search,
 	},
 })
 
