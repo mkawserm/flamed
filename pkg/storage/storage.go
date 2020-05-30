@@ -555,6 +555,9 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 	if !bytes.HasPrefix(globalIterate.Prefix, globalIterate.Namespace) {
 		return nil, x.ErrAccessViolation
 	}
+
+	logger.L("storage").Debug("global iteration in progress")
+	logger.L("storage").Debug("iteration input", zap.String("input", globalIterate.String()))
 	itr := readOnlyStateContext.GetForwardIterator()
 	defer itr.Close()
 
@@ -566,9 +569,10 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 			stateEntryResponse.Found = true
 			stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sts.Address)
 			stateEntryResponse.StateEntry = sts.ToStateEntry()
+			stateEntryResponses = append(stateEntryResponses, stateEntryResponse)
 		}
 	}
-
+	logger.L("storage").Debug("global iteration done")
 	return stateEntryResponses, nil
 }
 
