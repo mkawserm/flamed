@@ -562,7 +562,9 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 	defer itr.Close()
 
 	stateEntryResponses := make([]*pb.StateEntryResponse, 0, globalIterate.Limit)
+	iterCounter := uint64(0)
 	for itr.Seek(globalIterate.From); itr.ValidForPrefix(globalIterate.Prefix); itr.Next() {
+		iterCounter = iterCounter + 1
 		sts := itr.StateSnapshot()
 		if sts != nil {
 			stateEntryResponse := &pb.StateEntryResponse{}
@@ -570,6 +572,9 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 			stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sts.Address)
 			stateEntryResponse.StateEntry = sts.ToStateEntry()
 			stateEntryResponses = append(stateEntryResponses, stateEntryResponse)
+		}
+		if iterCounter == globalIterate.Limit {
+			break
 		}
 	}
 	logger.L("storage").Debug("global iteration done")
