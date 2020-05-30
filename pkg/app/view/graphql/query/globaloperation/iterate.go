@@ -1,4 +1,4 @@
-package global
+package globaloperation
 
 import (
 	"github.com/graphql-go/graphql"
@@ -44,7 +44,7 @@ var Iterate = &graphql.Field{
 		}
 
 		if !utility.HasGlobalIteratePermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("global iterate permission required")
+			return nil, gqlerrors.NewFormattedError("globaloperation iterate permission required")
 		}
 
 		o, err := ctx.Query.Iterate(from, prefix, limit.Value())

@@ -1,4 +1,4 @@
-package global
+package globaloperation
 
 import (
 	"github.com/mkawserm/flamed/pkg/flamed"
@@ -6,6 +6,6 @@ import (
 )
 
 type Context struct {
-	Query         *flamed.Query
+	Query         *flamed.GlobalOperation
 	AccessControl *pb.AccessControl
 }

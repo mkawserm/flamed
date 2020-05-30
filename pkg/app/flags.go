@@ -94,8 +94,8 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag(constant.LogLevel, cmd.PersistentFlags().Lookup("log-level"))
 
 	cmd.PersistentFlags().
-		Duration("global-request-timeout", 30*time.Second, "Data storage path")
-	_ = viper.BindPFlag(constant.GlobalRequestTimeout, cmd.PersistentFlags().Lookup("global-request-timeout"))
+		Duration("globaloperation-request-timeout", 30*time.Second, "Data storage path")
+	_ = viper.BindPFlag(constant.GlobalRequestTimeout, cmd.PersistentFlags().Lookup("globaloperation-request-timeout"))
 
 	cmd.PersistentFlags().
 		String("storage-path", homePath, "Data storage path")

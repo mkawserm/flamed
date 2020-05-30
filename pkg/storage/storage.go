@@ -560,7 +560,7 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 		return nil, x.ErrAccessViolation
 	}
 
-	logger.L("storage").Debug("global iteration in progress")
+	logger.L("storage").Debug("globaloperation iteration in progress")
 	logger.L("storage").Debug("iteration input", zap.String("input", globalIterate.String()))
 	itr := readOnlyStateContext.GetForwardIterator()
 	defer itr.Close()
@@ -581,7 +581,7 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 			break
 		}
 	}
-	logger.L("storage").Debug("global iteration done")
+	logger.L("storage").Debug("globaloperation iteration done")
 	return stateEntryResponses, nil
 }
 

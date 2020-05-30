@@ -43,15 +43,15 @@ var UpsertAccessControl = &graphql.Field{
 			Type:        graphql.NewNonNull(graphql.Boolean),
 		},
 		"globalSearchAccess": &graphql.ArgumentConfig{
-			Description: "Global global access",
+			Description: "GlobalOperation globaloperation access",
 			Type:        graphql.NewNonNull(graphql.Boolean),
 		},
 		"globalIterateAccess": &graphql.ArgumentConfig{
-			Description: "Global iterate access",
+			Description: "GlobalOperation iterate access",
 			Type:        graphql.NewNonNull(graphql.Boolean),
 		},
 		"globalRetrieveAccess": &graphql.ArgumentConfig{
-			Description: "Global retrieve access",
+			Description: "GlobalOperation retrieve access",
 			Type:        graphql.NewNonNull(graphql.Boolean),
 		},
 

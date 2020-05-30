@@ -1,4 +1,4 @@
-package global
+package globaloperation
 
 import (
 	"github.com/graphql-go/graphql"
@@ -8,10 +8,10 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var SearchJ = &graphql.Field{
-	Name:        "SearchJ",
-	Description: "Search and get json response",
-	Type:        types.GQLJSONType,
+var Search = &graphql.Field{
+	Name:        "Search",
+	Description: "Search in the index store",
+	Type:        types.GQLBleveSearchResult,
 	Args: graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
 			Description: "Search input",
@@ -27,7 +27,7 @@ var SearchJ = &graphql.Field{
 		}
 
 		if !utility.HasGlobalSearchPermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("global search permission required")
+			return nil, gqlerrors.NewFormattedError("globaloperation search permission required")
 		}
 
 		globalSearchInput := &pb.GlobalSearchInput{
@@ -128,7 +128,7 @@ var SearchJ = &graphql.Field{
 		}
 
 		if o != nil {
-			return o.ToMap(), nil
+			return o.RawResult(), nil
 		}
 
 		return nil, nil

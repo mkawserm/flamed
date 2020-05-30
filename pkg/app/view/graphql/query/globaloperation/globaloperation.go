@@ -1,4 +1,4 @@
-package global
+package globaloperation
 
 import (
 	"github.com/graphql-go/graphql"
@@ -7,8 +7,8 @@ import (
 	fContext "github.com/mkawserm/flamed/pkg/context"
 )
 
-var GQLGlobalType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "Global",
+var GQLGlobalOperationType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "GlobalOperation",
 	Description: "Flamed global features",
 	Fields: graphql.Fields{
 		"search":   Search,
@@ -18,10 +18,10 @@ var GQLGlobalType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-func Global(flamedContext *fContext.FlamedContext) *graphql.Field {
+func GlobalOperation(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name:        "Global",
-		Type:        GQLGlobalType,
+		Name:        "GlobalOperation",
+		Type:        GQLGlobalOperationType,
 		Description: "Flamed global features",
 
 		Args: graphql.FieldConfigArgument{
@@ -41,7 +41,7 @@ func Global(flamedContext *fContext.FlamedContext) *graphql.Field {
 				return nil, err
 			}
 
-			query := flamedContext.Flamed().NewQuery(clusterID,
+			query := flamedContext.Flamed().NewGlobalOperation(clusterID,
 				namespace,
 				flamedContext.GlobalRequestTimeout())
 

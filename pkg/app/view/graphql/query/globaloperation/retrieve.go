@@ -1,4 +1,4 @@
-package global
+package globaloperation
 
 import (
 	"github.com/graphql-go/graphql"
@@ -26,7 +26,7 @@ var Retrieve = &graphql.Field{
 		}
 
 		if !utility.HasGlobalRetrievePermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("global retrieve permission required")
+			return nil, gqlerrors.NewFormattedError("globaloperation retrieve permission required")
 		}
 
 		o, err := ctx.Query.Retrieve(addresses)
