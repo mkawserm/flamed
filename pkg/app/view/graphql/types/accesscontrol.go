@@ -41,7 +41,7 @@ var GQLAccessControlType = graphql.NewObject(graphql.ObjectConfig{
 
 		"permission": &graphql.Field{
 			Name:        "Permission",
-			Type:        graphql.Int,
+			Type:        GQLUInt64Type,
 			Description: "User permission",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				accessControl, ok := p.Source.(*pb.AccessControl)
@@ -49,11 +49,7 @@ var GQLAccessControlType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, nil
 				}
 
-				if len(accessControl.Permission) == 0 {
-					return 0, nil
-				}
-
-				return int(accessControl.Permission[0]), nil
+				return NewUInt64FromUInt64(accessControl.Permission), nil
 			},
 		},
 

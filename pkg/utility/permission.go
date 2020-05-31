@@ -6,105 +6,56 @@ func HasReadPermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
 	}
-
-	if len(ac.Permission) == 0 {
-		return false
-	}
-
-	var p = ac.Permission[0]
-
-	return hasBit(p, 0)
+	return hasBit(ac.Permission, 0)
 }
 
 func HasWritePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
 	}
-
-	if len(ac.Permission) == 0 {
-		return false
-	}
-
-	var p = ac.Permission[0]
-
-	return hasBit(p, 1)
+	return hasBit(ac.Permission, 1)
 }
 
 func HasUpdatePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
 	}
-
-	if len(ac.Permission) == 0 {
-		return false
-	}
-
-	var p = ac.Permission[0]
-
-	return hasBit(p, 2)
+	return hasBit(ac.Permission, 2)
 }
 
 func HasDeletePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
 	}
-
-	if len(ac.Permission) == 0 {
-		return false
-	}
-
-	var p = ac.Permission[0]
-
-	return hasBit(p, 3)
+	return hasBit(ac.Permission, 3)
 }
 
 func HasGlobalSearchPermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
 	}
-
-	if len(ac.Permission) == 0 {
-		return false
-	}
-
-	var p = ac.Permission[0]
-
-	return hasBit(p, 4)
+	return hasBit(ac.Permission, 4)
 }
 
 func HasGlobalIteratePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
 	}
-
-	if len(ac.Permission) == 0 {
-		return false
-	}
-
-	var p = ac.Permission[0]
-
-	return hasBit(p, 5)
+	return hasBit(ac.Permission, 5)
 }
 
 func HasGlobalRetrievePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
 	}
-
-	if len(ac.Permission) == 0 {
-		return false
-	}
-
-	var p = ac.Permission[0]
-
-	return hasBit(p, 6)
+	return hasBit(ac.Permission, 6)
 }
 
 func NewPermission(read bool, write bool, update bool, delete bool,
 	globalSearch bool,
 	globalIterate bool,
-	globalRetrieve bool) []byte {
-	var p uint8 = 0
+	globalRetrieve bool) uint64 {
+	var p uint64 = 0
 
 	if read {
 		p = setBit(p, 0)
@@ -131,15 +82,15 @@ func NewPermission(read bool, write bool, update bool, delete bool,
 		p = setBit(p, 6)
 	}
 
-	return []byte{p}
+	return p
 }
 
-func setBit(n uint8, pos uint8) uint8 {
+func setBit(n uint64, pos uint16) uint64 {
 	n |= 1 << pos
 	return n
 }
 
-func hasBit(n uint8, pos uint8) bool {
+func hasBit(n uint64, pos uint16) bool {
 	val := n & (1 << pos)
 	return val > 0
 }

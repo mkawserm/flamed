@@ -164,7 +164,7 @@ message UserPayload {
 message AccessControl {
   string username = 1;
   bytes namespace = 2;
-  bytes permission = 3; /* First 1 byte is considered as permission.
+  fixed64 permission = 3; /*
                             Counted right to left bit
                             Permission format:
                               first bit read,
