@@ -44,10 +44,10 @@ var Iterate = &graphql.Field{
 		}
 
 		if !utility.HasGlobalIteratePermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("globaloperation iterate permission required")
+			return nil, gqlerrors.NewFormattedError("global iterate permission required")
 		}
 
-		o, err := ctx.Query.Iterate(from, prefix, limit.Value())
+		o, err := ctx.GlobalOperation.Iterate(from, prefix, limit.Value())
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}

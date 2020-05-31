@@ -26,10 +26,10 @@ var Retrieve = &graphql.Field{
 		}
 
 		if !utility.HasGlobalRetrievePermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("globaloperation retrieve permission required")
+			return nil, gqlerrors.NewFormattedError("global retrieve permission required")
 		}
 
-		o, err := ctx.Query.Retrieve(addresses)
+		o, err := ctx.GlobalOperation.Retrieve(addresses)
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}

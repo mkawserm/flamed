@@ -9,7 +9,7 @@ import (
 
 var GQLGlobalOperationType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "GlobalOperation",
-	Description: "Flamed global features",
+	Description: "`GlobalOperation` contains all flamed global features",
 	Fields: graphql.Fields{
 		"search":   Search,
 		"iterate":  Iterate,
@@ -41,13 +41,13 @@ func GlobalOperation(flamedContext *fContext.FlamedContext) *graphql.Field {
 				return nil, err
 			}
 
-			query := flamedContext.Flamed().NewGlobalOperation(clusterID,
+			globalOperation := flamedContext.Flamed().NewGlobalOperation(clusterID,
 				namespace,
 				flamedContext.GlobalRequestTimeout())
 
 			return &Context{
-				Query:         query,
-				AccessControl: accessControl,
+				GlobalOperation: globalOperation,
+				AccessControl:   accessControl,
 			}, nil
 		},
 	}

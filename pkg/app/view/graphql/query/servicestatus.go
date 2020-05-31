@@ -61,6 +61,6 @@ func ServiceStatus(_ *context.FlamedContext) *graphql.Field {
 				RAFTServer: true,
 			}, nil
 		},
-		Description: "Query service availability information",
+		Description: "GlobalOperation service availability information",
 	}
 }

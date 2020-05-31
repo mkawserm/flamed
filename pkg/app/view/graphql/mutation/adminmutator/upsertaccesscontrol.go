@@ -26,35 +26,10 @@ var UpsertAccessControl = &graphql.Field{
 			Type:        graphql.NewNonNull(graphql.String),
 		},
 
-		"readAccess": &graphql.ArgumentConfig{
-			Description: "Read access",
-			Type:        graphql.NewNonNull(graphql.Boolean),
+		"permission": &graphql.ArgumentConfig{
+			Description: "Access permission",
+			Type:        graphql.NewNonNull(types.GQLPermissionInputType),
 		},
-		"writeAccess": &graphql.ArgumentConfig{
-			Description: "Write access",
-			Type:        graphql.NewNonNull(graphql.Boolean),
-		},
-		"updateAccess": &graphql.ArgumentConfig{
-			Description: "Update access",
-			Type:        graphql.NewNonNull(graphql.Boolean),
-		},
-		"deleteAccess": &graphql.ArgumentConfig{
-			Description: "Delete access",
-			Type:        graphql.NewNonNull(graphql.Boolean),
-		},
-		"globalSearchAccess": &graphql.ArgumentConfig{
-			Description: "GlobalOperation globaloperation access",
-			Type:        graphql.NewNonNull(graphql.Boolean),
-		},
-		"globalIterateAccess": &graphql.ArgumentConfig{
-			Description: "GlobalOperation iterate access",
-			Type:        graphql.NewNonNull(graphql.Boolean),
-		},
-		"globalRetrieveAccess": &graphql.ArgumentConfig{
-			Description: "GlobalOperation retrieve access",
-			Type:        graphql.NewNonNull(graphql.Boolean),
-		},
-
 		"data": &graphql.ArgumentConfig{
 			Description: "Data in base64 encoded string",
 			Type:        graphql.String,
@@ -69,14 +44,16 @@ var UpsertAccessControl = &graphql.Field{
 		username := p.Args["username"].(string)
 		namespace := []byte(p.Args["namespace"].(string))
 
-		readAccess := p.Args["readAccess"].(bool)
-		writeAccess := p.Args["writeAccess"].(bool)
-		updateAccess := p.Args["updateAccess"].(bool)
-		deleteAccess := p.Args["deleteAccess"].(bool)
+		permission := p.Args["permission"].(map[string]interface{})
+		readPermission := permission["read"].(bool)
+		writePermission := permission["write"].(bool)
+		updatePermission := permission["update"].(bool)
+		deletePermission := permission["delete"].(bool)
 
-		globalSearchAccess := p.Args["globalSearchAccess"].(bool)
-		globalIterateAccess := p.Args["globalIterateAccess"].(bool)
-		globalRetrieveAccess := p.Args["globalRetrieveAccess"].(bool)
+		globalSearchPermission := permission["globalSearch"].(bool)
+		globalIteratePermission := permission["globalIterate"].(bool)
+		globalRetrievePermission := permission["globalRetrieve"].(bool)
+		globalCRUDPermission := permission["globalCRUD"].(bool)
 
 		if !bytes.Equal(namespace, []byte("*")) {
 			if !utility.IsNamespaceValid(namespace) {
@@ -97,21 +74,24 @@ var UpsertAccessControl = &graphql.Field{
 		//if !admin.IsUserAvailable(username) {
 		//	return nil, gqlerrors.NewFormattedError(username+" is not available")
 		//}
+		permissionNumber := utility.NewPermission(
+			readPermission,
+			writePermission,
+			updatePermission,
+			deletePermission,
+			globalSearchPermission,
+			globalIteratePermission,
+			globalRetrievePermission,
+			globalCRUDPermission)
 
 		accessControl := &pb.AccessControl{
-			Username:  username,
-			Namespace: namespace,
-			Permission: utility.NewPermission(readAccess,
-				writeAccess,
-				updateAccess,
-				deleteAccess,
-				globalSearchAccess,
-				globalIterateAccess,
-				globalRetrieveAccess),
-			CreatedAt: uint64(time.Now().UnixNano()),
-			UpdatedAt: uint64(time.Now().UnixNano()),
-			Data:      nil,
-			Meta:      nil,
+			Username:   username,
+			Namespace:  namespace,
+			Permission: permissionNumber,
+			CreatedAt:  uint64(time.Now().UnixNano()),
+			UpdatedAt:  uint64(time.Now().UnixNano()),
+			Data:       nil,
+			Meta:       nil,
 		}
 
 		if p.Args["data"] != nil {

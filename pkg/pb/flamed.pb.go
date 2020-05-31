@@ -2463,7 +2463,7 @@ type GlobalSearchInput struct {
 	HighlightStyle   string   `protobuf:"bytes,12,opt,name=highlightStyle,proto3" json:"highlightStyle,omitempty"`
 	HighlightFields  []string `protobuf:"bytes,13,rep,name=highlightFields,proto3" json:"highlightFields,omitempty"`
 	Facets           []*Facet `protobuf:"bytes,14,rep,name=facets,proto3" json:"facets,omitempty"`
-	// Types that are valid to be assigned to Query:
+	// Types that are valid to be assigned to GlobalOperation:
 	//	*GlobalSearchInput_QueryString
 	//	*GlobalSearchInput_Fuzzy
 	//	*GlobalSearchInput_Regexp

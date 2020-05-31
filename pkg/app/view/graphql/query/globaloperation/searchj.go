@@ -27,11 +27,11 @@ var SearchJ = &graphql.Field{
 		}
 
 		if !utility.HasGlobalSearchPermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("globaloperation search permission required")
+			return nil, gqlerrors.NewFormattedError("global search permission required")
 		}
 
 		globalSearchInput := &pb.GlobalSearchInput{
-			Namespace: []byte(ctx.Query.Namespace()),
+			Namespace: []byte(ctx.GlobalOperation.Namespace()),
 		}
 
 		globalSearchInput.Query = &pb.GlobalSearchInput_QueryString{
@@ -121,7 +121,7 @@ var SearchJ = &graphql.Field{
 			}
 		}
 
-		o, err := ctx.Query.Search(globalSearchInput)
+		o, err := ctx.GlobalOperation.Search(globalSearchInput)
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())

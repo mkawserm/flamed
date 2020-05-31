@@ -6,6 +6,6 @@ import (
 )
 
 type Context struct {
-	Query         *flamed.GlobalOperation
-	AccessControl *pb.AccessControl
+	GlobalOperation *flamed.GlobalOperation
+	AccessControl   *pb.AccessControl
 }

@@ -51,10 +51,18 @@ func HasGlobalRetrievePermission(ac *pb.AccessControl) bool {
 	return hasBit(ac.Permission, 6)
 }
 
+func HasGlobalCRUDPermission(ac *pb.AccessControl) bool {
+	if ac == nil {
+		return false
+	}
+	return hasBit(ac.Permission, 7)
+}
+
 func NewPermission(read bool, write bool, update bool, delete bool,
 	globalSearch bool,
 	globalIterate bool,
-	globalRetrieve bool) uint64 {
+	globalRetrieve bool,
+	globalCRUD bool) uint64 {
 	var p uint64 = 0
 
 	if read {
@@ -80,6 +88,10 @@ func NewPermission(read bool, write bool, update bool, delete bool,
 
 	if globalRetrieve {
 		p = setBit(p, 6)
+	}
+
+	if globalCRUD {
+		p = setBit(p, 7)
 	}
 
 	return p

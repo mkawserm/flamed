@@ -29,7 +29,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 		"nodeAdmin": &graphql.Field{
 			Name:        "NodeAdmin",
 			Type:        nodeadmin.GQLNodeAdminType,
-			Description: "Query administrative information from NodeAdmin by clusterID",
+			Description: "Global administrative information from NodeAdmin by clusterID",
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{
 					Description: "Cluster ID",
@@ -55,7 +55,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 		"admin": &graphql.Field{
 			Name:        "Admin",
 			Type:        admin.GQLAdminType,
-			Description: "Query user,index meta,access control related information from Admin by clusterID",
+			Description: "Global user,index meta,access control related information from Admin by clusterID",
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{
 					Description: "Cluster ID",
