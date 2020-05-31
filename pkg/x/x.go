@@ -8,6 +8,7 @@ var ErrStateNotFound = errors.New("state is not available")
 var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
 var ErrTPNotFound = errors.New("transaction processor not found")
 var ErrNotImplemented = errors.New("not implemented")
+var ErrInvalidInput = errors.New("invalid input")
 
 var ErrAccessViolation = errors.New("access violation")
 

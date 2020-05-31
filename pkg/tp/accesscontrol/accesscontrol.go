@@ -44,7 +44,7 @@ func (c *AccessControl) Retrieve(_ context.Context,
 	readOnlyStateContext iface.IStateContext,
 	retrieveInput *pb.RetrieveInput) (interface{}, error) {
 	if len(retrieveInput.Addresses) == 0 {
-		return nil, nil
+		return nil, x.ErrInvalidInput
 	}
 
 	accessControlList := make([]*pb.AccessControl, 0, len(retrieveInput.Addresses))
@@ -55,18 +55,15 @@ func (c *AccessControl) Retrieve(_ context.Context,
 		}
 
 		entry, err := readOnlyStateContext.GetState(sa)
-
 		if err != nil {
 			accessControlList = append(accessControlList, nil)
-			continue
+		} else {
+			ac := &pb.AccessControl{}
+			if err := proto.Unmarshal(entry.Payload, ac); err != nil {
+				return nil, err
+			}
+			accessControlList = append(accessControlList, ac)
 		}
-
-		ac := &pb.AccessControl{}
-		if err := proto.Unmarshal(entry.Payload, ac); err != nil {
-			return nil, err
-		}
-
-		accessControlList = append(accessControlList, ac)
 	}
 
 	return accessControlList, nil

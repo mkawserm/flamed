@@ -61,12 +61,13 @@ func (a *Admin) GetUser(username string) (*pb.User, error) {
 		return nil, err
 	}
 
-	if v, ok := output.([]*pb.User); ok {
-		if len(v) == 1 {
-			return v[0], nil
-		} else {
-			return nil, nil
+	v := output.([]*pb.User)
+	if len(v) == 1 {
+		if v[0] == nil {
+			return nil, x.ErrUnexpectedNilValue
 		}
+
+		return v[0], nil
 	} else {
 		return nil, x.ErrUnknownValue
 	}
@@ -188,12 +189,12 @@ func (a *Admin) GetAccessControl(username string, namespace []byte) (*pb.AccessC
 		return nil, err
 	}
 
-	if v, ok := output.([]*pb.AccessControl); ok {
-		if len(v) == 1 {
-			return v[0], nil
-		} else {
-			return nil, nil
+	acl := output.([]*pb.AccessControl)
+	if len(acl) == 1 {
+		if acl[0] == nil {
+			return nil, x.ErrUnexpectedNilValue
 		}
+		return acl[0], nil
 	} else {
 		return nil, x.ErrUnknownValue
 	}
@@ -321,12 +322,13 @@ func (a *Admin) GetIndexMeta(namespace []byte) (*pb.IndexMeta, error) {
 		return nil, err
 	}
 
-	if v, ok := output.([]*pb.IndexMeta); ok {
-		if len(v) == 1 {
-			return v[0], nil
-		} else {
-			return nil, nil
+	v := output.([]*pb.IndexMeta)
+	if len(v) == 1 {
+		if v[0] == nil {
+			return nil, x.ErrUnexpectedNilValue
 		}
+
+		return v[0], nil
 	} else {
 		return nil, x.ErrUnknownValue
 	}
