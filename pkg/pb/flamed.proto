@@ -233,7 +233,7 @@ message GlobalDeleteInput {
 }
 
 message StateEntryResponse {
-  bool found = 1;
+  bool stateAvailable = 1;
   string address = 2;
   StateEntry stateEntry = 3;
 }

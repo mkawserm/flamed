@@ -560,7 +560,7 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 		return nil, x.ErrAccessViolation
 	}
 
-	logger.L("storage").Debug("globaloperation iteration in progress")
+	logger.L("storage").Debug("global iteration in progress")
 	logger.L("storage").Debug("iteration input", zap.String("input", globalIterate.String()))
 	itr := readOnlyStateContext.GetForwardIterator()
 	defer itr.Close()
@@ -572,7 +572,7 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 		sts := itr.StateSnapshot()
 		if sts != nil {
 			stateEntryResponse := &pb.StateEntryResponse{}
-			stateEntryResponse.Found = true
+			stateEntryResponse.StateAvailable = true
 			stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sts.Address)
 			stateEntryResponse.StateEntry = sts.ToStateEntry()
 			stateEntryResponses = append(stateEntryResponses, stateEntryResponse)
@@ -581,7 +581,7 @@ func (s *Storage) GlobalIterate(_ context.Context, globalIterate *pb.GlobalItera
 			break
 		}
 	}
-	logger.L("storage").Debug("globaloperation iteration done")
+	logger.L("storage").Debug("global iteration done")
 	return stateEntryResponses, nil
 }
 
@@ -606,17 +606,17 @@ func (s *Storage) GlobalRetrieve(_ context.Context, globalRetrieveInput *pb.Glob
 	for _, sa := range globalRetrieveInput.Addresses {
 		if bytes.HasPrefix(sa, globalRetrieveInput.Namespace) {
 			stateEntryResponse := &pb.StateEntryResponse{}
-			stateEntryResponse.Found = true
+			stateEntryResponse.StateAvailable = true
 			stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sa)
 			state, err := readOnlyStateContext.GetState(sa)
 			if err != nil {
-				stateEntryResponse.Found = false
+				stateEntryResponse.StateAvailable = false
 			}
 			stateEntryResponse.StateEntry = state
 			stateEntryResponses = append(stateEntryResponses, stateEntryResponse)
 		} else {
 			stateEntryResponse := &pb.StateEntryResponse{}
-			stateEntryResponse.Found = false
+			stateEntryResponse.StateAvailable = false
 			stateEntryResponse.Address = crypto.StateAddressByteSliceToHexString(sa)
 			stateEntryResponses = append(stateEntryResponses, stateEntryResponse)
 		}

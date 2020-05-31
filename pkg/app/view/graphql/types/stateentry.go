@@ -72,16 +72,16 @@ var GQLStateEntryResponse = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "StateEntryResponse",
 	Description: "`StateEntryResponse`",
 	Fields: graphql.Fields{
-		"found": &graphql.Field{
-			Name:        "Found",
-			Description: "State found flag",
+		"stateAvailable": &graphql.Field{
+			Name:        "StateAvailable",
+			Description: "State availability flag",
 			Type:        graphql.Boolean,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				ser, ok := p.Source.(*pb.StateEntryResponse)
 				if !ok {
 					return nil, nil
 				}
-				return ser.Found, nil
+				return ser.StateAvailable, nil
 			},
 		},
 		"address": &graphql.Field{
