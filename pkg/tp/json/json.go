@@ -87,8 +87,10 @@ func (j *JSON) Retrieve(_ context.Context,
 
 		dataAsBytes, err := j.getDataAsBytes(readOnlyStateContext, sa)
 		if err != nil {
-			return nil, err
+			dataList = append(dataList, nil)
+			continue
 		}
+
 		dataList = append(dataList, dataAsBytes)
 	}
 

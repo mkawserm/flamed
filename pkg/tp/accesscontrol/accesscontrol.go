@@ -57,7 +57,8 @@ func (c *AccessControl) Retrieve(_ context.Context,
 		entry, err := readOnlyStateContext.GetState(sa)
 
 		if err != nil {
-			return nil, err
+			accessControlList = append(accessControlList, nil)
+			continue
 		}
 
 		ac := &pb.AccessControl{}

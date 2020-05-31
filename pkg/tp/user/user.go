@@ -57,7 +57,8 @@ func (u *User) Retrieve(_ context.Context,
 		entry, err := readOnlyStateContext.GetState(sa)
 
 		if err != nil {
-			return nil, err
+			users = append(users, nil)
+			continue
 		}
 
 		a := &pb.User{}

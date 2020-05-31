@@ -297,6 +297,9 @@ func (c *Client) GetList(id []interface{}) (interface{}, error) {
 		dataList := make([]map[string]interface{}, 0, len(v))
 
 		for _, jsonBytes := range v {
+			if jsonBytes == nil {
+				dataList = append(dataList, nil)
+			}
 			object := make(map[string]interface{})
 			if err := json.Unmarshal(jsonBytes, &object); err != nil {
 				return nil, err

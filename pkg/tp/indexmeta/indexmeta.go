@@ -56,7 +56,8 @@ func (i *IndexMeta) Retrieve(_ context.Context,
 		entry, err := readOnlyStateContext.GetState(sa)
 
 		if err != nil {
-			return nil, err
+			indexMetas = append(indexMetas, nil)
+			continue
 		}
 
 		a := &pb.IndexMeta{}

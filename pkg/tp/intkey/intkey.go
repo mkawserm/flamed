@@ -54,7 +54,8 @@ func (i *IntKey) Retrieve(_ context.Context,
 		entry, err := readOnlyStateContext.GetState(sa)
 
 		if err != nil {
-			return nil, err
+			intKeyStates = append(intKeyStates, nil)
+			continue
 		}
 
 		a := &IntKeyState{}
