@@ -1,6 +1,7 @@
 package json
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -78,8 +79,12 @@ func (j *JSON) Retrieve(_ context.Context,
 		return nil, nil
 	}
 
-	dataList := make([][]byte, 0, 1)
+	dataList := make([][]byte, 0, len(retrieveInput.Addresses))
 	for _, sa := range retrieveInput.Addresses {
+		if !bytes.HasPrefix(sa, retrieveInput.Namespace) {
+			return nil, x.ErrAccessViolation
+		}
+
 		dataAsBytes, err := j.getDataAsBytes(readOnlyStateContext, sa)
 		if err != nil {
 			return nil, err

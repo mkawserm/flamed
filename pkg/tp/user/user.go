@@ -1,6 +1,7 @@
 package user
 
 import (
+	"bytes"
 	"context"
 	"github.com/mkawserm/flamed/pkg/crypto"
 
@@ -49,6 +50,10 @@ func (u *User) Retrieve(_ context.Context,
 	users := make([]*pb.User, 0, 1)
 
 	for _, sa := range retrieveInput.Addresses {
+		if !bytes.HasPrefix(sa, retrieveInput.Namespace) {
+			return nil, x.ErrAccessViolation
+		}
+
 		entry, err := readOnlyStateContext.GetState(sa)
 
 		if err != nil {

@@ -47,9 +47,13 @@ func (c *AccessControl) Retrieve(_ context.Context,
 		return nil, nil
 	}
 
-	accessControlList := make([]*pb.AccessControl, 0, 1)
+	accessControlList := make([]*pb.AccessControl, 0, len(retrieveInput.Addresses))
 
 	for _, sa := range retrieveInput.Addresses {
+		if !bytes.HasPrefix(sa, retrieveInput.Namespace) {
+			return nil, x.ErrAccessViolation
+		}
+
 		entry, err := readOnlyStateContext.GetState(sa)
 
 		if err != nil {

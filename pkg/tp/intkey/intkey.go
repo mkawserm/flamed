@@ -1,6 +1,7 @@
 package intkey
 
 import (
+	"bytes"
 	"context"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/crypto"
@@ -43,9 +44,13 @@ func (i *IntKey) Retrieve(_ context.Context,
 		return nil, nil
 	}
 
-	intKeyStates := make([]*IntKeyState, 0, 1)
+	intKeyStates := make([]*IntKeyState, 0, len(retrieveInput.Addresses))
 
 	for _, sa := range retrieveInput.Addresses {
+		if !bytes.HasPrefix(sa, retrieveInput.Namespace) {
+			return nil, x.ErrAccessViolation
+		}
+
 		entry, err := readOnlyStateContext.GetState(sa)
 
 		if err != nil {

@@ -1,6 +1,7 @@
 package indexmeta
 
 import (
+	"bytes"
 	"context"
 	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/constant"
@@ -46,8 +47,12 @@ func (i *IndexMeta) Retrieve(_ context.Context,
 		return nil, nil
 	}
 
-	indexMetas := make([]*pb.IndexMeta, 0, 1)
+	indexMetas := make([]*pb.IndexMeta, 0, len(retrieveInput.Addresses))
 	for _, sa := range retrieveInput.Addresses {
+		if !bytes.HasPrefix(sa, retrieveInput.Namespace) {
+			return nil, x.ErrAccessViolation
+		}
+
 		entry, err := readOnlyStateContext.GetState(sa)
 
 		if err != nil {
