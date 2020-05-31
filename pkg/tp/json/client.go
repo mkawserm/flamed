@@ -260,7 +260,11 @@ func (c *Client) Get(id string, object interface{}) (interface{}, error) {
 
 	if v, ok := data.([][]byte); ok {
 		if len(v) != 1 {
-			return nil, nil
+			return nil, x.ErrUnknownValue
+		}
+
+		if v[0] == nil {
+			return nil, x.ErrUnexpectedNilValue
 		}
 
 		if err := json.Unmarshal(v[0], object); err != nil {
@@ -299,7 +303,9 @@ func (c *Client) GetList(id []interface{}) (interface{}, error) {
 		for _, jsonBytes := range v {
 			if jsonBytes == nil {
 				dataList = append(dataList, nil)
+				continue
 			}
+
 			object := make(map[string]interface{})
 			if err := json.Unmarshal(jsonBytes, &object); err != nil {
 				return nil, err
