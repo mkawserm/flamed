@@ -14,7 +14,7 @@ var Retrieve = &graphql.Field{
 	Args: graphql.FieldConfigArgument{
 		"addresses": &graphql.ArgumentConfig{
 			Description: "Address in hex string format",
-			Type:        graphql.NewList(graphql.String),
+			Type:        graphql.NewList(graphql.NewNonNull(graphql.String)),
 		},
 	},
 

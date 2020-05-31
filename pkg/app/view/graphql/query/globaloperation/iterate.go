@@ -13,7 +13,7 @@ var Iterate = &graphql.Field{
 	Type:        graphql.NewList(types.GQLStateEntryResponse),
 	Args: graphql.FieldConfigArgument{
 		"from": &graphql.ArgumentConfig{
-			Description: "State address in hex string format",
+			Description: "State address or address prefix in hex string format",
 			Type:        graphql.String,
 		},
 		"prefix": &graphql.ArgumentConfig{
