@@ -20,8 +20,9 @@ import (
 type GQLHandler func(flamedContext *flamedContext.FlamedContext) *graphql.Field
 
 type View struct {
-	mQueryFields    graphql.Fields
-	mMutationFields graphql.Fields
+	mQueryFields        graphql.Fields
+	mMutationFields     graphql.Fields
+	mSubscriptionFields graphql.Fields
 
 	mFlamedContext *flamedContext.FlamedContext
 }
@@ -32,6 +33,10 @@ func (v *View) AddQueryField(name string, handler GQLHandler) {
 
 func (v *View) AddMutationField(name string, handler GQLHandler) {
 	v.mMutationFields[name] = handler(v.mFlamedContext)
+}
+
+func (v *View) AddSubscriptionField(name string, handler GQLHandler) {
+	v.mSubscriptionFields[name] = handler(v.mFlamedContext)
 }
 
 func (v *View) GetHTTPHandler() http.HandlerFunc {
@@ -50,9 +55,22 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 		Description: "All available GraphQL mutations",
 	}
 
+	subscription := graphql.ObjectConfig{
+		Name:        "Subscription",
+		Description: "All available GraphQL subscriptions",
+		Fields:      v.mSubscriptionFields,
+	}
+
 	schemaConfig := graphql.SchemaConfig{
-		Query:    graphql.NewObject(query),
-		Mutation: graphql.NewObject(mutation),
+		Query: graphql.NewObject(query),
+	}
+
+	if len(v.mMutationFields) != 0 {
+		schemaConfig.Mutation = graphql.NewObject(mutation)
+	}
+
+	if len(v.mSubscriptionFields) != 0 {
+		schemaConfig.Subscription = graphql.NewObject(subscription)
 	}
 
 	schema, err := graphql.NewSchema(schemaConfig)
@@ -149,8 +167,9 @@ func (v *View) GetHTTPHandler() http.HandlerFunc {
 
 func NewView(flamedContext *flamedContext.FlamedContext) *View {
 	return &View{
-		mFlamedContext:  flamedContext,
-		mQueryFields:    map[string]*graphql.Field{},
-		mMutationFields: map[string]*graphql.Field{},
+		mFlamedContext:      flamedContext,
+		mQueryFields:        map[string]*graphql.Field{},
+		mMutationFields:     map[string]*graphql.Field{},
+		mSubscriptionFields: map[string]*graphql.Field{},
 	}
 }
