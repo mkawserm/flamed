@@ -320,6 +320,49 @@ func (c *Client) GetList(id []interface{}) (interface{}, error) {
 	return nil, x.ErrUnknownValue
 }
 
+func (c *Client) GetListByIndexID(idList []interface{}) (interface{}, error) {
+	request := &pb.RetrieveInput{
+		Namespace:     []byte(c.mNamespace),
+		FamilyName:    Name,
+		FamilyVersion: Version,
+		Addresses:     make([][]byte, 0, len(idList)),
+	}
+
+	for _, t := range idList {
+		if t2, ok := t.(string); ok {
+			request.Addresses = append(request.Addresses, crypto.GetStateAddressFromHexString(t2))
+		}
+	}
+
+	data, err := c.mRW.Read(c.mClusterID, request, c.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if v, ok := data.([][]byte); ok {
+		dataList := make([]map[string]interface{}, 0, len(v))
+
+		for _, jsonBytes := range v {
+			if jsonBytes == nil {
+				dataList = append(dataList, nil)
+				continue
+			}
+
+			object := make(map[string]interface{})
+			if err := json.Unmarshal(jsonBytes, &object); err != nil {
+				return nil, err
+			} else {
+				dataList = append(dataList, object)
+			}
+		}
+
+		return dataList, nil
+	}
+
+	return nil, x.ErrUnknownValue
+}
+
 func (c *Client) Merge(data interface{}) (*pb.ProposalResponse, error) {
 	b := &Batch{
 		mNamespace:      []byte(c.mNamespace),

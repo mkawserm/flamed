@@ -8,20 +8,20 @@ import (
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
-var GQLGetList = &graphql.Field{
-	Name:        "GetList",
+var GQLGetListByIndexID = &graphql.Field{
+	Name:        "GetListByIndexID",
 	Type:        types.GQLJSONType,
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
 		"idList": &graphql.ArgumentConfig{
-			Description: "List of id",
-			Type:        graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(graphql.ID))),
+			Description: "List of index id",
+			Type:        graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(graphql.String))),
 		},
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		idList := p.Args["idList"].([]interface{})
+		ids := p.Args["idList"].([]interface{})
 
 		ikc, ok := p.Source.(*json.Context)
 		if !ok {
@@ -32,7 +32,7 @@ var GQLGetList = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("read permission required")
 		}
 
-		obj, err := ikc.Client.GetList(idList)
+		obj, err := ikc.Client.GetListByIndexID(ids)
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}

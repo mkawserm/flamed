@@ -13,8 +13,9 @@ var GQLJSONTPType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "JSONTP",
 	Description: "JSON transaction processor",
 	Fields: graphql.Fields{
-		"get":     GQLGet,
-		"getList": GQLGetList,
+		"get":              GQLGet,
+		"getList":          GQLGetList,
+		"getListByIndexID": GQLGetListByIndexID,
 	},
 })
 
