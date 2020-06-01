@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
+	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
@@ -38,7 +39,7 @@ var Iterate = &graphql.Field{
 		}
 
 		limit := p.Args["limit"].(*types.UInt64)
-		ctx, ok := p.Source.(*Context)
+		ctx, ok := p.Source.(*context.GlobalOperationContext)
 		if !ok {
 			return nil, nil
 		}

@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
+	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 )
@@ -21,7 +22,7 @@ var Search = &graphql.Field{
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 		input := p.Args["input"].(map[string]interface{})
-		ctx, ok := p.Source.(*Context)
+		ctx, ok := p.Source.(*context.GlobalOperationContext)
 		if !ok {
 			return nil, nil
 		}

@@ -30,7 +30,7 @@ func GlobalOperation(flamedContext *fContext.FlamedContext) *graphql.Field {
 				Type:        graphql.NewNonNull(types.GQLUInt64Type),
 			},
 			"namespace": &graphql.ArgumentConfig{
-				Description: "Cluster ID",
+				Description: "Namespace",
 				Type:        graphql.NewNonNull(graphql.String),
 			},
 		},
@@ -45,7 +45,7 @@ func GlobalOperation(flamedContext *fContext.FlamedContext) *graphql.Field {
 				namespace,
 				flamedContext.GlobalRequestTimeout())
 
-			return &Context{
+			return &fContext.GlobalOperationContext{
 				GlobalOperation: globalOperation,
 				AccessControl:   accessControl,
 			}, nil

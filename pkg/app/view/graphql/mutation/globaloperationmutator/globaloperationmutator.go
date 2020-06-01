@@ -1,28 +1,25 @@
-package jsontp
+package globaloperationmutator
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/utility"
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
 	fContext "github.com/mkawserm/flamed/pkg/context"
-	"github.com/mkawserm/flamed/pkg/tp/json"
 )
 
-var GQLJSONTPType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "JSONTP",
-	Description: "JSON transaction processor",
+var GQLGlobalOperationMutatorType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "GlobalOperationMutator",
+	Description: "`GlobalOperationMutator`",
 	Fields: graphql.Fields{
-		"get":     GQLGet,
-		"getList": GQLGetList,
+		"propose": Propose,
 	},
 })
 
-func JSONTP(flamedContext *fContext.FlamedContext) *graphql.Field {
+func GlobalOperationMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name:        "JSONTP",
-		Type:        GQLJSONTPType,
-		Description: "JSON transaction processor",
+		Name:        "GlobalOperationMutator",
+		Type:        GQLGlobalOperationMutatorType,
+		Description: "Mutation in the flamed global scope",
 
 		Args: graphql.FieldConfigArgument{
 			"clusterID": &graphql.ArgumentConfig{
@@ -34,25 +31,20 @@ func JSONTP(flamedContext *fContext.FlamedContext) *graphql.Field {
 				Type:        graphql.NewNonNull(graphql.String),
 			},
 		},
+
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			clusterID, namespace, accessControl, err := utility.AuthCheck(p, flamedContext)
 			if err != nil {
 				return nil, err
 			}
 
-			client := &json.Client{}
-			err = client.Setup(clusterID,
+			globalOperation := flamedContext.Flamed().NewGlobalOperation(clusterID,
 				namespace,
-				flamedContext.Flamed(),
 				flamedContext.GlobalRequestTimeout())
 
-			if err != nil {
-				return nil, gqlerrors.NewFormattedError(err.Error())
-			}
-
-			return &json.Context{
-				AccessControl: accessControl,
-				Client:        client,
+			return &fContext.GlobalOperationContext{
+				GlobalOperation: globalOperation,
+				AccessControl:   accessControl,
 			}, nil
 		},
 	}

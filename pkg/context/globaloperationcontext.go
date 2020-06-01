@@ -1,11 +1,11 @@
-package globaloperation
+package context
 
 import (
 	"github.com/mkawserm/flamed/pkg/flamed"
 	"github.com/mkawserm/flamed/pkg/pb"
 )
 
-type Context struct {
+type GlobalOperationContext struct {
 	GlobalOperation *flamed.GlobalOperation
 	AccessControl   *pb.AccessControl
 }

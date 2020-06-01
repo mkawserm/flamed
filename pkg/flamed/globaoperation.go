@@ -1,6 +1,7 @@
 package flamed
 
 import (
+	"github.com/golang/protobuf/proto"
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 	"github.com/mkawserm/flamed/pkg/pb"
@@ -90,4 +91,20 @@ func (g *GlobalOperation) Iterate(from string, prefix string, limit uint64) (int
 	}
 
 	return g.mRW.Read(g.mClusterID, input, g.mTimeout)
+}
+
+func (g *GlobalOperation) Propose(proposal *pb.Proposal) (*pb.ProposalResponse, error) {
+	r, err := g.mRW.Write(g.mClusterID, proposal, g.mTimeout)
+
+	if err != nil {
+		return nil, err
+	}
+
+	pr := &pb.ProposalResponse{}
+
+	if err := proto.Unmarshal(r.Data, pr); err != nil {
+		return nil, err
+	}
+
+	return pr, nil
 }

@@ -76,7 +76,7 @@ func FlamedMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 	return &graphql.Field{
 		Name:        "FlamedMutator",
 		Type:        GQLFlamedMutatorType,
-		Description: "mFlamed mutator helps to modify cluster",
+		Description: "Flamed mutator helps to modify cluster",
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			if p.Context.Value("GraphQLContext") == nil {
 				return nil, nil

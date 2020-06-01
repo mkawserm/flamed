@@ -35,7 +35,7 @@ func JSONTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 				Type:        graphql.NewNonNull(types.GQLUInt64Type),
 			},
 			"namespace": &graphql.ArgumentConfig{
-				Description: "Cluster ID",
+				Description: "Namespace",
 				Type:        graphql.NewNonNull(graphql.String),
 			},
 		},
