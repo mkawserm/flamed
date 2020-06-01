@@ -6,6 +6,6 @@ import (
 )
 
 type GlobalOperationContext struct {
-	GlobalOperation *flamed.GlobalOperation
 	AccessControl   *pb.AccessControl
+	GlobalOperation *flamed.GlobalOperation
 }
