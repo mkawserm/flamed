@@ -94,15 +94,15 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag(constant.LogLevel, cmd.PersistentFlags().Lookup("log-level"))
 
 	cmd.PersistentFlags().
-		Duration("globaloperation-request-timeout", 30*time.Second, "Data storage path")
-	_ = viper.BindPFlag(constant.GlobalRequestTimeout, cmd.PersistentFlags().Lookup("globaloperation-request-timeout"))
+		Duration("global-request-timeout", 30*time.Second, "Global request timeout")
+	_ = viper.BindPFlag(constant.GlobalRequestTimeout, cmd.PersistentFlags().Lookup("global-request-timeout"))
 
 	cmd.PersistentFlags().
 		String("storage-path", homePath, "Data storage path")
 	_ = viper.BindPFlag(constant.StoragePath, cmd.PersistentFlags().Lookup("storage-path"))
 
 	cmd.PersistentFlags().
-		String("raft-address", "", "Raft rpc address")
+		String("raft-address", "localhost:2281", "Raft rpc address")
 	_ = viper.BindPFlag(constant.RaftAddress, cmd.PersistentFlags().Lookup("raft-address"))
 
 	cmd.PersistentFlags().
@@ -119,7 +119,7 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag(constant.EnableHTTPServer, cmd.PersistentFlags().Lookup("enable-http-server"))
 
 	cmd.PersistentFlags().
-		String("http-address", "", "HTTP server address")
+		String("http-address", "localhost:8081", "HTTP server address")
 	_ = viper.BindPFlag(constant.HTTPAddress, cmd.PersistentFlags().Lookup("http-address"))
 
 	cmd.PersistentFlags().

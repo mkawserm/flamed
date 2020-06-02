@@ -1,7 +1,7 @@
 package constant
 
 const LogLevel = "LogLevel"
-const GlobalRequestTimeout = "mGlobalRequestTimeout"
+const GlobalRequestTimeout = "GlobalRequestTimeout"
 const StoragePath = "StoragePath"
 const RaftAddress = "RaftAddress"
 const Join = "Join"
