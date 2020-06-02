@@ -265,10 +265,10 @@ func getNodeConfiguration(raftStoragePath string) *conf.NodeConfiguration {
 			SystemTickerPrecision: viper.GetDuration(constant.SystemTickerPrecision),
 
 			LogDBConfig:         config.GetTinyMemLogDBConfig(),
-			LogDBFactory:        nil,
-			RaftRPCFactory:      nil,
-			RaftEventListener:   nil,
-			SystemEventListener: nil,
+			LogDBFactory:        variable.DefaultLogDbFactory,
+			RaftRPCFactory:      variable.DefaultRaftRPCFactory,
+			RaftEventListener:   variable.DefaultRaftEventListener,
+			SystemEventListener: variable.DefaultSystemEventListener,
 		},
 	}
 }
