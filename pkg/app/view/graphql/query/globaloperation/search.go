@@ -12,7 +12,7 @@ import (
 var Search = &graphql.Field{
 	Name:        "Search",
 	Description: "Search in the index store",
-	Type:        types.GQLBleveSearchResult,
+	Type:        types.GQLSearchResponse,
 	Args: graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
 			Description: "Search input",
@@ -129,7 +129,7 @@ var Search = &graphql.Field{
 		}
 
 		if o != nil {
-			return o.RawResult(), nil
+			return o.ToSearchResponse(), nil
 		}
 
 		return nil, nil

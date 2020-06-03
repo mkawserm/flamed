@@ -144,7 +144,7 @@ func (b *BleveScorch) CanIndex(namespace string) bool {
 	return b.isPathExists(b.path + "/" + namespace)
 }
 
-func (b *BleveScorch) GlobalSearch(_ context.Context, input *pb.GlobalSearchInput) (iface.ISearchResult, error) {
+func (b *BleveScorch) GlobalSearch(_ context.Context, input *pb.GlobalSearchInput) (iface.IIndexStorageSearchResult, error) {
 	indexPath := b.path + "/" + string(input.Namespace)
 	index, err := bleveSearch.Open(indexPath)
 	if err != nil {

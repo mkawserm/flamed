@@ -1,22 +1,21 @@
 package types
 
 import (
-	bleveSearch "github.com/blevesearch/bleve"
-	"github.com/blevesearch/bleve/search"
 	"github.com/graphql-go/graphql"
+	"github.com/mkawserm/flamed/pkg/iface"
 )
 
-var GQLDocumentMatch = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "DocumentMatch",
-	Description: "Show matched document",
+var GQLDocument = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "Document",
+	Description: "Show document",
 	Fields: graphql.Fields{
 		"id": &graphql.Field{
 			Name:        "id",
 			Description: "ID",
 			Type:        graphql.NewNonNull(graphql.String),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				dm, _ := p.Source.(*search.DocumentMatch)
-				return dm.ID, nil
+				dm, _ := p.Source.(iface.IDocument)
+				return dm.ID(), nil
 			},
 		},
 
@@ -25,8 +24,8 @@ var GQLDocumentMatch = graphql.NewObject(graphql.ObjectConfig{
 			Description: "ID",
 			Type:        graphql.NewNonNull(graphql.Float),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				dm, _ := p.Source.(*search.DocumentMatch)
-				return dm.Score, nil
+				dm, _ := p.Source.(iface.IDocument)
+				return dm.Score(), nil
 			},
 		},
 
@@ -35,28 +34,28 @@ var GQLDocumentMatch = graphql.NewObject(graphql.ObjectConfig{
 			Description: "Index",
 			Type:        graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				dm, _ := p.Source.(*search.DocumentMatch)
-				return dm.Index, nil
+				dm, _ := p.Source.(iface.IDocument)
+				return dm.Index(), nil
 			},
 		},
 	},
 })
 
-var GQLBleveSearchResult = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "BleveSearchResult",
-	Description: "Bleve search result",
+var GQLSearchResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "SearchResponse",
+	Description: "Search response",
 	Fields: graphql.Fields{
 		"hits": &graphql.Field{
 			Name:        "hits",
 			Description: "Hits",
-			Type:        graphql.NewList(GQLDocumentMatch),
+			Type:        graphql.NewList(GQLDocument),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				sr, ok := p.Source.(*bleveSearch.SearchResult)
+				sr, ok := p.Source.(iface.ISearchResponse)
 				if !ok {
 					return nil, nil
 				}
 
-				return sr.Hits, nil
+				return sr.Hits(), nil
 			},
 		},
 
@@ -65,12 +64,12 @@ var GQLBleveSearchResult = graphql.NewObject(graphql.ObjectConfig{
 			Description: "Total result",
 			Type:        GQLUInt64Type,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				sr, ok := p.Source.(*bleveSearch.SearchResult)
+				sr, ok := p.Source.(iface.ISearchResponse)
 				if !ok {
 					return nil, nil
 				}
 
-				return NewUInt64FromUInt64(sr.Total), nil
+				return NewUInt64FromUInt64(sr.Total()), nil
 			},
 		},
 
@@ -79,12 +78,12 @@ var GQLBleveSearchResult = graphql.NewObject(graphql.ObjectConfig{
 			Description: "Maximum score",
 			Type:        graphql.Float,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				sr, ok := p.Source.(*bleveSearch.SearchResult)
+				sr, ok := p.Source.(iface.ISearchResponse)
 				if !ok {
 					return nil, nil
 				}
 
-				return sr.MaxScore, nil
+				return sr.MaxScore(), nil
 			},
 		},
 
@@ -93,12 +92,12 @@ var GQLBleveSearchResult = graphql.NewObject(graphql.ObjectConfig{
 			Description: "Search time",
 			Type:        GQLUInt64Type,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				sr, ok := p.Source.(*bleveSearch.SearchResult)
+				sr, ok := p.Source.(iface.ISearchResponse)
 				if !ok {
 					return nil, nil
 				}
 
-				return NewUInt64FromUInt64(uint64(sr.Took)), nil
+				return NewUInt64FromUInt64(uint64(sr.Took())), nil
 			},
 		},
 
@@ -107,12 +106,12 @@ var GQLBleveSearchResult = graphql.NewObject(graphql.ObjectConfig{
 			Description: "Search time in string",
 			Type:        graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				sr, ok := p.Source.(*bleveSearch.SearchResult)
+				sr, ok := p.Source.(iface.ISearchResponse)
 				if !ok {
 					return nil, nil
 				}
 
-				return sr.Took.String(), nil
+				return sr.Took().String(), nil
 			},
 		},
 	},

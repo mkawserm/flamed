@@ -49,13 +49,13 @@ func (g *GlobalOperation) Setup(clusterID uint64, namespace string, rw iface.IRe
 	return nil
 }
 
-func (g *GlobalOperation) Search(globalSearchInput *pb.GlobalSearchInput) (iface.ISearchResult, error) {
+func (g *GlobalOperation) Search(globalSearchInput *pb.GlobalSearchInput) (iface.IIndexStorageSearchResult, error) {
 	output, err := g.mRW.Read(g.mClusterID, globalSearchInput, g.mTimeout)
 	if err != nil {
 		return nil, err
 	}
 
-	if v, ok := output.(iface.ISearchResult); ok {
+	if v, ok := output.(iface.IIndexStorageSearchResult); ok {
 		return v, nil
 	} else {
 		return nil, x.ErrUnknownValue
