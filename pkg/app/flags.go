@@ -230,7 +230,7 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 
 	cmd.PersistentFlags().
 		Uint64("snapshot-entries",
-			100,
+			1000,
 			"Snapshot entries")
 	_ = viper.BindPFlag(constant.SnapshotEntries, cmd.PersistentFlags().Lookup("snapshot-entries"))
 
