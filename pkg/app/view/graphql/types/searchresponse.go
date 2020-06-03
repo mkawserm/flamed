@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/graphql-go/graphql"
+	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/iface"
 )
 
@@ -10,7 +11,7 @@ var GQLDocument = graphql.NewObject(graphql.ObjectConfig{
 	Description: "Show document",
 	Fields: graphql.Fields{
 		"id": &graphql.Field{
-			Name:        "id",
+			Name:        "ID",
 			Description: "ID",
 			Type:        graphql.NewNonNull(graphql.String),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -20,8 +21,8 @@ var GQLDocument = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"score": &graphql.Field{
-			Name:        "score",
-			Description: "ID",
+			Name:        "Score",
+			Description: "Score",
 			Type:        graphql.NewNonNull(graphql.Float),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				dm, _ := p.Source.(iface.IDocument)
@@ -30,12 +31,22 @@ var GQLDocument = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"index": &graphql.Field{
-			Name:        "index",
+			Name:        "Index",
 			Description: "Index",
 			Type:        graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				dm, _ := p.Source.(iface.IDocument)
 				return dm.Index(), nil
+			},
+		},
+
+		"namespace": &graphql.Field{
+			Name:        "Namespace",
+			Description: "Namespace",
+			Type:        graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				dm, _ := p.Source.(iface.IDocument)
+				return string(crypto.GetNamespaceFromStateAddressHexString(dm.ID())), nil
 			},
 		},
 	},
@@ -46,7 +57,7 @@ var GQLSearchResponse = graphql.NewObject(graphql.ObjectConfig{
 	Description: "Search response",
 	Fields: graphql.Fields{
 		"hits": &graphql.Field{
-			Name:        "hits",
+			Name:        "Hits",
 			Description: "Hits",
 			Type:        graphql.NewList(GQLDocument),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -60,7 +71,7 @@ var GQLSearchResponse = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"total": &graphql.Field{
-			Name:        "total",
+			Name:        "Total",
 			Description: "Total result",
 			Type:        GQLUInt64Type,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -74,7 +85,7 @@ var GQLSearchResponse = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"maxScore": &graphql.Field{
-			Name:        "maxScore",
+			Name:        "MaxScore",
 			Description: "Maximum score",
 			Type:        graphql.Float,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -88,7 +99,7 @@ var GQLSearchResponse = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"took": &graphql.Field{
-			Name:        "took",
+			Name:        "Took",
 			Description: "Search time",
 			Type:        GQLUInt64Type,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -102,7 +113,7 @@ var GQLSearchResponse = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"searchTime": &graphql.Field{
-			Name:        "searchTime",
+			Name:        "SearchTime",
 			Description: "Search time in string",
 			Type:        graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
