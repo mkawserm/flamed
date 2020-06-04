@@ -1,0 +1,159 @@
+{
+  "info": {
+    "_postman_id": "f96541bb-e24a-4689-960b-20e020dd86a5",
+    "name": "FLAMED",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "QUERY",
+      "item": [
+        {
+          "name": "flamed",
+          "item": [
+            {
+              "name": "admin",
+              "item": [
+                {
+                  "name": "getAccessControl",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "query GetAccessControl($clusterID: UInt64!,$username:String!, $namespace:String!) {\n    flamed{\n        admin(clusterID:$clusterID){\n            getAccessControl(username:$username, namespace:$namespace){\n                createdAt\n                data\n                hasDeletePermission\n                hasReadPermission\n                hasUpdatePermission\n                hasWritePermission\n                meta\n                namespace\n                permission\n                updatedAt\n                username\n            }   \n        }\n    }\n}",
+                        "variables": "{\n\t\"username\": \"admin\",\n\t\"namespace\": \"test\",\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "protocolProfileBehavior": {},
+              "_postman_isSubFolder": true
+            }
+          ],
+          "description": "Flamed administrative infomation API",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "54fe521f-b856-41ba-9891-3d1b7b63f36f",
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "8b3e2bc9-046d-4b89-918e-1bf3b5ccf803",
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "globalOperation",
+          "item": [],
+          "description": "Flamed supported global operation",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "707b88ec-59fe-499c-b71d-78c09ff7793b",
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "39713172-acb7-4e9a-b1e1-4f72b804b459",
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "intKeyTP",
+          "item": [],
+          "description": "Integer Key Trnsaction Processor",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "8fe69bf1-a34b-4e8a-9c69-accb7b29aad7",
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "492ce881-df33-4fd3-b261-9e9813cbc0d6",
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "jsonTP",
+          "item": [],
+          "description": "Json Transaction Processor",
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "MUTATION",
+      "item": [],
+      "protocolProfileBehavior": {}
+    }
+  ],
+  "protocolProfileBehavior": {}
+}
