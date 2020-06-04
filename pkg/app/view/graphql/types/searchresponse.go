@@ -189,7 +189,7 @@ var GQLDocument = graphql.NewObject(graphql.ObjectConfig{
 var GQLFacet = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "Facet",
 	Description: "Facet",
-	Fields: &graphql.Fields{
+	Fields: graphql.Fields{
 		"name": &graphql.Field{
 			Name: "Name",
 			Type: graphql.String,
