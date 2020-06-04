@@ -15,7 +15,7 @@
               "name": "admin",
               "item": [
                 {
-                  "name": "getAccessControl",
+                  "name": "isAccessControlAvailable",
                   "request": {
                     "auth": {
                       "type": "basic",
@@ -39,6 +39,186 @@
                       "graphql": {
                         "query": "query GetAccessControl($clusterID: UInt64!,$username:String!, $namespace:String!) {\n    flamed{\n        admin(clusterID:$clusterID){\n            getAccessControl(username:$username, namespace:$namespace){\n                createdAt\n                data\n                hasDeletePermission\n                hasReadPermission\n                hasUpdatePermission\n                hasWritePermission\n                meta\n                namespace\n                permission\n                updatedAt\n                username\n            }   \n        }\n    }\n}",
                         "variables": "{\n\t\"username\": \"admin\",\n\t\"namespace\": \"test\",\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "getAccessControl",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "query IsAccessControlAvailable($clusterID: UInt64!,$username:String!, $namespace:String!) {\n    flamed{\n        admin(clusterID:$clusterID){\n            isAccessControlAvailable(username:$username, namespace:$namespace)\n        }\n    }\n}",
+                        "variables": "{\n\t\"username\": \"admin\",\n\t\"namespace\": \"test\",\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "isIndexMetaAvailable",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "query IsIndexMetaAvailable($clusterID: UInt64!, $namespace:String!) {\n    flamed{\n        admin(clusterID:$clusterID){\n            isIndexMetaAvailable(namespace:$namespace)   \n        }\n    }\n}",
+                        "variables": "{\n\t\"namespace\": \"test\",\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "getIndexMeta",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "query GetIndexMeta($clusterID: UInt64!, $namespace:String!) {\n    flamed{\n        admin(clusterID:$clusterID){\n            getIndexMeta(namespace:$namespace){\n                createdAt\n                customAnalysis\n                default\n                defaultAnalyzer\n                defaultDateTimeParser\n                defaultField\n                defaultType\n                docValuesDynamic\n                enabled\n                indexDynamic\n                namespace\n                storeDynamic\n                typeField\n                updatedAt\n                version\n                indexDocumentList {\n                    default\n                    dynamic\n                    enabled\n                    name\n                    indexFieldList{\n                        analyzer\n                        docValues\n                        enabled\n                        includeInAll\n                        includeTermVectors\n                        index\n                        indexFieldType\n                        name\n                        store\n                    }\n                }\n            }   \n        }\n    }\n}",
+                        "variables": "{\n\t\"namespace\": \"test\",\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "isUserAvailable",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "query IsUserAvailable($clusterID: UInt64!, $username:String!) {\n    flamed{\n        admin(clusterID:$clusterID){\n            isUserAvailable(username:$username)\n        }\n    }\n}",
+                        "variables": "{\n\t\"username\": \"admin\",\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "getUser",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "query GetUser($clusterID: UInt64!, $username:String!) {\n    flamed{\n        admin(clusterID:$clusterID){\n            getUser(username:$username){\n                createdAt\n                data\n                meta\n                password\n                roles\n                updatedAt\n                userType\n                username\n            }\n        }\n    }\n}",
+                        "variables": "{\n\t\"username\": \"admin\",\n\t\"clusterID\": \"1\"\n}"
                       }
                     },
                     "url": {
