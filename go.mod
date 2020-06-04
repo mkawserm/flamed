@@ -8,7 +8,7 @@ require (
 	github.com/golang/protobuf v1.4.1
 	github.com/google/uuid v1.1.1
 	github.com/graphql-go/graphql v0.7.9
-	github.com/lni/dragonboat/v3 v3.1.1-0.20200524160912-79134da77b20
+	github.com/lni/dragonboat/v3 v3.1.1-0.20200603153911-85dbb966cc03
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0

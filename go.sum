@@ -59,6 +59,8 @@ github.com/cockroachdb/pebble v0.0.0-20200504143515-e6f57fcc8db7 h1:KaulK4RUD6pY
 github.com/cockroachdb/pebble v0.0.0-20200504143515-e6f57fcc8db7/go.mod h1:4htqGJZBuuX7YR/S8KKD6GBBC0Ibl+wvy6VEuiGAb6c=
 github.com/cockroachdb/pebble v0.0.0-20200520133530-1977fd885276 h1:y1NIJVnpWF4uzwetXKgpR2rOBAgpheW1fcmWDmoP5+M=
 github.com/cockroachdb/pebble v0.0.0-20200520133530-1977fd885276/go.mod h1:4htqGJZBuuX7YR/S8KKD6GBBC0Ibl+wvy6VEuiGAb6c=
+github.com/cockroachdb/pebble v0.0.0-20200526130908-5f17be9b9e37 h1:7qhw0jV114RAEtjJnxz1SeCj1+CbDSQrRqwTIcjD3OI=
+github.com/cockroachdb/pebble v0.0.0-20200526130908-5f17be9b9e37/go.mod h1:4htqGJZBuuX7YR/S8KKD6GBBC0Ibl+wvy6VEuiGAb6c=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
@@ -198,8 +200,12 @@ github.com/lni/dragonboat/v3 v3.1.1-0.20200518120809-5ce914b80953 h1:T2wgK6o2ZeN
 github.com/lni/dragonboat/v3 v3.1.1-0.20200518120809-5ce914b80953/go.mod h1:9OHwG/R1FBGzvykhmo54E1F7KtDSPHhZX3WCXu7LgBQ=
 github.com/lni/dragonboat/v3 v3.1.1-0.20200524160912-79134da77b20 h1:dYJpUBbvvzCz4EAmTyUB1NaiuTdn6hIgn7oB0hMVXJc=
 github.com/lni/dragonboat/v3 v3.1.1-0.20200524160912-79134da77b20/go.mod h1:EewNOKE0ghi1eY+bjgz0OTBeLJ8Nau/nVetMOqTtX98=
+github.com/lni/dragonboat/v3 v3.1.1-0.20200603153911-85dbb966cc03 h1:a6MGdPJkde1D1f8643+DUVEj0NQjytmUWVLzRnHn/lo=
+github.com/lni/dragonboat/v3 v3.1.1-0.20200603153911-85dbb966cc03/go.mod h1:wUv/Ig9whEmfWiMOypZyhchYeU2H1VaNApDytwYqd0c=
 github.com/lni/goutils v1.1.0 h1:dnLcvFyaJ3Wt1YkcFUOd2Vxq+E+ioGW1HVJtDLseC4U=
 github.com/lni/goutils v1.1.0/go.mod h1:NDD+zR5cMNH2OsJj+r/X7zBSzBlmxytUUot268gtOOw=
+github.com/lni/goutils v1.2.0 h1:zROCmctQ/Nq0aMaRsSD5t8l/AO39vGRUoYQ7/RTvBj8=
+github.com/lni/goutils v1.2.0/go.mod h1:NDD+zR5cMNH2OsJj+r/X7zBSzBlmxytUUot268gtOOw=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1 h1:ZC2Vc7/ZFkGmsVC9KvOjumD+G5lXy2RtTKyzRKO2BQ4=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
