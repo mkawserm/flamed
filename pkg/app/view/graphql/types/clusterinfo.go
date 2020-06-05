@@ -57,11 +57,11 @@ var GQLClusterInfoType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"stateMachineType": &graphql.Field{
-			Type:        GQLUInt64Type,
+			Type:        GQLStateMachineType,
 			Description: "State machine type",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if clusterInfo, ok := p.Source.(dragonboat.ClusterInfo); ok {
-					return NewUInt64FromUInt64(uint64(clusterInfo.StateMachineType)), nil
+					return int(clusterInfo.StateMachineType), nil
 				}
 				return nil, nil
 			},
