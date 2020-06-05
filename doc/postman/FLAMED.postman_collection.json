@@ -235,6 +235,86 @@
               "_postman_isSubFolder": true
             },
             {
+              "name": "nodeAdmin",
+              "item": [
+                {
+                  "name": "appliedIndex",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "query AppliedIndex($clusterID: UInt64!) {\n    flamed{\n        nodeAdmin(clusterID:$clusterID){\n            appliedIndex\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "nodeAdmin",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "query AppliedIndex($clusterID: UInt64!) {\n    flamed{\n        nodeAdmin(clusterID:$clusterID){\n            appliedIndex\n            clusterMembership {\n                configChangeID\n                nodes {\n                    nodeID\n                    raftAddress\n                }\n                    \n                observers {\n                    nodeID\n                    raftAddress\n                }\n                \n                witnesses {\n                    nodeID\n                    raftAddress\n                }\n      \n                removed {\n                    nodeID\n                    raftAddress\n                }\n            }\n            \n            leaderID\n            hasNodeInfo(nodeID:1)\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "description": "Node admin",
+              "protocolProfileBehavior": {},
+              "_postman_isSubFolder": true
+            },
+            {
               "name": "nodeHostInfo",
               "item": [
                 {
