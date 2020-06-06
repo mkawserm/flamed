@@ -1074,6 +1074,10 @@ func (s *Storage) buildIndex() error {
 			})
 
 			currentNamespace := string(entry.Namespace)
+			if oldNamespace == "" {
+				oldNamespace = currentNamespace
+			}
+
 			if oldNamespace != currentNamespace {
 				if len(indexDataList) != 0 {
 					indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
@@ -1139,10 +1143,24 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 			logger.L("storage").Error("UpsertIndexMeta failure", zap.Error(err))
 			return err
 		}
+	} else {
+		indexMeta := &pb.IndexMeta{
+			Namespace: namespace,
+			Version:   1,
+			Enabled:   true,
+			Default:   true,
+			CreatedAt: uint64(time.Now().UnixNano()),
+			UpdatedAt: uint64(time.Now().UnixNano()),
+		}
+
+		if err := s.mIndexStorage.UpsertIndexMeta(indexMeta); err != nil {
+			logger.L("storage").Error("default UpsertIndexMeta failure", zap.Error(err))
+			return err
+		}
 	}
 
 	indexDataList := make([]*variant.IndexData, 0, 100)
-	oldNamespace := ""
+	currentNamespace := string(namespace)
 	for it.Seek(namespace); it.ValidForPrefix(namespace); it.Next() {
 		snap := it.StateSnapshot()
 		if snap != nil {
@@ -1166,22 +1184,8 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 				Action: pb.Action_UPSERT,
 			})
 
-			currentNamespace := string(entry.Namespace)
-			if oldNamespace != currentNamespace {
-				if len(indexDataList) != 0 {
-					indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
-					err := s.directIndex(indexDataContainer)
-					if err != nil {
-						logger.L("storage").Error("indexing error", zap.Error(err))
-					}
-					indexDataList = make([]*variant.IndexData, 0, 100)
-				}
-
-				oldNamespace = currentNamespace
-			}
-
 			if len(indexDataList) == 100 {
-				indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
+				indexDataContainer := IndexDataContainer{currentNamespace: indexDataList}
 				err := s.directIndex(indexDataContainer)
 				if err != nil {
 					logger.L("storage").Error("indexing error", zap.Error(err))
@@ -1192,7 +1196,7 @@ func (s *Storage) buildIndexByNamespace(namespace []byte) error {
 	}
 
 	if len(indexDataList) != 0 {
-		indexDataContainer := IndexDataContainer{oldNamespace: indexDataList}
+		indexDataContainer := IndexDataContainer{currentNamespace: indexDataList}
 		err := s.directIndex(indexDataContainer)
 		if err != nil {
 			logger.L("storage").Error("indexing error", zap.Error(err))
