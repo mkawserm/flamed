@@ -35,7 +35,7 @@ var GQLDelete = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError("write permission required")
 		}
 
-		pr, err := jsonContext.Client.Delete(id)
+		pr, err := jsonContext.Client.DeleteJSONMap(map[string]interface{}{"id": id})
 
 		if err != nil {
 			return nil, gqlerrors.NewFormattedError(err.Error())
