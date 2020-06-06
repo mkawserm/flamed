@@ -1213,7 +1213,7 @@ func (s *Storage) directIndex(indexDataContainer IndexDataContainer) error {
 
 	for k, v := range indexDataContainer {
 		if !s.mIndexStorage.CanIndex(k) && s.mConfiguration.AutoIndexMeta() {
-			//logger.L("storage").Info("no indexmeta found, creating new one", zap.String("namespace",k))
+			logger.L("storage").Debug("no indexmeta found, creating new one", zap.String("namespace", k))
 			indexMeta := &pb.IndexMeta{
 				Namespace: []byte(k),
 				Version:   1,
