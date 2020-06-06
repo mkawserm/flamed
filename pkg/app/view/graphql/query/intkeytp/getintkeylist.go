@@ -14,7 +14,7 @@ var GQLGetIntKeyList = &graphql.Field{
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
-		"name": &graphql.ArgumentConfig{
+		"nameList": &graphql.ArgumentConfig{
 			Description: "Name list",
 			Type:        graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(graphql.String))),
 		},
