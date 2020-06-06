@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/view/graphql/types"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/flamed"
+	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/spf13/viper"
 )
 
@@ -31,7 +32,7 @@ var RequestSnapshot = &graphql.Field{
 		exported := p.Args["exported"].(bool)
 		overrideCompactionOverhead := p.Args["overrideCompactionOverhead"].(bool)
 		exportPath := viper.GetString(constant.StoragePath) + "/snapshot"
-
+		utility.MkPath(exportPath)
 		nodeAdmin, ok := p.Source.(*flamed.NodeAdmin)
 		if !ok {
 			return nil, nil
