@@ -677,10 +677,22 @@ func (s *Storage) ApplyProposal(ctx context.Context, proposal *pb.Proposal, entr
 			return pr
 		} else {
 			if len(stateContext.mIndexDataList) > 0 {
-				indexDataContainer[string(t.Namespace)] = stateContext.mIndexDataList
+				if _, found := indexDataContainer[string(t.Namespace)]; found {
+					indexDataContainer[string(t.Namespace)] = append(indexDataContainer[string(t.Namespace)],
+						stateContext.mIndexDataList...)
+				} else {
+					indexDataContainer[string(t.Namespace)] = stateContext.mIndexDataList
+				}
 			}
+
 			if len(stateContext.mIndexMetaActionList) > 0 {
-				indexMetaActionContainer[string(t.Namespace)] = stateContext.mIndexMetaActionList
+				if _, found := indexMetaActionContainer[string(t.Namespace)]; found {
+					indexMetaActionContainer[string(t.Namespace)] = append(
+						indexMetaActionContainer[string(t.Namespace)],
+						stateContext.mIndexMetaActionList...)
+				} else {
+					indexMetaActionContainer[string(t.Namespace)] = stateContext.mIndexMetaActionList
+				}
 			}
 		}
 	}
