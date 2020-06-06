@@ -1162,7 +1162,7 @@
                   "mode": "graphql",
                   "graphql": {
                     "query": "mutation JsonTPMutatorInsert($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        insert(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": \"100\"\n\t}\n}"
                   }
                 },
                 "url": {
@@ -1198,7 +1198,7 @@
                   "mode": "graphql",
                   "graphql": {
                     "query": "mutation JsonTPMutatorUpsert($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        upsert(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": \"100\"\n\t}\n}"
                   }
                 },
                 "url": {
@@ -1234,7 +1234,7 @@
                   "mode": "graphql",
                   "graphql": {
                     "query": "mutation JsonTPMutatorMerge($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        merge(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": \"100\"\n\t}\n}"
                   }
                 },
                 "url": {
@@ -1270,7 +1270,7 @@
                   "mode": "graphql",
                   "graphql": {
                     "query": "mutation JsonTPMutatorUpdate($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        update(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": \"100\"\n\t}\n}"
                   }
                 },
                 "url": {
@@ -1342,7 +1342,7 @@
                   "mode": "graphql",
                   "graphql": {
                     "query": "mutation JsonTPMutatorBatchProcess($clusterID:UInt64!, $namespace:String!, $input:[JSON!]!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        batchProcess(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": [\n\t\t{\n\t\t\t\"action\": \"INSERT\",\n\t\t\t\"data\": {\"id\": \"3\", \"value\": 300}\n\t\t},\n\t\t{\n\t\t\t\"action\":\"INSERT\",\n\t\t\t\"data\": {\"id\": \"4\", \"value\": 400}\n\t\t}\n\t]\n}"
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": [\n\t\t{\n\t\t\t\"action\": \"UPSERT\",\n\t\t\t\"data\": {\"id\": \"1\", \"value\": \"100\"}\n\t\t},\n\t\t{\n\t\t\t\"action\":\"UPSERT\",\n\t\t\t\"data\": {\"id\": \"2\", \"value\": \"200\"}\n\t\t},\n\t\t{\n\t\t\t\"action\": \"UPSERT\",\n\t\t\t\"data\": {\"id\": \"3\", \"value\": \"300\"}\n\t\t},\n\t\t{\n\t\t\t\"action\":\"UPSERT\",\n\t\t\t\"data\": {\"id\": \"4\", \"value\": \"400\"}\n\t\t},\n\t\t{\n\t\t\t\"action\":\"UPSERT\",\n\t\t\t\"data\": {\"id\": \"5\", \"value\": \"500\"}\n\t\t}\n\t]\n}"
                   }
                 },
                 "url": {
@@ -2173,7 +2173,7 @@
               "mode": "graphql",
               "graphql": {
                 "query": "query Get($clusterID:UInt64!, $namespace:String!, $id:ID!)\n{\n    jsonTP(clusterID:$clusterID, namespace:$namespace) {\n        get(id:$id)\n    }\n}",
-                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"id\": 1\n}"
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"id\": 2\n}"
               }
             },
             "url": {
@@ -2281,7 +2281,7 @@
               "mode": "graphql",
               "graphql": {
                 "query": "mutation JsonTPMutatorInsert($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        insert(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": \"100\"\n\t}\n}"
               }
             },
             "url": {
@@ -2295,6 +2295,11 @@
         },
         {
           "name": "upsert",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept-encoding": true
+            }
+          },
           "request": {
             "auth": {
               "type": "basic",
@@ -2317,7 +2322,7 @@
               "mode": "graphql",
               "graphql": {
                 "query": "mutation JsonTPMutatorUpsert($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        upsert(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": \"100\"\n\t}\n}"
               }
             },
             "url": {
@@ -2353,7 +2358,7 @@
               "mode": "graphql",
               "graphql": {
                 "query": "mutation JsonTPMutatorMerge($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        merge(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": \"100\"\n\t}\n}"
               }
             },
             "url": {
@@ -2389,7 +2394,7 @@
               "mode": "graphql",
               "graphql": {
                 "query": "mutation JsonTPMutatorUpdate($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        update(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": \"100\"\n\t}\n}"
               }
             },
             "url": {
@@ -2461,7 +2466,7 @@
               "mode": "graphql",
               "graphql": {
                 "query": "mutation JsonTPMutatorBatchProcess($clusterID:UInt64!, $namespace:String!, $input:[JSON!]!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        batchProcess(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
-                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": [\n\t\t{\n\t\t\t\"action\": \"INSERT\",\n\t\t\t\"data\": {\"id\": \"3\", \"value\": 300}\n\t\t},\n\t\t{\n\t\t\t\"action\":\"INSERT\",\n\t\t\t\"data\": {\"id\": \"4\", \"value\": 400}\n\t\t}\n\t]\n}"
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": [\n\t\t{\n\t\t\t\"action\": \"UPSERT\",\n\t\t\t\"data\": {\"id\": \"1\", \"value\": \"100\"}\n\t\t},\n\t\t{\n\t\t\t\"action\":\"UPSERT\",\n\t\t\t\"data\": {\"id\": \"2\", \"value\": \"200\"}\n\t\t}\n\t]\n}"
               }
             },
             "url": {
@@ -2482,6 +2487,11 @@
       "item": [
         {
           "name": "search",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept-encoding": true
+            }
+          },
           "request": {
             "auth": {
               "type": "basic",
