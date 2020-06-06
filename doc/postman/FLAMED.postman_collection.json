@@ -896,7 +896,1664 @@
     },
     {
       "name": "MUTATION",
-      "item": [],
+      "item": [
+        {
+          "name": "counterMutator",
+          "item": [
+            {
+              "name": "increment",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation Increment {\n    counterMutator {\n        increment\n    }\n}",
+                    "variables": ""
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "decrement",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation Decrement {\n    counterMutator {\n        decrement\n    }\n}",
+                    "variables": ""
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "description": "Counter Mutator",
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "intKeyTPMutator",
+          "item": [
+            {
+              "name": "insert",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation Insert($clusterID:UInt64!, $namespace:String!, $name: String!, $value:UInt64!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        insert(name:$name,value:$value) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\",\n\t\"value\": \"1\"\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "upsert",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation Upsert($clusterID:UInt64!, $namespace:String!, $name: String!, $value:UInt64!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        upsert(name:$name,value:$value) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\",\n\t\"value\": \"1\"\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "increment",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation Increment($clusterID:UInt64!, $namespace:String!, $name: String!, $value:UInt64!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        increment(name:$name, value:$value) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\",\n\t\"value\": \"1\"\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "decrement",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation Decrement($clusterID:UInt64!, $namespace:String!, $name: String!, $value:UInt64!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        decrement(name:$name, value:$value) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\",\n\t\"value\": \"1\"\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation Delete($clusterID:UInt64!, $namespace:String!, $name: String!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        delete(name:$name) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\"\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "description": "Int Key TP Mutator",
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "jsonTPMutator",
+          "item": [
+            {
+              "name": "insert",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation JsonTPMutatorInsert($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        insert(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "upsert",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation JsonTPMutatorUpsert($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        upsert(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "merge",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation JsonTPMutatorMerge($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        merge(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation JsonTPMutatorUpdate($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        update(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation JsonTPMutatorDelete($clusterID:UInt64!, $namespace:String!, $id:ID!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        delete(id:$id) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"id\":1\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "batchProcess",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation JsonTPMutatorBatchProcess($clusterID:UInt64!, $namespace:String!, $input:[JSON!]!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        batchProcess(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": [\n\t\t{\n\t\t\t\"action\": \"INSERT\",\n\t\t\t\"data\": {\"id\": \"3\", \"value\": 300}\n\t\t},\n\t\t{\n\t\t\t\"action\":\"INSERT\",\n\t\t\t\"data\": {\"id\": \"4\", \"value\": 400}\n\t\t}\n\t]\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "description": "JSON Transaction Processor Mutator",
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "flamedMutator",
+          "item": [
+            {
+              "name": "adminMutator",
+              "item": [
+                {
+                  "name": "changeUserPassword",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation ChangeUserPassword($clusterID: UInt64!, $username: String!, $password: String!) {\n    flamedMutator {\n        adminMutator(clusterID: $clusterID) {\n            changeUserPassword(username: $username, password: $password) {\n                errorCode\n                errorText\n                status\n                uuid\n                transactionResponses {\n                    errorCode\n                    errorText\n                    familyName\n                    familyVersion\n                    responseMessage\n                    status\n                }\n            }\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"username\": \"admin\",\n\t\"password\": \"admin\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "upsertAccessControl",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation UpsertAccessControl($clusterID: UInt64!, $username: String!, $namespace: String!, $permission: PermissionInput!) {\n    flamedMutator {\n        adminMutator(clusterID: $clusterID) {\n            upsertAccessControl(username: $username, namespace: $namespace, permission: $permission) {\n                errorCode\n                errorText\n                status\n                uuid\n                transactionResponses {\n                    errorCode\n                    errorText\n                    familyName\n                    familyVersion\n                    responseMessage\n                    status\n                }\n            }\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"username\": \"admin\",\n\t\"namespace\": \"*\",\n\t\"permission\": {\n\t\t\"read\":true,\n\t\t\"write\":true,\n\t\t\"update\":true,\n\t\t\"delete\":true,\n\t\t\"globalSearch\":true,\n\t\t\"globalIterate\":true,\n\t\t\"globalRetrieve\":true,\n\t\t\"globalCRUD\":true\n\t}\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "deleteAccessControl",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation DeleteAccessControl($clusterID: UInt64!, $username: String!, $namespace: String!) {\n    flamedMutator {\n        adminMutator(clusterID: $clusterID) {\n            deleteAccessControl(username: $username, namespace: $namespace) {\n                errorCode\n                errorText\n                status\n                uuid\n                transactionResponses {\n                    errorCode\n                    errorText\n                    familyName\n                    familyVersion\n                    responseMessage\n                    status\n                }\n            }\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"username\": \"admin\",\n\t\"namespace\": \"test\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "upsertUser",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation UpsertUser($clusterID: UInt64!, $username: String!, $password: String!, $roles: String, $data: String, $meta: String) {\n    flamedMutator {\n        adminMutator(clusterID: $clusterID) {\n            upsertUser(username: $username, password: $password, roles: $roles, data: $data, meta: $meta) {\n                errorCode\n                errorText\n                status\n                uuid\n                transactionResponses {\n                    errorCode\n                    errorText\n                    familyName\n                    familyVersion\n                    responseMessage\n                    status\n                }\n            }\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"username\": \"test\",\n\t\"password\": \"test\",\n\t\"roles\": \"\",\n\t\"data\": \"\",\n\t\"meta\": \"\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "updateUser",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation UpdateUser($clusterID: UInt64!, $username: String!, $password: String!, $roles: String, $data: String, $meta: String) {\n    flamedMutator {\n        adminMutator(clusterID: $clusterID) {\n            updateUser(username: $username, password: $password, roles: $roles, data: $data, meta: $meta) {\n                errorCode\n                errorText\n                status\n                uuid\n                transactionResponses {\n                    errorCode\n                    errorText\n                    familyName\n                    familyVersion\n                    responseMessage\n                    status\n                }\n            }\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"username\": \"test\",\n\t\"password\": \"test\",\n\t\"roles\": \"\",\n\t\"data\": \"\",\n\t\"meta\": \"\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "deleteUser",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation DeleteUser($clusterID: UInt64!, $username: String!) {\n    flamedMutator {\n        adminMutator(clusterID: $clusterID) {\n            deleteUser(username: $username) {\n                errorCode\n                errorText\n                status\n                uuid\n                transactionResponses {\n                    errorCode\n                    errorText\n                    familyName\n                    familyVersion\n                    responseMessage\n                    status\n                }\n            }\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"username\": \"test\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "protocolProfileBehavior": {},
+              "_postman_isSubFolder": true
+            },
+            {
+              "name": "nodeAdminMutator",
+              "item": [
+                {
+                  "name": "addNode",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation AddNode($clusterID: UInt64!, $nodeID: UInt64!, $address: String!, $configChangeIndex: UInt64!) {\n    flamedMutator {\n        nodeAdminMutator(clusterID: $clusterID) {\n            addNode(nodeID: $nodeID, address: $address,configChangeIndex: $configChangeIndex)\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"nodeID\": \"2\",\n\t\"address\": \"0.0.0.0:8082\",\n\t\"configChangeIndex\": \"0\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "addObserver",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation AddObserver($clusterID: UInt64!, $nodeID: UInt64!, $address: String!, $configChangeIndex: UInt64!) {\n    flamedMutator {\n        nodeAdminMutator(clusterID: $clusterID) {\n            addObserver(nodeID: $nodeID, address: $address,configChangeIndex: $configChangeIndex)\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"nodeID\": \"2\",\n\t\"address\": \"0.0.0.0:8082\",\n\t\"configChangeIndex\": \"0\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "addWitness",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation AddWitness($clusterID: UInt64!, $nodeID: UInt64!, $address: String!, $configChangeIndex: UInt64!) {\n    flamedMutator {\n        nodeAdminMutator(clusterID: $clusterID) {\n            addWitness(nodeID: $nodeID, address: $address,configChangeIndex: $configChangeIndex)\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"nodeID\": \"2\",\n\t\"address\": \"0.0.0.0:8082\",\n\t\"configChangeIndex\": \"0\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "deleteNode",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation DeleteNode($clusterID: UInt64!, $nodeID: UInt64!, $configChangeIndex: UInt64!) {\n    flamedMutator {\n        nodeAdminMutator(clusterID: $clusterID) {\n            deleteNode(nodeID: $nodeID,configChangeIndex: $configChangeIndex)\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"nodeID\": \"2\",\n\t\"configChangeIndex\": \"0\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "buildIndex",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation BuildIndex($clusterID: UInt64!) {\n    flamedMutator {\n        nodeAdminMutator(clusterID: $clusterID) {\n            buildIndex\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "buildIndexByNamespace",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation BuildIndexByNamespace($clusterID: UInt64!, $namespace: String!) {\n    flamedMutator {\n        nodeAdminMutator(clusterID: $clusterID) {\n            buildIndexByNamespace(namespace: $namespace)\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "runStorageGC",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation RunStorageGC($clusterID: UInt64!) {\n    flamedMutator {\n        nodeAdminMutator(clusterID: $clusterID) {\n            runStorageGC\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "requestSnapshot",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation RequestSnapshot($clusterID: UInt64!, $compactionOverhead: UInt64!, $exported: Boolean!, $overrideCompactionOverhead: Boolean!) {\n    flamedMutator {\n        nodeAdminMutator(clusterID: $clusterID) {\n            requestSnapshot(compactionOverhead: $compactionOverhead, exported: $exported, overrideCompactionOverhead: $overrideCompactionOverhead)\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"compactionOverhead\": \"1\",\n\t\"exported\": true,\n\t\"overrideCompactionOverhead\": false\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "protocolProfileBehavior": {},
+              "_postman_isSubFolder": true
+            }
+          ],
+          "description": "Flamed Mutator",
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "IntKeyTP",
+      "item": [
+        {
+          "name": "getIntKey",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetIntKey($clusterID:UInt64!, $namespace:String!, $name:String!)\n{\n    intKeyTP(clusterID:$clusterID, namespace:$namespace) {\n        getIntKey(name:$name){\n            name\n            value\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getIntKeyList",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetIntKey($clusterID:UInt64!, $namespace:String!, $nameList:[String!]!)\n{\n    intKeyTP(clusterID:$clusterID, namespace:$namespace) {\n        getIntKeyList(nameList:$nameList){\n            name\n            value\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"nameList\": [\"one\"]\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "insert",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation Insert($clusterID:UInt64!, $namespace:String!, $name: String!, $value:UInt64!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        insert(name:$name,value:$value) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\",\n\t\"value\": \"1\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "upsert",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation Upsert($clusterID:UInt64!, $namespace:String!, $name: String!, $value:UInt64!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        upsert(name:$name,value:$value) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\",\n\t\"value\": \"1\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "increment",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation Increment($clusterID:UInt64!, $namespace:String!, $name: String!, $value:UInt64!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        increment(name:$name, value:$value) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\",\n\t\"value\": \"1\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "decrement",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation Decrement($clusterID:UInt64!, $namespace:String!, $name: String!, $value:UInt64!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        decrement(name:$name, value:$value) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\",\n\t\"value\": \"1\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation Delete($clusterID:UInt64!, $namespace:String!, $name: String!) {\n    intKeyTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        delete(name:$name) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "JSONTP",
+      "item": [
+        {
+          "name": "get",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query Get($clusterID:UInt64!, $namespace:String!, $id:ID!)\n{\n    jsonTP(clusterID:$clusterID, namespace:$namespace) {\n        get(id:$id)\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"id\": 1\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getList",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetList($clusterID:UInt64!, $namespace:String!, $idList:[ID!]!)\n{\n    jsonTP(clusterID:$clusterID, namespace:$namespace) {\n        getList(idList:$idList)\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"idList\": [1]\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getListByIndexID",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetListByIndexID($clusterID:UInt64!, $namespace:String!, $idList:[String!]!)\n{\n    jsonTP(clusterID:$clusterID, namespace:$namespace) {\n        getListByIndexID(idList:$idList)\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"idList\": [\"746573743a3a4a534f4e3a3a31\"]\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "insert",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation JsonTPMutatorInsert($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        insert(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "upsert",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation JsonTPMutatorUpsert($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        upsert(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "merge",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation JsonTPMutatorMerge($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        merge(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation JsonTPMutatorUpdate($clusterID:UInt64!, $namespace:String!, $input:JSON!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        update(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"id\": \"1\",\n\t\t\"value\": 100\n\t}\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation JsonTPMutatorDelete($clusterID:UInt64!, $namespace:String!, $id:ID!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        delete(id:$id) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"id\":1\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "batchProcess",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation JsonTPMutatorBatchProcess($clusterID:UInt64!, $namespace:String!, $input:[JSON!]!) {\n    jsonTPMutator(clusterID:$clusterID,namespace:$namespace) {\n        batchProcess(input:$input) {\n            errorCode\n            errorText\n            status\n            uuid\n            transactionResponses {\n                errorCode\n                errorText\n                familyName\n                familyVersion\n                responseMessage\n                status\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": [\n\t\t{\n\t\t\t\"action\": \"INSERT\",\n\t\t\t\"data\": {\"id\": \"3\", \"value\": 300}\n\t\t},\n\t\t{\n\t\t\t\"action\":\"INSERT\",\n\t\t\t\"data\": {\"id\": \"4\", \"value\": 400}\n\t\t}\n\t]\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "JSON Transaction Processor",
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "search",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query Search($clusterID:UInt64!, $namespace:String!, $input:SearchInput!) {\n    globalOperation(clusterID:$clusterID, namespace:$namespace) {\n        search(input:$input) {\n            maxScore\n            took\n            total\n            searchTime\n            hits {\n                id\n                score\n                index\n                namespace\n            }\n            facets {\n                field\n                missing\n                name\n                other\n                total\n                terms {\n                    count\n                    term\n                }\n                numericRanges {\n                    count\n                    max\n                    min\n                    name\n                }\n                dateRanges {\n                    count\n                    end\n                    name\n                    start\n                }\n            }\n        }\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"query\": \"*\",\n\t\t\"size\": 20,\n\t\t\"fields\": [\"id\",\"value\"],\n\t\t\"sort\": [\"_id\"],\n\t\t\"highlightFields\": [\"value\"],\n\t\t\"highlightStyle\": \"html\",\n\t\t\"includeLocations\": true,\n\t\t\"explain\": false,\n\t\t\"facets\": [\n\t\t\t{\"name\":\"ValueName\", \"field\":\"value\", \"size\":100},\n\t\t\t{\"name\":\"rangeFacet\", \"field\":\"value\", \"size\":100, \"numericRangeFacets\":[{\"name\":\"99-201\",\"min\":99.0,\"max\":201.0}]}\n         ]\n\t}\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "searchj",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{FLAMED_ADMIN_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query Searchj($clusterID:UInt64!, $namespace:String!, $input:SearchInput!) {\n    globalOperation(clusterID:$clusterID, namespace:$namespace) {\n        searchJ(input:$input)\n    }\n}",
+                "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"query\": \"*\",\n\t\t\"size\": 20,\n\t\t\"fields\": [\"id\",\"value\"],\n\t\t\"sort\": [\"_id\"],\n\t\t\"highlightFields\": [\"value\"],\n\t\t\"highlightStyle\": \"html\",\n\t\t\"includeLocations\": true,\n\t\t\"explain\": false,\n\t\t\"facets\": [\n\t\t\t{\"name\":\"ValueName\", \"field\":\"value\", \"size\":100},\n\t\t\t{\"name\":\"rangeFacet\", \"field\":\"value\", \"size\":100, \"numericRangeFacets\":[{\"name\":\"99-201\",\"min\":99.0,\"max\":201.0}]}\n         ]\n\t}\n}"
+              }
+            },
+            "url": {
+              "raw": "{{FLAMED_GRAPHQL_URL}}",
+              "host": [
+                "{{FLAMED_GRAPHQL_URL}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Search inside the index store",
       "protocolProfileBehavior": {}
     }
   ],
