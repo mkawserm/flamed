@@ -21,7 +21,7 @@ var GQLGetIntKeyList = &graphql.Field{
 	},
 
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		nameList := p.Args["name"].([]interface{})
+		nameList := p.Args["nameList"].([]interface{})
 		ikc, ok := p.Source.(*intkey.Context)
 		if !ok {
 			return nil, nil
