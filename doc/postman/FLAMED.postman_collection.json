@@ -458,7 +458,152 @@
         },
         {
           "name": "globalOperation",
-          "item": [],
+          "item": [
+            {
+              "name": "iterate",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query Iterate($clusterID:UInt64!, $namespace:String!, $limit:UInt64!,$from:String, $prefix:String) {\n    globalOperation(clusterID:$clusterID, namespace:$namespace) {\n        iterate(limit:$limit, from:$from, prefix:$prefix){\n            address\n            stateAvailable\n            stateEntry {\n                namespace\n                familyName\n                familyVersion\n                payload\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"limit\": \"100\",\n\t\"from\": \"\",\n\t\"prefix\": \"\"\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "retrieve",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query Retrieve($clusterID:UInt64!, $namespace:String!, $addresses:[String!]!) {\n    globalOperation(clusterID:$clusterID, namespace:$namespace) {\n        retrieve(addresses:$addresses){\n            stateAvailable\n            address\n            stateEntry {\n                namespace\n                familyName\n                familyVersion\n                payload\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"addresses\": [\"746573743a3a4a534f4e3a3a31\",\"746573743a3a4a534f4e3a3a32\"]\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "search",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query Search($clusterID:UInt64!, $namespace:String!, $input:SearchInput!) {\n    globalOperation(clusterID:$clusterID, namespace:$namespace) {\n        search(input:$input) {\n            maxScore\n            took\n            total\n            searchTime\n            hits {\n                id\n                score\n                index\n                namespace\n            }\n            facets {\n                field\n                missing\n                name\n                other\n                total\n                terms {\n                    count\n                    term\n                }\n                numericRanges {\n                    count\n                    max\n                    min\n                    name\n                }\n                dateRanges {\n                    count\n                    end\n                    name\n                    start\n                }\n            }\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"query\": \"*\",\n\t\t\"size\": 20,\n\t\t\"fields\": [\"id\",\"value\"],\n\t\t\"sort\": [\"_id\"],\n\t\t\"highlightFields\": [\"value\"],\n\t\t\"highlightStyle\": \"html\",\n\t\t\"includeLocations\": true,\n\t\t\"explain\": false,\n\t\t\"facets\": [\n\t\t\t{\"name\":\"ValueName\", \"field\":\"value\", \"size\":100},\n\t\t\t{\"name\":\"rangeFacet\", \"field\":\"value\", \"size\":100, \"numericRangeFacets\":[{\"name\":\"99-201\",\"min\":99.0,\"max\":201.0}]}\n         ]\n\t}\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "searchj",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query Searchj($clusterID:UInt64!, $namespace:String!, $input:SearchInput!) {\n    globalOperation(clusterID:$clusterID, namespace:$namespace) {\n        searchJ(input:$input)\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"input\": {\n\t\t\"query\": \"*\",\n\t\t\"size\": 20,\n\t\t\"fields\": [\"id\",\"value\"],\n\t\t\"sort\": [\"_id\"],\n\t\t\"highlightFields\": [\"value\"],\n\t\t\"highlightStyle\": \"html\",\n\t\t\"includeLocations\": true,\n\t\t\"explain\": false,\n\t\t\"facets\": [\n\t\t\t{\"name\":\"ValueName\", \"field\":\"value\", \"size\":100},\n\t\t\t{\"name\":\"rangeFacet\", \"field\":\"value\", \"size\":100, \"numericRangeFacets\":[{\"name\":\"99-201\",\"min\":99.0,\"max\":201.0}]}\n         ]\n\t}\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
           "description": "Flamed supported global operation",
           "event": [
             {
@@ -487,7 +632,80 @@
         },
         {
           "name": "intKeyTP",
-          "item": [],
+          "item": [
+            {
+              "name": "getIntKey",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query GetIntKey($clusterID:UInt64!, $namespace:String!, $name:String!)\n{\n    intKeyTP(clusterID:$clusterID, namespace:$namespace) {\n        getIntKey(name:$name){\n            name\n            value\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"name\": \"one\"\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "getIntKeyList",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query GetIntKey($clusterID:UInt64!, $namespace:String!, $nameList:[String!]!)\n{\n    intKeyTP(clusterID:$clusterID, namespace:$namespace) {\n        getIntKeyList(nameList:$nameList){\n            name\n            value\n        }\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"nameList\": [\"one\"]\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
           "description": "Integer Key Trnsaction Processor",
           "event": [
             {
@@ -516,8 +734,160 @@
         },
         {
           "name": "jsonTP",
-          "item": [],
+          "item": [
+            {
+              "name": "get",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query Get($clusterID:UInt64!, $namespace:String!, $id:ID!)\n{\n    jsonTP(clusterID:$clusterID, namespace:$namespace) {\n        get(id:$id)\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"id\": 1\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "getList",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query GetList($clusterID:UInt64!, $namespace:String!, $idList:[ID!]!)\n{\n    jsonTP(clusterID:$clusterID, namespace:$namespace) {\n        getList(idList:$idList)\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"idList\": [1]\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "getListByIndexID",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query GetListByIndexID($clusterID:UInt64!, $namespace:String!, $idList:[String!]!)\n{\n    jsonTP(clusterID:$clusterID, namespace:$namespace) {\n        getListByIndexID(idList:$idList)\n    }\n}",
+                    "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\",\n\t\"idList\": [\"746573743a3a4a534f4e3a3a31\"]\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
           "description": "Json Transaction Processor",
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "serviceStatus",
+          "item": [
+            {
+              "name": "serviceStatus",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "{{FLAMED_ADMIN_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query ServiceStatus {\n    serviceStatus {\n        grpcServer\n        httpServer\n        raftServer\n    }\n}",
+                    "variables": ""
+                  }
+                },
+                "url": {
+                  "raw": "{{FLAMED_GRAPHQL_URL}}",
+                  "host": [
+                    "{{FLAMED_GRAPHQL_URL}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
           "protocolProfileBehavior": {},
           "_postman_isSubFolder": true
         }
