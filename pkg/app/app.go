@@ -113,7 +113,7 @@ func (a *App) DisableDefaultCommands() {
 }
 
 func (a *App) UpdateGlobalRequestTimeout(timeout time.Duration) {
-	viper.Set("mGlobalRequestTimeout", timeout)
+	viper.Set(constant.GlobalRequestTimeout, timeout)
 }
 
 func (a *App) AddView(pattern string, handler func(http.ResponseWriter, *http.Request)) {
@@ -134,8 +134,6 @@ func (a *App) AddCommand(commands ...*cobra.Command) {
 
 func (a *App) setup() {
 	a.mFlamedContext.SetFlamed(flamed.NewFlamed())
-	a.mGraphQL = graphql.NewGraphQL(a.mFlamedContext)
-
 	a.mRootCommand = &cobra.Command{
 		Use:   variable.Name,
 		Short: variable.ShortDescription,
@@ -175,17 +173,30 @@ func (a *App) initCommands() {
 	}
 }
 
+func (a *App) initGraphQL() {
+	a.mGraphQL = graphql.NewGraphQL(a.mFlamedContext)
+	_, _ = a.mGraphQL.BuildSchema()
+}
+
+func (a *App) initGraphQLView() {
+	// graphql view
+	schema, _ := a.mGraphQL.BuildSchema()
+	a.AddView("/graphql", graphql2.NewGraphQLView(a.mFlamedContext, schema).GetHTTPHandler())
+}
+
 func (a *App) initViews() {
+	if !viper.GetBool(constant.EnableHTTPServer) {
+		return
+	}
+
 	if !a.mDefaultViewFlag {
 		return
 	}
 
 	if !a.mViewsInitialized {
-		schema, _ := a.mGraphQL.BuildSchema()
 		/* initialize all views here */
+		a.initGraphQLView()
 
-		// graphql view
-		a.AddView("/graphql", graphql2.NewGraphQLView(a.mFlamedContext, schema).GetHTTPHandler())
 		a.mViewsInitialized = true
 	}
 }
@@ -207,10 +218,9 @@ func (a *App) initTransactionProcessors() {
 }
 
 func (a *App) initBeforeCommandExecution() {
-	/* build schema */
-	_, _ = a.mGraphQL.BuildSchema()
-
 	/* setup defaults */
+
+	// set log level
 	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString(constant.LogLevel))
 	a.mFlamedContext.SetGlobalTimeout(viper.GetDuration(constant.GlobalRequestTimeout))
 
@@ -225,6 +235,12 @@ func (a *App) initBeforeCommandExecution() {
 			)
 		}
 	}
+
+	/* init graphql */
+	a.initGraphQL()
+
+	/* init views */
+	a.initViews()
 }
 
 func (a *App) Execute() error {

@@ -26,7 +26,7 @@ import (
 
 var RunCMD = &cobra.Command{
 	Use:   "run",
-	Short: "Run mFlamed server",
+	Short: "Run server",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(viper.GetString(constant.StoragePath)) == 0 {
 			fmt.Println("StoragePath can not be empty")
@@ -58,11 +58,11 @@ var RunCMD = &cobra.Command{
 
 		// start cluster
 		startCluster()
+
 		// initialize cluster defaults
 		// like admin user and other things
 		initializeClusterDefaults()
-		// initialize views
-		GetApp().initViews()
+
 		// run server and wait for shutdown
 		runServerAndWaitForShutdown()
 	},
