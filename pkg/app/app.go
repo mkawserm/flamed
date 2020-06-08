@@ -2,7 +2,8 @@ package app
 
 import (
 	"fmt"
-	"github.com/mkawserm/flamed/pkg/app/view/graphql"
+	"github.com/mkawserm/flamed/pkg/app/graphql"
+	graphql2 "github.com/mkawserm/flamed/pkg/app/view/graphql"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/crypto"
@@ -46,6 +47,7 @@ type App struct {
 
 	mRootCommand   *cobra.Command
 	mFlamedContext *context.FlamedContext
+	mGraphQL       *graphql.GraphQL
 
 	mProposalReceiver func(*pb.Proposal, pb.Status)
 }
@@ -132,6 +134,7 @@ func (a *App) AddCommand(commands ...*cobra.Command) {
 
 func (a *App) setup() {
 	a.mFlamedContext.SetFlamed(flamed.NewFlamed())
+	a.mGraphQL = graphql.NewGraphQL(a.mFlamedContext)
 
 	a.mRootCommand = &cobra.Command{
 		Use:   variable.Name,
@@ -178,10 +181,11 @@ func (a *App) initViews() {
 	}
 
 	if !a.mViewsInitialized {
+		schema, _ := a.mGraphQL.BuildSchema()
 		/* initialize all views here */
 
 		// graphql view
-		a.AddView("/graphql", graphql.NewView(a.mFlamedContext).GetHTTPHandler())
+		a.AddView("/graphql", graphql2.NewGraphQLView(a.mFlamedContext, schema).GetHTTPHandler())
 		a.mViewsInitialized = true
 	}
 }
@@ -203,6 +207,9 @@ func (a *App) initTransactionProcessors() {
 }
 
 func (a *App) initBeforeCommandExecution() {
+	/* build schema */
+	_, _ = a.mGraphQL.BuildSchema()
+
 	/* setup defaults */
 	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString(constant.LogLevel))
 	a.mFlamedContext.SetGlobalTimeout(viper.GetDuration(constant.GlobalRequestTimeout))

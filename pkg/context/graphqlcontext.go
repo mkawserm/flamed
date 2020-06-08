@@ -6,7 +6,6 @@ import (
 	"github.com/mkawserm/flamed/pkg/flamed"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/variable"
-	"net/http"
 	"strings"
 )
 
@@ -14,10 +13,11 @@ type GraphQLContext struct {
 	URL        string
 	Host       string
 	RequestURI string
-	Header     http.Header
 	RemoteAddr string
 
-	Data map[string]interface{}
+	Protocol string
+	Data     map[string]interface{}
+	Header   map[string][]string
 }
 
 func (g *GraphQLContext) AddData(key string, value interface{}) {
