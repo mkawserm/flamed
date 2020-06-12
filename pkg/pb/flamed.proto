@@ -79,7 +79,7 @@ message IndexField {
 message IndexDocument {
   string name = 1;
   bool enabled = 2;
-  bool default = 3;
+  string defaultAnalyzer = 3;
   bool dynamic = 4;
   repeated IndexField indexFieldList = 5;
 }

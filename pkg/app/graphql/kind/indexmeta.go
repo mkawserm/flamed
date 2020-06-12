@@ -36,17 +36,17 @@ var GQLIndexDocumentType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 
-		"default": &graphql.Field{
-			Name:        "Default",
+		"defaultAnalyzer": &graphql.Field{
+			Name:        "DefaultAnalyzer",
 			Description: "",
-			Type:        graphql.Boolean,
+			Type:        graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				indexDocument, ok := p.Source.(*pb.IndexDocument)
 				if !ok {
 					return nil, nil
 				}
 
-				return indexDocument.Default, nil
+				return indexDocument.DefaultAnalyzer, nil
 			},
 		},
 

@@ -118,8 +118,10 @@ func makeIndexDocument(document interface{}) *pb.IndexDocument {
 		indexDoc.Enabled = v
 	}
 
-	if v, ok := documentMap["default"].(bool); ok {
-		indexDoc.Default = v
+	if v, found := documentMap["defaultAnalyzer"]; found {
+		if v2, ok := v.(string); ok {
+			indexDoc.DefaultAnalyzer = v2
+		}
 	}
 
 	if v, ok := documentMap["dynamic"].(bool); ok {

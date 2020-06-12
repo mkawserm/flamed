@@ -8,10 +8,10 @@ var GQLIndexDocumentInputType = graphql.NewInputObject(graphql.InputObjectConfig
 	Name:        "IndexDocumentInput",
 	Description: "`IndexDocumentInput`",
 	Fields: graphql.InputObjectConfigFieldMap{
-		"name":    &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.String)},
-		"enabled": &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Boolean)},
-		"default": &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Boolean)},
-		"dynamic": &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Boolean)},
+		"name":            &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.String)},
+		"enabled":         &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Boolean)},
+		"defaultAnalyzer": &graphql.InputObjectFieldConfig{Type: graphql.String},
+		"dynamic":         &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Boolean)},
 		"indexFieldList": &graphql.InputObjectFieldConfig{
 			Type: graphql.NewList(graphql.NewNonNull(GQLIndexFieldInputType)),
 		},

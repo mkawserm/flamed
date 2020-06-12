@@ -269,7 +269,13 @@ func (b *BleveScorch) getMapping(meta *pb.IndexMeta) *bleveMapping.IndexMappingI
 
 	for _, indexDocument := range meta.IndexDocumentList {
 		documentMapping := bleveSearch.NewDocumentMapping()
-		documentMapping.DefaultAnalyzer = standard.Name
+
+		if indexDocument.DefaultAnalyzer != "" {
+			documentMapping.DefaultAnalyzer = indexDocument.DefaultAnalyzer
+		} else {
+			documentMapping.DefaultAnalyzer = standard.Name
+		}
+
 		documentMapping.Enabled = indexDocument.Enabled
 		documentMapping.Dynamic = indexDocument.Dynamic
 
