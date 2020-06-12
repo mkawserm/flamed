@@ -160,7 +160,7 @@ func getInitialMembers(stringList []string) map[uint64]string {
 
 func initializeClusterDefaults() {
 	/*Initialize cluster defaults*/
-	if viper.GetBool("Join") {
+	if viper.GetBool(constant.Join) {
 		return
 	}
 
@@ -299,7 +299,7 @@ func startCluster() {
 	im := getInitialMembers(strings.Split(viper.GetString(constant.InitialMembers), ";"))
 
 	if len(im) == 0 {
-		if !viper.GetBool("Join") {
+		if !viper.GetBool(constant.Join) {
 			im[viper.GetUint64(constant.NodeID)] = viper.GetString(constant.RaftAddress)
 		}
 	}
