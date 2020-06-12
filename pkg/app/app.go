@@ -47,10 +47,10 @@ type App struct {
 
 	mRootCommand   *cobra.Command
 	mFlamedContext *context.FlamedContext
-	mGraphQL       *graphql.GraphQL
 
 	mProposalReceiver func(*pb.Proposal, pb.Status)
 
+	mGraphQL             *graphql.GraphQL
 	mGraphQLQuery        map[string]graphql.GQLHandler
 	mGraphQLMutation     map[string]graphql.GQLHandler
 	mGraphQLSubscription map[string]graphql.GQLHandler
