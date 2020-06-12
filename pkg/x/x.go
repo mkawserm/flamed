@@ -29,6 +29,8 @@ var ErrFailedToDeleteDataFromStorage = errors.New("failed to delete data from th
 
 var ErrFailedToCreateIndexMeta = errors.New("failed to create indexmeta meta")
 
+var ErrFailedToAddCustomIndexRule = errors.New("failed to add custom index rul")
+
 var ErrInvalidUsername = errors.New("username length must be greater than 2")
 
 var ErrFailedToApplyIndex = errors.New("failed to apply indexmeta")

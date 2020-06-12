@@ -92,6 +92,33 @@ func (b *BleveScorch) DefaultIndexMeta(namespace string) error {
 	return nil
 }
 
+func (b *BleveScorch) CustomIndexRule(namespace string, indexRule interface{}) error {
+	indexMapping, ok := indexRule.(*bleveMapping.IndexMappingImpl)
+	if !ok {
+		return x.ErrUnknownValue
+	}
+
+	p := b.path + "/" + namespace
+	if b.isPathExists(p) {
+		b.removeAll(p)
+	}
+
+	index, err := bleveSearch.NewUsing(p,
+		indexMapping,
+		scorch.Name,
+		scorch.Name,
+		nil)
+
+	if err != nil {
+		logger.L(Name).Debug("error while adding custom index rule", zap.Error(err))
+		return x.ErrFailedToAddCustomIndexRule
+	}
+
+	_ = index.Close()
+
+	return nil
+}
+
 func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) error {
 	p := b.path + "/" + namespace
 	if !b.isPathExists(p) {

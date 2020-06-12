@@ -22,6 +22,8 @@ type IIndexStorage interface {
 	UpsertIndexMeta(meta *pb.IndexMeta) error
 	DeleteIndexMeta(meta *pb.IndexMeta) error
 
+	CustomIndexRule(namespace string, indexRule interface{}) error
+
 	CanIndex(namespace string) bool
 	ApplyIndex(namespace string, data []*variant.IndexData) error
 

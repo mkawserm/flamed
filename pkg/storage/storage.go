@@ -767,6 +767,14 @@ func (s *Storage) DefaultIndexMeta(namespace string) error {
 	return s.mIndexStorage.DefaultIndexMeta(namespace)
 }
 
+func (s *Storage) CustomIndexRule(namespace string, indexRule interface{}) error {
+	if s.mIndexStorage == nil {
+		return nil
+	}
+
+	return s.mIndexStorage.CustomIndexRule(namespace, indexRule)
+}
+
 func (s *Storage) updateIndexOfIndexStorage(indexDataContainer IndexDataContainer) {
 	if len(indexDataContainer) == 0 {
 		return
