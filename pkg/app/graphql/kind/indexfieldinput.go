@@ -4,7 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-var GQLIndexFieldInputType = graphql.NewObject(graphql.ObjectConfig{
+var GQLIndexFieldInputType = graphql.NewInputObject(graphql.InputObjectConfig{
 	Name:        "IndexFieldInput",
 	Description: "`IndexFieldInput`",
 	Fields: graphql.InputObjectConfigFieldMap{
