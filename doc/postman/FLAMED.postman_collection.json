@@ -1580,6 +1580,42 @@
                     }
                   },
                   "response": []
+                },
+                {
+                  "name": "deleteIndexMeta",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "{{FLAMED_ADMIN_PASSWORD}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "{{FLAMED_ADMIN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "graphql",
+                      "graphql": {
+                        "query": "mutation DeleteIndexMeta($clusterID: UInt64!, $namespace: String!) {\n    flamedMutator {\n        adminMutator(clusterID: $clusterID) {\n            deleteIndexMeta(namespace: $namespace) {\n                errorCode\n                errorText\n                status\n                uuid\n                transactionResponses {\n                    errorCode\n                    errorText\n                    familyName\n                    familyVersion\n                    responseMessage\n                    status\n                }\n            }\n        }\n    }\n}",
+                        "variables": "{\n\t\"clusterID\": \"1\",\n\t\"namespace\": \"test\"\n}"
+                      }
+                    },
+                    "url": {
+                      "raw": "{{FLAMED_GRAPHQL_URL}}",
+                      "host": [
+                        "{{FLAMED_GRAPHQL_URL}}"
+                      ]
+                    }
+                  },
+                  "response": []
                 }
               ],
               "protocolProfileBehavior": {},
