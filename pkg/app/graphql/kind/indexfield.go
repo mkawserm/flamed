@@ -10,7 +10,7 @@ var GQLIndexFieldType = graphql.NewObject(graphql.ObjectConfig{
 	Description: "`IndexField`",
 	Fields: graphql.Fields{
 		"indexFieldType": &graphql.Field{
-			Name:        "GQLIndexFieldType",
+			Name:        "IndexFieldType",
 			Description: "",
 			Type:        GQLIndexFieldTypeEnum,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
