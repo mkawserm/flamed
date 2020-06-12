@@ -1,10 +1,10 @@
-package types
+package kind
 
 import "github.com/graphql-go/graphql"
 
 var GQLStateMachineType = graphql.NewEnum(graphql.EnumConfig{
 	Name:        "StateMachineType",
-	Description: "`StateMachineType` defines different types of state machine",
+	Description: "`StateMachineType` defines different kind of state machine",
 	Values: graphql.EnumValueConfigMap{
 		"RegularStateMachine": &graphql.EnumValueConfig{
 			Value:       1,

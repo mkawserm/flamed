@@ -2,7 +2,7 @@ package mutation
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	flamedContext "github.com/mkawserm/flamed/pkg/context"
 	"sync/atomic"
 )
@@ -14,7 +14,7 @@ var GQLCounterMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"increment": &graphql.Field{
 			Name:        "Increment",
-			Type:        types.GQLUInt64Type,
+			Type:        kind.GQLUInt64Type,
 			Description: "Increment counter by one",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				i, ok := p.Source.(*uint64)
@@ -25,13 +25,13 @@ var GQLCounterMutatorType = graphql.NewObject(graphql.ObjectConfig{
 					var m uint64 = 1
 					atomic.AddUint64(i, m)
 				}
-				return types.NewUInt64FromUInt64(*i), nil
+				return kind.NewUInt64FromUInt64(*i), nil
 			},
 		},
 
 		"decrement": &graphql.Field{
 			Name:        "Decrement",
-			Type:        types.GQLUInt64Type,
+			Type:        kind.GQLUInt64Type,
 			Description: "Decrement counter by one",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				i, ok := p.Source.(*uint64)
@@ -44,7 +44,7 @@ var GQLCounterMutatorType = graphql.NewObject(graphql.ObjectConfig{
 					atomic.AddUint64(i, -m)
 				}
 
-				return types.NewUInt64FromUInt64(*i), nil
+				return kind.NewUInt64FromUInt64(*i), nil
 			},
 		},
 	},

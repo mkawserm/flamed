@@ -3,7 +3,7 @@ package adminmutator
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/flamed"
 	"github.com/mkawserm/flamed/pkg/logger"
@@ -16,7 +16,7 @@ import (
 var ChangeUserPassword = &graphql.Field{
 	Name:        "ChangeUserPassword",
 	Description: "",
-	Type:        types.GQLProposalResponseType,
+	Type:        kind.GQLProposalResponseType,
 	Args: graphql.FieldConfigArgument{
 		"username": &graphql.ArgumentConfig{
 			Description: "Username",

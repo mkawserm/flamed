@@ -3,7 +3,7 @@ package nodeadminmutator
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/flamed"
 )
 
@@ -13,16 +13,16 @@ var DeleteNode = &graphql.Field{
 	Args: graphql.FieldConfigArgument{
 		"nodeID": &graphql.ArgumentConfig{
 			Description: "Node ID",
-			Type:        graphql.NewNonNull(types.GQLUInt64Type),
+			Type:        graphql.NewNonNull(kind.GQLUInt64Type),
 		},
 		"configChangeIndex": &graphql.ArgumentConfig{
 			Description: "Config change index",
-			Type:        graphql.NewNonNull(types.GQLUInt64Type),
+			Type:        graphql.NewNonNull(kind.GQLUInt64Type),
 		},
 	},
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		nodeID := p.Args["nodeID"].(*types.UInt64)
-		configChangeIndex := p.Args["configChangeIndex"].(*types.UInt64)
+		nodeID := p.Args["nodeID"].(*kind.UInt64)
+		configChangeIndex := p.Args["configChangeIndex"].(*kind.UInt64)
 
 		nodeAdmin, ok := p.Source.(*flamed.NodeAdmin)
 		if !ok {

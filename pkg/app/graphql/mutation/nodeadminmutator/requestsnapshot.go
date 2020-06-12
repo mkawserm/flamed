@@ -3,7 +3,7 @@ package nodeadminmutator
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/flamed"
 	"github.com/mkawserm/flamed/pkg/utility"
@@ -11,12 +11,12 @@ import (
 )
 
 var RequestSnapshot = &graphql.Field{
-	Type:        types.GQLUInt64Type,
+	Type:        kind.GQLUInt64Type,
 	Description: "Add new node to the cluster",
 	Args: graphql.FieldConfigArgument{
 		"compactionOverhead": &graphql.ArgumentConfig{
 			Description: "Compaction overhead",
-			Type:        graphql.NewNonNull(types.GQLUInt64Type),
+			Type:        graphql.NewNonNull(kind.GQLUInt64Type),
 		},
 		"exported": &graphql.ArgumentConfig{
 			Description: "Will the snapshot be exported?",
@@ -28,7 +28,7 @@ var RequestSnapshot = &graphql.Field{
 		},
 	},
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		compactionOverhead := p.Args["compactionOverhead"].(*types.UInt64)
+		compactionOverhead := p.Args["compactionOverhead"].(*kind.UInt64)
 		exported := p.Args["exported"].(bool)
 		overrideCompactionOverhead := p.Args["overrideCompactionOverhead"].(bool)
 		exportPath := viper.GetString(constant.StoragePath) + "/snapshot"
@@ -46,6 +46,6 @@ var RequestSnapshot = &graphql.Field{
 			return nil, gqlerrors.NewFormattedError(err.Error())
 		}
 
-		return types.NewUInt64FromUInt64(n), nil
+		return kind.NewUInt64FromUInt64(n), nil
 	},
 }

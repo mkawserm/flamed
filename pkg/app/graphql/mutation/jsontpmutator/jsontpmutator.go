@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	fContext "github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/tp/json"
 	"strings"
@@ -32,7 +32,7 @@ func JSONTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 		Args: graphql.FieldConfigArgument{
 			"clusterID": &graphql.ArgumentConfig{
 				Description: "Cluster ID",
-				Type:        graphql.NewNonNull(types.GQLUInt64Type),
+				Type:        graphql.NewNonNull(kind.GQLUInt64Type),
 			},
 			"namespace": &graphql.ArgumentConfig{
 				Description: "Namespace",
@@ -41,7 +41,7 @@ func JSONTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 		},
 
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			clusterID := p.Args["clusterID"].(*types.UInt64)
+			clusterID := p.Args["clusterID"].(*kind.UInt64)
 			namespace := p.Args["namespace"].(string)
 
 			if !flamedContext.Flamed().IsClusterIDAvailable(clusterID.Value()) {

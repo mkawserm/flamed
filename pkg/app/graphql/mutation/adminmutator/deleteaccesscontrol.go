@@ -3,14 +3,14 @@ package adminmutator
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/flamed"
 )
 
 var DeleteAccessControl = &graphql.Field{
 	Name:        "DeleteAccessControl",
 	Description: "",
-	Type:        types.GQLProposalResponseType,
+	Type:        kind.GQLProposalResponseType,
 	Args: graphql.FieldConfigArgument{
 		"username": &graphql.ArgumentConfig{
 			Description: "Username",

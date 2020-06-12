@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/app/graphql/mutation/adminmutator"
 	"github.com/mkawserm/flamed/pkg/app/graphql/mutation/nodeadminmutator"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
 	fContext "github.com/mkawserm/flamed/pkg/context"
 )
 
@@ -23,11 +23,11 @@ var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{
 					Description: "Cluster ID",
-					Type:        graphql.NewNonNull(types.GQLUInt64Type),
+					Type:        graphql.NewNonNull(kind.GQLUInt64Type),
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				clusterID := p.Args["clusterID"].(*types.UInt64)
+				clusterID := p.Args["clusterID"].(*kind.UInt64)
 				fc, ok := p.Source.(*fContext.FlamedContext)
 				if !ok {
 					return nil, nil
@@ -50,11 +50,11 @@ var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 			Args: graphql.FieldConfigArgument{
 				"clusterID": &graphql.ArgumentConfig{
 					Description: "Cluster ID",
-					Type:        graphql.NewNonNull(types.GQLUInt64Type),
+					Type:        graphql.NewNonNull(kind.GQLUInt64Type),
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				clusterID := p.Args["clusterID"].(*types.UInt64)
+				clusterID := p.Args["clusterID"].(*kind.UInt64)
 				fc, ok := p.Source.(*fContext.FlamedContext)
 				if !ok {
 					return nil, nil

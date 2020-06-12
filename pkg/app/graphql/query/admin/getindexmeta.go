@@ -3,14 +3,14 @@ package admin
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/flamed"
 )
 
 var GetIndexMeta = &graphql.Field{
 	Name:        "GetIndexMeta",
 	Description: "",
-	Type:        types.IndexMetaType,
+	Type:        kind.IndexMetaType,
 	Args: graphql.FieldConfigArgument{
 		"namespace": &graphql.ArgumentConfig{
 			Description: "Namespace",

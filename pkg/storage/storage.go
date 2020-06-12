@@ -175,7 +175,7 @@ func (s *StateContext) DefaultIndexMeta(namespace string) error {
 	return nil
 }
 
-//func (s *StateContext) ApplyIndex(namespace string, data []*variant.IndexData) error {
+//func (s *StateContext) ApplyIndex(namespace string, data []*kind.IndexData) error {
 //	if s.mReadOnly {
 //		return nil
 //	}

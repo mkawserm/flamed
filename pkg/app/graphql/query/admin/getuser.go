@@ -3,14 +3,14 @@ package admin
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/flamed"
 )
 
 var GetUser = &graphql.Field{
 	Name:        "GetUser",
 	Description: "Get user by username",
-	Type:        types.GQLUserType,
+	Type:        kind.GQLUserType,
 	Args: graphql.FieldConfigArgument{
 		"username": &graphql.ArgumentConfig{
 			Description: "Username",

@@ -3,14 +3,14 @@ package jsontpmutator
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
 var GQLBatchProcess = &graphql.Field{
 	Name:        "BatchProcess",
-	Type:        types.GQLProposalResponseType,
+	Type:        kind.GQLProposalResponseType,
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
@@ -19,7 +19,7 @@ var GQLBatchProcess = &graphql.Field{
 				"supported action: INSERT, UPSERT, UPDATE, MERGE, DELETE " +
 				"example `[{action:\"INSERT\",data:{id:1,value:100}}," +
 				"{action:\"UPSERT\",data:{id:2,value:5}}]`",
-			Type: graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(types.GQLJSONType))),
+			Type: graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(kind.GQLJSONType))),
 		},
 	},
 

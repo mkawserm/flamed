@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
@@ -13,11 +13,11 @@ import (
 var Propose = &graphql.Field{
 	Name:        "Propose",
 	Description: "`Propose`",
-	Type:        types.GQLProposalResponseType,
+	Type:        kind.GQLProposalResponseType,
 	Args: graphql.FieldConfigArgument{
 		"proposal": &graphql.ArgumentConfig{
 			Description: "Proposal",
-			Type:        graphql.NewNonNull(types.GQLProposalInputType),
+			Type:        graphql.NewNonNull(kind.GQLProposalInputType),
 		},
 	},
 

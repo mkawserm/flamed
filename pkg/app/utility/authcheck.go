@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	fContext "github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"strings"
@@ -15,7 +15,7 @@ func AuthCheck(p graphql.ResolveParams,
 	namespace string,
 	accessControl *pb.AccessControl,
 	err error) {
-	clusterID = p.Args["clusterID"].(*types.UInt64).Value()
+	clusterID = p.Args["clusterID"].(*kind.UInt64).Value()
 	namespace = p.Args["namespace"].(string)
 
 	if !flamedContext.Flamed().IsClusterIDAvailable(clusterID) {

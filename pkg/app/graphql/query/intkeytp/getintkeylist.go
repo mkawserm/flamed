@@ -3,14 +3,14 @@ package intkeytp
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
 var GQLGetIntKeyList = &graphql.Field{
 	Name:        "GetIntKeyList",
-	Type:        graphql.NewList(types.GQLIntKeyStateType),
+	Type:        graphql.NewList(kind.GQLIntKeyStateType),
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{

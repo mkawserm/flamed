@@ -3,7 +3,7 @@ package globaloperation
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/utility"
 )
@@ -11,7 +11,7 @@ import (
 var Retrieve = &graphql.Field{
 	Name:        "Retrieve",
 	Description: "Retrieve data from the state store",
-	Type:        graphql.NewList(types.GQLStateEntryResponse),
+	Type:        graphql.NewList(kind.GQLStateEntryResponse),
 	Args: graphql.FieldConfigArgument{
 		"addresses": &graphql.ArgumentConfig{
 			Description: "Address in hex string format",

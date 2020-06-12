@@ -3,20 +3,20 @@ package jsontpmutator
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/utility"
 )
 
 var GQLUpdate = &graphql.Field{
 	Name:        "Update",
-	Type:        types.GQLProposalResponseType,
+	Type:        kind.GQLProposalResponseType,
 	Description: "",
 
 	Args: graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
 			Description: "Input object",
-			Type:        graphql.NewNonNull(types.GQLJSONType),
+			Type:        graphql.NewNonNull(kind.GQLJSONType),
 		},
 	},
 

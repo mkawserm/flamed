@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/flamed"
 	"github.com/mkawserm/flamed/pkg/logger"
@@ -18,11 +18,11 @@ import (
 var UpdateUser = &graphql.Field{
 	Name:        "UpdateUser",
 	Description: "",
-	Type:        types.GQLProposalResponseType,
+	Type:        kind.GQLProposalResponseType,
 	Args: graphql.FieldConfigArgument{
 		"userType": &graphql.ArgumentConfig{
 			Description: "User type",
-			Type:        types.GQLUserTypeEnum,
+			Type:        kind.GQLUserTypeEnum,
 		},
 		"roles": &graphql.ArgumentConfig{
 			Description: "Roles",

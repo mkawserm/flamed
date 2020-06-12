@@ -1,10 +1,10 @@
-package types
+package kind
 
 import "github.com/graphql-go/graphql"
 
 var GQLActionEnum = graphql.NewEnum(graphql.EnumConfig{
 	Name:        "Action",
-	Description: "`Action` defines different types of action",
+	Description: "`Action` defines different kind of action",
 	Values: graphql.EnumValueConfigMap{
 
 		"RETRIEVE": &graphql.EnumValueConfig{

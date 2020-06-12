@@ -32,5 +32,5 @@ type IStateContext interface {
 	UpsertIndexMeta(meta *pb.IndexMeta) error
 	DeleteIndexMeta(meta *pb.IndexMeta) error
 	DefaultIndexMeta(namespace string) error
-	//ApplyIndex(namespace string, data []*variant.IndexData) error
+	//ApplyIndex(namespace string, data []*kind.IndexData) error
 }

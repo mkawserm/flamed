@@ -3,7 +3,7 @@ package globaloperation
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
@@ -12,11 +12,11 @@ import (
 var Search = &graphql.Field{
 	Name:        "Search",
 	Description: "Search in the index store",
-	Type:        types.GQLSearchResponse,
+	Type:        kind.GQLSearchResponse,
 	Args: graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
 			Description: "Search input",
-			Type:        graphql.NewNonNull(types.GQLSearchInputType),
+			Type:        graphql.NewNonNull(kind.GQLSearchInputType),
 		},
 	},
 

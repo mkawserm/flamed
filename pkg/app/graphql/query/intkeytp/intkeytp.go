@@ -3,7 +3,7 @@ package intkeytp
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/app/utility"
 	fContext "github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
@@ -27,7 +27,7 @@ func IntKeyTP(flamedContext *fContext.FlamedContext) *graphql.Field {
 		Args: graphql.FieldConfigArgument{
 			"clusterID": &graphql.ArgumentConfig{
 				Description: "Cluster ID",
-				Type:        graphql.NewNonNull(types.GQLUInt64Type),
+				Type:        graphql.NewNonNull(kind.GQLUInt64Type),
 			},
 			"namespace": &graphql.ArgumentConfig{
 				Description: "Namespace",

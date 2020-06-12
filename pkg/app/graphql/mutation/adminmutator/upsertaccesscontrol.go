@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/flamed"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
@@ -15,7 +15,7 @@ import (
 var UpsertAccessControl = &graphql.Field{
 	Name:        "UpsertAccessControl",
 	Description: "",
-	Type:        types.GQLProposalResponseType,
+	Type:        kind.GQLProposalResponseType,
 	Args: graphql.FieldConfigArgument{
 		"username": &graphql.ArgumentConfig{
 			Description: "Username",
@@ -28,7 +28,7 @@ var UpsertAccessControl = &graphql.Field{
 
 		"permission": &graphql.ArgumentConfig{
 			Description: "Access permission",
-			Type:        graphql.NewNonNull(types.GQLPermissionInputType),
+			Type:        graphql.NewNonNull(kind.GQLPermissionInputType),
 		},
 		"data": &graphql.ArgumentConfig{
 			Description: "Data in base64 encoded string",

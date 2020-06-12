@@ -3,7 +3,7 @@ package globaloperation
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/mkawserm/flamed/pkg/app/graphql/types"
+	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/utility"
 )
@@ -11,7 +11,7 @@ import (
 var Iterate = &graphql.Field{
 	Name:        "Iterate",
 	Description: "Iterate data from the state store",
-	Type:        graphql.NewList(types.GQLStateEntryResponse),
+	Type:        graphql.NewList(kind.GQLStateEntryResponse),
 	Args: graphql.FieldConfigArgument{
 		"from": &graphql.ArgumentConfig{
 			Description: "State address or address prefix in hex string format",
@@ -23,7 +23,7 @@ var Iterate = &graphql.Field{
 		},
 		"limit": &graphql.ArgumentConfig{
 			Description: "Limit",
-			Type:        graphql.NewNonNull(types.GQLUInt64Type),
+			Type:        graphql.NewNonNull(kind.GQLUInt64Type),
 		},
 	},
 
@@ -38,7 +38,7 @@ var Iterate = &graphql.Field{
 			prefix = p.Args["prefix"].(string)
 		}
 
-		limit := p.Args["limit"].(*types.UInt64)
+		limit := p.Args["limit"].(*kind.UInt64)
 		ctx, ok := p.Source.(*context.GlobalOperationContext)
 		if !ok {
 			return nil, nil
