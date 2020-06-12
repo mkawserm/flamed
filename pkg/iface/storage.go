@@ -70,4 +70,12 @@ type IStorage interface {
 	GlobalRetrieve(ctx context.Context, globalRetrieve *pb.GlobalRetrieveInput) (interface{}, error)
 
 	ApplyProposal(ctx context.Context, proposal *pb.Proposal, entryIndex uint64) *pb.ProposalResponse
+
+	UpsertIndexMeta(meta *pb.IndexMeta) error
+	DeleteIndexMeta(meta *pb.IndexMeta) error
+	CanIndex(namespace string) bool
+	IndexEnable() bool
+	AutoIndexMeta() bool
+	DefaultIndexMeta(namespace string) error
+	CustomIndexRule(namespace string, indexRule interface{}) error
 }

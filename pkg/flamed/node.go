@@ -142,8 +142,9 @@ func (n *Node) StartOnDiskCluster(clusterConfiguration iface.IOnDiskClusterConfi
 	rc.ClusterID = clusterConfiguration.ClusterID()
 
 	err := n.mNodeHost.StartOnDiskCluster(clusterConfiguration.InitialMembers(),
-		clusterConfiguration.Join(),
-		clusterConfiguration.StateMachine(storagedConfiguration), rc)
+		clusterConfiguration.Join(), func(clusterId uint64, nodeId uint64) sm.IOnDiskStateMachine {
+			return clusterConfiguration.StateMachine(storagedConfiguration)(clusterId, nodeId)
+		}, rc)
 
 	if err != nil {
 		return err

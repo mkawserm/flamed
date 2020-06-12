@@ -228,8 +228,8 @@ func (s *Storaged) RecoverFromSnapshot(r io.Reader, _ <-chan struct{}) error {
 
 func NewStoraged(configuration iface.IStoragedConfiguration) func(
 	clusterID uint64,
-	nodeID uint64) sm.IOnDiskStateMachine {
-	return func(clusterId uint64, nodeId uint64) sm.IOnDiskStateMachine {
+	nodeID uint64) iface.IStoraged {
+	return func(clusterId uint64, nodeId uint64) iface.IStoraged {
 		sd := &Storaged{}
 		sd.Setup(clusterId, nodeId)
 		sd.SetStorage(&storage.Storage{})
