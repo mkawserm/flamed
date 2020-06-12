@@ -50,6 +50,10 @@ type App struct {
 	mGraphQL       *graphql.GraphQL
 
 	mProposalReceiver func(*pb.Proposal, pb.Status)
+
+	mGraphQLQuery        map[string]graphql.GQLHandler
+	mGraphQLMutation     map[string]graphql.GQLHandler
+	mGraphQLSubscription map[string]graphql.GQLHandler
 }
 
 func (a *App) GetFlamedContext() *context.FlamedContext {
@@ -116,6 +120,18 @@ func (a *App) UpdateGlobalRequestTimeout(timeout time.Duration) {
 	viper.Set(constant.GlobalRequestTimeout, timeout)
 }
 
+func (a *App) AddGraphQLQuery(name string, handler graphql.GQLHandler) {
+	a.mGraphQLQuery[name] = handler
+}
+
+func (a *App) AddGraphQLMutation(name string, handler graphql.GQLHandler) {
+	a.mGraphQLMutation[name] = handler
+}
+
+func (a *App) AddGraphQLSubscription(name string, handler graphql.GQLHandler) {
+	a.mGraphQLSubscription[name] = handler
+}
+
 func (a *App) AddView(pattern string, handler func(http.ResponseWriter, *http.Request)) {
 	a.mServerMux.HandleFunc(pattern, handler)
 }
@@ -133,6 +149,20 @@ func (a *App) AddCommand(commands ...*cobra.Command) {
 }
 
 func (a *App) setup() {
+	/*initialize all attributes*/
+	a.mServerMux = &http.ServeMux{}
+	a.mFlamedContext = context.NewFlamedContext()
+
+	a.mCommandsInitialized = false
+	a.mDefaultCommandFlag = true
+	a.mViewsInitialized = false
+	a.mDefaultViewFlag = true
+	a.mTPInitialized = false
+	a.mDefaultTPFlag = true
+	a.mGraphQLQuery = make(map[string]graphql.GQLHandler)
+	a.mGraphQLMutation = make(map[string]graphql.GQLHandler)
+	a.mGraphQLSubscription = make(map[string]graphql.GQLHandler)
+
 	a.mFlamedContext.SetFlamed(flamed.NewFlamed())
 	a.mRootCommand = &cobra.Command{
 		Use:   variable.Name,
@@ -175,6 +205,19 @@ func (a *App) initCommands() {
 
 func (a *App) initGraphQL() {
 	a.mGraphQL = graphql.NewGraphQL(a.mFlamedContext)
+
+	for k, v := range a.mGraphQLQuery {
+		a.mGraphQL.AddQueryField(k, v)
+	}
+
+	for k, v := range a.mGraphQLMutation {
+		a.mGraphQL.AddMutationField(k, v)
+	}
+
+	for k, v := range a.mGraphQLSubscription {
+		a.mGraphQL.AddSubscriptionField(k, v)
+	}
+
 	_, _ = a.mGraphQL.BuildSchema()
 }
 
@@ -261,20 +304,7 @@ func GetApp() *App {
 func init() {
 	cobra.OnInitialize(initConfig)
 	appOnce.Do(func() {
-		appIns = &App{
-			mServerMux:     &http.ServeMux{},
-			mFlamedContext: context.NewFlamedContext(),
-
-			mCommandsInitialized: false,
-			mDefaultCommandFlag:  true,
-
-			mViewsInitialized: false,
-			mDefaultViewFlag:  true,
-
-			mTPInitialized: false,
-			mDefaultTPFlag: true,
-		}
-
+		appIns = &App{}
 		appIns.setup()
 	})
 }
