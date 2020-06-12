@@ -125,5 +125,18 @@ var GQLIndexFieldType = graphql.NewObject(graphql.ObjectConfig{
 				return indexField.DocValues, nil
 			},
 		},
+
+		"dateFormat": &graphql.Field{
+			Name:        "DateFormat",
+			Description: "",
+			Type:        graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				indexField, ok := p.Source.(*pb.IndexField)
+				if !ok {
+					return nil, nil
+				}
+				return indexField.DateFormat, nil
+			},
+		},
 	},
 })

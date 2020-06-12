@@ -3,6 +3,7 @@ package blevescorch
 import (
 	"context"
 	bleveSearch "github.com/blevesearch/bleve"
+	"github.com/blevesearch/bleve/analysis/analyzer/standard"
 	"github.com/blevesearch/bleve/index/scorch"
 	bleveMapping "github.com/blevesearch/bleve/mapping"
 	bleveSearchQuery "github.com/blevesearch/bleve/search/query"
@@ -235,6 +236,82 @@ func (b *BleveScorch) getMapping(meta *pb.IndexMeta) *bleveMapping.IndexMappingI
 	indexMapping := bleveMapping.NewIndexMapping()
 	if meta.Default {
 		return indexMapping
+	}
+
+	indexMapping.IndexDynamic = meta.IndexDynamic
+	indexMapping.StoreDynamic = meta.StoreDynamic
+	indexMapping.DocValuesDynamic = meta.DocValuesDynamic
+
+	if meta.DefaultType != "" {
+		indexMapping.DefaultType = meta.DefaultType
+	}
+
+	if meta.DefaultAnalyzer != "" {
+		indexMapping.DefaultAnalyzer = meta.DefaultAnalyzer
+	}
+
+	if meta.DefaultDateTimeParser != "" {
+		indexMapping.DefaultDateTimeParser = meta.DefaultDateTimeParser
+	}
+
+	if meta.DefaultField != "" {
+		indexMapping.DefaultField = meta.DefaultField
+	}
+
+	if meta.TypeField != "" {
+		indexMapping.TypeField = meta.TypeField
+	}
+
+	if meta.CustomAnalysis != "" {
+		// Get custom analyzer from registry
+		// not defined yet
+	}
+
+	for _, indexDocument := range meta.IndexDocumentList {
+		documentMapping := bleveSearch.NewDocumentMapping()
+		documentMapping.DefaultAnalyzer = standard.Name
+		documentMapping.Enabled = indexDocument.Enabled
+		documentMapping.Dynamic = indexDocument.Dynamic
+
+		for _, documentField := range indexDocument.IndexFieldList {
+			if !documentField.Enabled {
+				disable := bleveSearch.NewDocumentMapping()
+				disable.Enabled = false
+				documentMapping.AddSubDocumentMapping(indexDocument.Name, disable)
+				continue
+			}
+
+			var fieldMap *bleveMapping.FieldMapping
+			if documentField.IndexFieldType == pb.IndexFieldType_TEXT {
+				fieldMap = bleveSearch.NewTextFieldMapping()
+			} else if documentField.IndexFieldType == pb.IndexFieldType_BOOLEAN {
+				fieldMap = bleveSearch.NewBooleanFieldMapping()
+			} else if documentField.IndexFieldType == pb.IndexFieldType_DATE_TIME {
+				fieldMap = bleveSearch.NewDateTimeFieldMapping()
+			} else if documentField.IndexFieldType == pb.IndexFieldType_NUMERIC {
+				fieldMap = bleveSearch.NewNumericFieldMapping()
+			} else if documentField.IndexFieldType == pb.IndexFieldType_GEO_POINT {
+				fieldMap = bleveSearch.NewGeoPointFieldMapping()
+			} else {
+				fieldMap = bleveSearch.NewTextFieldMapping()
+			}
+
+			fieldMap.Name = documentField.Name
+			fieldMap.Analyzer = documentField.Analyzer
+			fieldMap.DocValues = documentField.DocValues
+			fieldMap.Store = documentField.Store
+			fieldMap.Index = documentField.Index
+			fieldMap.IncludeTermVectors = documentField.IncludeTermVectors
+			fieldMap.IncludeInAll = documentField.IncludeInAll
+
+			if documentField.DateFormat != "" {
+				fieldMap.DateFormat = documentField.DateFormat
+			}
+
+			documentMapping.AddFieldMappingsAt(documentField.Name, fieldMap)
+		}
+
+		indexMapping.AddDocumentMapping(indexDocument.Name, documentMapping)
 	}
 
 	return indexMapping

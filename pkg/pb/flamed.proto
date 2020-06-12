@@ -73,6 +73,7 @@ message IndexField {
   bool includeTermVectors = 7;
   bool includeInAll = 8;
   bool docValues = 9;
+  string dateFormat = 10;
 }
 
 message IndexDocument {

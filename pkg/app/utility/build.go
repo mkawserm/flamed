@@ -184,5 +184,11 @@ func buildIndexField(indexFieldInterface interface{}) *pb.IndexField {
 		indexField.DocValues = v
 	}
 
+	if v, found := indexFieldMap["dateFormat"]; found {
+		if v2, ok := v.(string); ok {
+			indexField.DateFormat = v2
+		}
+	}
+
 	return indexField
 }

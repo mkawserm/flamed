@@ -18,5 +18,7 @@ var GQLIndexFieldInputType = graphql.NewInputObject(graphql.InputObjectConfig{
 		"includeTermVectors": &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Boolean)},
 		"includeInAll":       &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Boolean)},
 		"docValues":          &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Boolean)},
+
+		"dateFormat": &graphql.InputObjectFieldConfig{Type: graphql.String},
 	},
 })
