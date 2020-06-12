@@ -7,22 +7,17 @@ import (
 	"github.com/mkawserm/flamed/pkg/flamed"
 )
 
-var DeleteAccessControl = &graphql.Field{
+var DeleteIndexMeta = &graphql.Field{
 	Name:        "DeleteIndexMeta",
 	Description: "",
 	Type:        kind.GQLProposalResponseType,
 	Args: graphql.FieldConfigArgument{
-		"username": &graphql.ArgumentConfig{
-			Description: "Username",
-			Type:        graphql.NewNonNull(graphql.String),
-		},
 		"namespace": &graphql.ArgumentConfig{
 			Description: "Namespace",
 			Type:        graphql.NewNonNull(graphql.String),
 		},
 	},
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		username := p.Args["username"].(string)
 		namespace := []byte(p.Args["namespace"].(string))
 		admin, ok := p.Source.(*flamed.Admin)
 		if !ok {
@@ -30,7 +25,7 @@ var DeleteAccessControl = &graphql.Field{
 				" FlamedContext required")
 		}
 
-		pr, err := admin.DeleteAccessControl(namespace, username)
+		pr, err := admin.DeleteIndexMeta(namespace)
 		if err != nil {
 			return nil, err
 		}

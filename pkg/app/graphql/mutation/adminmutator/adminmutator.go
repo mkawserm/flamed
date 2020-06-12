@@ -9,10 +9,12 @@ var GQLAdminMutatorType = graphql.NewObject(graphql.ObjectConfig{
 	Description: "`AdminMutator`",
 	Fields: graphql.Fields{
 		"upsertAccessControl": UpsertAccessControl,
-		"deleteAccessControl": DeleteAccessControl,
+		"deleteAccessControl": DeleteIndexMeta,
 		"deleteUser":          DeleteUser,
 		"upsertUser":          UpsertUser,
 		"updateUser":          UpdateUser,
 		"changeUserPassword":  ChangeUserPassword,
+
+		"deleteIndexMeta": DeleteIndexMeta,
 	},
 })
