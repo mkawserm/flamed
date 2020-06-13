@@ -103,7 +103,7 @@ func initAllDefaults() {
 func initAllPersistentFlags(cmd *cobra.Command) {
 	/*Log related settings*/
 	cmd.PersistentFlags().
-		String("log-level", "info", "Log level")
+		String("log-level", "error", "Log level")
 	_ = viper.BindPFlag(constant.LogLevel, cmd.PersistentFlags().Lookup("log-level"))
 
 	cmd.PersistentFlags().
