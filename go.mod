@@ -3,7 +3,7 @@ module github.com/mkawserm/flamed
 go 1.14
 
 require (
-	github.com/blevesearch/bleve v1.0.7
+	github.com/blevesearch/bleve v1.0.9
 	github.com/dgraph-io/badger/v2 v2.0.3
 	github.com/golang/protobuf v1.4.1
 	github.com/google/uuid v1.1.1
