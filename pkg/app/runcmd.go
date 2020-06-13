@@ -38,8 +38,8 @@ var RunCMD = &cobra.Command{
 			return
 		}
 
-		if len(viper.GetString(constant.HTTPAddress)) == 0 {
-			fmt.Println("HTTPAddress can not be empty")
+		if len(viper.GetString(constant.HTTPServerAddress)) == 0 {
+			fmt.Println("HTTPServerAddress can not be empty")
 			return
 		}
 
@@ -111,9 +111,9 @@ func runHTTPServer() error {
 	logger.L("app").Info("preparing http server")
 	if viper.GetBool(constant.HTTPServerTLS) {
 		logger.L("app").Info("http server with tls started @ " +
-			viper.GetString(constant.HTTPAddress))
+			viper.GetString(constant.HTTPServerAddress))
 
-		server := &http.Server{Addr: viper.GetString(constant.HTTPAddress), Handler: appIns.getServerMux()}
+		server := &http.Server{Addr: viper.GetString(constant.HTTPServerAddress), Handler: appIns.getServerMux()}
 		appIns.mHTTPServer = server
 
 		err := server.ListenAndServeTLS(viper.GetString(constant.HTTPServerCertFile),
@@ -122,9 +122,9 @@ func runHTTPServer() error {
 		return err
 	} else {
 		logger.L("app").Info("http server started @ " +
-			viper.GetString(constant.HTTPAddress))
+			viper.GetString(constant.HTTPServerAddress))
 
-		server := &http.Server{Addr: viper.GetString(constant.HTTPAddress), Handler: appIns.getServerMux()}
+		server := &http.Server{Addr: viper.GetString(constant.HTTPServerAddress), Handler: appIns.getServerMux()}
 		appIns.mHTTPServer = server
 
 		err := server.ListenAndServe()

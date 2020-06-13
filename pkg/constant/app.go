@@ -9,7 +9,7 @@ const InitialMembers = "InitialMembers"
 
 const EnableHTTPServer = "EnableHTTPServer"
 const HTTPServerTLS = "HTTPServerTLS"
-const HTTPAddress = "HTTPAddress"
+const HTTPServerAddress = "HTTPServerAddress"
 const HTTPServerCertFile = "HTTPServerCertFile"
 const HTTPServerKeyFile = "HTTPServerKeyFile"
 

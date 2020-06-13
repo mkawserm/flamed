@@ -53,7 +53,7 @@ func initAllDefaults() {
 	viper.SetDefault(constant.InitialMembers, "")
 
 	viper.SetDefault(constant.EnableHTTPServer, true)
-	viper.SetDefault(constant.HTTPAddress, "localhost:8081")
+	viper.SetDefault(constant.HTTPServerAddress, "localhost:8081")
 	viper.SetDefault(constant.HTTPServerTLS, false)
 	viper.SetDefault(constant.HTTPServerCertFile, "")
 	viper.SetDefault(constant.HTTPServerKeyFile, "")
@@ -132,8 +132,8 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag(constant.EnableHTTPServer, cmd.PersistentFlags().Lookup("enable-http-server"))
 
 	cmd.PersistentFlags().
-		String("http-address", "localhost:8081", "HTTP server address")
-	_ = viper.BindPFlag(constant.HTTPAddress, cmd.PersistentFlags().Lookup("http-address"))
+		String("http-server-address", "localhost:8081", "HTTP server address")
+	_ = viper.BindPFlag(constant.HTTPServerAddress, cmd.PersistentFlags().Lookup("http-server-address"))
 
 	cmd.PersistentFlags().
 		Bool("http-server-tls", false, "HTTP server TLS flag")

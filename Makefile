@@ -24,10 +24,10 @@ build-all: build-darwin-amd64 build-windows-amd64 build-linux-amd64 build-linux-
 #	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/flamed.go
 
 run:
-	@go run cmd/flamed/flamed.go run --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level debug
+	@go run cmd/flamed/flamed.go run --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-server-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level debug
 
 run-race:
-	@go run -race cmd/flamed/flamed.go run --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level debug
+	@go run -race cmd/flamed/flamed.go run --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-server-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level debug
 
 test:
 	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -v
