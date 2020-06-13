@@ -294,49 +294,49 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().
 		Bool("cors-allow-all-origins",
 			false,
-			"")
+			"CORS allow all origins")
 	_ = viper.BindPFlag(constant.CORSAllowAllOrigins,
 		cmd.PersistentFlags().Lookup("cors-allow-all-origins"))
 
 	cmd.PersistentFlags().
 		StringSlice("cors-allow-origins",
 			[]string{},
-			"")
+			"CORS allow origins")
 	_ = viper.BindPFlag(constant.CORSAllowOrigins,
 		cmd.PersistentFlags().Lookup("cors-allow-origins"))
 
 	cmd.PersistentFlags().
 		Bool("cors-allow-credentials",
 			false,
-			"")
+			"CORS allow credentials")
 	_ = viper.BindPFlag(constant.CORSAllowCredentials,
 		cmd.PersistentFlags().Lookup("cors-allow-credentials"))
 
 	cmd.PersistentFlags().
 		StringSlice("cors-allow-methods",
 			[]string{"GET"},
-			"")
+			"CORS allow methods")
 	_ = viper.BindPFlag(constant.CORSAllowMethods,
 		cmd.PersistentFlags().Lookup("cors-allow-methods"))
 
 	cmd.PersistentFlags().
 		StringSlice("cors-allow-headers",
 			[]string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "Authorization"},
-			"")
+			"CORS allow headers")
 	_ = viper.BindPFlag(constant.CORSAllowHeaders,
 		cmd.PersistentFlags().Lookup("cors-allow-headers"))
 
 	cmd.PersistentFlags().
 		StringSlice("cors-expose-headers",
 			[]string{},
-			"")
+			"CORS expose headers")
 	_ = viper.BindPFlag(constant.CORSExposeHeaders,
 		cmd.PersistentFlags().Lookup("cors-expose-headers"))
 
 	cmd.PersistentFlags().
 		Duration("cors-max-age",
 			5*time.Minute,
-			"")
+			"CORS max age")
 	_ = viper.BindPFlag(constant.CORSMaxAge,
 		cmd.PersistentFlags().Lookup("cors-max-age"))
 }
