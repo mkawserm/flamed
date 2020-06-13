@@ -77,13 +77,13 @@ func runServerAndWaitForShutdown() {
 
 		logger.L("app").Info("shutdown signal received",
 			zap.String("signal", sig.String()))
-		logger.L("app").Info("preparing for shutdown")
+		logger.L("app").Debug("preparing for shutdown")
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		if err := GetApp().getServer().Shutdown(ctx); err == context.DeadlineExceeded {
-			logger.L("app").Info("shutdown: halted active connections")
+			logger.L("app").Debug("shutdown: halted active connections")
 		}
 
 		// Stop node
@@ -108,7 +108,7 @@ func runServerAndWaitForShutdown() {
 }
 
 func runHTTPServer() error {
-	logger.L("app").Info("preparing http server")
+	logger.L("app").Debug("preparing http server")
 	if viper.GetBool(constant.HTTPServerTLS) {
 		logger.L("app").Info("http server with tls started @ " +
 			viper.GetString(constant.HTTPServerAddress))
