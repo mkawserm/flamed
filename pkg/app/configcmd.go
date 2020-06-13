@@ -16,7 +16,7 @@ var ConfigCMD = &cobra.Command{
 	},
 }
 
-var configCreateCMD = &cobra.Command{
+var ConfigCreateCMD = &cobra.Command{
 	Use:   "create",
 	Short: "Create config file",
 	Run: func(cmd *cobra.Command, _ []string) {
@@ -33,12 +33,12 @@ var configCreateCMD = &cobra.Command{
 }
 
 func init() {
-	configCreateCMD.
+	ConfigCreateCMD.
 		Flags().
 		StringVar(
 			&filePath,
 			"file-path",
 			"",
 			"Configuration file path")
-	ConfigCMD.AddCommand(configCreateCMD)
+	ConfigCMD.AddCommand(ConfigCreateCMD)
 }
