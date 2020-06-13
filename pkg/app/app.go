@@ -55,101 +55,175 @@ type App struct {
 	mGraphQLQuery        map[string]graphql.GQLHandler
 	mGraphQLMutation     map[string]graphql.GQLHandler
 	mGraphQLSubscription map[string]graphql.GQLHandler
+
+	mMutex sync.Mutex
 }
 
 func (a *App) GetFlamedContext() *context.FlamedContext {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	return a.mFlamedContext
 }
 
 func (a *App) GetTPMap() map[string]iface.ITransactionProcessor {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	return a.mFlamedContext.TransactionProcessorMap()
 }
 
 func (a *App) GetTransactionProcessorMap() map[string]iface.ITransactionProcessor {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	return a.mFlamedContext.TransactionProcessorMap()
 }
 
 func (a *App) SetProposalReceiver(pr func(*pb.Proposal, pb.Status)) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mProposalReceiver = pr
 }
 
 func (a *App) GetProposalReceiver() func(*pb.Proposal, pb.Status) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	return a.mProposalReceiver
 }
 
-func (a *App) getServer() *http.Server {
+func (a *App) getHTTPServer() *http.Server {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	return a.mHTTPServer
 }
 
 func (a *App) getServerMux() *http.ServeMux {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	return a.mServerMux
 }
 
 func (a *App) SetPasswordHashAlgorithmFactory(f iface.IPasswordHashAlgorithmFactory) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	variable.DefaultPasswordHashAlgorithmFactory = f
 }
 
 func (a *App) GetPasswordHashAlgorithmFactory() iface.IPasswordHashAlgorithmFactory {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	return variable.DefaultPasswordHashAlgorithmFactory
 }
 
 func (a *App) EnableDefaultTransactionProcessors() {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mDefaultTPFlag = true
 }
 
 func (a *App) DisableDefaultTransactionProcessors() {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mDefaultTPFlag = false
 }
 
 func (a *App) EnableDefaultViews() {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mDefaultViewFlag = true
 }
 
 func (a *App) DisableDefaultViews() {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mDefaultViewFlag = false
 }
 
 func (a *App) EnableDefaultCommands() {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mDefaultCommandFlag = true
 }
 
 func (a *App) DisableDefaultCommands() {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mDefaultCommandFlag = false
 }
 
 func (a *App) UpdateGlobalRequestTimeout(timeout time.Duration) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	viper.Set(constant.GlobalRequestTimeout, timeout)
 }
 
 func (a *App) AddGraphQLQuery(name string, handler graphql.GQLHandler) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mGraphQLQuery[name] = handler
 }
 
 func (a *App) AddGraphQLMutation(name string, handler graphql.GQLHandler) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mGraphQLMutation[name] = handler
 }
 
 func (a *App) AddGraphQLSubscription(name string, handler graphql.GQLHandler) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mGraphQLSubscription[name] = handler
 }
 
 func (a *App) AddView(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mServerMux.HandleFunc(pattern, handler)
 }
 
 func (a *App) AddTransactionProcessor(tp iface.ITransactionProcessor) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mFlamedContext.AddTP(tp)
 }
 
 func (a *App) GetFlamed() *flamed.Flamed {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	return a.mFlamedContext.Flamed()
 }
 
 func (a *App) AddCommand(commands ...*cobra.Command) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
 	a.mRootCommand.AddCommand(commands...)
 }
 
 func (a *App) setup() {
+	//a.mMutex.Lock()
+	//defer a.mMutex.Unlock()
+
 	/*initialize all attributes*/
 	a.mServerMux = &http.ServeMux{}
 	a.mFlamedContext = context.NewFlamedContext()
@@ -305,6 +379,12 @@ func (a *App) Execute() error {
 	}
 
 	return a.mRootCommand.Execute()
+}
+
+func (a *App) setHTTPServer(server *http.Server) {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+	a.mHTTPServer = server
 }
 
 func GetApp() *App {

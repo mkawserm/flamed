@@ -10,6 +10,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
 	"io"
+	"sync"
 )
 
 import sm "github.com/lni/dragonboat/v3/statemachine"
@@ -22,6 +23,8 @@ type Storaged struct {
 	mLastApplied uint64
 
 	mStoragedConfiguration iface.IStoragedConfiguration
+
+	mMutex sync.Mutex
 }
 
 func (s *Storaged) Setup(clusterID uint64, nodeID uint64) {
@@ -67,6 +70,9 @@ func (s *Storaged) queryAppliedIndex() (uint64, error) {
 }
 
 func (s *Storaged) Open(<-chan struct{}) (uint64, error) {
+	s.mMutex.Lock()
+	defer s.mMutex.Unlock()
+
 	if s.mStorage == nil {
 		return 0, x.ErrStorageIsNotReady
 	}
@@ -91,6 +97,9 @@ func (s *Storaged) Sync() error {
 }
 
 func (s *Storaged) Close() error {
+	s.mMutex.Lock()
+	defer s.mMutex.Unlock()
+
 	logger.L("storaged").Debug("storaged closing")
 	defer func() {
 		logger.L("storaged").Debug("storaged closed")
@@ -188,6 +197,8 @@ func (s *Storaged) Lookup(input interface{}) (interface{}, error) {
 }
 
 func (s *Storaged) PrepareSnapshot() (interface{}, error) {
+	s.mMutex.Lock()
+	defer s.mMutex.Unlock()
 	if s.mStorage == nil {
 		return nil, x.ErrStorageIsNotReady
 	}
@@ -196,6 +207,8 @@ func (s *Storaged) PrepareSnapshot() (interface{}, error) {
 }
 
 func (s *Storaged) SaveSnapshot(snapshotContext interface{}, w io.Writer, _ <-chan struct{}) error {
+	s.mMutex.Lock()
+	defer s.mMutex.Unlock()
 	if s.mStorage == nil {
 		return x.ErrStorageIsNotReady
 	}
@@ -203,6 +216,8 @@ func (s *Storaged) SaveSnapshot(snapshotContext interface{}, w io.Writer, _ <-ch
 }
 
 func (s *Storaged) RecoverFromSnapshot(r io.Reader, _ <-chan struct{}) error {
+	s.mMutex.Lock()
+	defer s.mMutex.Unlock()
 	if s.mStorage == nil {
 		return x.ErrStorageIsNotReady
 	}

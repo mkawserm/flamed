@@ -197,9 +197,14 @@ type Storage struct {
 	mConfiguration iface.IStorageConfiguration
 
 	mIndexTaskQueue variant.TaskQueue
+
+	//mMutex sync.Mutex
+	mStorageInitialized bool
 }
 
 func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bool {
+	//s.mMutex.Lock()
+	//defer s.mMutex.Unlock()
 	if s.mConfiguration != nil {
 		return false
 	}
@@ -241,6 +246,13 @@ func (s *Storage) SetConfiguration(configuration iface.IStorageConfiguration) bo
 }
 
 func (s *Storage) Open() error {
+	//s.mMutex.Lock()
+	//defer s.mMutex.Unlock()
+
+	if s.mStorageInitialized {
+		return nil
+	}
+
 	defer func() {
 		_ = logger.L("storage").Sync()
 	}()
@@ -273,10 +285,20 @@ func (s *Storage) Open() error {
 	go s.storageTaskQueueHandler()
 
 	logger.L("storage").Debug("Storage opened")
+
+	s.mStorageInitialized = true
+
 	return nil
 }
 
 func (s *Storage) Close() error {
+	//s.mMutex.Lock()
+	//defer s.mMutex.Unlock()
+
+	if !s.mStorageInitialized {
+		return nil
+	}
+
 	err1 := s.mStateStorage.Close()
 
 	if err1 != nil {
@@ -290,7 +312,7 @@ func (s *Storage) Close() error {
 			Command: "done",
 		}
 		close(s.mIndexTaskQueue)
-		s.mIndexTaskQueue = nil
+		//s.mIndexTaskQueue = nil
 		err2 := s.mIndexStorage.Close()
 		return err2
 	}
@@ -304,6 +326,7 @@ func (s *Storage) Close() error {
 	}
 
 	s.mConfiguration = nil
+	s.mStorageInitialized = false
 	return nil
 }
 
@@ -833,6 +856,9 @@ func (s *Storage) updateIndexMetaOfIndexStorage(indexMetaActionContainer IndexMe
 }
 
 func (s *Storage) PrepareSnapshot() (interface{}, error) {
+	//s.mMutex.Lock()
+	//defer s.mMutex.Unlock()
+
 	defer func() {
 		_ = logger.L("storage").Sync()
 	}()
@@ -846,6 +872,9 @@ func (s *Storage) PrepareSnapshot() (interface{}, error) {
 }
 
 func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
+	//s.mMutex.Lock()
+	//defer s.mMutex.Unlock()
+
 	defer func() {
 		_ = logger.L("storage").Sync()
 	}()
@@ -944,6 +973,9 @@ func (s *Storage) RecoverFromSnapshot(r io.Reader) error {
 }
 
 func (s *Storage) SaveSnapshot(snapshotContext interface{}, w io.Writer) error {
+	//s.mMutex.Lock()
+	//defer s.mMutex.Unlock()
+
 	defer func() {
 		_ = logger.L("storage").Sync()
 	}()
@@ -1028,6 +1060,9 @@ func (s *Storage) BuildIndexByNamespace(namespace []byte) {
 }
 
 func (s *Storage) buildIndex() error {
+	//s.mMutex.Lock()
+	//defer s.mMutex.Unlock()
+
 	if !s.mConfiguration.IndexEnable() {
 		return nil
 	}
@@ -1122,6 +1157,9 @@ func (s *Storage) buildIndex() error {
 }
 
 func (s *Storage) buildIndexByNamespace(namespace []byte) error {
+	//s.mMutex.Lock()
+	//defer s.mMutex.Unlock()
+
 	if !s.mConfiguration.IndexEnable() {
 		return nil
 	}

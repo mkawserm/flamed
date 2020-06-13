@@ -82,7 +82,7 @@ func runServerAndWaitForShutdown() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
-		if err := GetApp().getServer().Shutdown(ctx); err == context.DeadlineExceeded {
+		if err := GetApp().getHTTPServer().Shutdown(ctx); err == context.DeadlineExceeded {
 			logger.L("app").Debug("shutdown: halted active connections")
 		}
 
@@ -114,8 +114,7 @@ func runHTTPServer() error {
 			viper.GetString(constant.HTTPServerAddress))
 
 		server := &http.Server{Addr: viper.GetString(constant.HTTPServerAddress), Handler: appIns.getServerMux()}
-		appIns.mHTTPServer = server
-
+		appIns.setHTTPServer(server)
 		err := server.ListenAndServeTLS(viper.GetString(constant.HTTPServerCertFile),
 			viper.GetString(constant.HTTPServerKeyFile))
 
@@ -125,7 +124,7 @@ func runHTTPServer() error {
 			viper.GetString(constant.HTTPServerAddress))
 
 		server := &http.Server{Addr: viper.GetString(constant.HTTPServerAddress), Handler: appIns.getServerMux()}
-		appIns.mHTTPServer = server
+		appIns.setHTTPServer(server)
 
 		err := server.ListenAndServe()
 		return err
