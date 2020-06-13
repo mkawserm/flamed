@@ -8,10 +8,12 @@ import (
 )
 
 var Name = "flamed"
-var ShortDescription = "mFlamed is an open-source distributed embeddable NoSQL database"
-var LongDescription = "mFlamed is an open-source distributed embeddable NoSQL database"
+var ShortDescription = "Flamed is an open-source distributed embeddable NoSQL database"
+var LongDescription = "Flamed is an open-source distributed embeddable NoSQL database"
+
 var DefaultPasswordHashAlgorithm = "argon2"
-var DefaultPasswordHashAlgorithmFactory iface.IPasswordHashAlgorithmFactory = crypto.DefaultPasswordHashAlgorithmFactory()
+var DefaultPasswordHashAlgorithmFactory iface.IPasswordHashAlgorithmFactory = crypto.
+	DefaultPasswordHashAlgorithmFactory()
 
 var DefaultLogDbFactory config.LogDBFactoryFunc
 var DefaultRaftRPCFactory config.RaftRPCFactoryFunc
