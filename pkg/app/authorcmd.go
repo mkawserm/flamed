@@ -10,7 +10,7 @@ const author = `Md Kawser Munshi <mkawserm@gmail.com>
 
 var AuthorCMD = &cobra.Command{
 	Use:   "author",
-	Short: "Print mFlamed authors",
+	Short: "Print Flamed authors",
 	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Printf(author)
 	},
