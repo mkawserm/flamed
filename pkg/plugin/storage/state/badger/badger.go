@@ -136,9 +136,13 @@ type Badger struct {
 	mDbConfiguration Configuration
 }
 
+func (b *Badger) StateStorageName() string {
+	return Name
+}
+
 func (b *Badger) Setup(path string, secretKey []byte, configuration interface{}) {
 	if b.mDb != nil {
-		logger.L(Name).Debug("state::badger db already open")
+		logger.L(Name).Debug("db already open")
 		_ = logger.L(Name).Sync()
 		return
 	}
@@ -187,7 +191,7 @@ func (b *Badger) Setup(path string, secretKey []byte, configuration interface{})
 }
 
 func (b *Badger) Open() error {
-	logger.L(Name).Debug("state::badger opening db")
+	logger.L(Name).Debug("opening db")
 	defer func() {
 		_ = logger.L(Name).Sync()
 	}()
@@ -199,12 +203,12 @@ func (b *Badger) Open() error {
 	db, err := badgerDb.Open(b.mDbConfiguration.BadgerOptions)
 
 	if err != nil {
-		logger.L(Name).Error("state::badger failed to open db", zap.Error(err))
+		logger.L(Name).Error("failed to open db", zap.Error(err))
 		return x.ErrFailedToOpenStorage
 	}
 
 	b.mDb = db
-	logger.L(Name).Debug("state::badger db opened")
+	logger.L(Name).Debug("db opened")
 	return nil
 }
 
@@ -224,7 +228,7 @@ func (b *Badger) Close() error {
 	err := b.mDb.Close()
 	b.mDb = nil
 	if err != nil {
-		logger.L(Name).Error("state::badger failed to close db", zap.Error(err))
+		logger.L(Name).Error("failed to close db", zap.Error(err))
 		return x.ErrFailedToCloseStorage
 	}
 
@@ -261,7 +265,7 @@ func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey 
 
 	kr, err := badgerDb.OpenKeyRegistry(opt)
 	if err != nil {
-		logger.L(Name).Error("state::badger open key registry failure", zap.Error(err))
+		logger.L(Name).Error("open key registry failure", zap.Error(err))
 		return x.ErrFailedToChangeSecretKey
 	}
 
@@ -269,7 +273,7 @@ func (b *Badger) ChangeSecretKey(path string, oldSecretKey []byte, newSecretKey 
 
 	err = badgerDb.WriteKeyRegistry(kr, opt)
 	if err != nil {
-		logger.L(Name).Error("state::badger write to the key registry failure", zap.Error(err))
+		logger.L(Name).Error("write to the key registry failure", zap.Error(err))
 		return x.ErrFailedToChangeSecretKey
 	}
 

@@ -22,6 +22,10 @@ type BleveScorch struct {
 	configuration interface{}
 }
 
+func (b *BleveScorch) IndexStorageName() string {
+	return Name
+}
+
 func (b *BleveScorch) Open(path string, secretKey []byte, configuration interface{}) error {
 	if len(path) == 0 {
 		return x.ErrPathCanNotBeEmpty
@@ -51,7 +55,7 @@ func (b *BleveScorch) UpsertIndexMeta(meta *pb.IndexMeta) error {
 		nil)
 
 	if err != nil {
-		logger.L(Name).Debug("error while adding indexmeta meta", zap.Error(err))
+		logger.L(Name).Debug("error while adding index meta", zap.Error(err))
 		return x.ErrFailedToCreateIndexMeta
 	}
 
@@ -83,7 +87,7 @@ func (b *BleveScorch) DefaultIndexMeta(namespace string) error {
 		nil)
 
 	if err != nil {
-		logger.L(Name).Debug("error while adding default indexmeta meta", zap.Error(err))
+		logger.L(Name).Debug("error while adding default index meta", zap.Error(err))
 		return x.ErrFailedToCreateIndexMeta
 	}
 
@@ -128,7 +132,7 @@ func (b *BleveScorch) ApplyIndex(namespace string, data []*variant.IndexData) er
 	index, err := bleveSearch.Open(p)
 
 	if err != nil {
-		logger.L(Name).Error("index db opening error", zap.Error(err))
+		logger.L(Name).Error("db opening error", zap.Error(err))
 		return x.ErrFailedToApplyIndex
 	}
 

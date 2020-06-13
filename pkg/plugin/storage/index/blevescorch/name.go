@@ -1,3 +1,3 @@
 package blevescorch
 
-const Name = "blevescorch"
+const Name = "index::blevescorch"

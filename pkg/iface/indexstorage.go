@@ -16,6 +16,7 @@ type IIndexStorageSearchResult interface {
 type IIndexStorage interface {
 	RunGC()
 	Close() error
+	IndexStorageName() string
 	Open(path string, secretKey []byte, configuration interface{}) error
 
 	DefaultIndexMeta(namespace string) error
