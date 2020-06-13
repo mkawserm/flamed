@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/app/graphql"
+	utility2 "github.com/mkawserm/flamed/pkg/app/utility"
 	graphql2 "github.com/mkawserm/flamed/pkg/app/view/graphql"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/context"
@@ -266,6 +267,15 @@ func (a *App) initBeforeCommandExecution() {
 	// set log level
 	logger.GetLoggerFactory().ChangeLogLevel(viper.GetString(constant.LogLevel))
 	a.mFlamedContext.SetGlobalTimeout(viper.GetDuration(constant.GlobalRequestTimeout))
+
+	// set cors options
+	utility2.GetCORSOptions().AllowAllOrigins = viper.GetBool(constant.CORSAllowAllOrigins)
+	utility2.GetCORSOptions().AllowOrigins = viper.GetStringSlice(constant.CORSAllowOrigins)
+	utility2.GetCORSOptions().AllowCredentials = viper.GetBool(constant.CORSAllowCredentials)
+	utility2.GetCORSOptions().AllowMethods = viper.GetStringSlice(constant.CORSAllowMethods)
+	utility2.GetCORSOptions().AllowHeaders = viper.GetStringSlice(constant.CORSAllowHeaders)
+	utility2.GetCORSOptions().ExposeHeaders = viper.GetStringSlice(constant.CORSExposeHeaders)
+	utility2.GetCORSOptions().MaxAge = viper.GetDuration(constant.CORSMaxAge)
 
 	if a.mProposalReceiver == nil {
 		a.mProposalReceiver = func(proposal *pb.Proposal, status pb.Status) {

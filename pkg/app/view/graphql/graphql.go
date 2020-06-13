@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	goGraphQL "github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
+	utility2 "github.com/mkawserm/flamed/pkg/app/utility"
 	flamedContext "github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/logger"
 	"github.com/mkawserm/flamed/pkg/utility"
@@ -22,6 +23,11 @@ type GraphQL struct {
 func (v *GraphQL) GetHTTPHandler() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		logger.L("graphql").Debug("processing graphql request")
+
+		if !utility2.GetCORSOptions().CROSCheckAllowNext(writer, request) {
+			return
+		}
+
 		writer.Header().Add("Content-Type", "application/json; charset=utf-8")
 
 		var result *goGraphQL.Result
