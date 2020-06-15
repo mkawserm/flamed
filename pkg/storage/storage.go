@@ -1143,6 +1143,11 @@ func (s *Storage) storageTaskQueueHandler() {
 	logger.L("storage").Info("entering into forever loop")
 	for {
 		task := <-q
+		if task.Command == "" {
+			logger.L("storage").Info("storageTaskQueueHandler forever loop quit because of empty command")
+			break
+		}
+
 		logger.L("storage").Info("executing task",
 			zap.String("id", task.ID),
 			zap.String("name", task.Name),
@@ -1184,6 +1189,10 @@ func (s *Storage) indexTaskQueueHandler() {
 
 	for {
 		task := <-s.mIndexTaskQueue
+		if task.Command == "" {
+			logger.L("storage").Info("indexTaskQueueHandler forever loop quit because of empty command")
+			break
+		}
 		logger.L("storage").Info("executing task",
 			zap.String("id", task.ID),
 			zap.String("name", task.Name),
