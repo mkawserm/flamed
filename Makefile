@@ -30,10 +30,16 @@ run-race:
 	@go run -race cmd/flamed/flamed.go run --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-server-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level debug
 
 test:
-	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -v
+	@go test ./... -v
 
 cover:
-	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -coverprofile=cover.out -v
+	@go test ./... -coverprofile=cover.out -v
+
+#test:
+#	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -v
+#
+#cover:
+#	@DRAGONBOAT_LOGDB=pebble go test -tags dragonboat_no_rocksdb ./... -coverprofile=cover.out -v
 
 cover-html:
 	@go tool cover -html=cover.out
