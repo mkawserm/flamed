@@ -142,11 +142,11 @@ func (s *Storage) Close() error {
 	}
 
 	if s.mConfiguration.IndexEnable() {
-		s.mIndexTaskQueue <- variant.Task{
-			ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
-			Name:    "index-task",
-			Command: "done",
-		}
+		//s.mIndexTaskQueue <- variant.Task{
+		//	ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+		//	Name:    "index-task",
+		//	Command: "done",
+		//}
 		close(s.mIndexTaskQueue)
 		//s.mIndexTaskQueue = nil
 		err2 := s.mIndexStorage.Close()
