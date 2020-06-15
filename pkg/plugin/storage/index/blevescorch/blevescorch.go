@@ -16,6 +16,10 @@ import (
 	"os"
 )
 
+import _ "github.com/blevesearch/bleve/analysis/analyzer/keyword"
+import _ "github.com/blevesearch/bleve/analysis/analyzer/simple"
+import _ "github.com/blevesearch/bleve/analysis/analyzer/web"
+
 type BleveScorch struct {
 	path          string
 	secretKey     []byte
