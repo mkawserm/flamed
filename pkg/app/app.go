@@ -279,6 +279,16 @@ func (a *App) initCommands() {
 }
 
 func (a *App) initGraphQL() {
+	if !viper.GetBool(constant.EnableHTTPServer) &&
+		!viper.GetBool(constant.EnableGRPCServer) {
+		return
+	}
+
+	if !viper.GetBool(constant.EnableGraphQLOverHTTP) &&
+		!viper.GetBool(constant.EnableGraphQLOverGRPC) {
+		return
+	}
+
 	a.mGraphQL = graphql.NewGraphQL(a.mFlamedContext)
 
 	for k, v := range a.mGraphQLQuery {
@@ -297,6 +307,14 @@ func (a *App) initGraphQL() {
 }
 
 func (a *App) initGraphQLView() {
+	if !viper.GetBool(constant.EnableGraphQLOverHTTP) {
+		return
+	}
+
+	if a.mGraphQL == nil {
+		return
+	}
+
 	// graphql view
 	schema, _ := a.mGraphQL.BuildSchema()
 	a.AddView("/graphql", graphql2.NewGraphQLView(a.mFlamedContext, schema).GetHTTPHandler())

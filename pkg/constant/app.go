@@ -48,3 +48,12 @@ const CORSAllowMethods = "CORSAllowMethods"
 const CORSAllowHeaders = "CORSAllowHeaders"
 const CORSExposeHeaders = "CORSExposeHeaders"
 const CORSMaxAge = "CORSMaxAge"
+
+const EnableGraphQLOverHTTP = "EnableGraphQLOverHTTP"
+const EnableGraphQLOverGRPC = "EnableGraphQLOverGRPC"
+
+const EnableGRPCServer = "EnableGRPCServer"
+const GRPCServerTLS = "GRPCServerTLS"
+const GRPCServerAddress = "GRPCServerAddress"
+const GRPCServerCertFile = "GRPCServerCertFile"
+const GRPCServerKeyFile = "GRPCServerKeyFile"
