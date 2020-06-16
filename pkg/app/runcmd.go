@@ -28,6 +28,8 @@ var RunCMD = &cobra.Command{
 	Use:   "run",
 	Short: "Run server",
 	Run: func(cmd *cobra.Command, args []string) {
+		go runServerPreHOOK()
+
 		if len(viper.GetString(constant.StoragePath)) == 0 {
 			fmt.Println("StoragePath can not be empty")
 			return
@@ -68,6 +70,14 @@ var RunCMD = &cobra.Command{
 	},
 } // Command
 
+func runServerPreHOOK() {
+
+}
+
+func runServerPostHOOK() {
+
+}
+
 func runServerAndWaitForShutdown() {
 	idleChan := make(chan struct{})
 	go func() {
@@ -101,6 +111,9 @@ func runServerAndWaitForShutdown() {
 			}
 		}()
 	}
+
+	// Run a any non blocking code
+	go runServerPostHOOK()
 
 	// Blocking until the shutdown is complete
 	<-idleChan
