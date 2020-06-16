@@ -71,11 +71,15 @@ var RunCMD = &cobra.Command{
 } // Command
 
 func runServerPreHOOK() {
-
+	if variable.DefaultRunServerPreHOOK != nil {
+		variable.DefaultRunServerPreHOOK()
+	}
 }
 
 func runServerPostHOOK() {
-
+	if variable.DefaultRunServerPostHOOK != nil {
+		variable.DefaultRunServerPostHOOK()
+	}
 }
 
 func runServerAndWaitForShutdown() {

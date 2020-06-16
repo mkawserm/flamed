@@ -19,3 +19,6 @@ var DefaultLogDbFactory config.LogDBFactoryFunc
 var DefaultRaftRPCFactory config.RaftRPCFactoryFunc
 var DefaultRaftEventListener raftio.IRaftEventListener
 var DefaultSystemEventListener raftio.ISystemEventListener
+
+var DefaultRunServerPreHOOK func() = nil
+var DefaultRunServerPostHOOK func() = nil
