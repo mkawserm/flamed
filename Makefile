@@ -1,5 +1,6 @@
 build:
-	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/flamed.go
+	@go build -v -o bin/flamed cmd/flamed/flamed.go
+#	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/flamed.go
 
 build-darwin-amd64:
 	@GOOS=darwin GOARCH=amd64 go build -v -o bin/flamed-darwin-amd64 cmd/flamed/flamed.go
