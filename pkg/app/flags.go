@@ -153,7 +153,7 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag(constant.HTTPServerCertFile, cmd.PersistentFlags().Lookup("http-server-cert-file"))
 
 	cmd.PersistentFlags().
-		String("http-server-key-file", "", "HTTP server cert file")
+		String("http-server-key-file", "", "HTTP server key file")
 	_ = viper.BindPFlag(constant.HTTPServerKeyFile, cmd.PersistentFlags().Lookup("http-server-key-file"))
 
 	cmd.PersistentFlags().
@@ -348,4 +348,41 @@ func initAllPersistentFlags(cmd *cobra.Command) {
 			"CORS max age")
 	_ = viper.BindPFlag(constant.CORSMaxAge,
 		cmd.PersistentFlags().Lookup("cors-max-age"))
+
+	cmd.PersistentFlags().
+		Bool("enable-graphql-over-http",
+			true,
+			"Enable GraphQL Over HTTP")
+	_ = viper.BindPFlag(constant.EnableGraphQLOverHTTP,
+		cmd.PersistentFlags().Lookup("enable-graphql-over-http"))
+
+	cmd.PersistentFlags().
+		Bool("enable-graphql-over-grpc",
+			false,
+			"Enable GraphQL Over GRPC")
+	_ = viper.BindPFlag(constant.EnableGraphQLOverGRPC,
+		cmd.PersistentFlags().Lookup("enable-graphql-over-grpc"))
+
+	cmd.PersistentFlags().
+		Bool("enable-grpc-server",
+			false,
+			"Enable GRPC Server")
+	_ = viper.BindPFlag(constant.EnableGRPCServer,
+		cmd.PersistentFlags().Lookup("enable-grpc-server"))
+
+	cmd.PersistentFlags().
+		String("grpc-server-address", "localhost:9091", "GRPC server address")
+	_ = viper.BindPFlag(constant.GRPCServerAddress, cmd.PersistentFlags().Lookup("grpc-server-address"))
+
+	cmd.PersistentFlags().
+		Bool("grpc-server-tls", false, "GRPC server TLS flag")
+	_ = viper.BindPFlag(constant.GRPCServerTLS, cmd.PersistentFlags().Lookup("grpc-server-tls"))
+
+	cmd.PersistentFlags().
+		String("grpc-server-cert-file", "", "GRPC server cert file")
+	_ = viper.BindPFlag(constant.GRPCServerCertFile, cmd.PersistentFlags().Lookup("grpc-server-cert-file"))
+
+	cmd.PersistentFlags().
+		String("grpc-server-key-file", "", "GRPC server key file")
+	_ = viper.BindPFlag(constant.GRPCServerKeyFile, cmd.PersistentFlags().Lookup("grpc-server-key-file"))
 }

@@ -3,8 +3,8 @@ package app
 import (
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/app/graphql"
+	graphql2 "github.com/mkawserm/flamed/pkg/app/server/http/view/graphql"
 	utility2 "github.com/mkawserm/flamed/pkg/app/utility"
-	graphql2 "github.com/mkawserm/flamed/pkg/app/view/graphql"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/crypto"
