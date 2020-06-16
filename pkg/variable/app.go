@@ -20,5 +20,5 @@ var DefaultRaftRPCFactory config.RaftRPCFactoryFunc
 var DefaultRaftEventListener raftio.IRaftEventListener
 var DefaultSystemEventListener raftio.ISystemEventListener
 
-var DefaultRunServerPreHOOK func() = nil
-var DefaultRunServerPostHOOK func() = nil
+var DefaultRunCMDPreHOOK func() = nil
+var DefaultRunCMDPostHOOK func() = nil
