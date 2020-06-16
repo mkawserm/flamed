@@ -289,6 +289,26 @@ func (a *App) initGraphQL() {
 		return
 	}
 
+	if viper.GetBool(constant.EnableHTTPServer) ||
+		viper.GetBool(constant.EnableGRPCServer) {
+		if !viper.GetBool(constant.EnableGraphQLOverHTTP) &&
+			!viper.GetBool(constant.EnableGraphQLOverGRPC) {
+			return
+		}
+
+		if viper.GetBool(constant.EnableHTTPServer) &&
+			!viper.GetBool(constant.EnableGRPCServer) &&
+			!viper.GetBool(constant.EnableGraphQLOverHTTP) {
+			return
+		}
+
+		if !viper.GetBool(constant.EnableHTTPServer) &&
+			viper.GetBool(constant.EnableGRPCServer) &&
+			!viper.GetBool(constant.EnableGraphQLOverGRPC) {
+			return
+		}
+	}
+
 	a.mGraphQL = graphql.NewGraphQL(a.mFlamedContext)
 
 	for k, v := range a.mGraphQLQuery {
