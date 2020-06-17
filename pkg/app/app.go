@@ -281,7 +281,7 @@ func (a *App) initCommands() {
 		a.mCommandsInitialized = true
 
 		/* flags */
-		initAllRunCMDPersistentFlags(RunCMD)
+		initAllRunCMDPersistentFlags(RunServerCMD)
 
 		// invoke post hook
 		if variable.DefaultInitCommandPostHOOK != nil {
