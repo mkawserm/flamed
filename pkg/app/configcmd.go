@@ -41,4 +41,5 @@ func init() {
 			"",
 			"Configuration file path")
 	ConfigCMD.AddCommand(ConfigCreateCMD)
+	initAllRunCMDPersistentFlags(ConfigCreateCMD)
 }
