@@ -258,8 +258,6 @@ func (a *App) setup() {
 			"config",
 			"",
 			"Config file")
-
-	initAllPersistentFlags(a.mRootCommand)
 }
 
 func (a *App) initCommands() {
@@ -268,13 +266,27 @@ func (a *App) initCommands() {
 	}
 
 	if !a.mCommandsInitialized {
-		/* initialize all commands here */
+		// invoke pre hook
+		if variable.DefaultInitCommandPreHOOK != nil {
+			variable.DefaultInitCommandPreHOOK()
+		}
 
+		/* initialize all commands here */
 		a.mRootCommand.AddCommand(RunCMD)
+		RunCMD.AddCommand(RunServerCMD)
+
 		a.mRootCommand.AddCommand(ConfigCMD)
 		a.mRootCommand.AddCommand(AuthorCMD)
 		a.mRootCommand.AddCommand(VersionCMD)
 		a.mCommandsInitialized = true
+
+		/* flags */
+		initAllRunCMDPersistentFlags(RunCMD)
+
+		// invoke post hook
+		if variable.DefaultInitCommandPostHOOK != nil {
+			variable.DefaultInitCommandPostHOOK()
+		}
 	}
 }
 

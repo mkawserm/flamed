@@ -109,7 +109,7 @@ func initAllDefaults() {
 	viper.SetDefault(constant.GRPCServerKeyFile, "")
 }
 
-func initAllPersistentFlags(cmd *cobra.Command) {
+func initAllRunCMDPersistentFlags(cmd *cobra.Command) {
 	/*Log related settings*/
 	cmd.PersistentFlags().
 		String(constant.LogLevelFlag, "error", "Log level")
