@@ -251,13 +251,13 @@ func (a *App) setup() {
 		},
 	}
 
-	a.mRootCommand.
-		PersistentFlags().
-		StringVar(
-			&configFile,
-			"config",
-			"",
-			"Config file")
+	//a.mRootCommand.
+	//	PersistentFlags().
+	//	StringVar(
+	//		&configFile,
+	//		"config",
+	//		"",
+	//		"Config file")
 }
 
 func (a *App) initCommands() {

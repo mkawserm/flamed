@@ -368,3 +368,7 @@ func startCluster() {
 		panic(err)
 	}
 }
+
+func init() {
+	InitConfigFlag(RunServerCMD)
+}
