@@ -112,277 +112,278 @@ func initAllDefaults() {
 func initAllPersistentFlags(cmd *cobra.Command) {
 	/*Log related settings*/
 	cmd.PersistentFlags().
-		String("log-level", "error", "Log level")
-	_ = viper.BindPFlag(constant.LogLevel, cmd.PersistentFlags().Lookup("log-level"))
+		String(constant.LogLevelFlag, "error", "Log level")
+	_ = viper.BindPFlag(constant.LogLevel, cmd.PersistentFlags().Lookup(constant.LogLevelFlag))
 
 	cmd.PersistentFlags().
-		Duration("global-request-timeout", 30*time.Second, "Global request timeout")
-	_ = viper.BindPFlag(constant.GlobalRequestTimeout, cmd.PersistentFlags().Lookup("global-request-timeout"))
+		Duration(constant.GlobalRequestTimeoutFlag, 30*time.Second, "Global request timeout")
+	_ = viper.BindPFlag(constant.GlobalRequestTimeout, cmd.PersistentFlags().Lookup(constant.GlobalRequestTimeoutFlag))
 
 	cmd.PersistentFlags().
-		String("storage-path", "~/"+variable.Name, "Data storage path")
-	_ = viper.BindPFlag(constant.StoragePath, cmd.PersistentFlags().Lookup("storage-path"))
+		String(constant.StoragePathFlag, "~/"+variable.Name, "Data storage path")
+	_ = viper.BindPFlag(constant.StoragePath, cmd.PersistentFlags().Lookup(constant.StoragePathFlag))
 
 	cmd.PersistentFlags().
-		String("raft-address", "localhost:2281", "Raft rpc address")
-	_ = viper.BindPFlag(constant.RaftAddress, cmd.PersistentFlags().Lookup("raft-address"))
+		String(constant.RaftAddressFlag, "localhost:2281", "Raft rpc address")
+	_ = viper.BindPFlag(constant.RaftAddress, cmd.PersistentFlags().Lookup(constant.RaftAddressFlag))
 
 	cmd.PersistentFlags().
-		Bool("join", false, "Node join flag")
-	_ = viper.BindPFlag(constant.Join, cmd.PersistentFlags().Lookup("join"))
+		Bool(constant.JoinFlag, false, "Node join flag")
+	_ = viper.BindPFlag(constant.Join, cmd.PersistentFlags().Lookup(constant.JoinFlag))
 
 	cmd.PersistentFlags().
-		String("initial-members", "", "Initial raft members "+
+		String(constant.InitialMembersFlag, "", "Initial raft members "+
 			"format: [node_id,raft_address;] (ex: 1,localhost:6001; 2,localhost:6002;)")
-	_ = viper.BindPFlag(constant.InitialMembers, cmd.PersistentFlags().Lookup("initial-members"))
+	_ = viper.BindPFlag(constant.InitialMembers, cmd.PersistentFlags().Lookup(constant.InitialMembersFlag))
 
 	cmd.PersistentFlags().
-		Bool("enable-http-server", true, "Enable HTTP server flag")
-	_ = viper.BindPFlag(constant.EnableHTTPServer, cmd.PersistentFlags().Lookup("enable-http-server"))
+		Bool(constant.EnableHTTPServerFlag, true, "Enable HTTP server flag")
+	_ = viper.BindPFlag(constant.EnableHTTPServer, cmd.PersistentFlags().Lookup(constant.EnableHTTPServerFlag))
 
 	cmd.PersistentFlags().
-		String("http-server-address", "localhost:8081", "HTTP server address")
-	_ = viper.BindPFlag(constant.HTTPServerAddress, cmd.PersistentFlags().Lookup("http-server-address"))
+		String(constant.HTTPServerAddressFlag, "localhost:8081", "HTTP server address")
+	_ = viper.BindPFlag(constant.HTTPServerAddress, cmd.PersistentFlags().Lookup(constant.HTTPServerAddressFlag))
 
 	cmd.PersistentFlags().
-		Bool("http-server-tls", false, "HTTP server TLS flag")
-	_ = viper.BindPFlag(constant.HTTPServerTLS, cmd.PersistentFlags().Lookup("http-server-tls"))
+		Bool(constant.HTTPServerTLSFlag, false, "HTTP server TLS flag")
+	_ = viper.BindPFlag(constant.HTTPServerTLS, cmd.PersistentFlags().Lookup(constant.HTTPServerTLSFlag))
 
 	cmd.PersistentFlags().
-		String("http-server-cert-file", "", "HTTP server cert file")
-	_ = viper.BindPFlag(constant.HTTPServerCertFile, cmd.PersistentFlags().Lookup("http-server-cert-file"))
+		String(constant.HTTPServerCertFileFlag, "", "HTTP server cert file")
+	_ = viper.BindPFlag(constant.HTTPServerCertFile, cmd.PersistentFlags().Lookup(constant.HTTPServerCertFileFlag))
 
 	cmd.PersistentFlags().
-		String("http-server-key-file", "", "HTTP server key file")
-	_ = viper.BindPFlag(constant.HTTPServerKeyFile, cmd.PersistentFlags().Lookup("http-server-key-file"))
+		String(constant.HTTPServerKeyFileFlag, "", "HTTP server key file")
+	_ = viper.BindPFlag(constant.HTTPServerKeyFile, cmd.PersistentFlags().Lookup(constant.HTTPServerKeyFileFlag))
 
 	cmd.PersistentFlags().
-		Uint64("deployment-id", 1, "HTTP server cert file")
-	_ = viper.BindPFlag(constant.DeploymentID, cmd.PersistentFlags().Lookup("deployment-id"))
+		Uint64(constant.DeploymentIDFlag, 1, "HTTP server cert file")
+	_ = viper.BindPFlag(constant.DeploymentID, cmd.PersistentFlags().Lookup(constant.DeploymentIDFlag))
 
 	cmd.PersistentFlags().
-		Uint64("rtt-millisecond", 200, "Round trip time in milli second")
-	_ = viper.BindPFlag(constant.RTTMillisecond, cmd.PersistentFlags().Lookup("rtt-millisecond"))
+		Uint64(constant.RTTMillisecondFlag, 200, "Round trip time in milli second")
+	_ = viper.BindPFlag(constant.RTTMillisecond, cmd.PersistentFlags().Lookup(constant.RTTMillisecondFlag))
 
 	cmd.PersistentFlags().
-		Bool("mutual-tls", false, "Raft mutual TLS flag")
-	_ = viper.BindPFlag(constant.MutualTLS, cmd.PersistentFlags().Lookup("mutual-tls"))
+		Bool(constant.MutualTLSFlag, false, "Raft mutual TLS flag")
+	_ = viper.BindPFlag(constant.MutualTLS, cmd.PersistentFlags().Lookup(constant.MutualTLSFlag))
 
 	cmd.PersistentFlags().
-		String("ca-file", "", "Raft TLS ca file")
-	_ = viper.BindPFlag(constant.CAFile, cmd.PersistentFlags().Lookup("ca-file"))
+		String(constant.CAFileFlag, "", "Raft TLS ca file")
+	_ = viper.BindPFlag(constant.CAFile, cmd.PersistentFlags().Lookup(constant.CAFileFlag))
 
 	cmd.PersistentFlags().
-		String("cert-file", "", "Raft TLS cert file")
-	_ = viper.BindPFlag(constant.CertFile, cmd.PersistentFlags().Lookup("cert-file"))
+		String(constant.CertFileFlag, "", "Raft TLS cert file")
+	_ = viper.BindPFlag(constant.CertFile, cmd.PersistentFlags().Lookup(constant.CertFileFlag))
 
 	cmd.PersistentFlags().
-		String("key-file", "", "Raft TLS key file")
-	_ = viper.BindPFlag(constant.KeyFile, cmd.PersistentFlags().Lookup("key-file"))
+		String(constant.KeyFileFlag, "", "Raft TLS key file")
+	_ = viper.BindPFlag(constant.KeyFile, cmd.PersistentFlags().Lookup(constant.KeyFileFlag))
 
 	cmd.PersistentFlags().
-		Uint64("max-send-queue-size", 0, "Raft max send queue size")
-	_ = viper.BindPFlag(constant.MaxSendQueueSize, cmd.PersistentFlags().Lookup("max-send-queue-size"))
+		Uint64(constant.MaxSendQueueSizeFlag, 0, "Raft max send queue size")
+	_ = viper.BindPFlag(constant.MaxSendQueueSize, cmd.PersistentFlags().Lookup(constant.MaxSendQueueSizeFlag))
 
 	cmd.PersistentFlags().
-		Uint64("max-receive-queue-size", 0, "Raft max receive queue size")
-	_ = viper.BindPFlag(constant.MaxReceiveQueueSize, cmd.PersistentFlags().Lookup("max-receive-queue-size"))
+		Uint64(constant.MaxReceiveQueueSizeFlag, 0, "Raft max receive queue size")
+	_ = viper.BindPFlag(constant.MaxReceiveQueueSize, cmd.PersistentFlags().Lookup(constant.MaxReceiveQueueSizeFlag))
 
 	cmd.PersistentFlags().
-		Bool("enable-metrics", false, "Enable metrics")
-	_ = viper.BindPFlag(constant.EnableMetrics, cmd.PersistentFlags().Lookup("enable-metrics"))
+		Bool(constant.EnableMetricsFlag, false, "Enable metrics")
+	_ = viper.BindPFlag(constant.EnableMetrics, cmd.PersistentFlags().Lookup(constant.EnableMetricsFlag))
 
 	cmd.PersistentFlags().
 		Uint64(
-			"max-snapshot-send-bytes-per-second",
+			constant.MaxSnapshotSendBytesPerSecondFlag,
 			0,
 			"Max snapshot send bytes per second")
 	_ = viper.BindPFlag(constant.MaxSnapshotSendBytesPerSecond,
-		cmd.PersistentFlags().Lookup("max-snapshot-send-bytes-per-second"))
+		cmd.PersistentFlags().Lookup(constant.MaxSnapshotSendBytesPerSecondFlag))
 
 	cmd.PersistentFlags().
 		Uint64(
-			"max-snapshot-recv-bytes-per-second",
+			constant.MaxSnapshotRecvBytesPerSecondFlag,
 			0,
 			"Max snapshot recv bytes per second")
 	_ = viper.BindPFlag(constant.MaxSnapshotRecvBytesPerSecond,
-		cmd.PersistentFlags().Lookup("max-snapshot-recv-bytes-per-second"))
+		cmd.PersistentFlags().Lookup(constant.MaxSnapshotRecvBytesPerSecondFlag))
 
 	cmd.PersistentFlags().
-		Bool("notify-commit",
+		Bool(constant.NotifyCommitFlag,
 			false,
 			"Notify commit")
-	_ = viper.BindPFlag(constant.NotifyCommit, cmd.PersistentFlags().Lookup("notify-commit"))
+	_ = viper.BindPFlag(constant.NotifyCommit, cmd.PersistentFlags().Lookup(constant.NotifyCommitFlag))
 
 	cmd.PersistentFlags().
-		String("log-db-config",
+		String(constant.LogDBConfigFlag,
 			"tiny",
 			"Log db config")
-	_ = viper.BindPFlag(constant.LogDBConfig, cmd.PersistentFlags().Lookup("log-db-config"))
+	_ = viper.BindPFlag(constant.LogDBConfig, cmd.PersistentFlags().Lookup(constant.LogDBConfigFlag))
 
 	cmd.PersistentFlags().
-		Duration("system-ticker-precision",
+		Duration(constant.SystemTickerPrecisionFlag,
 			0,
 			"System ticker precision")
-	_ = viper.BindPFlag(constant.SystemTickerPrecision, cmd.PersistentFlags().Lookup("system-ticker-precision"))
+	_ = viper.BindPFlag(constant.SystemTickerPrecision, cmd.PersistentFlags().
+		Lookup(constant.SystemTickerPrecisionFlag))
 
 	cmd.PersistentFlags().
-		Uint64("node-id",
+		Uint64(constant.NodeIDFlag,
 			1,
 			"Node id")
-	_ = viper.BindPFlag(constant.NodeID, cmd.PersistentFlags().Lookup("node-id"))
+	_ = viper.BindPFlag(constant.NodeID, cmd.PersistentFlags().Lookup(constant.NodeIDFlag))
 
 	cmd.PersistentFlags().
-		Bool("check-quorum",
+		Bool(constant.CheckQuorumFlag,
 			true,
 			"Check quorum")
-	_ = viper.BindPFlag(constant.CheckQuorum, cmd.PersistentFlags().Lookup("check-quorum"))
+	_ = viper.BindPFlag(constant.CheckQuorum, cmd.PersistentFlags().Lookup(constant.CheckQuorumFlag))
 
 	cmd.PersistentFlags().
-		Uint64("election-rtt",
+		Uint64(constant.ElectionRTTFlag,
 			5,
 			"Election RTT")
-	_ = viper.BindPFlag(constant.ElectionRTT, cmd.PersistentFlags().Lookup("election-rtt"))
+	_ = viper.BindPFlag(constant.ElectionRTT, cmd.PersistentFlags().Lookup(constant.ElectionRTTFlag))
 
 	cmd.PersistentFlags().
-		Uint64("heartbeat-rtt",
+		Uint64(constant.HeartbeatRTTFlag,
 			1,
 			"Heartbeat RTT")
-	_ = viper.BindPFlag(constant.HeartbeatRTT, cmd.PersistentFlags().Lookup("heartbeat-rtt"))
+	_ = viper.BindPFlag(constant.HeartbeatRTT, cmd.PersistentFlags().Lookup(constant.HeartbeatRTTFlag))
 
 	cmd.PersistentFlags().
-		Uint64("snapshot-entries",
+		Uint64(constant.SnapshotEntriesFlag,
 			1000,
 			"Snapshot entries")
-	_ = viper.BindPFlag(constant.SnapshotEntries, cmd.PersistentFlags().Lookup("snapshot-entries"))
+	_ = viper.BindPFlag(constant.SnapshotEntries, cmd.PersistentFlags().Lookup(constant.SnapshotEntriesFlag))
 
 	cmd.PersistentFlags().
-		Uint64("compaction-overhead",
+		Uint64(constant.CompactionOverheadFlag,
 			5,
 			"Compaction overhead")
-	_ = viper.BindPFlag(constant.CompactionOverhead, cmd.PersistentFlags().Lookup("compaction-overhead"))
+	_ = viper.BindPFlag(constant.CompactionOverhead, cmd.PersistentFlags().Lookup(constant.CompactionOverheadFlag))
 
 	cmd.PersistentFlags().
-		Bool("ordered-config-change",
+		Bool(constant.OrderedConfigChangeFlag,
 			false,
 			"Ordered config change")
-	_ = viper.BindPFlag(constant.OrderedConfigChange, cmd.PersistentFlags().Lookup("ordered-config-change"))
+	_ = viper.BindPFlag(constant.OrderedConfigChange, cmd.PersistentFlags().Lookup(constant.OrderedConfigChangeFlag))
 
 	cmd.PersistentFlags().
-		Uint64("max-in-mem-log-size",
+		Uint64(constant.MaxInMemLogSizeFlag,
 			0,
 			"Max in mem log size")
-	_ = viper.BindPFlag(constant.MaxInMemLogSize, cmd.PersistentFlags().Lookup("max-in-mem-log-size"))
+	_ = viper.BindPFlag(constant.MaxInMemLogSize, cmd.PersistentFlags().Lookup(constant.MaxInMemLogSizeFlag))
 
 	cmd.PersistentFlags().
-		Bool("disable-auto-compactions",
+		Bool(constant.DisableAutoCompactionsFlag,
 			false,
 			"Disable auto compactions")
 	_ = viper.BindPFlag(constant.DisableAutoCompactions,
-		cmd.PersistentFlags().Lookup("disable-auto-compactions"))
+		cmd.PersistentFlags().Lookup(constant.DisableAutoCompactionsFlag))
 
 	cmd.PersistentFlags().
-		Bool("is-observer",
+		Bool(constant.IsObserverFlag,
 			false,
 			"Is observer")
-	_ = viper.BindPFlag(constant.IsObserver, cmd.PersistentFlags().Lookup("is-observer"))
+	_ = viper.BindPFlag(constant.IsObserver, cmd.PersistentFlags().Lookup(constant.IsObserverFlag))
 
 	cmd.PersistentFlags().
-		Bool("is-witness",
+		Bool(constant.IsWitnessFlag,
 			false,
 			"Is witness")
-	_ = viper.BindPFlag(constant.IsWitness, cmd.PersistentFlags().Lookup("is-witness"))
+	_ = viper.BindPFlag(constant.IsWitness, cmd.PersistentFlags().Lookup(constant.IsWitnessFlag))
 
 	cmd.PersistentFlags().
-		Bool("quiesce",
+		Bool(constant.QuiesceFlag,
 			false,
 			"Quiesce")
-	_ = viper.BindPFlag(constant.Quiesce, cmd.PersistentFlags().Lookup("quiesce"))
+	_ = viper.BindPFlag(constant.Quiesce, cmd.PersistentFlags().Lookup(constant.QuiesceFlag))
 
 	// CORS related flags
 	cmd.PersistentFlags().
-		Bool("cors-allow-all-origins",
+		Bool(constant.CORSAllowAllOriginsFlag,
 			false,
 			"CORS allow all origins")
 	_ = viper.BindPFlag(constant.CORSAllowAllOrigins,
-		cmd.PersistentFlags().Lookup("cors-allow-all-origins"))
+		cmd.PersistentFlags().Lookup(constant.CORSAllowAllOriginsFlag))
 
 	cmd.PersistentFlags().
-		StringSlice("cors-allow-origins",
+		StringSlice(constant.CORSAllowOriginsFlag,
 			[]string{},
 			"CORS allow origins")
 	_ = viper.BindPFlag(constant.CORSAllowOrigins,
-		cmd.PersistentFlags().Lookup("cors-allow-origins"))
+		cmd.PersistentFlags().Lookup(constant.CORSAllowOriginsFlag))
 
 	cmd.PersistentFlags().
-		Bool("cors-allow-credentials",
+		Bool(constant.CORSAllowCredentialsFlag,
 			false,
 			"CORS allow credentials")
 	_ = viper.BindPFlag(constant.CORSAllowCredentials,
-		cmd.PersistentFlags().Lookup("cors-allow-credentials"))
+		cmd.PersistentFlags().Lookup(constant.CORSAllowCredentialsFlag))
 
 	cmd.PersistentFlags().
-		StringSlice("cors-allow-methods",
+		StringSlice(constant.CORSAllowMethodsFlag,
 			[]string{"GET"},
 			"CORS allow methods")
 	_ = viper.BindPFlag(constant.CORSAllowMethods,
-		cmd.PersistentFlags().Lookup("cors-allow-methods"))
+		cmd.PersistentFlags().Lookup(constant.CORSAllowMethodsFlag))
 
 	cmd.PersistentFlags().
-		StringSlice("cors-allow-headers",
+		StringSlice(constant.CORSAllowHeadersFlag,
 			[]string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "Authorization"},
 			"CORS allow headers")
 	_ = viper.BindPFlag(constant.CORSAllowHeaders,
-		cmd.PersistentFlags().Lookup("cors-allow-headers"))
+		cmd.PersistentFlags().Lookup(constant.CORSAllowHeadersFlag))
 
 	cmd.PersistentFlags().
-		StringSlice("cors-expose-headers",
+		StringSlice(constant.CORSExposeHeadersFlag,
 			[]string{},
 			"CORS expose headers")
 	_ = viper.BindPFlag(constant.CORSExposeHeaders,
-		cmd.PersistentFlags().Lookup("cors-expose-headers"))
+		cmd.PersistentFlags().Lookup(constant.CORSExposeHeadersFlag))
 
 	cmd.PersistentFlags().
-		Duration("cors-max-age",
+		Duration(constant.CORSMaxAgeFlag,
 			5*time.Minute,
 			"CORS max age")
 	_ = viper.BindPFlag(constant.CORSMaxAge,
-		cmd.PersistentFlags().Lookup("cors-max-age"))
+		cmd.PersistentFlags().Lookup(constant.CORSMaxAgeFlag))
 
 	cmd.PersistentFlags().
-		Bool("enable-graphql-over-http",
+		Bool(constant.EnableGraphQLOverHTTPFlag,
 			true,
 			"Enable GraphQL Over HTTP")
 	_ = viper.BindPFlag(constant.EnableGraphQLOverHTTP,
-		cmd.PersistentFlags().Lookup("enable-graphql-over-http"))
+		cmd.PersistentFlags().Lookup(constant.EnableGraphQLOverHTTPFlag))
 
 	cmd.PersistentFlags().
-		Bool("enable-graphql-over-grpc",
+		Bool(constant.EnableGraphQLOverGRPCFlag,
 			false,
 			"Enable GraphQL Over GRPC")
 	_ = viper.BindPFlag(constant.EnableGraphQLOverGRPC,
-		cmd.PersistentFlags().Lookup("enable-graphql-over-grpc"))
+		cmd.PersistentFlags().Lookup(constant.EnableGraphQLOverGRPCFlag))
 
 	cmd.PersistentFlags().
-		Bool("enable-grpc-server",
+		Bool(constant.EnableGRPCServerFlag,
 			false,
 			"Enable GRPC Server")
 	_ = viper.BindPFlag(constant.EnableGRPCServer,
-		cmd.PersistentFlags().Lookup("enable-grpc-server"))
+		cmd.PersistentFlags().Lookup(constant.EnableGRPCServerFlag))
 
 	cmd.PersistentFlags().
-		String("grpc-server-address", "localhost:9091", "GRPC server address")
-	_ = viper.BindPFlag(constant.GRPCServerAddress, cmd.PersistentFlags().Lookup("grpc-server-address"))
+		String(constant.GRPCServerAddressFlag, "localhost:9091", "GRPC server address")
+	_ = viper.BindPFlag(constant.GRPCServerAddress, cmd.PersistentFlags().Lookup(constant.GRPCServerAddressFlag))
 
 	cmd.PersistentFlags().
-		Bool("grpc-server-tls", false, "GRPC server TLS flag")
-	_ = viper.BindPFlag(constant.GRPCServerTLS, cmd.PersistentFlags().Lookup("grpc-server-tls"))
+		Bool(constant.GRPCServerTLSFlag, false, "GRPC server TLS flag")
+	_ = viper.BindPFlag(constant.GRPCServerTLS, cmd.PersistentFlags().Lookup(constant.GRPCServerTLSFlag))
 
 	cmd.PersistentFlags().
-		String("grpc-server-cert-file", "", "GRPC server cert file")
-	_ = viper.BindPFlag(constant.GRPCServerCertFile, cmd.PersistentFlags().Lookup("grpc-server-cert-file"))
+		String(constant.GRPCServerCertFileFlag, "", "GRPC server cert file")
+	_ = viper.BindPFlag(constant.GRPCServerCertFile, cmd.PersistentFlags().Lookup(constant.GRPCServerCertFileFlag))
 
 	cmd.PersistentFlags().
-		String("grpc-server-key-file", "", "GRPC server key file")
-	_ = viper.BindPFlag(constant.GRPCServerKeyFile, cmd.PersistentFlags().Lookup("grpc-server-key-file"))
+		String(constant.GRPCServerKeyFileFlag, "", "GRPC server key file")
+	_ = viper.BindPFlag(constant.GRPCServerKeyFile, cmd.PersistentFlags().Lookup(constant.GRPCServerKeyFileFlag))
 }
