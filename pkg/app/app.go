@@ -3,7 +3,9 @@ package app
 import (
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/app/graphql"
+	"github.com/mkawserm/flamed/pkg/app/http/server"
 	graphql2 "github.com/mkawserm/flamed/pkg/app/http/view/graphql"
+	iface2 "github.com/mkawserm/flamed/pkg/app/iface"
 	utility2 "github.com/mkawserm/flamed/pkg/app/utility"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/context"
@@ -20,7 +22,6 @@ import (
 	"github.com/mkawserm/flamed/pkg/variable"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	"net/http"
 	"sync"
 	"time"
 
@@ -34,8 +35,7 @@ var (
 )
 
 type App struct {
-	mServerMux  *http.ServeMux
-	mHTTPServer *http.Server
+	mHTTPServer *server.HTTPServer
 
 	mViewsInitialized bool
 	mDefaultViewFlag  bool
@@ -55,6 +55,7 @@ type App struct {
 	mGraphQLQuery        map[string]graphql.GQLHandler
 	mGraphQLMutation     map[string]graphql.GQLHandler
 	mGraphQLSubscription map[string]graphql.GQLHandler
+	mView                map[string]iface2.IView
 
 	mMutex sync.Mutex
 }
@@ -94,18 +95,11 @@ func (a *App) GetProposalReceiver() func(*pb.Proposal, pb.Status) {
 	return a.mProposalReceiver
 }
 
-func (a *App) getHTTPServer() *http.Server {
+func (a *App) getHTTPServer() *server.HTTPServer {
 	a.mMutex.Lock()
 	defer a.mMutex.Unlock()
 
 	return a.mHTTPServer
-}
-
-func (a *App) getServerMux() *http.ServeMux {
-	a.mMutex.Lock()
-	defer a.mMutex.Unlock()
-
-	return a.mServerMux
 }
 
 func (a *App) SetPasswordHashAlgorithmFactory(f iface.IPasswordHashAlgorithmFactory) {
@@ -192,11 +186,11 @@ func (a *App) AddGraphQLSubscription(name string, handler graphql.GQLHandler) {
 	a.mGraphQLSubscription[name] = handler
 }
 
-func (a *App) AddView(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+func (a *App) AddView(pattern string, view iface2.IView) {
 	a.mMutex.Lock()
 	defer a.mMutex.Unlock()
 
-	a.mServerMux.HandleFunc(pattern, handler)
+	a.mView[pattern] = view
 }
 
 func (a *App) AddTransactionProcessor(tp iface.ITransactionProcessor) {
@@ -225,7 +219,7 @@ func (a *App) setup() {
 	//defer a.mMutex.Unlock()
 
 	/*initialize all attributes*/
-	a.mServerMux = &http.ServeMux{}
+	a.mHTTPServer = server.NewHTTPServer()
 	a.mFlamedContext = context.NewFlamedContext()
 
 	a.mCommandsInitialized = false
@@ -234,6 +228,8 @@ func (a *App) setup() {
 	a.mDefaultViewFlag = true
 	a.mTPInitialized = false
 	a.mDefaultTPFlag = true
+
+	a.mView = make(map[string]iface2.IView)
 	a.mGraphQLQuery = make(map[string]graphql.GQLHandler)
 	a.mGraphQLMutation = make(map[string]graphql.GQLHandler)
 	a.mGraphQLSubscription = make(map[string]graphql.GQLHandler)
@@ -349,12 +345,16 @@ func (a *App) initGraphQLView() {
 
 	// graphql view
 	schema, _ := a.mGraphQL.BuildSchema()
-	a.AddView("/graphql", graphql2.NewGraphQLView(a.mFlamedContext, schema).GetHTTPHandler())
+	a.mHTTPServer.AddView("/graphql", graphql2.NewGraphQLView(a.mFlamedContext, schema))
 }
 
 func (a *App) initViews() {
 	if !viper.GetBool(constant.EnableHTTPServer) {
 		return
+	}
+
+	for k, v := range a.mView {
+		a.mHTTPServer.AddView(k, v)
 	}
 
 	if !a.mDefaultViewFlag {
@@ -364,7 +364,6 @@ func (a *App) initViews() {
 	if !a.mViewsInitialized {
 		/* initialize all views here */
 		a.initGraphQLView()
-
 		a.mViewsInitialized = true
 	}
 }
@@ -429,12 +428,6 @@ func (a *App) Execute() error {
 	}
 
 	return a.mRootCommand.Execute()
-}
-
-func (a *App) setHTTPServer(server *http.Server) {
-	a.mMutex.Lock()
-	defer a.mMutex.Unlock()
-	a.mHTTPServer = server
 }
 
 func GetApp() *App {

@@ -109,7 +109,11 @@ func runServerAndWaitForShutdown() {
 	// HTTP Server
 	if viper.GetBool(constant.EnableHTTPServer) {
 		go func() {
-			if err := runHTTPServer(); err == http.ErrServerClosed {
+			if err := GetApp().getHTTPServer().Start(
+				viper.GetString(constant.HTTPServerAddress),
+				viper.GetBool(constant.HTTPServerTLS),
+				viper.GetString(constant.HTTPServerCertFile),
+				viper.GetString(constant.HTTPServerKeyFile)); err == http.ErrServerClosed {
 				logger.L("app").Info("http server closed")
 			}
 		}()
@@ -121,30 +125,6 @@ func runServerAndWaitForShutdown() {
 	// Blocking until the shutdown is complete
 	<-idleChan
 	logger.L("app").Info("shutdown complete")
-}
-
-func runHTTPServer() error {
-	logger.L("app").Debug("preparing http server")
-	if viper.GetBool(constant.HTTPServerTLS) {
-		logger.L("app").Info("http server with tls started @ " +
-			viper.GetString(constant.HTTPServerAddress))
-
-		server := &http.Server{Addr: viper.GetString(constant.HTTPServerAddress), Handler: appIns.getServerMux()}
-		appIns.setHTTPServer(server)
-		err := server.ListenAndServeTLS(viper.GetString(constant.HTTPServerCertFile),
-			viper.GetString(constant.HTTPServerKeyFile))
-
-		return err
-	} else {
-		logger.L("app").Info("http server started @ " +
-			viper.GetString(constant.HTTPServerAddress))
-
-		server := &http.Server{Addr: viper.GetString(constant.HTTPServerAddress), Handler: appIns.getServerMux()}
-		appIns.setHTTPServer(server)
-
-		err := server.ListenAndServe()
-		return err
-	}
 }
 
 func getInitialMembers(stringList []string) map[uint64]string {
