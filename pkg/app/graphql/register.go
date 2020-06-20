@@ -12,7 +12,7 @@ import (
 )
 
 func (g *GraphQL) register() {
-	g.AddQueryField("serviceStatus", query.ServerStatus)
+	g.AddQueryField("serverStatus", query.ServerStatus)
 	g.AddMutationField("counterMutator", mutation.CounterMutator)
 
 	g.AddQueryField("flamed", query.Flamed)
