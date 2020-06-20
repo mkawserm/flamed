@@ -2,25 +2,20 @@ package query
 
 import (
 	"github.com/graphql-go/graphql"
+	utility2 "github.com/mkawserm/flamed/pkg/app/utility"
 	"github.com/mkawserm/flamed/pkg/context"
 )
 
-type serviceStatus struct {
-	HTTPServer bool
-	GRPCServer bool
-	RAFTServer bool
-}
-
-var ServiceStatusType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "ServiceStatus",
-	Description: "`ServiceStatus` provides information about service availability",
+var ServerStatusType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "ServerStatus",
+	Description: "`ServerStatus` provides information about service availability",
 	Fields: graphql.Fields{
 		"httpServer": &graphql.Field{
 			Type:        graphql.Boolean,
 			Description: "Is HTTP server available?",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if val, ok := p.Source.(serviceStatus); ok {
-					return val.HTTPServer, nil
+				if val, ok := p.Source.(utility2.ServerStatus); ok {
+					return val.HTTPServer(), nil
 				}
 				return nil, nil
 			},
@@ -30,8 +25,8 @@ var ServiceStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Is GRPC server available?",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if val, ok := p.Source.(serviceStatus); ok {
-					return val.GRPCServer, nil
+				if val, ok := p.Source.(utility2.ServerStatus); ok {
+					return val.GRPCServer(), nil
 				}
 				return nil, nil
 			},
@@ -41,8 +36,8 @@ var ServiceStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Is RAFT server available?",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if val, ok := p.Source.(serviceStatus); ok {
-					return val.RAFTServer, nil
+				if val, ok := p.Source.(utility2.ServerStatus); ok {
+					return val.RAFTServer(), nil
 				}
 				return nil, nil
 			},
@@ -50,17 +45,13 @@ var ServiceStatusType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-func ServiceStatus(_ *context.FlamedContext) *graphql.Field {
+func ServerStatus(_ *context.FlamedContext) *graphql.Field {
 	return &graphql.Field{
-		Name: "ServiceStatus",
-		Type: ServiceStatusType,
+		Name: "ServerStatus",
+		Type: ServerStatusType,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			return serviceStatus{
-				HTTPServer: true,
-				GRPCServer: false,
-				RAFTServer: true,
-			}, nil
+			return utility2.GetServerStatus(), nil
 		},
-		Description: "GlobalOperation service availability information",
+		Description: "GlobalOperation server availability information",
 	}
 }
