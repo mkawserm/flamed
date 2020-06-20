@@ -14,7 +14,7 @@ var ServerStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Is HTTP server available?",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if val, ok := p.Source.(utility2.ServerStatus); ok {
+				if val, ok := p.Source.(*utility2.ServerStatus); ok {
 					return val.HTTPServer(), nil
 				}
 				return nil, nil
@@ -25,7 +25,7 @@ var ServerStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Is GRPC server available?",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if val, ok := p.Source.(utility2.ServerStatus); ok {
+				if val, ok := p.Source.(*utility2.ServerStatus); ok {
 					return val.GRPCServer(), nil
 				}
 				return nil, nil
@@ -36,7 +36,7 @@ var ServerStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Boolean,
 			Description: "Is RAFT server available?",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if val, ok := p.Source.(utility2.ServerStatus); ok {
+				if val, ok := p.Source.(*utility2.ServerStatus); ok {
 					return val.RAFTServer(), nil
 				}
 				return nil, nil
