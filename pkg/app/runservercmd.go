@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/lni/dragonboat/v3/config"
+	utility2 "github.com/mkawserm/flamed/pkg/app/utility"
 	"github.com/mkawserm/flamed/pkg/conf"
 	"github.com/mkawserm/flamed/pkg/constant"
 	"github.com/mkawserm/flamed/pkg/crypto"
@@ -109,11 +110,13 @@ func runServerAndWaitForShutdown() {
 	// HTTP Server
 	if viper.GetBool(constant.EnableHTTPServer) {
 		go func() {
+			utility2.GetServerStatus().SetHTTPServer(true)
 			if err := GetApp().getHTTPServer().Start(
 				viper.GetString(constant.HTTPServerAddress),
 				viper.GetBool(constant.HTTPServerTLS),
 				viper.GetString(constant.HTTPServerCertFile),
 				viper.GetString(constant.HTTPServerKeyFile)); err == http.ErrServerClosed {
+				utility2.GetServerStatus().SetHTTPServer(false)
 				logger.L("app").Info("http server closed")
 			}
 		}()
@@ -343,8 +346,9 @@ func startCluster() {
 		clusterConfiguration,
 		storagedConfiguration,
 		raftConfiguration)
-
+	utility2.GetServerStatus().SetRAFTServer(true)
 	if err != nil {
+		utility2.GetServerStatus().SetRAFTServer(false)
 		panic(err)
 	}
 }
