@@ -849,10 +849,10 @@
           "_postman_isSubFolder": true
         },
         {
-          "name": "serviceStatus",
+          "name": "serverStatus",
           "item": [
             {
-              "name": "serviceStatus",
+              "name": "serverStatus",
               "request": {
                 "auth": {
                   "type": "basic",
@@ -874,7 +874,7 @@
                 "body": {
                   "mode": "graphql",
                   "graphql": {
-                    "query": "query ServiceStatus {\n    serviceStatus {\n        grpcServer\n        httpServer\n        raftServer\n    }\n}",
+                    "query": "query ServerStatus {\n    serverStatus {\n        grpcServer\n        httpServer\n        raftServer\n    }\n}",
                     "variables": ""
                   }
                 },
@@ -886,6 +886,28 @@
                 }
               },
               "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "d8bdecfb-0743-42a7-91a5-0190a14c0719",
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "80949ae3-da79-41b2-9e0e-c5ace3e8b180",
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
             }
           ],
           "protocolProfileBehavior": {},
