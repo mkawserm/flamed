@@ -3,6 +3,8 @@ package app
 import (
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/app/graphql"
+	server2 "github.com/mkawserm/flamed/pkg/app/grpc/server"
+	graphql3 "github.com/mkawserm/flamed/pkg/app/grpc/service/graphql"
 	"github.com/mkawserm/flamed/pkg/app/http/server"
 	graphql2 "github.com/mkawserm/flamed/pkg/app/http/view/graphql"
 	iface2 "github.com/mkawserm/flamed/pkg/app/iface"
@@ -36,9 +38,13 @@ var (
 
 type App struct {
 	mHTTPServer *server.HTTPServer
+	mGRPCServer *server2.GRPCServer
 
 	mViewsInitialized bool
 	mDefaultViewFlag  bool
+
+	mServicesInitialized bool
+	mDefaultServiceFlag  bool
 
 	mCommandsInitialized bool
 	mDefaultCommandFlag  bool
@@ -55,7 +61,7 @@ type App struct {
 	mGraphQLQuery        map[string]graphql.GQLHandler
 	mGraphQLMutation     map[string]graphql.GQLHandler
 	mGraphQLSubscription map[string]graphql.GQLHandler
-	mView                map[string]iface2.IView
+	mView                map[string]iface2.IHTTPView
 
 	mMutex sync.Mutex
 }
@@ -100,6 +106,13 @@ func (a *App) getHTTPServer() *server.HTTPServer {
 	defer a.mMutex.Unlock()
 
 	return a.mHTTPServer
+}
+
+func (a *App) getGRPCServer() *server2.GRPCServer {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
+	return a.mGRPCServer
 }
 
 func (a *App) SetPasswordHashAlgorithmFactory(f iface.IPasswordHashAlgorithmFactory) {
@@ -186,11 +199,15 @@ func (a *App) AddGraphQLSubscription(name string, handler graphql.GQLHandler) {
 	a.mGraphQLSubscription[name] = handler
 }
 
-func (a *App) AddView(pattern string, view iface2.IView) {
+func (a *App) AddHTTPView(pattern string, view iface2.IHTTPView) {
 	a.mMutex.Lock()
 	defer a.mMutex.Unlock()
 
 	a.mView[pattern] = view
+}
+
+func (a *App) AddGRPCService(service iface2.IGRPCService) {
+	a.mGRPCServer.AddService(service)
 }
 
 func (a *App) AddTransactionProcessor(tp iface.ITransactionProcessor) {
@@ -220,6 +237,7 @@ func (a *App) setup() {
 
 	/*initialize all attributes*/
 	a.mHTTPServer = server.NewHTTPServer()
+	a.mGRPCServer = server2.NewGRPCServer()
 	a.mFlamedContext = context.NewFlamedContext()
 
 	a.mCommandsInitialized = false
@@ -229,7 +247,10 @@ func (a *App) setup() {
 	a.mTPInitialized = false
 	a.mDefaultTPFlag = true
 
-	a.mView = make(map[string]iface2.IView)
+	a.mServicesInitialized = false
+	a.mDefaultServiceFlag = true
+
+	a.mView = make(map[string]iface2.IHTTPView)
 	a.mGraphQLQuery = make(map[string]graphql.GQLHandler)
 	a.mGraphQLMutation = make(map[string]graphql.GQLHandler)
 	a.mGraphQLSubscription = make(map[string]graphql.GQLHandler)
@@ -368,6 +389,36 @@ func (a *App) initViews() {
 	}
 }
 
+func (a *App) initGraphQLGRPCService() {
+	if !viper.GetBool(constant.EnableGraphQLOverGRPC) {
+		return
+	}
+
+	if a.mGraphQL == nil {
+		return
+	}
+
+	// graphql service
+	schema, _ := a.mGraphQL.BuildSchema()
+	a.mGRPCServer.AddService(graphql3.NewGraphQLService(a.mFlamedContext, schema))
+}
+
+func (a *App) initGRPCServices() {
+	if !viper.GetBool(constant.EnableGRPCServer) {
+		return
+	}
+
+	if !a.mDefaultServiceFlag {
+		return
+	}
+
+	if !a.mServicesInitialized {
+		/* initialize all services here */
+		a.initGraphQLGRPCService()
+		a.mServicesInitialized = true
+	}
+}
+
 func (a *App) initTransactionProcessors() {
 	if !a.mDefaultTPFlag {
 		return
@@ -417,6 +468,9 @@ func (a *App) initBeforeCommandExecution() {
 
 	/* init views */
 	a.initViews()
+
+	/* init grpc services */
+	a.initGRPCServices()
 }
 
 func (a *App) Execute() error {

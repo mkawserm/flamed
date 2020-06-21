@@ -2,6 +2,6 @@ package iface
 
 import "net/http"
 
-type IView interface {
+type IHTTPView interface {
 	GetHTTPHandler() http.HandlerFunc
 }

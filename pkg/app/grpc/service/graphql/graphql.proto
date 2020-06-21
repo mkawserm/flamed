@@ -1,0 +1,14 @@
+syntax = "proto3";
+package graphql;
+
+message GraphQLRequest {
+  bytes payload = 1;
+}
+
+message GraphQLResponse {
+  bytes payload = 1;
+}
+
+service GraphQLRPC {
+  rpc GetGraphQLResponse(GraphQLRequest) returns (GraphQLResponse) {}
+}

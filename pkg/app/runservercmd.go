@@ -100,12 +100,29 @@ func runServerAndWaitForShutdown() {
 			logger.L("app").Debug("shutdown: halted active connections")
 		}
 
+		GetApp().getGRPCServer().GracefulStop()
+
 		// Stop node
 		GetApp().GetFlamed().StopNode()
 
 		// Actual shutdown trigger.
 		close(idleChan)
 	}()
+
+	// GRPC Server
+	if viper.GetBool(constant.EnableGRPCServer) {
+		go func() {
+			utility2.GetServerStatus().SetGRPCServer(true)
+			if err := GetApp().getGRPCServer().Start(
+				viper.GetString(constant.GRPCServerAddress),
+				viper.GetBool(constant.GRPCServerTLS),
+				viper.GetString(constant.GRPCServerCertFile),
+				viper.GetString(constant.GRPCServerKeyFile)); err != nil {
+				utility2.GetServerStatus().SetGRPCServer(false)
+				logger.L("app").Info("grpc server closed")
+			}
+		}()
+	}
 
 	// HTTP Server
 	if viper.GetBool(constant.EnableHTTPServer) {

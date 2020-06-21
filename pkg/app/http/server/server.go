@@ -12,7 +12,7 @@ type HTTPServer struct {
 	mHTTPServer *http.Server
 }
 
-func (h *HTTPServer) AddView(pattern string, view iface.IView) {
+func (h *HTTPServer) AddView(pattern string, view iface.IHTTPView) {
 	h.mServerMux.HandleFunc(pattern, view.GetHTTPHandler())
 }
 
@@ -21,7 +21,6 @@ func (h *HTTPServer) AddHandlerFunc(pattern string, handler http.HandlerFunc) {
 }
 
 func (h *HTTPServer) Start(address string, enableTLS bool, certFile string, keyFile string) error {
-	logger.L("http::server").Debug("starting server")
 	h.mHTTPServer.Addr = address
 
 	if enableTLS {

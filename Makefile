@@ -25,10 +25,10 @@ build-all: build-darwin-amd64 build-windows-amd64 build-linux-amd64 build-linux-
 #	@DRAGONBOAT_LOGDB=pebble go build -v -tags dragonboat_no_rocksdb -o bin/flamed cmd/flamed/flamed.go
 
 run-server:
-	go run cmd/flamed/flamed.go run server --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-server-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level debug
+	go run cmd/flamed/flamed.go run server --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-server-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level debug --grpc-server-address 0.0.0.0:9091
 
 run-server-race:
-	go run -race cmd/flamed/flamed.go run server --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-server-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level debug
+	go run -race cmd/flamed/flamed.go run server --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-server-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --log-level debug --grpc-server-address 0.0.0.0:9091
 
 test:
 	go test ./... -v
@@ -57,7 +57,7 @@ clean:
 ## Generate go protobuf files using symlinked modules
 proto-link:
 	./protoimport
-#	@protoc -I ./.proto-dir -I=./pkg/app/grpc/service/admin --go_out=./pkg/app/grpc/service/admin admin.proto
+	protoc -I ./.proto-dir -I=./pkg/app/grpc/service/graphql --go_out=plugins=grpc:./pkg/app/grpc/service/graphql graphql.proto
 
 push:
 	git push
