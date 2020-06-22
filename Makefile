@@ -58,6 +58,7 @@ clean:
 proto-link:
 	./protoimport
 	protoc -I ./.proto-dir -I=./pkg/app/grpc/service/graphql --go_out=plugins=grpc:./pkg/app/grpc/service/graphql graphql.proto
+	protoc -I ./.proto-dir -I=./pkg/app/grpc/service/admin --go_out=plugins=grpc:./pkg/app/grpc/service/admin admin.proto
 
 push:
 	git push

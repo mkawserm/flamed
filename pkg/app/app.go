@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mkawserm/flamed/pkg/app/graphql"
 	server2 "github.com/mkawserm/flamed/pkg/app/grpc/server"
+	adminService "github.com/mkawserm/flamed/pkg/app/grpc/service/admin"
 	graphql3 "github.com/mkawserm/flamed/pkg/app/grpc/service/graphql"
 	"github.com/mkawserm/flamed/pkg/app/http/server"
 	graphql2 "github.com/mkawserm/flamed/pkg/app/http/view/graphql"
@@ -423,6 +424,10 @@ func (a *App) initGraphQLGRPCService() {
 	a.mGRPCServer.AddService(graphql3.NewGraphQLService(a.mFlamedContext, schema))
 }
 
+func (a *App) initAdminRPCService() {
+	a.mGRPCServer.AddService(adminService.NewAdminService(a.mFlamedContext))
+}
+
 func (a *App) initGRPCServices() {
 	if !viper.GetBool(constant.EnableGRPCServer) {
 		return
@@ -434,6 +439,7 @@ func (a *App) initGRPCServices() {
 
 	if !a.mGRPCServicesInitialized {
 		/* initialize all services here */
+		a.initAdminRPCService()
 		a.initGraphQLGRPCService()
 		a.mGRPCServicesInitialized = true
 	}

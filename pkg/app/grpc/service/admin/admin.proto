@@ -1,0 +1,13 @@
+syntax = "proto3";
+package admin;
+
+import "github.com/mkawserm/flamed/pkg/pb/flamed.proto";
+
+message UserRequest {
+  uint64 clusterID = 1;
+  string username = 2;
+}
+
+service AdminRPC {
+  rpc GetUser(UserRequest) returns (pb.User) {}
+}

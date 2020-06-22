@@ -11,6 +11,8 @@ var ErrNotImplemented = errors.New("not implemented")
 var ErrInvalidInput = errors.New("invalid input")
 
 var ErrAccessViolation = errors.New("access violation")
+var ErrAccessDenied = errors.New("access denied")
+var ErrClusterIsNotAvailable = errors.New("cluster is not available")
 
 var ErrAddressNotFound = errors.New("key is not available")
 
