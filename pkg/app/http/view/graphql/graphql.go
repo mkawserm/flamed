@@ -22,7 +22,7 @@ type GraphQL struct {
 
 func (v *GraphQL) GetHTTPHandler() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		logger.L("graphql").Debug("processing graphql request")
+		logger.L("app::http::view::graphql").Debug("processing graphql request")
 
 		if !utility2.GetCORSOptions().CROSCheckAllowNext(writer, request) {
 			return
@@ -61,7 +61,7 @@ func (v *GraphQL) GetHTTPHandler() http.HandlerFunc {
 			return
 		}
 
-		logger.L("graphql").Debug("graphql request body received")
+		logger.L("app::http::view::graphql").Debug("graphql request body received")
 
 		var fields []zap.Field
 		header := make(map[string][]string)
@@ -76,7 +76,7 @@ func (v *GraphQL) GetHTTPHandler() http.HandlerFunc {
 			fields = append(fields, zap.String(k, strings.Join(v, ",")))
 		}
 
-		logger.L("graphql").Debug("graphql request header", fields...)
+		logger.L("app::http::view::graphql").Debug("graphql request header", fields...)
 
 		ro := utility.ParseGraphQLQuery(bodyBytes)
 
@@ -110,7 +110,7 @@ func (v *GraphQL) GetHTTPHandler() http.HandlerFunc {
 		//rJSON, _ := json.Marshal(result)
 		//_, _ = writer.Write(rJSON)
 
-		logger.L("graphql").Debug("graphql request response served")
+		logger.L("app::http::view::graphql").Debug("graphql request response served")
 	}
 }
 
