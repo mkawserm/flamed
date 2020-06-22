@@ -33,7 +33,7 @@ func GraphQLAuthCheck(p graphql.ResolveParams,
 	//	return nil, nil
 	//}
 
-	gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
+	gqlContext := p.Context.Value("GraphQLContext").(*fContext.AuthContext)
 	admin := flamedContext.Flamed().NewAdmin(clusterID, flamedContext.GlobalRequestTimeout())
 
 	// Authenticate user

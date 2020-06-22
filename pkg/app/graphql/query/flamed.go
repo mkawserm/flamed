@@ -91,7 +91,7 @@ func Flamed(flamedContext *fContext.FlamedContext) *graphql.Field {
 				return nil, nil
 			}
 
-			gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
+			gqlContext := p.Context.Value("GraphQLContext").(*fContext.AuthContext)
 			if !gqlContext.AuthenticateSuperUser(flamedContext.Flamed().NewAdmin(
 				1,
 				flamedContext.GlobalRequestTimeout())) {

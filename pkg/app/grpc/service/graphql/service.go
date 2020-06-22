@@ -48,9 +48,9 @@ func (s *Service) GetGraphQLResponse(ctx context.Context, request *GraphQLReques
 
 	var params goGraphQL.Params
 
-	var graphQLContext = &flamedContext.GraphQLContext{}
+	var graphQLContext = &flamedContext.AuthContext{}
 	graphQLContext.Protocol = "GRPC"
-	graphQLContext.Header = header
+	graphQLContext.KVPair = header
 
 	params = goGraphQL.Params{
 		Schema:         s.mSchema,

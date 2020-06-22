@@ -82,9 +82,9 @@ func (v *GraphQL) GetHTTPHandler() http.HandlerFunc {
 
 		var params goGraphQL.Params
 
-		var graphQLContext = &flamedContext.GraphQLContext{}
+		var graphQLContext = &flamedContext.AuthContext{}
 		graphQLContext.Protocol = "HTTP"
-		graphQLContext.Header = header
+		graphQLContext.KVPair = header
 		graphQLContext.Host = request.Host
 		graphQLContext.URL = request.URL.String()
 		graphQLContext.RemoteAddr = request.RemoteAddr

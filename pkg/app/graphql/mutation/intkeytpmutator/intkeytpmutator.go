@@ -57,7 +57,7 @@ func IntKeyTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 			//	return nil, nil
 			//}
 
-			gqlContext := p.Context.Value("GraphQLContext").(*fContext.GraphQLContext)
+			gqlContext := p.Context.Value("GraphQLContext").(*fContext.AuthContext)
 			admin := flamedContext.Flamed().NewAdmin(clusterID.Value(), flamedContext.GlobalRequestTimeout())
 
 			// Authenticate user
