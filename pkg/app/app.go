@@ -264,7 +264,13 @@ func (a *App) setup() {
 			fmt.Println(cmd.UsageString())
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if variable.DefaultInitBeforeCommandExecutionPreHOOK != nil {
+				variable.DefaultInitBeforeCommandExecutionPreHOOK()
+			}
 			a.initBeforeCommandExecution()
+			if variable.DefaultInitBeforeCommandExecutionPostHOOK != nil {
+				variable.DefaultInitBeforeCommandExecutionPostHOOK()
+			}
 		},
 	}
 
