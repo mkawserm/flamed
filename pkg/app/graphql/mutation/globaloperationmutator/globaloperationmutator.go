@@ -33,7 +33,7 @@ func GlobalOperationMutator(flamedContext *fContext.FlamedContext) *graphql.Fiel
 		},
 
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			clusterID, namespace, accessControl, err := utility.AuthCheck(p, flamedContext)
+			clusterID, namespace, accessControl, err := utility.GraphQLAuthCheck(p, flamedContext)
 			if err != nil {
 				return nil, err
 			}

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func AuthCheck(p graphql.ResolveParams,
+func GraphQLAuthCheck(p graphql.ResolveParams,
 	flamedContext *fContext.FlamedContext) (clusterID uint64,
 	namespace string,
 	accessControl *pb.AccessControl,
