@@ -8,6 +8,13 @@ message UserRequest {
   string username = 2;
 }
 
+message UpsertUserRequest {
+  uint64 clusterID = 1;
+  pb.User user = 2;
+}
+
 service AdminRPC {
   rpc GetUser(UserRequest) returns (pb.User) {}
+  rpc UpsertUser(UpsertUserRequest) returns (pb.ProposalResponse) {}
+  rpc DeleteUser(UserRequest) returns (pb.ProposalResponse) {}
 }
