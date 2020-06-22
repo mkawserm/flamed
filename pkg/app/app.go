@@ -43,8 +43,8 @@ type App struct {
 	mViewsInitialized bool
 	mDefaultViewFlag  bool
 
-	mServicesInitialized bool
-	mDefaultServiceFlag  bool
+	mGRPCServicesInitialized bool
+	mDefaultGRPCServiceFlag  bool
 
 	mCommandsInitialized bool
 	mDefaultCommandFlag  bool
@@ -171,6 +171,20 @@ func (a *App) DisableDefaultCommands() {
 	a.mDefaultCommandFlag = false
 }
 
+func (a *App) EnableDefaultGRPCServices() {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
+	a.mDefaultGRPCServiceFlag = true
+}
+
+func (a *App) DisableDefaultGRPCServices() {
+	a.mMutex.Lock()
+	defer a.mMutex.Unlock()
+
+	a.mDefaultGRPCServiceFlag = false
+}
+
 func (a *App) UpdateGlobalRequestTimeout(timeout time.Duration) {
 	a.mMutex.Lock()
 	defer a.mMutex.Unlock()
@@ -247,8 +261,8 @@ func (a *App) setup() {
 	a.mTPInitialized = false
 	a.mDefaultTPFlag = true
 
-	a.mServicesInitialized = false
-	a.mDefaultServiceFlag = true
+	a.mGRPCServicesInitialized = false
+	a.mDefaultGRPCServiceFlag = true
 
 	a.mView = make(map[string]iface2.IHTTPView)
 	a.mGraphQLQuery = make(map[string]graphql.GQLHandler)
@@ -414,14 +428,14 @@ func (a *App) initGRPCServices() {
 		return
 	}
 
-	if !a.mDefaultServiceFlag {
+	if !a.mDefaultGRPCServiceFlag {
 		return
 	}
 
-	if !a.mServicesInitialized {
+	if !a.mGRPCServicesInitialized {
 		/* initialize all services here */
 		a.initGraphQLGRPCService()
-		a.mServicesInitialized = true
+		a.mGRPCServicesInitialized = true
 	}
 }
 
