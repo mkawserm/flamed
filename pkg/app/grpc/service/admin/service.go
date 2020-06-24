@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"errors"
 	flamedContext "github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/pb"
@@ -9,7 +10,6 @@ import (
 	"github.com/mkawserm/flamed/pkg/x"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"gopkg.in/errgo.v2/errors"
 	"time"
 )
 
