@@ -13,8 +13,44 @@ message UpsertUserRequest {
   pb.User user = 2;
 }
 
+message ChangeUserPasswordRequest {
+  uint64 clusterID = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message AccessControlRequest {
+  uint64 clusterID = 1;
+  bytes namespace = 2;
+  string username = 3;
+}
+
+message UpsertAccessControlRequest {
+  uint64 clusterID = 1;
+  pb.AccessControl accessControl = 2;
+}
+
+message IndexMetaRequest {
+  uint64 clusterID = 1;
+  bytes namespace = 2;
+}
+
+message UpsertIndexMetaRequest {
+  uint64 clusterID = 1;
+  pb.IndexMeta indexMeta = 2;
+}
+
 service AdminRPC {
   rpc GetUser(UserRequest) returns (pb.User) {}
   rpc UpsertUser(UpsertUserRequest) returns (pb.ProposalResponse) {}
+  rpc ChangeUserPassword(ChangeUserPasswordRequest) returns (pb.ProposalResponse) {}
   rpc DeleteUser(UserRequest) returns (pb.ProposalResponse) {}
+
+  rpc GetAccessControl(AccessControlRequest) returns (pb.AccessControl) {}
+  rpc UpsertAccessControl(UpsertAccessControlRequest) returns (pb.ProposalResponse) {}
+  rpc DeleteAccessControl(AccessControlRequest) returns (pb.ProposalResponse) {}
+
+  rpc GetIndexMeta(IndexMetaRequest) returns (pb.IndexMeta) {}
+  rpc UpsertIndexMeta(UpsertIndexMetaRequest) returns (pb.ProposalResponse) {}
+  rpc DeleteIndexMeta(IndexMetaRequest) returns (pb.ProposalResponse) {}
 }

@@ -48,7 +48,11 @@ var ChangeUserPassword = &graphql.Field{
 
 		user.UpdatedAt = uint64(time.Now().UnixNano())
 		password := p.Args["password"].(string)
-		//TODO: check password validity
+
+		//TODO: check password policy
+		if len(password) == 0 {
+			return nil, gqlerrors.NewFormattedError("password can not be empty")
+		}
 
 		pha := variable.DefaultPasswordHashAlgorithmFactory
 		if !pha.IsAlgorithmAvailable(variable.DefaultPasswordHashAlgorithm) {
