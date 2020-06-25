@@ -1,12 +1,12 @@
 package utility
 
 import (
-	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	fContext "github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/pb"
+	"github.com/mkawserm/flamed/pkg/x"
 	"strings"
 )
 
@@ -19,13 +19,12 @@ func GraphQLAuthCheck(p graphql.ResolveParams,
 	namespace = p.Args["namespace"].(string)
 
 	if !flamedContext.Flamed().IsClusterIDAvailable(clusterID) {
-		err = gqlerrors.NewFormattedError(
-			fmt.Sprintf("clusterID [%d] is not available", clusterID))
+		err = gqlerrors.NewFormattedError(x.ErrClusterIsNotAvailable.Error())
 		return
 	}
 
 	if strings.EqualFold(namespace, "meta") {
-		err = gqlerrors.NewFormattedError("meta namespace is reserved")
+		err = gqlerrors.NewFormattedError(x.ErrMetaNamespaceIsReserved.Error())
 		return
 	}
 
@@ -39,14 +38,12 @@ func GraphQLAuthCheck(p graphql.ResolveParams,
 	// Authenticate user
 	username, password := gqlContext.GetUsernameAndPasswordFromAuth()
 	if len(username) == 0 || len(password) == 0 {
-		err = gqlerrors.NewFormattedError("Access denied." +
-			" Only authenticated user can access")
+		err = gqlerrors.NewFormattedError(x.ErrAccessDenied.Error())
 		return
 	}
 
 	if !gqlContext.IsUserPasswordValid(admin, username, password) {
-		err = gqlerrors.NewFormattedError("Access denied." +
-			" Only authenticated user can access")
+		err = gqlerrors.NewFormattedError(x.ErrAccessDenied.Error())
 		return
 	}
 
@@ -54,7 +51,7 @@ func GraphQLAuthCheck(p graphql.ResolveParams,
 	if err != nil {
 		accessControl, err = admin.GetAccessControl(username, []byte("*"))
 		if err != nil {
-			err = gqlerrors.NewFormattedError("namespace access control not found")
+			err = gqlerrors.NewFormattedError(x.ErrAccessControlNotFound.Error())
 			return
 		}
 	}

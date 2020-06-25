@@ -1,13 +1,13 @@
 package mutation
 
 import (
-	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/app/graphql/mutation/adminmutator"
 	"github.com/mkawserm/flamed/pkg/app/graphql/mutation/nodeadminmutator"
 	fContext "github.com/mkawserm/flamed/pkg/context"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
@@ -35,8 +35,7 @@ var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 
 				if !fc.Flamed().IsClusterIDAvailable(clusterID.Value()) {
 					return nil,
-						gqlerrors.NewFormattedError(
-							fmt.Sprintf("clusterID [%d] is not available", clusterID.Value()))
+						gqlerrors.NewFormattedError(x.ErrClusterIsNotAvailable.Error())
 				}
 				return fc.Flamed().NewNodeAdmin(clusterID.Value(), fc.GlobalRequestTimeout()), nil
 			},
@@ -62,8 +61,7 @@ var GQLFlamedMutatorType = graphql.NewObject(graphql.ObjectConfig{
 
 				if !fc.Flamed().IsClusterIDAvailable(clusterID.Value()) {
 					return nil,
-						gqlerrors.NewFormattedError(
-							fmt.Sprintf("clusterID [%d] is not available", clusterID.Value()))
+						gqlerrors.NewFormattedError(x.ErrClusterIsNotAvailable.Error())
 				}
 
 				return fc.Flamed().NewAdmin(clusterID.Value(), fc.GlobalRequestTimeout()), nil
@@ -86,7 +84,7 @@ func FlamedMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 			if !gqlContext.AuthenticateSuperUser(flamedContext.Flamed().NewAdmin(
 				1,
 				flamedContext.GlobalRequestTimeout())) {
-				return nil, gqlerrors.NewFormattedError("Access denied. Only super user can access")
+				return nil, gqlerrors.NewFormattedError(x.ErrAccessDenied.Error())
 			}
 
 			return flamedContext, nil

@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var Retrieve = &graphql.Field{
@@ -27,7 +28,7 @@ var Retrieve = &graphql.Field{
 		}
 
 		if !utility.HasGlobalRetrievePermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("global retrieve permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrGlobalRetrievePermissionRequired.Error())
 		}
 
 		o, err := ctx.GlobalOperation.Retrieve(addresses)

@@ -65,9 +65,26 @@ var ErrInvalidOperation = errors.New("e40: invalid operation")
 //var ErrResourceIsNotAvailable = errors.New("e41: resource is not available")
 var ErrPasswordHashAlgorithmIsNotAvailable = errors.New("e42: password hash algorithm is not available")
 var ErrFailedToGeneratePassword = errors.New("e43: failed to generate password")
+var ErrMetaNamespaceIsReserved = errors.New("e44: meta namespace is reserved")
+var ErrAccessControlNotFound = errors.New("e45: access control not found")
+var ErrDecodingError = errors.New("e46: decoding error")
+var ErrPayloadCanNotBeEmpty = errors.New("e47: payload can not be empty")
+var ErrFamilyNameCanNotBeEmpty = errors.New("e48: family name can not be empty")
+var ErrFamilyVersionCanNotBeEmpty = errors.New("e49: family version can not be empty")
+var ErrInvalidSourceType = errors.New("e50: invalid source type")
+var ErrPasswordCanNotBeEmpty = errors.New("e51: password can not be empty")
 
-//var ErrGenericNotFound = errors.New("e101: generic not found")
-//var ErrGenericCanNotProcess = errors.New("e102: generic can not process")
+var ErrGlobalSearchPermissionRequired = errors.New("e101: global search permission required")
+var ErrGlobalIteratePermissionRequired = errors.New("e102: global iterate permission required")
+var ErrGlobalRetrievePermissionRequired = errors.New("e103: global retrieve permission required")
+var ErrGlobalCRUDPermissionRequired = errors.New("e104: global CRUD permission required")
+var ErrReadPermissionRequired = errors.New("e105: read permission required")
+var ErrWritePermissionRequired = errors.New("e106: write permission required")
+var ErrUpdatePermissionRequired = errors.New("e107: update permission required")
+var ErrDeletePermissionRequired = errors.New("e108: delete permission required")
+
+//var ErrGenericNotFound = errors.New("e201: generic not found")
+//var ErrGenericCanNotProcess = errors.New("e202: generic can not process")
 
 //func IsInvalidConfiguration(err error) bool {
 //	return err == ErrInvalidConfiguration

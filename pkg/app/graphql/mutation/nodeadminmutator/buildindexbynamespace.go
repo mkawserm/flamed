@@ -5,6 +5,7 @@ import (
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/flamed"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var BuildIndexByNamespace = &graphql.Field{
@@ -20,7 +21,7 @@ var BuildIndexByNamespace = &graphql.Field{
 		namespace := p.Args["namespace"].(string)
 		namespaceBytes := []byte(namespace)
 		if !utility.IsNamespaceValid(namespaceBytes) {
-			return nil, gqlerrors.NewFormattedError("invalid namespace")
+			return nil, gqlerrors.NewFormattedError(x.ErrInvalidNamespace.Error())
 		}
 
 		nodeAdmin, ok := p.Source.(*flamed.NodeAdmin)

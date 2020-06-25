@@ -8,6 +8,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var Propose = &graphql.Field{
@@ -30,14 +31,14 @@ var Propose = &graphql.Field{
 		namespace := []byte(ctx.GlobalOperation.Namespace())
 		proposalMap := p.Args["proposal"].(map[string]interface{})
 		if !utility.HasGlobalCRUDPermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("global CRUD permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrGlobalCRUDPermissionRequired.Error())
 		}
 
 		meta := []byte("")
 		if v, found := proposalMap["meta"]; found {
 			v2, err2 := base64.StdEncoding.DecodeString(v.(string))
 			if err2 != nil {
-				return nil, gqlerrors.NewFormattedError(err2.Error())
+				return nil, gqlerrors.NewFormattedError(x.ErrDecodingError.Error())
 			}
 			meta = v2
 		}
@@ -51,18 +52,18 @@ var Propose = &graphql.Field{
 			familyVersion := stm["familyVersion"].(string)
 
 			if payload == "" {
-				return nil, gqlerrors.NewFormattedError("Payload can not be empty")
+				return nil, gqlerrors.NewFormattedError(x.ErrPayloadCanNotBeEmpty.Error())
 			}
 			if familyName == "" {
-				return nil, gqlerrors.NewFormattedError("FamilyName can not be empty")
+				return nil, gqlerrors.NewFormattedError(x.ErrFamilyNameCanNotBeEmpty.Error())
 			}
 			if familyVersion == "" {
-				return nil, gqlerrors.NewFormattedError("FamilyVersion can not be empty")
+				return nil, gqlerrors.NewFormattedError(x.ErrFamilyVersionCanNotBeEmpty.Error())
 			}
 
 			payloadBytes, err := base64.StdEncoding.DecodeString(payload)
 			if err != nil {
-				return nil, gqlerrors.NewFormattedError(err.Error())
+				return nil, gqlerrors.NewFormattedError(x.ErrDecodingError.Error())
 			}
 
 			proposal.AddTransaction(namespace, familyName, familyVersion, payloadBytes)

@@ -7,6 +7,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var SearchJ = &graphql.Field{
@@ -28,7 +29,7 @@ var SearchJ = &graphql.Field{
 		}
 
 		if !utility.HasGlobalSearchPermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("global search permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrGlobalSearchPermissionRequired.Error())
 		}
 
 		globalSearchInput := &pb.GlobalSearchInput{

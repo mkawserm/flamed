@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var GQLGetIntKey = &graphql.Field{
@@ -29,7 +30,7 @@ var GQLGetIntKey = &graphql.Field{
 		}
 
 		if !utility.HasReadPermission(ikc.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("read permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrReadPermissionRequired.Error())
 		}
 
 		intKeyState, err := ikc.Client.GetIntKeyState(name)

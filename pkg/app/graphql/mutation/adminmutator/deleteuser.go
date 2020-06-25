@@ -5,6 +5,7 @@ import (
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/flamed"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var DeleteUser = &graphql.Field{
@@ -22,13 +23,11 @@ var DeleteUser = &graphql.Field{
 		admin, ok := p.Source.(*flamed.Admin)
 
 		if username == "admin" {
-			return nil, gqlerrors.NewFormattedError("delete operation is not" +
-				" allowed on admin user")
+			return nil, gqlerrors.NewFormattedError(x.ErrInvalidOperation.Error())
 		}
 
 		if !ok {
-			return nil, gqlerrors.NewFormattedError("Unknown source type." +
-				" FlamedContext required")
+			return nil, gqlerrors.NewFormattedError(x.ErrInvalidSourceType.Error())
 		}
 
 		pr, err := admin.DeleteUser(username)

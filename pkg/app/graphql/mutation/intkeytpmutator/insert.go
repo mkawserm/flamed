@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var GQLInsert = &graphql.Field{
@@ -35,11 +36,11 @@ var GQLInsert = &graphql.Field{
 		}
 
 		if !utility.HasReadPermission(ikc.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("read permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrReadPermissionRequired.Error())
 		}
 
 		if !utility.HasWritePermission(ikc.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("write permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrWritePermissionRequired.Error())
 		}
 
 		pr, err := ikc.Client.Insert(name, value.Value())

@@ -1,12 +1,12 @@
 package jsontpmutator
 
 import (
-	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	fContext "github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/tp/json"
+	"github.com/mkawserm/flamed/pkg/x"
 	"strings"
 )
 
@@ -46,12 +46,11 @@ func JSONTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 
 			if !flamedContext.Flamed().IsClusterIDAvailable(clusterID.Value()) {
 				return nil,
-					gqlerrors.NewFormattedError(
-						fmt.Sprintf("clusterID [%d] is not available", clusterID.Value()))
+					gqlerrors.NewFormattedError(x.ErrClusterIsNotAvailable.Error())
 			}
 
 			if strings.EqualFold(namespace, "meta") {
-				return nil, gqlerrors.NewFormattedError("meta namespace is reserved")
+				return nil, gqlerrors.NewFormattedError(x.ErrMetaNamespaceIsReserved.Error())
 			}
 
 			//if p.Context.Value("GraphQLContext") == nil {
@@ -64,19 +63,17 @@ func JSONTPMutator(flamedContext *fContext.FlamedContext) *graphql.Field {
 			// Authenticate user
 			username, password := gqlContext.GetUsernameAndPasswordFromAuth()
 			if len(username) == 0 || len(password) == 0 {
-				return nil, gqlerrors.NewFormattedError("Access denied." +
-					" Only authenticated user can access")
+				return nil, gqlerrors.NewFormattedError(x.ErrAccessDenied.Error())
 			}
 			if !gqlContext.IsUserPasswordValid(admin, username, password) {
-				return nil, gqlerrors.NewFormattedError("Access denied." +
-					" Only authenticated user can access")
+				return nil, gqlerrors.NewFormattedError(x.ErrAccessDenied.Error())
 			}
 
 			accessControl, err := admin.GetAccessControl(username, []byte(namespace))
 			if err != nil {
 				accessControl, err = admin.GetAccessControl(username, []byte("*"))
 				if err != nil {
-					return nil, gqlerrors.NewFormattedError("namespace access control not found")
+					return nil, gqlerrors.NewFormattedError(x.ErrAccessControlNotFound.Error())
 				}
 			}
 

@@ -9,6 +9,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/flamed"
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 	"time"
 )
 
@@ -57,18 +58,17 @@ var UpsertAccessControl = &graphql.Field{
 
 		if !bytes.Equal(namespace, []byte("*")) {
 			if !utility.IsNamespaceValid(namespace) {
-				return nil, gqlerrors.NewFormattedError("invalid namespace")
+				return nil, gqlerrors.NewFormattedError(x.ErrInvalidNamespace.Error())
 			}
 		}
 
 		if !utility.IsUsernameValid(username) {
-			return nil, gqlerrors.NewFormattedError("invalid username")
+			return nil, gqlerrors.NewFormattedError(x.ErrInvalidUsername.Error())
 		}
 
 		admin, ok := p.Source.(*flamed.Admin)
 		if !ok {
-			return nil, gqlerrors.NewFormattedError("Unknown source type." +
-				" FlamedContext required")
+			return nil, gqlerrors.NewFormattedError(x.ErrInvalidSourceType.Error())
 		}
 
 		//if !admin.IsUserAvailable(username) {

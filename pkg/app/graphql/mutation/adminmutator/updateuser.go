@@ -11,6 +11,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/pb"
 	"github.com/mkawserm/flamed/pkg/utility"
 	"github.com/mkawserm/flamed/pkg/variable"
+	"github.com/mkawserm/flamed/pkg/x"
 	"go.uber.org/zap"
 	"time"
 )
@@ -55,16 +56,14 @@ var UpdateUser = &graphql.Field{
 		if username == "admin" {
 			if p.Args["userType"] != nil {
 				if pb.UserType(p.Args["userType"].(int)) != pb.UserType_SUPER_USER {
-					return nil, gqlerrors.NewFormattedError("changing user type is not" +
-						" allowed on admin user")
+					return nil, gqlerrors.NewFormattedError(x.ErrInvalidOperation.Error())
 				}
 			}
 		}
 
 		admin, ok := p.Source.(*flamed.Admin)
 		if !ok {
-			return nil, gqlerrors.NewFormattedError("Unknown source type." +
-				" FlamedContext required")
+			return nil, gqlerrors.NewFormattedError(x.ErrInvalidSourceType.Error())
 		}
 
 		user, err := admin.GetUser(username)
@@ -87,8 +86,7 @@ var UpdateUser = &graphql.Field{
 			if !pha.IsAlgorithmAvailable(variable.DefaultPasswordHashAlgorithm) {
 				logger.L("app").Error(variable.DefaultPasswordHashAlgorithm +
 					" password hash algorithm is to available")
-				return nil, gqlerrors.NewFormattedError(variable.DefaultPasswordHashAlgorithm +
-					" is not available")
+				return nil, gqlerrors.NewFormattedError(x.ErrPasswordHashAlgorithmIsNotAvailable.Error())
 			}
 
 			encoded, err := pha.MakePassword(password,
@@ -97,7 +95,7 @@ var UpdateUser = &graphql.Field{
 
 			if err != nil {
 				logger.L("app").Error("make password returned error", zap.Error(err))
-				return nil, gqlerrors.NewFormattedError(err.Error())
+				return nil, gqlerrors.NewFormattedError(x.ErrFailedToGeneratePassword.Error())
 			}
 			user.Password = encoded
 		}

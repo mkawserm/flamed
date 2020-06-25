@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var GQLBatchProcess = &graphql.Field{
@@ -31,19 +32,19 @@ var GQLBatchProcess = &graphql.Field{
 		}
 
 		if !utility.HasReadPermission(jsonContext.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("read permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrReadPermissionRequired.Error())
 		}
 
 		if !utility.HasWritePermission(jsonContext.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("write permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrWritePermissionRequired.Error())
 		}
 
 		if !utility.HasUpdatePermission(jsonContext.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("update permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrUpdatePermissionRequired.Error())
 		}
 
 		if !utility.HasDeletePermission(jsonContext.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("delete permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrDeletePermissionRequired.Error())
 		}
 
 		batch := jsonContext.Client.NewBatch()

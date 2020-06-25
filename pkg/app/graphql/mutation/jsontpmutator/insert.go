@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/tp/json"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var GQLInsert = &graphql.Field{
@@ -28,11 +29,11 @@ var GQLInsert = &graphql.Field{
 		}
 
 		if !utility.HasReadPermission(jsonContext.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("read permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrReadPermissionRequired.Error())
 		}
 
 		if !utility.HasWritePermission(jsonContext.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("write permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrWritePermissionRequired.Error())
 		}
 
 		pr, err := jsonContext.Client.InsertJSONMap(input)

@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var Iterate = &graphql.Field{
@@ -45,7 +46,7 @@ var Iterate = &graphql.Field{
 		}
 
 		if !utility.HasGlobalIteratePermission(ctx.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("global iterate permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrGlobalIteratePermissionRequired.Error())
 		}
 
 		o, err := ctx.GlobalOperation.Iterate(from, prefix, limit.Value())

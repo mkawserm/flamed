@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/app/utility"
 	"github.com/mkawserm/flamed/pkg/flamed"
+	"github.com/mkawserm/flamed/pkg/x"
 	"time"
 )
 
@@ -24,8 +25,7 @@ var UpsertIndexMeta = &graphql.Field{
 		input := p.Args["input"].(map[string]interface{})
 		admin, ok := p.Source.(*flamed.Admin)
 		if !ok {
-			return nil, gqlerrors.NewFormattedError("Unknown source type." +
-				" FlamedContext required")
+			return nil, gqlerrors.NewFormattedError(x.ErrInvalidSourceType.Error())
 		}
 
 		indexMeta := utility.BuildIndexMetaFromMap(input)

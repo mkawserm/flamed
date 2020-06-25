@@ -5,6 +5,7 @@ import (
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/flamed"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var DeleteIndexMeta = &graphql.Field{
@@ -21,8 +22,7 @@ var DeleteIndexMeta = &graphql.Field{
 		namespace := []byte(p.Args["namespace"].(string))
 		admin, ok := p.Source.(*flamed.Admin)
 		if !ok {
-			return nil, gqlerrors.NewFormattedError("Unknown source type." +
-				" FlamedContext required")
+			return nil, gqlerrors.NewFormattedError(x.ErrInvalidSourceType.Error())
 		}
 
 		pr, err := admin.DeleteIndexMeta(namespace)

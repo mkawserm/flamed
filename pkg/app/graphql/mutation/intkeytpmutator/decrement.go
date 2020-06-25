@@ -6,6 +6,7 @@ import (
 	"github.com/mkawserm/flamed/pkg/app/graphql/kind"
 	"github.com/mkawserm/flamed/pkg/tp/intkey"
 	"github.com/mkawserm/flamed/pkg/utility"
+	"github.com/mkawserm/flamed/pkg/x"
 )
 
 var GQLDecrement = &graphql.Field{
@@ -35,7 +36,7 @@ var GQLDecrement = &graphql.Field{
 		}
 
 		if !utility.HasUpdatePermission(ikc.AccessControl) {
-			return nil, gqlerrors.NewFormattedError("update permission required")
+			return nil, gqlerrors.NewFormattedError(x.ErrUpdatePermissionRequired.Error())
 		}
 
 		pr, err := ikc.Client.Decrement(name, value.Value())
