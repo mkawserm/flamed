@@ -73,6 +73,22 @@ func (g *GlobalOperation) Retrieve(addresses []interface{}) (interface{}, error)
 	return g.mRW.Read(g.mClusterID, globalRetrieveInput, g.mTimeout)
 }
 
+func (g *GlobalOperation) RetrieveByAddressStringList(addresses []string) (interface{}, error) {
+	globalRetrieveInput := &pb.GlobalRetrieveInput{Namespace: []byte(g.mNamespace)}
+
+	for _, addr := range addresses {
+		addrBytes := crypto.GetStateAddressFromHexString(addr)
+		globalRetrieveInput.Addresses = append(globalRetrieveInput.Addresses, addrBytes)
+	}
+	return g.mRW.Read(g.mClusterID, globalRetrieveInput, g.mTimeout)
+}
+
+func (g *GlobalOperation) RetrieveByAddressList(addresses [][]byte) (interface{}, error) {
+	globalRetrieveInput := &pb.GlobalRetrieveInput{Namespace: []byte(g.mNamespace)}
+	globalRetrieveInput.Addresses = addresses
+	return g.mRW.Read(g.mClusterID, globalRetrieveInput, g.mTimeout)
+}
+
 func (g *GlobalOperation) Iterate(from string, prefix string, limit uint64) (interface{}, error) {
 	input := &pb.GlobalIterateInput{
 		Namespace: []byte(g.mNamespace),
