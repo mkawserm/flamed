@@ -60,6 +60,15 @@ var ErrInvalidStoragedConfiguration = errors.New("e38: invalid storaged configur
 
 var ErrIndexStorageIsNotReady = errors.New("e39: index storage is not ready")
 
+var ErrInvalidOperation = errors.New("e40: invalid operation")
+
+//var ErrResourceIsNotAvailable = errors.New("e41: resource is not available")
+var ErrPasswordHashAlgorithmIsNotAvailable = errors.New("e42: password hash algorithm is not available")
+var ErrFailedToGeneratePassword = errors.New("e43: failed to generate password")
+
+//var ErrGenericNotFound = errors.New("e101: generic not found")
+//var ErrGenericCanNotProcess = errors.New("e102: generic can not process")
+
 //func IsInvalidConfiguration(err error) bool {
 //	return err == ErrInvalidConfiguration
 //}

@@ -2,7 +2,6 @@ package admin
 
 import (
 	"context"
-	"errors"
 	flamedContext "github.com/mkawserm/flamed/pkg/context"
 	"github.com/mkawserm/flamed/pkg/crypto"
 	"github.com/mkawserm/flamed/pkg/pb"
@@ -67,16 +66,12 @@ func (s *Service) UpsertUser(ctx context.Context, req *UpsertUserRequest) (*pb.P
 	}
 
 	if req.User.Username == "admin" {
-		return nil, errors.New("upsert operation is not allowed on admin user")
-	}
-
-	if len(req.User.Password) == 0 {
-		return nil, errors.New("password can not be empty")
+		return nil, x.ErrInvalidOperation
 	}
 
 	pha := variable.DefaultPasswordHashAlgorithmFactory
 	if !pha.IsAlgorithmAvailable(variable.DefaultPasswordHashAlgorithm) {
-		return nil, errors.New(variable.DefaultPasswordHashAlgorithm + " is not available")
+		return nil, x.ErrPasswordHashAlgorithmIsNotAvailable
 	}
 
 	encoded, err := pha.MakePassword(req.User.Password,
@@ -84,7 +79,7 @@ func (s *Service) UpsertUser(ctx context.Context, req *UpsertUserRequest) (*pb.P
 		variable.DefaultPasswordHashAlgorithm)
 
 	if err != nil {
-		return nil, err
+		return nil, x.ErrFailedToGeneratePassword
 	}
 
 	req.User.Password = encoded
@@ -120,7 +115,7 @@ func (s *Service) ChangeUserPassword(ctx context.Context, req *ChangeUserPasswor
 
 	pha := variable.DefaultPasswordHashAlgorithmFactory
 	if !pha.IsAlgorithmAvailable(variable.DefaultPasswordHashAlgorithm) {
-		return nil, errors.New(variable.DefaultPasswordHashAlgorithm + " is not available")
+		return nil, x.ErrPasswordHashAlgorithmIsNotAvailable
 	}
 
 	encoded, err := pha.MakePassword(req.Password,
@@ -128,7 +123,7 @@ func (s *Service) ChangeUserPassword(ctx context.Context, req *ChangeUserPasswor
 		variable.DefaultPasswordHashAlgorithm)
 
 	if err != nil {
-		return nil, err
+		return nil, x.ErrFailedToGeneratePassword
 	}
 
 	user.Password = encoded
