@@ -8,7 +8,7 @@ import (
 func TestHasReadPermission(t *testing.T) {
 	t.Helper()
 
-	p := NewPermission(true, false, false, false)
+	p := NewPermission(true, false, false, false, false, false, false, false)
 	ac := &pb.AccessControl{
 		Permission: p,
 	}
