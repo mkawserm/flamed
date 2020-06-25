@@ -2,63 +2,63 @@ package x
 
 import "errors"
 
-var ErrUnknownValue = errors.New("unknown value")
-var ErrClusterNotFound = errors.New("cluster not found")
-var ErrStateNotFound = errors.New("state is not available")
-var ErrPathCanNotBeEmpty = errors.New("path can not be empty")
-var ErrTPNotFound = errors.New("transaction processor not found")
-var ErrNotImplemented = errors.New("not implemented")
-var ErrInvalidInput = errors.New("invalid input")
+var ErrUnknownValue = errors.New("e1: unknown value")
+var ErrClusterNotFound = errors.New("e2: cluster not found")
+var ErrStateNotFound = errors.New("e3: state is not available")
+var ErrPathCanNotBeEmpty = errors.New("e4: path can not be empty")
+var ErrTPNotFound = errors.New("e5: transaction processor not found")
+var ErrNotImplemented = errors.New("e6: not implemented")
+var ErrInvalidInput = errors.New("e7: invalid input")
 
-var ErrAccessViolation = errors.New("access violation")
-var ErrAccessDenied = errors.New("access denied")
-var ErrClusterIsNotAvailable = errors.New("cluster is not available")
+var ErrAccessViolation = errors.New("e8: access violation")
+var ErrAccessDenied = errors.New("e9: access denied")
+var ErrClusterIsNotAvailable = errors.New("e10: cluster is not available")
 
-var ErrAddressNotFound = errors.New("key is not available")
+var ErrAddressNotFound = errors.New("e11: key is not available")
 
-var ErrInvalidPassword = errors.New("password length must be greater than 5")
-var ErrUnexpectedNilValue = errors.New("unexpected nil value")
+var ErrInvalidPassword = errors.New("e12: password length must be greater than 5")
+var ErrUnexpectedNilValue = errors.New("e13: unexpected nil value")
 
-var ErrInvalidConfiguration = errors.New("invalid configuration")
-var ErrStorageIsAlreadyOpen = errors.New("storage is already open")
-var ErrFailedToOpenStorage = errors.New("failed to open the storage")
-var ErrFailedToCloseStorage = errors.New("failed to close the storage")
-var ErrFailedToChangeSecretKey = errors.New("failed to change secret key")
-var ErrFailedToReadDataFromStorage = errors.New("failed to read data from the storage")
+var ErrInvalidConfiguration = errors.New("e14: invalid configuration")
+var ErrStorageIsAlreadyOpen = errors.New("e15: storage is already open")
+var ErrFailedToOpenStorage = errors.New("e16: failed to open the storage")
+var ErrFailedToCloseStorage = errors.New("e17: failed to close the storage")
+var ErrFailedToChangeSecretKey = errors.New("e18: failed to change secret key")
+var ErrFailedToReadDataFromStorage = errors.New("e19: failed to read data from the storage")
 
-var ErrFailedToCreateDataToStorage = errors.New("failed to create data to the storage")
-var ErrFailedToDeleteDataFromStorage = errors.New("failed to delete data from the storage")
+var ErrFailedToCreateDataToStorage = errors.New("e20: failed to create data to the storage")
+var ErrFailedToDeleteDataFromStorage = errors.New("e21: failed to delete data from the storage")
 
-var ErrFailedToCreateIndexMeta = errors.New("failed to create indexmeta meta")
+var ErrFailedToCreateIndexMeta = errors.New("e22: failed to create indexmeta meta")
 
-var ErrFailedToAddCustomIndexRule = errors.New("failed to add custom index rul")
+var ErrFailedToAddCustomIndexRule = errors.New("e23: failed to add custom index rul")
 
-var ErrInvalidUsername = errors.New("username length must be greater than 2")
+var ErrInvalidUsername = errors.New("e24: username length must be greater than 2")
 
-var ErrFailedToApplyIndex = errors.New("failed to apply indexmeta")
-var ErrFailedToCreateIndex = errors.New("failed to create indexmeta")
+var ErrFailedToApplyIndex = errors.New("e25: failed to apply indexmeta")
+var ErrFailedToCreateIndex = errors.New("e26: failed to create indexmeta")
 
-var ErrInvalidNamespace = errors.New("invalid namespace: namespace should start with a letter" +
+var ErrInvalidNamespace = errors.New("e27: invalid namespace: namespace should start with a letter" +
 	" and minimum 3 characters and can not contain `::`")
 
-var ErrInvalidLookupInput = errors.New("invalid lookup input")
+var ErrInvalidLookupInput = errors.New("e28: invalid lookup input")
 
 //var ErrFailedToPrepareSnapshot = errors.New("failed to prepare snapshot")
-var ErrFailedToSaveSnapshot = errors.New("failed to save snapshot")
-var ErrFailedToRecoverFromSnapshot = errors.New("failed to recover from snapshot")
+var ErrFailedToSaveSnapshot = errors.New("e29: failed to save snapshot")
+var ErrFailedToRecoverFromSnapshot = errors.New("e30: failed to recover from snapshot")
 
 //var ErrInvalidSnapshotContext = errors.New("invalid snapshot context")
-var ErrLastIndexIsNotMovingForward = errors.New("last indexmeta is not moving forward")
+var ErrLastIndexIsNotMovingForward = errors.New("e31: last indexmeta is not moving forward")
 
-var ErrNodeIsNotReady = errors.New("node is not ready")
-var ErrStorageIsNotReady = errors.New("storage is not ready")
-var ErrFailedToStopCluster = errors.New("failed to stop cluster")
-var ErrFailedToCreateWALDir = errors.New("failed to create wal dir")
-var ErrNodeAlreadyConfigured = errors.New("node is already configured")
-var ErrFailedToCreateNodeHostDir = errors.New("failed to create node host dir")
-var ErrInvalidStoragedConfiguration = errors.New("invalid storaged configuration")
+var ErrNodeIsNotReady = errors.New("e32: node is not ready")
+var ErrStorageIsNotReady = errors.New("e33: storage is not ready")
+var ErrFailedToStopCluster = errors.New("e34: failed to stop cluster")
+var ErrFailedToCreateWALDir = errors.New("e35: failed to create wal dir")
+var ErrNodeAlreadyConfigured = errors.New("e36: node is already configured")
+var ErrFailedToCreateNodeHostDir = errors.New("e37: failed to create node host dir")
+var ErrInvalidStoragedConfiguration = errors.New("e38: invalid storaged configuration")
 
-var ErrIndexStorageIsNotReady = errors.New("index storage is not ready")
+var ErrIndexStorageIsNotReady = errors.New("e39: index storage is not ready")
 
 //func IsInvalidConfiguration(err error) bool {
 //	return err == ErrInvalidConfiguration
