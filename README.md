@@ -1,5 +1,4 @@
 # flamed
-
 ---------------------------------------------------------------
 [![GoDoc](https://godoc.org/github.com/mkawserm/flamed?status.svg)](https://godoc.org/github.com/mkawserm/flamed)
 [![Build Status](https://travis-ci.com/mkawserm/flamed.svg?branch=master)](https://travis-ci.com/mkawserm/flamed)
