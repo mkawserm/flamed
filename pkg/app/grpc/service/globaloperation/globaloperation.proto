@@ -1,0 +1,14 @@
+syntax = "proto3";
+package globaloperation;
+
+import "github.com/mkawserm/flamed/pkg/pb/flamed.proto";
+
+message ProposalRequest {
+  uint64 clusterID = 1;
+  bytes namespace = 2;
+  pb.Proposal proposal = 3;
+}
+
+service GlobalOperationRPC {
+  rpc Propose(ProposalRequest) returns (pb.ProposalResponse) {}
+}

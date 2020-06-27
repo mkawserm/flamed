@@ -42,7 +42,7 @@ func GlobalOperation(flamedContext *fContext.FlamedContext) *graphql.Field {
 			}
 
 			globalOperation := flamedContext.Flamed().NewGlobalOperation(clusterID,
-				namespace,
+				[]byte(namespace),
 				flamedContext.GlobalRequestTimeout())
 
 			return &fContext.GlobalOperationContext{

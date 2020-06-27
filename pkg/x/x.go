@@ -73,6 +73,7 @@ var ErrFamilyNameCanNotBeEmpty = errors.New("e48: family name can not be empty")
 var ErrFamilyVersionCanNotBeEmpty = errors.New("e49: family version can not be empty")
 var ErrInvalidSourceType = errors.New("e50: invalid source type")
 var ErrPasswordCanNotBeEmpty = errors.New("e51: password can not be empty")
+var ErrInvalidProposal = errors.New("e52: invalid proposal")
 
 var ErrGlobalSearchPermissionRequired = errors.New("e101: global search permission required")
 var ErrGlobalIteratePermissionRequired = errors.New("e102: global iterate permission required")

@@ -11,13 +11,13 @@ import (
 )
 
 type GlobalOperation struct {
-	mNamespace string
+	mNamespace []byte
 	mClusterID uint64
 	mTimeout   time.Duration
 	mRW        iface.IReaderWriter
 }
 
-func (g *GlobalOperation) Namespace() string {
+func (g *GlobalOperation) Namespace() []byte {
 	return g.mNamespace
 }
 
@@ -33,8 +33,8 @@ func (g *GlobalOperation) UpdateTimeout(timeout time.Duration) {
 	g.mTimeout = timeout
 }
 
-func (g *GlobalOperation) Setup(clusterID uint64, namespace string, rw iface.IReaderWriter, timeout time.Duration) error {
-	if !utility.IsNamespaceValid([]byte(namespace)) {
+func (g *GlobalOperation) Setup(clusterID uint64, namespace []byte, rw iface.IReaderWriter, timeout time.Duration) error {
+	if !utility.IsNamespaceValid(namespace) {
 		return x.ErrInvalidNamespace
 	}
 

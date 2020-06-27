@@ -28,7 +28,7 @@ var Propose = &graphql.Field{
 			return nil, nil
 		}
 
-		namespace := []byte(ctx.GlobalOperation.Namespace())
+		namespace := ctx.GlobalOperation.Namespace()
 		proposalMap := p.Args["proposal"].(map[string]interface{})
 		if !utility.HasGlobalCRUDPermission(ctx.AccessControl) {
 			return nil, gqlerrors.NewFormattedError(x.ErrGlobalCRUDPermissionRequired.Error())

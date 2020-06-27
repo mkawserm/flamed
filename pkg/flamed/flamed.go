@@ -69,7 +69,7 @@ func (f *Flamed) NewAdmin(clusterID uint64, timeout time.Duration) *Admin {
 	}
 }
 
-func (f *Flamed) NewGlobalOperation(clusterID uint64, namespace string, timeout time.Duration) *GlobalOperation {
+func (f *Flamed) NewGlobalOperation(clusterID uint64, namespace []byte, timeout time.Duration) *GlobalOperation {
 	q := &GlobalOperation{}
 	if err := q.Setup(clusterID, namespace, f, timeout); err != nil {
 		return nil
