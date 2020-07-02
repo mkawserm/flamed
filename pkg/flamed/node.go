@@ -249,7 +249,7 @@ func (n *Node) NewNodeAdmin(clusterID uint64, timeout time.Duration) *NodeAdmin 
 
 func (n *Node) managedSyncRead(clusterID uint64, query interface{}, timeout time.Duration) (interface{}, error) {
 	if !n.IsClusterIDAvailable(clusterID) {
-		return nil, x.ErrClusterNotFound
+		return nil, x.ErrClusterIsNotAvailable
 	}
 
 	ctx, cancel := context.WithTimeout(context.TODO(), timeout)
@@ -263,7 +263,7 @@ func (n *Node) managedSyncApplyProposal(clusterID uint64,
 	pp *pb.Proposal,
 	timeout time.Duration) (sm.Result, error) {
 	if !n.IsClusterIDAvailable(clusterID) {
-		return sm.Result{}, x.ErrClusterNotFound
+		return sm.Result{}, x.ErrClusterIsNotAvailable
 	}
 
 	cmd, err := proto.Marshal(pp)

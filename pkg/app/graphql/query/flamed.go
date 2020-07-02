@@ -70,7 +70,7 @@ var FlamedType = graphql.NewObject(graphql.ObjectConfig{
 
 				if !fc.Flamed().IsClusterIDAvailable(clusterID.Value()) {
 					return nil,
-						gqlerrors.NewFormattedError(x.ErrClusterNotFound.Error())
+						gqlerrors.NewFormattedError(x.ErrClusterIsNotAvailable.Error())
 				}
 
 				return fc.Flamed().NewAdmin(clusterID.Value(), fc.GlobalRequestTimeout()), nil

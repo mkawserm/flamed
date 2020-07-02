@@ -2,35 +2,75 @@ package x
 
 import "errors"
 
+// ErrUnknownValue defines unknown value error.
 var ErrUnknownValue = errors.New("e1: unknown value")
-var ErrClusterNotFound = errors.New("e2: cluster not found")
+
+// ErrClusterNotFound defines cluster is not available error.
+// var ErrClusterNotFound = errors.New("e2: cluster not found")
+
+// ErrStateNotFound defines state is not available error.
 var ErrStateNotFound = errors.New("e3: state is not available")
+
+// ErrPathCanNotBeEmpty defines path empty error.
 var ErrPathCanNotBeEmpty = errors.New("e4: path can not be empty")
+
+// ErrTPNotFound defines transaction processor not found error.
 var ErrTPNotFound = errors.New("e5: transaction processor not found")
+
+// ErrNotImplemented defines not implemented error.
 var ErrNotImplemented = errors.New("e6: not implemented")
+
+// ErrInvalidInput defines invalid input error.
 var ErrInvalidInput = errors.New("e7: invalid input")
 
+// ErrAccessViolation defines access violation error. This error must
+// be raised when user does not have proper access permission
+// to access the resource
 var ErrAccessViolation = errors.New("e8: access violation")
+
+// ErrAccessDenied defines access denied error.
 var ErrAccessDenied = errors.New("e9: access denied")
+
+// ErrClusterIsNotAvailable defines cluster unavailability error.
 var ErrClusterIsNotAvailable = errors.New("e10: cluster is not available")
 
+// ErrAddressNotFound defines key unavailability error.
 var ErrAddressNotFound = errors.New("e11: key is not available")
 
+// ErrInvalidPassword defines invalid password error.
 var ErrInvalidPassword = errors.New("e12: password length must be greater than 5")
+
+// ErrUnexpectedNilValue defines unexpected nil value error.
 var ErrUnexpectedNilValue = errors.New("e13: unexpected nil value")
 
+// ErrInvalidConfiguration defines invalid configuration error.
 var ErrInvalidConfiguration = errors.New("e14: invalid configuration")
+
+// ErrStorageIsAlreadyOpen defines storage already open error.
 var ErrStorageIsAlreadyOpen = errors.New("e15: storage is already open")
+
+// ErrFailedToOpenStorage defines storage open failure error.
 var ErrFailedToOpenStorage = errors.New("e16: failed to open the storage")
+
+// ErrFailedToCloseStorage defines storage closing failure error.
 var ErrFailedToCloseStorage = errors.New("e17: failed to close the storage")
+
+// ErrFailedToChangeSecretKey defines secret key change error.
 var ErrFailedToChangeSecretKey = errors.New("e18: failed to change secret key")
+
+// ErrFailedToReadDataFromStorage defines reading from storage failure error.
 var ErrFailedToReadDataFromStorage = errors.New("e19: failed to read data from the storage")
 
+// ErrFailedToCreateDataToStorage defines data creation to storage failure error.
 var ErrFailedToCreateDataToStorage = errors.New("e20: failed to create data to the storage")
+
+// ErrFailedToDeleteDataFromStorage defines data deletion from storage failure error.
 var ErrFailedToDeleteDataFromStorage = errors.New("e21: failed to delete data from the storage")
 
+// ErrFailedToCreateIndexMeta defines index meta creation failure error.
 var ErrFailedToCreateIndexMeta = errors.New("e22: failed to create indexmeta meta")
 
+// ErrFailedToAddCustomIndexRule defines custom index rule addition failure error.
 var ErrFailedToAddCustomIndexRule = errors.New("e23: failed to add custom index rul")
 
 var ErrInvalidUsername = errors.New("e24: username length must be greater than 2")
