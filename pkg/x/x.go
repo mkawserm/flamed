@@ -73,55 +73,119 @@ var ErrFailedToCreateIndexMeta = errors.New("e22: failed to create indexmeta met
 // ErrFailedToAddCustomIndexRule defines custom index rule addition failure error.
 var ErrFailedToAddCustomIndexRule = errors.New("e23: failed to add custom index rul")
 
+// ErrInvalidUsername defines invalid username error.
 var ErrInvalidUsername = errors.New("e24: username length must be greater than 2")
 
-var ErrFailedToApplyIndex = errors.New("e25: failed to apply indexmeta")
-var ErrFailedToCreateIndex = errors.New("e26: failed to create indexmeta")
+// ErrFailedToApplyIndex defines apply index failure error.
+var ErrFailedToApplyIndex = errors.New("e25: failed to apply index")
 
+// ErrFailedToCreateIndex defines index creation failure error.
+var ErrFailedToCreateIndex = errors.New("e26: failed to create index")
+
+// ErrInvalidNamespace defines invalid namespace failure error.
 var ErrInvalidNamespace = errors.New("e27: invalid namespace: namespace should start with a letter" +
 	" and minimum 3 characters and can not contain `::`")
 
+// ErrInvalidLookupInput defines invalid lookup input error.
 var ErrInvalidLookupInput = errors.New("e28: invalid lookup input")
 
 //var ErrFailedToPrepareSnapshot = errors.New("failed to prepare snapshot")
+
+// ErrFailedToSaveSnapshot defines snapshot save failure error.
 var ErrFailedToSaveSnapshot = errors.New("e29: failed to save snapshot")
+
+// ErrFailedToRecoverFromSnapshot defines recover from snapshot failure error.
 var ErrFailedToRecoverFromSnapshot = errors.New("e30: failed to recover from snapshot")
 
 //var ErrInvalidSnapshotContext = errors.New("invalid snapshot context")
-var ErrLastIndexIsNotMovingForward = errors.New("e31: last indexmeta is not moving forward")
 
+// ErrLastIndexIsNotMovingForward defines last index moving forward failure error.
+var ErrLastIndexIsNotMovingForward = errors.New("e31: last index is not moving forward")
+
+// ErrNodeIsNotReady defines node is not ready error.
 var ErrNodeIsNotReady = errors.New("e32: node is not ready")
+
+// ErrStorageIsNotReady defines storage is not ready error.
 var ErrStorageIsNotReady = errors.New("e33: storage is not ready")
+
+// ErrFailedToStopCluster defines cluster stop failure error.
 var ErrFailedToStopCluster = errors.New("e34: failed to stop cluster")
+
+// ErrFailedToCreateWALDir defines wal dir create failure error.
 var ErrFailedToCreateWALDir = errors.New("e35: failed to create wal dir")
+
+// ErrNodeAlreadyConfigured defines node is not configured failure error.
 var ErrNodeAlreadyConfigured = errors.New("e36: node is already configured")
+
+// ErrFailedToCreateNodeHostDir defines node host dir create failure error.
 var ErrFailedToCreateNodeHostDir = errors.New("e37: failed to create node host dir")
+
+// ErrInvalidStoragedConfiguration defines invalid storaged configuration error.
 var ErrInvalidStoragedConfiguration = errors.New("e38: invalid storaged configuration")
 
+// ErrIndexStorageIsNotReady defines index storage not ready error.
 var ErrIndexStorageIsNotReady = errors.New("e39: index storage is not ready")
 
+// ErrInvalidOperation defines invalid operation failure error.
 var ErrInvalidOperation = errors.New("e40: invalid operation")
 
 //var ErrResourceIsNotAvailable = errors.New("e41: resource is not available")
+
+// ErrPasswordHashAlgorithmIsNotAvailable defines password hash algorithm unavailable error.
 var ErrPasswordHashAlgorithmIsNotAvailable = errors.New("e42: password hash algorithm is not available")
+
+// ErrFailedToGeneratePassword defines password generation failure error.
 var ErrFailedToGeneratePassword = errors.New("e43: failed to generate password")
+
+// ErrMetaNamespaceIsReserved defines meta namespace reserved error.
 var ErrMetaNamespaceIsReserved = errors.New("e44: meta namespace is reserved")
+
+// ErrAccessControlNotFound defines access control not found error.
 var ErrAccessControlNotFound = errors.New("e45: access control not found")
+
+// ErrDecodingError defines decoding failure error.
 var ErrDecodingError = errors.New("e46: decoding error")
+
+// ErrPayloadCanNotBeEmpty defines payload can not be empty error.
 var ErrPayloadCanNotBeEmpty = errors.New("e47: payload can not be empty")
+
+// ErrFamilyNameCanNotBeEmpty defines family name can not be empty error.
 var ErrFamilyNameCanNotBeEmpty = errors.New("e48: family name can not be empty")
+
+// ErrFamilyVersionCanNotBeEmpty defines family version can not be empty error.
 var ErrFamilyVersionCanNotBeEmpty = errors.New("e49: family version can not be empty")
+
+// ErrInvalidSourceType defines invalid source type error.
 var ErrInvalidSourceType = errors.New("e50: invalid source type")
+
+// ErrPasswordCanNotBeEmpty defines password can not be empty error.
 var ErrPasswordCanNotBeEmpty = errors.New("e51: password can not be empty")
+
+// ErrInvalidProposal defines invalid proposal error.
 var ErrInvalidProposal = errors.New("e52: invalid proposal")
 
+// ErrGlobalSearchPermissionRequired defines global search permission required error.
 var ErrGlobalSearchPermissionRequired = errors.New("e101: global search permission required")
+
+// ErrGlobalIteratePermissionRequired defines global iterate permission required error.
 var ErrGlobalIteratePermissionRequired = errors.New("e102: global iterate permission required")
+
+// ErrGlobalRetrievePermissionRequired defines global retrieve permission required error.
 var ErrGlobalRetrievePermissionRequired = errors.New("e103: global retrieve permission required")
+
+// ErrGlobalCRUDPermissionRequired defines global CRUD permission required error.
 var ErrGlobalCRUDPermissionRequired = errors.New("e104: global CRUD permission required")
+
+// ErrReadPermissionRequired defines read permission required error.
 var ErrReadPermissionRequired = errors.New("e105: read permission required")
+
+// ErrWritePermissionRequired defines write permission required error.
 var ErrWritePermissionRequired = errors.New("e106: write permission required")
+
+// ErrUpdatePermissionRequired defines update permission required error.
 var ErrUpdatePermissionRequired = errors.New("e107: update permission required")
+
+// ErrDeletePermissionRequired defines delete permission required error.
 var ErrDeletePermissionRequired = errors.New("e108: delete permission required")
 
 //var ErrGenericNotFound = errors.New("e201: generic not found")
