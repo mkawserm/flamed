@@ -102,7 +102,7 @@ func initAllDefaults() {
 	viper.SetDefault(constant.EnableGraphQLOverHTTP, true)
 	viper.SetDefault(constant.EnableGraphQLOverGRPC, false)
 
-	viper.SetDefault(constant.EnableGRPCServer, true)
+	viper.SetDefault(constant.EnableGRPCServer, false)
 	viper.SetDefault(constant.GRPCServerAddress, "localhost:9091")
 	viper.SetDefault(constant.GRPCServerTLS, false)
 	viper.SetDefault(constant.GRPCServerCertFile, "")
