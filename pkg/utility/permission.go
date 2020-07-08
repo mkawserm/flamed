@@ -2,6 +2,7 @@ package utility
 
 import "github.com/mkawserm/flamed/pkg/pb"
 
+// HasReadPermission checks availability of read permission
 func HasReadPermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
@@ -9,6 +10,7 @@ func HasReadPermission(ac *pb.AccessControl) bool {
 	return hasBit(ac.Permission, 0)
 }
 
+// HasWritePermission checks availability of write permission
 func HasWritePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
@@ -16,6 +18,7 @@ func HasWritePermission(ac *pb.AccessControl) bool {
 	return hasBit(ac.Permission, 1)
 }
 
+// HasUpdatePermission checks availability of update permission
 func HasUpdatePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
@@ -23,6 +26,7 @@ func HasUpdatePermission(ac *pb.AccessControl) bool {
 	return hasBit(ac.Permission, 2)
 }
 
+// HasDeletePermission checks availability of delete permission
 func HasDeletePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
@@ -30,6 +34,7 @@ func HasDeletePermission(ac *pb.AccessControl) bool {
 	return hasBit(ac.Permission, 3)
 }
 
+// HasGlobalSearchPermission checks availability of global search permission
 func HasGlobalSearchPermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
@@ -37,6 +42,7 @@ func HasGlobalSearchPermission(ac *pb.AccessControl) bool {
 	return hasBit(ac.Permission, 4)
 }
 
+// HasGlobalIteratePermission checks availability of global iterate permission
 func HasGlobalIteratePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
@@ -44,6 +50,7 @@ func HasGlobalIteratePermission(ac *pb.AccessControl) bool {
 	return hasBit(ac.Permission, 5)
 }
 
+// HasGlobalRetrievePermission checks availability of global retrieve permission
 func HasGlobalRetrievePermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
@@ -51,6 +58,7 @@ func HasGlobalRetrievePermission(ac *pb.AccessControl) bool {
 	return hasBit(ac.Permission, 6)
 }
 
+// HasGlobalCRUDPermission checks availability of global CRUD permission
 func HasGlobalCRUDPermission(ac *pb.AccessControl) bool {
 	if ac == nil {
 		return false
@@ -58,6 +66,8 @@ func HasGlobalCRUDPermission(ac *pb.AccessControl) bool {
 	return hasBit(ac.Permission, 7)
 }
 
+// NewPermission creates permission unsigned integer based on
+// parameters boolean flag
 func NewPermission(read bool, write bool, update bool, delete bool,
 	globalSearch bool,
 	globalIterate bool,
@@ -81,15 +91,12 @@ func NewPermission(read bool, write bool, update bool, delete bool,
 	if globalSearch {
 		p = setBit(p, 4)
 	}
-
 	if globalIterate {
 		p = setBit(p, 5)
 	}
-
 	if globalRetrieve {
 		p = setBit(p, 6)
 	}
-
 	if globalCRUD {
 		p = setBit(p, 7)
 	}
