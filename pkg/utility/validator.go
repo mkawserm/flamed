@@ -2,6 +2,7 @@ package utility
 
 import (
 	"bytes"
+	"strings"
 )
 
 func IsNamespaceValid(namespace []byte) bool {
@@ -21,6 +22,9 @@ func IsNamespaceValid(namespace []byte) bool {
 }
 
 func IsUsernameValid(username string) bool {
+	if strings.Contains(username, "::") {
+		return false
+	}
 	return len(username) >= 3
 }
 
