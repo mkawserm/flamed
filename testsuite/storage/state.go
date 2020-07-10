@@ -39,14 +39,20 @@ func StateStorageTestSuite(t *testing.T, stateStorage iface.IStateStorage) {
 		"0",
 		"5",
 		"1",
+		"Ab",
+		"1ba",
+		"1ab",
 	}
 
 	expectedForwardDataTable := []string{
 		"0",
 		"1",
+		"1ab",
+		"1ba",
 		"5",
 		"9",
 		"A",
+		"Ab",
 		"Z",
 		"a",
 		"z",
@@ -56,9 +62,12 @@ func StateStorageTestSuite(t *testing.T, stateStorage iface.IStateStorage) {
 		"z",
 		"a",
 		"Z",
+		"Ab",
 		"A",
 		"9",
 		"5",
+		"1ba",
+		"1ab",
 		"1",
 		"0",
 	}
