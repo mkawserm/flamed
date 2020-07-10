@@ -227,6 +227,8 @@ github.com/lni/dragonboat/v3 v3.1.1-0.20200607163207-449368c7335d h1:i54TZtJZgEL
 github.com/lni/dragonboat/v3 v3.1.1-0.20200607163207-449368c7335d/go.mod h1:wUv/Ig9whEmfWiMOypZyhchYeU2H1VaNApDytwYqd0c=
 github.com/lni/dragonboat/v3 v3.1.1-0.20200703035341-ab2240ccadf9 h1:N4ITiSsl3vZHBD99wZWfm/bop1ZKArpLXOCxWzsFQW8=
 github.com/lni/dragonboat/v3 v3.1.1-0.20200703035341-ab2240ccadf9/go.mod h1:3B9wTaH9drdcG/P9CXSilP7yjNhNsz1FEgy7lzL4Qc0=
+github.com/lni/dragonboat/v3 v3.1.1-0.20200709032149-93177a39a35d h1:jcywGUjlfjtelxa8usw07vUwTV10Yos0MDxdsfI3bPk=
+github.com/lni/dragonboat/v3 v3.1.1-0.20200709032149-93177a39a35d/go.mod h1:3B9wTaH9drdcG/P9CXSilP7yjNhNsz1FEgy7lzL4Qc0=
 github.com/lni/goutils v1.1.0 h1:dnLcvFyaJ3Wt1YkcFUOd2Vxq+E+ioGW1HVJtDLseC4U=
 github.com/lni/goutils v1.1.0/go.mod h1:NDD+zR5cMNH2OsJj+r/X7zBSzBlmxytUUot268gtOOw=
 github.com/lni/goutils v1.2.0 h1:zROCmctQ/Nq0aMaRsSD5t8l/AO39vGRUoYQ7/RTvBj8=
