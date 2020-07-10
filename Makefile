@@ -30,8 +30,11 @@ run-server:
 run-server-race:
 	go run -race cmd/flamed/flamed.go run server --notify-commit true --node-id 1 --storage-path /tmp/data1 --http-server-address 0.0.0.0:8081 --raft-address 0.0.0.0:63001 --grpc-server-address 0.0.0.0:9091 --log-level debug
 
-test:
+test-v:
 	go test ./... -v
+
+test:
+	go test ./...
 
 cover:
 	go test ./... -coverprofile=cover.out -v
