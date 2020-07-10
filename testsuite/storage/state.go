@@ -80,6 +80,9 @@ func reverseIteratorCheck(t *testing.T, stateStorage iface.IStateStorage, expect
 	reverseIterator.Close()
 }
 
+// StateStorageTestSuite is helpful for developer
+// to implement new key value plugin for state storage
+// correctly
 func StateStorageTestSuite(t *testing.T, stateStorage iface.IStateStorage) {
 	path := "/tmp/test_db_1"
 	defer func() {
