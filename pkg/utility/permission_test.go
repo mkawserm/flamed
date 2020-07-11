@@ -45,7 +45,7 @@ func TestHasReadPermission(t *testing.T) {
 	}
 
 	if HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if HasGlobalCRUDPermission(ac) {
@@ -93,7 +93,7 @@ func TestHasWritePermission(t *testing.T) {
 	}
 
 	if HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if HasGlobalCRUDPermission(ac) {
@@ -141,7 +141,7 @@ func TestHasUpdatePermission(t *testing.T) {
 	}
 
 	if HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if HasGlobalCRUDPermission(ac) {
@@ -189,7 +189,7 @@ func TestHasDeletePermission(t *testing.T) {
 	}
 
 	if HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if HasGlobalCRUDPermission(ac) {
@@ -237,7 +237,7 @@ func TestHasGlobalSearchPermission(t *testing.T) {
 	}
 
 	if HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if HasGlobalCRUDPermission(ac) {
@@ -285,7 +285,7 @@ func TestHasGlobalIteratePermission(t *testing.T) {
 	}
 
 	if HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if HasGlobalCRUDPermission(ac) {
@@ -333,7 +333,7 @@ func TestHasGlobalRetrievePermission(t *testing.T) {
 	}
 
 	if !HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if HasGlobalCRUDPermission(ac) {
@@ -381,7 +381,7 @@ func TestHasGlobalCRUDPermission(t *testing.T) {
 	}
 
 	if HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if !HasGlobalCRUDPermission(ac) {
@@ -429,7 +429,7 @@ func TestNewPermission(t *testing.T) {
 	}
 
 	if HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if HasGlobalCRUDPermission(ac) {
@@ -477,7 +477,7 @@ func TestNewPermission2(t *testing.T) {
 	}
 
 	if !HasGlobalRetrievePermission(ac) {
-		t.Fatalf("Unexpected global retreive permission")
+		t.Fatalf("Unexpected global retrieve permission")
 	}
 
 	if !HasGlobalCRUDPermission(ac) {
