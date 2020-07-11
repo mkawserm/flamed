@@ -77,7 +77,7 @@ func (i *IntKey) insert(tpr *pb.TransactionResponse,
 	entry, _ := stateContext.GetState(address)
 	if entry != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 6
 		tpr.ErrorText = "state already exists so can not insert"
 		return tpr
 	}
@@ -91,7 +91,7 @@ func (i *IntKey) insert(tpr *pb.TransactionResponse,
 
 	if err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 7
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
@@ -105,7 +105,7 @@ func (i *IntKey) insert(tpr *pb.TransactionResponse,
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 8
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
@@ -122,14 +122,14 @@ func (i *IntKey) delete(tpr *pb.TransactionResponse,
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 9
 		tpr.ErrorText = "state does not exists, can not delete"
 		return tpr
 	}
 
 	if err := stateContext.DeleteState(address); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 10
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
@@ -155,7 +155,7 @@ func (i *IntKey) upsert(tpr *pb.TransactionResponse,
 
 	if err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 11
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
@@ -169,7 +169,7 @@ func (i *IntKey) upsert(tpr *pb.TransactionResponse,
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 12
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
@@ -188,7 +188,7 @@ func (i *IntKey) increment(tpr *pb.TransactionResponse,
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 13
 		tpr.ErrorText = "state does not exists so can not increment"
 		return tpr
 	}
@@ -197,14 +197,14 @@ func (i *IntKey) increment(tpr *pb.TransactionResponse,
 
 	if err := proto.Unmarshal(entry.Payload, stateData); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 14
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if 18446744073709551615-payload.Value < stateData.Value {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 15
 		tpr.ErrorText = "result can not be out of range"
 		return tpr
 	}
@@ -212,7 +212,7 @@ func (i *IntKey) increment(tpr *pb.TransactionResponse,
 	stateBytes, err := proto.Marshal(stateData)
 	if err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 16
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
@@ -221,7 +221,7 @@ func (i *IntKey) increment(tpr *pb.TransactionResponse,
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 17
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
@@ -240,7 +240,7 @@ func (i *IntKey) decrement(tpr *pb.TransactionResponse,
 	entry, _ := stateContext.GetState(address)
 	if entry == nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 18
 		tpr.ErrorText = "state does not exists can not decrement"
 		return tpr
 	}
@@ -249,14 +249,14 @@ func (i *IntKey) decrement(tpr *pb.TransactionResponse,
 
 	if err := proto.Unmarshal(entry.Payload, stateData); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 19
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if payload.Value > stateData.Value {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 20
 		tpr.ErrorText = "result can not be out of range"
 		return tpr
 	}
@@ -266,7 +266,7 @@ func (i *IntKey) decrement(tpr *pb.TransactionResponse,
 	stateBytes, err := proto.Marshal(stateData)
 	if err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 21
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
@@ -275,7 +275,7 @@ func (i *IntKey) decrement(tpr *pb.TransactionResponse,
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 22
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
@@ -292,7 +292,7 @@ func (i *IntKey) Apply(_ context.Context,
 
 	tpr := &pb.TransactionResponse{
 		Status:        pb.Status_REJECTED,
-		ErrorCode:     0,
+		ErrorCode:     1,
 		ErrorText:     "",
 		FamilyName:    Name,
 		FamilyVersion: Version,
@@ -302,21 +302,21 @@ func (i *IntKey) Apply(_ context.Context,
 
 	if err := proto.Unmarshal(transaction.Payload, payload); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 2
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
 
 	if len(payload.Name) == 0 {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 3
 		tpr.ErrorText = "name can not be empty"
 		return tpr
 	}
 
 	if len(payload.Name) > 20 {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 4
 		tpr.ErrorText = "name length can not exceed 20 characters"
 		return tpr
 	}
@@ -336,7 +336,7 @@ func (i *IntKey) Apply(_ context.Context,
 		return i.delete(tpr, stateContext, address)
 	} else {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 0
+		tpr.ErrorCode = 5
 		tpr.ErrorText = "unknown verb"
 		return tpr
 	}
