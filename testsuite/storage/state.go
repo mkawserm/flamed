@@ -80,6 +80,60 @@ func reverseIteratorCheck(t *testing.T, stateStorage iface.IStateStorage, expect
 	reverseIterator.Close()
 }
 
+func forwardIteratorKeyOnlyCheck(t *testing.T, stateStorage iface.IStateStorage, expectedForwardDataTable []string) {
+	txn := stateStorage.NewTransaction()
+	forwardIterator := txn.KeyOnlyForwardIterator()
+	if forwardIterator == nil {
+		t.Fatal("unexpected nil forward iterator")
+		return
+	}
+
+	var i = 0
+	for forwardIterator.Rewind(); forwardIterator.Valid(); forwardIterator.Next() {
+		state := forwardIterator.StateSnapshot()
+		currentData := expectedForwardDataTable[i]
+
+		if !bytes.EqualFold([]byte(currentData), state.Address) {
+			t.Fatal("address ordering is not correct")
+		}
+
+		if state.Data == nil {
+			t.Fatal("data mismatch")
+		}
+
+		i = i + 1
+	}
+
+	forwardIterator.Close()
+}
+
+func reverseIteratorCheckKeyOnly(t *testing.T, stateStorage iface.IStateStorage, expectedReverseDataTable []string) {
+	txn := stateStorage.NewTransaction()
+	reverseIterator := txn.ReverseIterator()
+	if reverseIterator == nil {
+		t.Error("unexpected nil reverse iterator")
+		return
+	}
+
+	var i = 0
+	for reverseIterator.Rewind(); reverseIterator.Valid(); reverseIterator.Next() {
+		state := reverseIterator.StateSnapshot()
+		currentData := expectedReverseDataTable[i]
+
+		if !bytes.EqualFold([]byte(currentData), state.Address) {
+			t.Fatal("address ordering is not correct")
+		}
+
+		if state.Data == nil {
+			t.Fatal("data mismatch")
+		}
+
+		i = i + 1
+	}
+
+	reverseIterator.Close()
+}
+
 // StateStorageTestSuite is helpful for developer
 // to implement new key value plugin for state storage
 // correctly
@@ -142,6 +196,10 @@ func StateStorageTestSuite(t *testing.T, stateStorage iface.IStateStorage) {
 	}
 
 	setKeyValuePair(t, stateStorage, inputDataTable)
+
 	forwardIteratorCheck(t, stateStorage, expectedForwardDataTable)
+	forwardIteratorKeyOnlyCheck(t, stateStorage, expectedForwardDataTable)
+
 	reverseIteratorCheck(t, stateStorage, expectedReverseDataTable)
+	reverseIteratorCheckKeyOnly(t, stateStorage, expectedReverseDataTable)
 }
