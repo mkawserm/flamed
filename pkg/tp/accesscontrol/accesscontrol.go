@@ -78,7 +78,7 @@ func (c *AccessControl) upsert(tpr *pb.TransactionResponse,
 	payload, err := proto.Marshal(accessControl)
 	if err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 6
+		tpr.ErrorCode = 7
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
@@ -92,12 +92,12 @@ func (c *AccessControl) upsert(tpr *pb.TransactionResponse,
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 7
+		tpr.ErrorCode = 8
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
 		tpr.Status = pb.Status_ACCEPTED
-		tpr.ErrorCode = 8
+		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
 	}
@@ -120,7 +120,7 @@ func (c *AccessControl) delete(tpr *pb.TransactionResponse,
 		return tpr
 	} else {
 		tpr.Status = pb.Status_ACCEPTED
-		tpr.ErrorCode = 11
+		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
 	}
@@ -179,7 +179,7 @@ func (c *AccessControl) Apply(_ context.Context,
 		return c.delete(tpr, stateContext, address)
 	} else {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 12
+		tpr.ErrorCode = 6
 		tpr.ErrorText = "unknown action"
 		return tpr
 	}
