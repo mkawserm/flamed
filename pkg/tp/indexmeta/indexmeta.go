@@ -80,7 +80,7 @@ func (i *IndexMeta) upsert(tpr *pb.TransactionResponse,
 	payload, err := proto.Marshal(indexMeta)
 	if err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 5
+		tpr.ErrorCode = 6
 		tpr.ErrorText = err.Error()
 		return tpr
 	}
@@ -94,12 +94,12 @@ func (i *IndexMeta) upsert(tpr *pb.TransactionResponse,
 
 	if err := stateContext.UpsertState(address, entry); err != nil {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 6
+		tpr.ErrorCode = 7
 		tpr.ErrorText = err.Error()
 		return tpr
 	} else {
 		tpr.Status = pb.Status_ACCEPTED
-		tpr.ErrorCode = 7
+		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
 	}
@@ -123,7 +123,7 @@ func (i *IndexMeta) delete(tpr *pb.TransactionResponse,
 		return tpr
 	} else {
 		tpr.Status = pb.Status_ACCEPTED
-		tpr.ErrorCode = 10
+		tpr.ErrorCode = 0
 		tpr.ErrorText = ""
 		return tpr
 	}
@@ -180,7 +180,7 @@ func (i *IndexMeta) Apply(_ context.Context,
 		return r
 	} else {
 		tpr.Status = pb.Status_REJECTED
-		tpr.ErrorCode = 11
+		tpr.ErrorCode = 5
 		tpr.ErrorText = "unknown action"
 		return tpr
 	}
