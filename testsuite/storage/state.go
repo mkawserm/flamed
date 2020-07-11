@@ -97,7 +97,7 @@ func forwardIteratorKeyOnlyCheck(t *testing.T, stateStorage iface.IStateStorage,
 			t.Fatal("address ordering is not correct")
 		}
 
-		if state.Data == nil {
+		if !bytes.EqualFold([]byte(currentData), state.Data) {
 			t.Fatal("data mismatch")
 		}
 
@@ -124,7 +124,7 @@ func reverseIteratorCheckKeyOnly(t *testing.T, stateStorage iface.IStateStorage,
 			t.Fatal("address ordering is not correct")
 		}
 
-		if state.Data == nil {
+		if !bytes.EqualFold([]byte(currentData), state.Data) {
 			t.Fatal("data mismatch")
 		}
 
