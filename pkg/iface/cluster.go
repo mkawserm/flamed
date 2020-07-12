@@ -1,5 +1,7 @@
 package iface
 
+// IOnDiskClusterConfiguration interface defines on disk
+// cluster configuration
 type IOnDiskClusterConfiguration interface {
 	// Join defines the join flag for on disk cluster
 	// configuration
