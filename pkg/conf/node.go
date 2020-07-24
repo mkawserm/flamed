@@ -32,7 +32,7 @@ type NodeConfigurationInput struct {
 
 	NotifyCommit bool `json:"notifyCommit"`
 
-	LogDBConfig         config.LogDBConfig          `json:"-"`
+	LogDB               config.LogDBConfig          `json:"-"`
 	LogDBFactory        config.LogDBFactoryFunc     `json:"-"`
 	RaftRPCFactory      config.RaftRPCFactoryFunc   `json:"-"`
 	RaftEventListener   raftio.IRaftEventListener   `json:"-"`
@@ -176,5 +176,5 @@ func (n *NodeConfiguration) NotifyCommit() bool {
 func (n *NodeConfiguration) LogDB() config.LogDBConfig {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
-	return n.NodeConfigurationInput.LogDBConfig
+	return n.NodeConfigurationInput.LogDB
 }
