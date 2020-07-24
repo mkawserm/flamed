@@ -85,7 +85,7 @@ func (n *Node) ConfigureNode(nodeConfiguration iface.INodeConfiguration) error {
 
 		NotifyCommit: nodeConfiguration.NotifyCommit(),
 
-		LogDBConfig:  nodeConfiguration.LogDBConfig(),
+		LogDB:        nodeConfiguration.LogDB(),
 		LogDBFactory: nodeConfiguration.LogDBFactory(),
 
 		RaftRPCFactory:        nodeConfiguration.RaftRPCFactory(),

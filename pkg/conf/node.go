@@ -173,7 +173,7 @@ func (n *NodeConfiguration) NotifyCommit() bool {
 	return n.NodeConfigurationInput.NotifyCommit
 }
 
-func (n *NodeConfiguration) LogDBConfig() config.LogDBConfig {
+func (n *NodeConfiguration) LogDB() config.LogDBConfig {
 	n.mMutex.Lock()
 	defer n.mMutex.Unlock()
 	return n.NodeConfigurationInput.LogDBConfig
