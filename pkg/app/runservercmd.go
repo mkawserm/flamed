@@ -49,9 +49,9 @@ var RunServerCMD = &cobra.Command{
 		// node configuration
 		nodeConfiguration := getNodeConfiguration(raftStoragePath)
 		if viper.GetString("LogDBConfig") == "tiny" {
-			nodeConfiguration.NodeConfigurationInput.LogDBConfig = config.GetTinyMemLogDBConfig()
+			nodeConfiguration.NodeConfigurationInput.LogDB = config.GetTinyMemLogDBConfig()
 		} else {
-			nodeConfiguration.NodeConfigurationInput.LogDBConfig = config.GetTinyMemLogDBConfig()
+			nodeConfiguration.NodeConfigurationInput.LogDB = config.GetTinyMemLogDBConfig()
 		}
 		err := GetApp().GetFlamed().ConfigureNode(nodeConfiguration)
 		if err != nil {
@@ -279,7 +279,7 @@ func getNodeConfiguration(raftStoragePath string) *conf.NodeConfiguration {
 
 			SystemTickerPrecision: viper.GetDuration(constant.SystemTickerPrecision),
 
-			LogDBConfig:         config.GetTinyMemLogDBConfig(),
+			LogDB:               config.GetTinyMemLogDBConfig(),
 			LogDBFactory:        variable.DefaultLogDbFactory,
 			RaftRPCFactory:      variable.DefaultRaftRPCFactory,
 			RaftEventListener:   variable.DefaultRaftEventListener,
