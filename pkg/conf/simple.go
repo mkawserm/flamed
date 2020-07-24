@@ -42,7 +42,7 @@ func SimpleNodeConfiguration(nodeHostDir string, walDir string, raftAddress stri
 		MaxSnapshotSendBytesPerSecond: 0,
 		MaxSnapshotRecvBytesPerSecond: 0,
 
-		LogDBConfig:  config.GetTinyMemLogDBConfig(),
+		LogDB:        config.GetTinyMemLogDBConfig(),
 		NotifyCommit: false,
 	}}
 }
