@@ -202,6 +202,8 @@ github.com/lni/dragonboat/v3 v3.1.1-0.20200722114424-f6f99457bc3d h1:5xMn1mnA+5b
 github.com/lni/dragonboat/v3 v3.1.1-0.20200722114424-f6f99457bc3d/go.mod h1:ZDGJkYSZIJ+6aSJ+IfnxhuZ8i58YqHqqZIZGuxVQpIo=
 github.com/lni/dragonboat/v3 v3.1.1-0.20200802121132-873c379b6136 h1:jfG2ML9XrolMKXqVnxUapuoFOm9kY8u7y4y7vXt8cTY=
 github.com/lni/dragonboat/v3 v3.1.1-0.20200802121132-873c379b6136/go.mod h1:ZDGJkYSZIJ+6aSJ+IfnxhuZ8i58YqHqqZIZGuxVQpIo=
+github.com/lni/dragonboat/v3 v3.1.1-0.20200814135203-b16d342bc2ca h1:cx2lAnoZIsSP6C8wOjSUw8EySN0+J3Aj0Z5LpOqpeXQ=
+github.com/lni/dragonboat/v3 v3.1.1-0.20200814135203-b16d342bc2ca/go.mod h1:ZDGJkYSZIJ+6aSJ+IfnxhuZ8i58YqHqqZIZGuxVQpIo=
 github.com/lni/goutils v1.2.0 h1:zROCmctQ/Nq0aMaRsSD5t8l/AO39vGRUoYQ7/RTvBj8=
 github.com/lni/goutils v1.2.0/go.mod h1:NDD+zR5cMNH2OsJj+r/X7zBSzBlmxytUUot268gtOOw=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
